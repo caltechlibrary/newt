@@ -1,5 +1,5 @@
 
-# Newt, a page assembler micro service
+# Newt, a router and page assembler micro service
 
 An idea occurred to me about PostgreSQL and PostgREST. It is missing feature the ability to render a web page. It lacks access to a template engine. Pandoc Server seems ripe for this. What is needed is a micro service that takes a requested URL, fetches the data and template from PostgREST hands it to Pandoc server before returning the assembled page to the requestor (e.g. web browser or front end web server).
 
@@ -20,20 +20,55 @@ Web Browser (GET) -> page assembler -> PostgREST (PL GET router function ) -> pa
 
 ## Refining the ideas
 
-Routing can be thought of as a table. It contains a tupple of prefix filter, HTTP Method, mapping to a micro service URL, the micro service's HTTP Method and Pandoc template file name(s). The route table could be define via a simple SQL table or CSV file l9aded into PostgreSQL.
+Routing can be thought of as a table. It contains a tupple of prefix filter, HTTP Method, mapping to a micro service URL, the micro service's HTTP Method, optional Pandoc template file name/source. The route table could be define via a simple SQL table or CSV file loaded into PostgreSQL router table.
+
+~~~csv
+request_presidence, request_expresion, request_method, request_content_types, micro_service_url_template, micro_service_method, micro_service_content_type, optional_pandoc_template
+~~~
+
+request_presidence
+: determine the order of evaluation of a routes, integer
+
+request_expression
+: url dsl expression used to select route and parse path info fields for processing by micro_service_url_template
+
+request_method
+: HTTP Method, e.g. GET, POST, PUT, PATCH, DELETE, HEAD
+
+request_content_types
+: an array of HTTP content types accepted for this route
+
+micro_service_url_template
+: the template, a url dsl, used to call the next micro service
+
+micro_service_method
+: the HTTP Method used to call the next micro service 
+
+micro_service_content_type
+: the HTTP content type used to call next micro service 
+
+optional_pandoc_template
+: filename to Pandoc template if response needs to be processed through Pandoc 
 
 
-When the page assember router starts up it needs to know the routes and load a map of pandoc templat file names to the templates.  If the target microserver is pandoc server thats all that is needed. If a different micro service is target by the prefix and method then that would be call (e.g. a file upload handler).
-
-If most traffic is going to the pandoc server then Pandoc could be integrated into the page assembler directly. That would save a network call and response. It would make the page assembler responsible for more work and would make the page assembler either fork a process or require it to be written in Haskell. Otherwise the page assembler and router could be written in any language.
 
 
-## Prefix parser 
+When newt starts up it reads the table of routes and loads a Pandoc templates for page assember.
 
-The prefix parser needs two properties. Does a URL match a defined prefix match. What parameters can be extracted from the URL. These may be query paramters but also information encoded in the URL path. 
+Pandoc server needs to be available of the templates are to be used.
+
+Should Pandoc be embedded in newt?
+
+If most traffic is going to the pandoc server then Pandoc could be integrated into newt. That would save a network call and response. It would make newt the page assembler and not just a simple router. The url dsl could be Pandoc's template language.
 
 
-Here is an example of some paths expressing the embedded parameters.
+## route parser
+
+Can be simple if the order of evaluation is set in the router table use the presidence number. Each defined route is evaluted, on successful match the micro server vice is called passing along the fields and values expressed and any query parameters passed through to the micro service. If a Pandoc template is indicated it is processed before returning to the requestor.
+
+
+
+Here is an example of some paths expressing the embedded parameters (using JavaScript string formatting as dsl).
 
 ~~~
 /rest/eprint/${eprintid}.xml
@@ -47,6 +82,9 @@ Here is an example of some paths expressing the embedded parameters.
 /people/${personid}/${aggregation_type}.json
 /people/${personid}/recent/${aggregation_type}.html
 ~~~
+
+
+## emplied route presidence
 
 If we sort by the number of path parts (ignoring query parameters) from highest to lowest route filters can be mapped successfull.
 
@@ -79,12 +117,9 @@ Sortinge by part count can be done onload but the question of matching a route p
 
 Literals take president over variables when testing for match. Non-literal interior path parts are matched next, terminating path part matches on basename and or extention indepently present following literal having presidence over var value.
 
-
-
-
-
-newt page_assembler
+newt and page_assembler
 :  a micro service (middleware) that accepts a URL, parses its path and queries PostgREST for object(s) and template, sends  to pandoc server returning result to requestor; routes to other designated micro service and hands back result; returns a 404
 
-Route handler is defined in a route table. Route table should support a pipeline of actions.
+Route handler is defined in a route table, should it support a pipeline of micro services?
+
 
