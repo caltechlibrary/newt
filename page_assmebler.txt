@@ -60,7 +60,7 @@ no. parts, prefix filter
 1,/${eprintid}
 2,/people/${personid}
 3,/people/${personid}/
-4,/people/${personid}/index.html
+3,/people/${personid}/index.html
 3,/people/${personid}/${aggregation_type}.html
 3,/people/${personid}/${aggregation_type}.include
 3,/people/${personid}/${aggregation_type}.json
@@ -69,22 +69,22 @@ no. parts, prefix filter
 
 The four part url path test is applied first and the 1 part path is last. If path parts are the same length they are sorted by alphabetical by the last element of the path for literals or filter parameter if not.
 
-If the PL function could talk directly to the web server we could pass the assembled page back directly from PostgREST passing it onto the web browser.
+Sortinge by part count can be done onload but the question of matching a route path requires identify the elements of the path part. This can be done by turning the embeded parameter names into a list of ordered parameters and using a simple regexp replacement to determine if match occurs. The ordered parameters then can be extracted as well if the regexp match returns the ordered list of elements. If a provided path does not match then the next path of similar length os tried.
 
-This would require knowledge of SQL, PL, Pandoc templates only. Need to think through form submission use case. Page assembler may naed to route GET and POST (and other supported HTtP Methods) independtly or to different PL router functios via PostgRES. Seems like a good use case for a simple Haskell program.
+- parse path into an array of parts
+   - for each prefix with same number parts
+     - if routes matches
+        - handle route and return result 
+   - return 404
 
-Configuration would be a simple of HTTP Method to PL function end point, Permission isues would be pushed back into PostgREST and PostgreSQL. Only need to support methods that are supported by PostgREST. Front end web server would handle rendering error pages.
-
-PL function examples could be provided in Python, SQL and pgplSQL.
-
-The PL functions access could be supplied controlled via Schma and Roles. You might be able to control this down to the row level for private versus public records loke those found in institutional repositories.
-
-
-page_assembler
-:  a micro service (middleware) that accepts a URL, parses its path and queries PostgREST for object(s) and template, sends  to pandoc server returning result to requestor. Route handler is defined in Postgres via a function. Function can apply permissions if nessary.  The function accepts a path and returns markup, content-type, suggested http status code/message. page_assembler passes that back to reqestor.
+Literals take president over variables when testing for match. Non-literal interior path parts are matched next, terminating path part matches on basename and or extention indepently present following literal having presidence over var value.
 
 
-Logic in page assembler is minimal, Just url parse for a path to query PostgREST to get be results of route handler PL function in PostgreSQL. Objects can then be retrieved and routed along with the template to Pandoc server for final page content or if error return a http status code and error message.
 
-PL function must accept a path and return the data object, template name, content type, suggested http status code and error msg if error. PL function is responsible for applying permissions.
-.
+
+
+newt page_assembler
+:  a micro service (middleware) that accepts a URL, parses its path and queries PostgREST for object(s) and template, sends  to pandoc server returning result to requestor; routes to other designated micro service and hands back result; returns a 404
+
+Route handler is defined in a route table. Route table should support a pipeline of actions.
+
