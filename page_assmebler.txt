@@ -5,7 +5,11 @@ An idea occurred to me about PostgreSQL and PostgREST. It is missing feature the
 
 The question is one of routing. Which request is sent to PostgREST and which template is used to send to Pandoc server. This reduces the problem to a function of routing. Where is the mapping defined and managed? I think the route handler could defined in PostgreSQL via a PL. The URL Path, HTTP Method and any payload is sent to PostgREST triggering the route handler. The route handler function processes the routing hand back the HTTP status code, message, headers and any Obecjts and Pandoc template name. The is then bounced to Pandoc server before handling the results back to the requestor.
 
-How do we deal with file uploads?
+
+- What is the essence of a route?
+- Where and when are routes defined?
+- How do we deal with file uploads?
+- How do we reduce the size of the page assembler pipe line?
 
 ~~~
 Web Browser (GET) -> page assembler -> PostgREST (PL GET router function ) -> page assembler \
@@ -15,6 +19,55 @@ Web Browser (GET) -> page assembler -> PostgREST (PL GET router function ) -> pa
 ~~~
 
 ## Refining the ideas
+
+Routing can be thought of as a table. It contains a tupple of prefix filter, HTTP Method, mapping to a micro service URL, the micro service's HTTP Method and Pandoc template file name(s). The route table could be define via a simple SQL table or CSV file l9aded into PostgreSQL.
+
+
+When the page assember router starts up it needs to know the routes and load a map of pandoc templat file names to the templates.  If the target microserver is pandoc server thats all that is needed. If a different micro service is target by the prefix and method then that would be call (e.g. a file upload handler).
+
+If most traffic is going to the pandoc server then Pandoc could be integrated into the page assembler directly. That would save a network call and response. It would make the page assembler responsible for more work and would make the page assembler either fork a process or require it to be written in Haskell. Otherwise the page assembler and router could be written in any language.
+
+
+## Prefix parser 
+
+The prefix parser needs two properties. Does a URL match a defined prefix match. What parameters can be extracted from the URL. These may be query paramters but also information encoded in the URL path. 
+
+
+Here is an example of some paths expressing the embedded parameters.
+
+~~~
+/rest/eprint/${eprintid}.xml
+/?q=${query_string}
+/${eprintid}
+/people/${personid}
+/people/${personid}/
+/people/${personid}/index.html
+/people/${personid}/${aggregation_type}.html
+/people/${personid}/${aggregation_type}.include
+/people/${personid}/${aggregation_type}.json
+/people/${personid}/recent/${aggregation_type}.html
+~~~
+
+If we sort by the number of path parts (ignoring query parameters) from highest to lowest route filters can be mapped successfull.
+
+Taking the list above that sort out as follows
+
+
+~~~csv
+no. parts, prefix filter  
+3,/rest/eprint/${eprintid}.xml
+1,/?q=${query_string}
+1,/${eprintid}
+2,/people/${personid}
+3,/people/${personid}/
+4,/people/${personid}/index.html
+3,/people/${personid}/${aggregation_type}.html
+3,/people/${personid}/${aggregation_type}.include
+3,/people/${personid}/${aggregation_type}.json
+4,/people/${personid}/recent/${aggregation_type}.html
+~~~
+
+The four part url path test is applied first and the 1 part path is last. If path parts are the same length they are sorted by alphabetical by the last element of the path for literals or filter parameter if not.
 
 If the PL function could talk directly to the web server we could pass the assembled page back directly from PostgREST passing it onto the web browser.
 
