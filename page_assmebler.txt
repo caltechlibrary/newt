@@ -5,13 +5,21 @@ The question I ran into is defining the routes.  I think the route handler could
 
 
 ~~~
-Web Browser -> page assembler -> PostgREST (PL router function ) -> page assembler \
+Web Browser (GET) -> page assembler -> PostgREST (PL GET router function ) -> page assembler \
     -+ (no error) -> Pandoc Server -> page assembler -> Web browser
      |
      + (error, permissions issue) http status code for error/page -> Web Browser
+~~~
 
-If the PL function could talk directly to the web server we could pass the assembled page back directly from PostgREST passing it onto the web browser 
-~~~  
+If the PL function could talk directly to the web server we could pass the assembled page back directly from PostgREST passing it onto the web browser.
+
+This would require knowledge of SQL, PL, Pandoc templates only. Need to think through form submission use case. Page assembler may naed to route GET and POST (and other supported HTtP Methods) independtly or to different PL router functios via PostgRES. Seems like a good use case for a simple Haskell program.
+
+Configuration would be a simple of HTTP Method to PL function end point, Permission isues would be pushed back into PostgREST and PostgreSQL. Only need to support methods that are supported by PostgREST. Front end web server would handle rendering error pages.
+
+PL function examples could be provided in Python, SQL and pgplSQL.
+
+The PL functions access could be supplied controlled via Schma and Roles. You might be able to control this down to the row level for private versus public records loke those found in institutional repositories.
 
 
 page_assembler
