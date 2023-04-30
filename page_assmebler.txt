@@ -1,5 +1,21 @@
+
+An idea that I had when I started thinking about PostgreSQL and PostgREST was the missing feature of an open standard template engine. Pandoc Server seems ripe for this. What is needed is a micro service that takes a requested URL, fetches the data and template from PostgREST to render the page. Once you have that the service would pass that to Pandoc Server returning the rendered result to the requestors (e.g. web browser or front end web server).
+
+The question I ran into is defining the routes.  I think the route handler could be a known function defined in PostgreSQL via a PL. Our page assembler would be responsible for parsing the requested URL and invoking the function via PostgREST.  
+
+
+~~~
+Web Browser -> page assembler -> PostgREST (PL router function ) -> page assembler \
+    -+ (no error) -> Pandoc Server -> page assembler -> Web browser
+     |
+     + (error, permissions issue) http status code for error/page -> Web Browser
+
+If the PL function could talk directly to the web server we could pass the assembled page back directly from PostgREST passing it onto the web browser 
+~~~  
+
+
 page_assembler
-:  a micro service that accepts a URL, parses its path and queries PostgREST for object(s) and template, sends both to pandoc server returning result to requestor. Route handler is defined in Postgres via a function. Function can apply permissions if nessary.  The function accepts a path and returns markup, content-type, suggested http status code/message. page_assembler passes that back to reqestor.
+:  a micro service that accepts a URL, parses its path and queries PostgREST for object(s) and template, sends  to pandoc server returning result to requestor. Route handler is defined in Postgres via a function. Function can apply permissions if nessary.  The function accepts a path and returns markup, content-type, suggested http status code/message. page_assembler passes that back to reqestor.
 
 
 Logic in page assembler is minimal, Just url parse for a path to query PostgREST to get be results of route handler PL function in PostgreSQL. Objects can then be retrieved and routed along with the template to Pandoc server for final page content or if error return a http status code and error message.
