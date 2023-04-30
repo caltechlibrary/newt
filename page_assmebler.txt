@@ -1,0 +1,4 @@
+page_assembler
+:  a micro service that accepts a URL, parses its path and queries PostgREST for object(s) and template, sends both to pandoc server returning result to requestor. Route handler is defined in Postgres via a function. Function can apply permissions if nessary.  The function returns markup, http status code. page_assembler passes that back to reqestor.
+
+.
