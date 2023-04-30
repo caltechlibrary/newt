@@ -1,8 +1,11 @@
 
-An idea that I had when I started thinking about PostgreSQL and PostgREST was the missing feature of an open standard template engine. Pandoc Server seems ripe for this. What is needed is a micro service that takes a requested URL, fetches the data and template from PostgREST to render the page. Once you have that the service would pass that to Pandoc Server returning the rendered result to the requestors (e.g. web browser or front end web server).
+# Newt, a page assembler micro service
 
-The question I ran into is defining the routes.  I think the route handler could be a known function defined in PostgreSQL via a PL. Our page assembler would be responsible for parsing the requested URL and invoking the function via PostgREST.  
+An idea occurred to me about PostgreSQL and PostgREST. It is missing feature the ability to render a web page. It lacks access to a template engine. Pandoc Server seems ripe for this. What is needed is a micro service that takes a requested URL, fetches the data and template from PostgREST hands it to Pandoc server before returning the assembled page to the requestor (e.g. web browser or front end web server).
 
+The question is one of routing. Which request is sent to PostgREST and which template is used to send to Pandoc server. This reduces the problem to a function of routing. Where is the mapping defined and managed? I think the route handler could defined in PostgreSQL via a PL. The URL Path, HTTP Method and any payload is sent to PostgREST triggering the route handler. The route handler function processes the routing hand back the HTTP status code, message, headers and any Obecjts and Pandoc template name. The is then bounced to Pandoc server before handling the results back to the requestor.
+
+How do we deal with file uploads?
 
 ~~~
 Web Browser (GET) -> page assembler -> PostgREST (PL GET router function ) -> page assembler \
@@ -10,6 +13,8 @@ Web Browser (GET) -> page assembler -> PostgREST (PL GET router function ) -> pa
      |
      + (error, permissions issue) http status code for error/page -> Web Browser
 ~~~
+
+## Refining the ideas
 
 If the PL function could talk directly to the web server we could pass the assembled page back directly from PostgREST passing it onto the web browser.
 
