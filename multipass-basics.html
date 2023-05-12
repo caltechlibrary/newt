@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt Project</title>
+    <link rel="stylesheet" href="./css/site.css">
+</head>
+<body>
+<header>
+<h1>Newt Project</h1>
+</header>
+<nav>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="index.html">README</a></li>
+    <li><a href="LICENSE">LICENSE</a></li>
+    <li><a href="install.html">INSTALL</a></li>
+    <li><a href="user-manual.html">User Manual</a></li>
+    <li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+    <li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="multipass-basics">Multipass basics</h1>
+<p>Multipass is a Ubuntu specific VM manager making it easy to develop
+applications targetting Ubuntu Server and Desktop environments. It is
+available on Linux, MacOS and Windows. See <a
+href="https://multipass.run">multipass.run</a> for installation
+instructions.</p>
+<h2 id="basic-commands">Basic commands</h2>
+<p>The <a
+href="https://github.com/caltechlibrary/newstack-demo">newstack-demo</a>
+provides a <a href="">newstack-init.yaml</a> to setup a Multipass
+environment for exploring a web appllication approach focusing on SQL,
+HTML, JavaScript using PostgreSQL 15, PostgREST 11 and a front end web
+server.</p>
+<p>Creating our developmenet VM.</p>
+<pre><code>multipass launch --name newstack --cloud-init newstack-init.yaml</code></pre>
+<p>Seeing if our VM is running</p>
+<pre><code>multipass list</code></pre>
+<p>Copy <a href="setup-birds.bash">setup-birds.bash</a> to our VM to
+save some type setting up our demo.</p>
+<pre><code>multipass transfer setup-birds.bash newstack:.</code></pre>
+<p>Access our VM’s shell</p>
+<pre><code>multipass shell newstack</code></pre>
+<p>Stopping our VM</p>
+<pre><code>multipass stop newstack</code></pre>
+<p>Removing the VM completely</p>
+<pre><code>multipass delete newstack &amp;&amp; multipass purge</code></pre>
+</section>
+
+<footer>
+<div>copyright &copy; 2023 all rights reserved.</div>
+</footer>
+</body>
+</html>

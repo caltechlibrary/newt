@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt Project</title>
+    <link rel="stylesheet" href="./css/site.css">
+</head>
+<body>
+<header>
+<h1>Newt Project</h1>
+</header>
+<nav>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="index.html">README</a></li>
+    <li><a href="LICENSE">LICENSE</a></li>
+    <li><a href="install.html">INSTALL</a></li>
+    <li><a href="user-manual.html">User Manual</a></li>
+    <li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+    <li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="a-pathdsl-a-routing-dsl">A PathDSL, a routing DSL</h1>
+<p>One of the challenges of implement a a URL router that is general
+purpose in front of PostgREST is how you describe the requested router
+coming from the front end web server and transform that into the route
+you need to use to get data form PostgREST. While a pipeline
+conceptually is easy to describe in our table (e.g. req_router,
+req_method, req_content_type, req_data, actions) how you describe the
+route mapping needs to be easy to learn, easy to read and easy to
+maintain. This is an exploration of an approach to a routing DSL for
+<code>newt</code>, the URL router designed to work with PostgREST and
+Pandoc server.</p>
+<p>NOTE: PathDSL does not describing implementation in a specific
+programming language. Ideally it should be “easy to implement” in the
+language of your choice.</p>
+<h2 id="why-another-yet-another-routing-dsl">Why another yet another
+routing DSL</h2>
+<p>Typically server side frameworks include among other things a routing
+DSL. You see this in frameworks such as Flask, jDango, Ruby on Rails,
+Sinatra, etc. In our stack based on Postgres+PostgREST and a front end
+web server there is now framework to map human friendly URLs to a data
+API like PostgREST.</p>
+<p>There are numerous implementations and there doesn’t appear to be a
+specific strong case that suggests adopting an existing DSL for routing
+using our approach to simplifying our back-end.</p>
+<h2 id="blogging-urls-a-use-case">Blogging URLs, a use case</h2>
+<p>An example would be translating a traditional blog path to the
+PostgREST API route. The PostgREST API has a shallow API that is well
+suited to a data API. If you can simply describe the route in “blog
+form” and translate it to a PostgREST API call our <code>newt</code>
+router could be relatively simple.</p>
+<p>For the purposes of discussion I am going to delimit our router
+dynamic elements with curly brackets.</p>
+<p>How do form a “route” description to list blogs posts expressed with
+the path <code>/blog/{YEAR}/{MONTH}/{DAY}</code> and translate that into
+a PostgREST API call that needs to be in the form of
+<code>http://user:secret@localhost:3000/blog?year={YEAR}&amp;month={MONTH}&amp;day={DAY}</code>?</p>
+<p>In principle you could simply use regular expression notation to
+identify matching parameters quickly answer the question of if a given
+URL path matches our route. The problem I have with regular expressions
+is they quickly become unreadable and difficulty to maintain with even a
+moderately complex expressions. Additionally returning an array of
+matched parts isn’t the most developer friendly way to reuse any
+information you want to extract from your matched route. Regular
+expression need to remain in our toolbox but should not be used to
+define our routes.</p>
+<p>Assuming a route has some embedded data we want to reuse how to me
+bind those to developer friendly variable names? If we can delimit
+variable names in the route expression then we can build a dictionary of
+mapped names and values which we return when we have a matching
+route.</p>
+<p>In many template languages variables are identified by some starting
+delimiter and sometimes and terminating one. Some examples I’ve commonly
+seen are <code>${varname}</code>, <code>{varname}</code>,
+<code>$(varname)</code>, <code>&lt;VARNAME&gt;</code>. Many languages
+that include formatted strings use curly braces to delimit the variable
+names. I will continue with curly brackets as I explore a minimal useful
+routing DSL.</p>
+<h1 id="exploring-routes">Exploring Routes</h1>
+<p>Routes describe a description of a URL path that match the
+characteristics described in PathDSL. A route must be uniquely
+identifiable to be useful in the larger context of a URL routers like
+<code>newt</code>.</p>
+<h1 id="how-do-we-identify-a-route-match">How do we identify a route
+match?</h1>
+<p>Our evaluation function that takes a path value and route returns two
+pieces of information. First is a boolean indicating if the path value
+provided match the route expressed. If the route matched we also want to
+returned name and value map (aka dictionary) found when we evaluated if
+the route matched.</p>
+<p>It is possible the described route is explicit or literal. In the
+case of a match our evaluation function should return true and an empty
+name/value map. The following are examples of explicit routes which
+would not be associated with any variable names or values.</p>
+<ul>
+<li><code>/about.html</code>, retrieve the content for “about.html”</li>
+<li><code>/blog/feed/</code>, retrieve the content of a “blog feed”</li>
+<li><code>/</code>, retrieve the homepage of a site
+(e.g. “index.html”)</li>
+</ul>
+<p>NOTE: Paths are evaluated from left to right.</p>
+<p>##e Routes with variable names and values</p>
+<p>A more complex route would include one or more variable expressions.
+Variable expressions are delimited by an opening curly bracket
+<code>{</code> and closed by a closing curly bracket <code>}</code>.
+This indicates where in the path the variable may be found (assuming the
+route matches). The value associated with the variable name is a sub
+string of the path. Using examples of a blog URL paths the route might
+look like</p>
+<ol type="1">
+<li><code>/blog/{YEAR}/{MONTH}/{DAY}</code>, a route to blog posts on a
+given day, this route evaluate against a request path such that
+<code>YEAR</code>, <code>MONTH</code>, <code>DAY</code> will contain the
+values is the requested path. These could be held in a map or dictionary
+where the names they keys.</li>
+<li><code>/blog/{YEAR}/{MONTH}/{DAY}/{TITLE_SLUG}.html</code>, this
+route would result with the variables <code>YEAR</code>,
+<code>MONTH</code>, <code>DAY</code> and <code>TITLE_SLUG</code>. Note
+the title slug would not be expected to include “.html” as that was
+expressed as a literal part of the string.</li>
+<li><code>/blog/{YEAR}/{MONTH}/{DAY}/{TITLE_SLUG}.{EXT}</code>, In this
+example the “.” separating the <code>TITLE_SLUG</code> from the
+<code>EXT</code> is a literal. It indicates the separator between two
+variables.</li>
+</ol>
+<p>The question now aside from the liter prefixes in our example how do
+we know where the value we’re going to associate with our variable name
+ends if we’re extracting sub-strings?</p>
+<p>Many language provide path parsing libraries and can return a list of
+directories, file basename and extension. In the examples above you
+could map directory elements into the variables assuming the variables
+consume the whole element of the path. This limits the types of routes
+we can express.</p>
+<p>Another challenge of this simple mapping based on existing path
+delimiters and variable names is it lacks even rudimentary validation.
+Here’s two examples that would match example one but are unlikely to
+both be valid in our blog context - <code>/blog/2023/02/28</code>
+(valid) <code>/blog/down/is/up</code> (probably not what we want). It is
+desirable to have some level of validation for the values we’re going to
+assign to our variable names and in deciding if a route matches.</p>
+<p>Ideally we should be able to specify a path as a sequence of variable
+names and parse them appropriately.</p>
+<ul>
+<li><code>/blog/{YEAR}{MONTH}{DAY}</code>, this is ambiguous without
+more information describing our route</li>
+</ul>
+<h2 id="variable-annotations">Variable annotations</h2>
+<p>How do we know where a <code>YEAR</code> value starts and ends? Same
+for <code>MONTH</code> or <code>DAY</code>? I think an annotation along
+side our variable name might be the solution. An easy to implement
+annotation might be a fixed length string.</p>
+<ul>
+<li><code>/blog/{YEAR string 4}{MONTH string 2}{DAY string 2}</code>,
+now we know that <code>YEAR</code> is four characters long and month and
+day are two</li>
+</ul>
+<p>A variation might be to use a regular expression (re) approach</p>
+<ul>
+<li><code>/blog/{YEAR re 2[0-9][0-9][0-9]}{MONTH:[0-1][0-9]}{DAY [0-3][0-9]}</code>,
+now we know that <code>YEAR</code> is four characters long starts with
+‘2’ and is followed by three digits and similarly and month and day are
+two long each containing a digit in a specific range.</li>
+</ul>
+<p>Note I’ve separated our variable names from our annotations using a
+space. If an annotation was not present then the assumption of that the
+variable consumes the remainder of the URL path. When we process the
+path value and compare with our route the variable declarations become
+the delimiting factor. This gives us the ability to describe a match
+using the whole URL if necessary without relying on a language’s
+implementation of path parsing.</p>
+<p>What do I mean by “type” if what our route evaluation returns
+matching status and a map of variable names pointing at string values?
+The first space indicates that we have a type rule that needs to be
+validated. After the second space we have any additional parameters need
+to evaluate the type. In our current examples this is string length or a
+regular expression. The type annotation describes a validation rule that
+is to be applied and that rule application should return the match state
+sub string holding the matched sub-string. This approach makes it
+straight forward to add additional types.</p>
+<p>Going back to our original blog path I can express both a file path
+delimited string and a numeric date string path and still populate my
+variable parts.</p>
+<ul>
+<li><code>/blog/{YEAR year}/{MONTH month}/{DAY day}/{TITLE_SLUG basename}{EXT extname}</code></li>
+</ul>
+<p>The “year” type would check for a four digit sub-string, it then
+could check if the value is reasonable. Likewise “month” and “day”
+should make sure the strings are two digits long and in the range of
+“01” to “12” for months and “01” to “31” for day. The “basename” and
+“extname” types could evaluate the whole URL path and return an
+appropriate filename and extension mapped to “TITLE_SLUG” and “EXT”.
+Over time a collection of variable types could validate elements of the
+URL we wish to map.</p>
+<p>The downside of what I’ve described is adding to yet another routing
+DSL. But I think the potential in the context of newt is that this trade
+off is reasonable to eliminate the need to write custom middle ware for
+many cases where I would like to build a front-end website on a back-end
+built from micro services like Postgres+PostgREST and Pandoc server.</p>
+<h2 id="algorithm-for-route-evaluation">Algorithm for route
+evaluation</h2>
+<ul>
+<li>read the path value from left to write</li>
+<li>if prefix is literal compare with literal in route</li>
+<li>else if route has a variable extract validate the value
+<ul>
+<li>if valid save the sub-string in our map and continue processing
+path</li>
+<li>else we don’t have a match, return false and empty name/value
+map</li>
+</ul></li>
+</ul>
+<h2 id="reference-materials">Reference materials</h2>
+<ul>
+<li><a
+href="https://github.com/pillarjs/path-to-regexp">path-to-regexp</a></li>
+<li><a
+href="https://developer.mozilla.org/en-US/docs/Web/API/URLPattern">URLPattern</a>
+at MDN, <a
+href="https://developer.chrome.com/articles/urlpattern/">URLPattern</a>
+at Chrome</li>
+<li><a href="https://pythonbasics.org/flask-tutorial-routes/">Flask
+Route tutorial</a></li>
+<li><a href="https://github.com/tildeio/router.js/">router.js</a></li>
+<li><a
+href="https://learn.microsoft.com/en-us/azure/application-gateway/url-route-overview#pathbasedrouting-rule">Azure
+application gateway routing</a></li>
+<li><a href="https://reactrouter.com/en/main/route/route">React
+Router</a></li>
+<li><a
+href="https://nextjs.org/docs/app/building-your-application/routing">Nextjs
+routing</a></li>
+<li><a
+href="https://www.django-rest-framework.org/api-guide/routers/">dJango
+routing</a></li>
+</ul>
+</section>
+
+<footer>
+<div>copyright &copy; 2023 all rights reserved.</div>
+</footer>
+</body>
+</html>
