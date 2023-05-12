@@ -1,7 +1,7 @@
 {
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
     "@type": "SoftwareSourceCode",
-    "license": "https://spdx.org/licenses/GPL-3.0-or-later",
+    "license": "https://caltechlibrary.github.io/newt/LICENSE",
     "codeRepository": "git+https://github.com/rsdoiel/newt",
     "dateCreated": "2023-04-27",
     "issueTracker": "git+https://github.com/rsdoiel/newt/issues",
@@ -41,7 +41,7 @@
             "@id": "https://orcid.org/0000-0003-0900-6903",
             "givenName": "R. S.",
             "familyName": "Doiel",
-            "email": "rsdoiel@gmail.com",
+            "email": "rsdoiel@caltech.edu",
             "affiliation": {
                 "@type": "Organization",
                 "name": "Caltech Library"

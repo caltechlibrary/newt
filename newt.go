@@ -6,7 +6,10 @@
 package newt
 
 import (
-	"text/scanner"
+	//"text/scanner"
+	"fmt"
+	"log"
+	"strings"
 )
 
 // RouteFunc implements a "type" rule that returns true of the input
@@ -37,13 +40,15 @@ type Route struct {
 // and values if found. If the route's defn does not match it
 // returns false and a nil map.
 func (r *Route) Eval(string) (bool, map[string]string) {
+	log.Println("Eval() not implemented")
+	return false, nil
 }
 
 type Router struct {
 	Routes []*Route
 }
 
-// NewRouter returns a new Router where you can add 
+// NewRouter returns a new Router where you can add
 // route definitions.
 func NewRouter() *Router {
 	return new(Router)
@@ -58,13 +63,11 @@ func (router *Router) AddRoute(defn string) error {
 	return fmt.Errorf("r.AddRoute() not implemented")
 }
 
-
-// GetStringValue evaluates a string and returns a success value and 
+// GetStringValue evaluates a string and returns a success value and
 // string value. If "l" is negative then true and the whole string.
 // If "l" is greater than -1 then and the string is of that length then
 // true and the string is returned.  If the string is longer than "l"
 // then false and a string of length "l" is returned.
-// 
 func GetStringValue(s string, l int) (bool, string) {
 	if l < 0 || len(s) == l {
 		return true, s[:]
@@ -74,7 +77,7 @@ func GetStringValue(s string, l int) (bool, string) {
 
 // GetLiteral returns the longest prefixed literal string in s. If no
 // literal prefix found, stops
-// and return a 
+// and return a
 func GetLiteral(s string) (bool, string) {
 	pos := strings.Index(s, "{")
 	if pos > -1 {
@@ -87,27 +90,30 @@ func GetLiteral(s string) (bool, string) {
 func GetVarDefn(s string) (bool, string) {
 	start := strings.Index(s, "{")
 	end := strings.Index(s, "}")
-	if (start > -1) &&  (end > -1) {
+	if (start > -1) && (end > -1) {
 		return true, s[start:end]
 	}
 	return false, ""
 }
 
 // EvalRoute takes a list of routes description and a path value and returns
-// a boolean match and if match is true a map of names and values 
+// a boolean match and if match is true a map of names and values
 //
 // ```
 // routeDef := `/blog/{year year}/{month month}/{day day}/`
 // reqPath := `/blog/2023/05/11/`
-// if ok, m := newt.HasRoute(routeDef, reqPath); ok {
-//    // ... using m assemble a PostgREST request, process with Pandoc ...
-// } else {
-//    // ... handle 404, requested route is not defined ...
-// }
+//
+//	if ok, m := newt.HasRoute(routeDef, reqPath); ok {
+//	   // ... using m assemble a PostgREST request, process with Pandoc ...
+//	} else {
+//
+//	   // ... handle 404, requested route is not defined ...
+//	}
+//
 // ```
-func EvalRoute(routes []*Routes, reqPath string) (bool, map[string]string) {
+func EvalRoute(routes []*Route, reqPath string) (bool, map[string]string) {
 	// Parse route returning literals or variable declarations
-	for _, routes
+	//for _, routes
 
 	// FIXME: HasRoute not implemented
 	return false, nil
