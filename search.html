@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt Project</title>
+    <link rel="stylesheet" href="./css/site.css">
+</head>
+<body>
+<header>
+<h1>Newt Project</h1>
+</header>
+<nav>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="index.html">README</a></li>
+    <li><a href="LICENSE">LICENSE</a></li>
+    <li><a href="install.html">INSTALL</a></li>
+    <li><a href="user-manual.html">User Manual</a></li>
+    <li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+    <li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="project-search">Project Search</h1>
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js" type="text/javascript"></script>
+<div id="search">
+
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        new PagefindUI({ 
+            element: "#search",
+            baseUrl: "./"
+        });
+    });
+</script>
+</section>
+
+<footer>
+<div>copyright &copy; 2023 all rights reserved.</div>
+</footer>
+</body>
+</html>
