@@ -1,0 +1,51 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/GPL-3.0-or-later",
+    "codeRepository": "git+https://github.com/rsdoiel/newt",
+    "dateCreated": "2023-04-27",
+    "issueTracker": "git+https://github.com/rsdoiel/newt/issues",
+    "name": "Newt",
+    "version": "0.0.1",
+    "description": "A new take on developing web applications, services and sites using Postgres, PostgREST, a URL router and front end web server.",
+    "applicationCategory": "computer science",
+    "releaseNotes": "This is exploratory project",
+    "developmentStatus": "concept",
+    "funder": {
+        "@type": "Organization",
+        "name": "Caltech Library"
+    },
+    "keywords": [
+        "web development",
+        "microservices"
+    ],
+    "programmingLanguage": [
+        "SQL",
+        "JavaScript",
+        "HTMLl"
+    ],
+    "operatingSystem": [
+        "Linux",
+        "Windows",
+        "macOS"
+    ],
+    "softwareRequirements": [
+        "Postgres >= 15",
+        "PostgREST >= 11",
+        "Pandoc >= 3",
+        "A front end web server supporting reverse proxy (e.g. Apache2, NginX)"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0003-0900-6903",
+            "givenName": "R. S.",
+            "familyName": "Doiel",
+            "email": "rsdoiel@gmail.com",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Caltech Library"
+            }
+        }
+    ]
+}
