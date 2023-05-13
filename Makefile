@@ -9,15 +9,15 @@ BRANCH = $(shell git branch | grep '* ' | cut -d\  -f 2)
 
 PROGRAMS = $(shell ls -1 cmd)
 
-PACKAGE = $(shell ls -1 *.go | grep -v 'version.go')
+MAN_PAGES = $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
 
-SUBPACKAGES = $(shell ls -1 */*.go)
+PACKAGE = $(shell ls -1 *.go | grep -v 'version.go')
 
 #PREFIX = /usr/local/bin
 PREFIX = $(HOME)
 
 ifneq ($(prefix),)
-        PREFIX = $(prefix)
+	PREFIX = $(prefix)
 endif
 
 OS = $(shell uname)
@@ -27,9 +27,9 @@ ifeq ($(OS), Windows)
 	EXT = .exe
 endif
 
-DIST_FOLDERS = bin/*
+DIST_FOLDERS = bin/* man/*
 
-build: version.go $(PROGRAMS) CITATION.cff
+build: version.go $(PROGRAMS) man CITATION.cff
 
 version.go: .FORCE
 	@echo "package $(PROJECT)" >version.go
@@ -44,6 +44,13 @@ version.go: .FORCE
 	@echo ')' >>version.go
 	@echo '' >>version.go
 	@git add version.go
+
+man: $(MAN_PAGES)
+
+$(MAN_PAGES): .FORCE
+	@mkdir -p man/man1
+	@pandoc $(basename $@).1.md --from markdown --to man -s >man/man1/$(basename $@).1
+	@git add man/man1/$(basename $@).1
 
 CITATION.cff: codemeta.json
 	echo "" | pandoc --metadata title="CITATION.cff" --metadata-file=codemeta.json --from=markdown --template=codemeta-cff.tmpl >CITATION.cff
@@ -74,11 +81,6 @@ uninstall: .FORCE
 	-for FNAME in $(PROGRAMS); do if [ -f $(PREFIX)/bin/$$FNAME ]; then rm -v $(PREFIX)/bin/$$FNAME; fi; done
 	-for FNAME in $(PROGRAMS); do rm "$(PREFIX)man/man1/$$FNAME.1"; done
 
-man: man/man1/*.1 .FORCE
-
-man/man1/$(PROGRAMS).1: $(PROGRAM).1.md
-	mkdir -p man/man1
-	pandoc $(PROGRAMS).1.md -s -t man -o man/man1/$(PROGRAM).1
 
 #website: page.tmpl README.md nav.md INSTALL.md LICENSE css/site.css
 #	bash mk-website.bash

@@ -3,6 +3,14 @@
 
 To extend the Postgres+PostgREST to support server side web page assembly with Pandoc server we need to be able to map a requested URL path to both PostgREST for content and a template for processing the data with Pandoc server before returning an assembled webpage to the front end web server. What information is needed to define this behavior.
 
+Newt URL router leverages your existing PostgREST configuration with
+the optional additional value `pandoc-server-port` if you Pandoc server is
+not running on a standard port. Route configuration is loaded from 
+Postgres+PostgREST. Routes can be manage in a CSV file which is used to 
+update a route table in Postgres.
+
+## The routes table fields
+
 route
 : route description (see [Path DSL concept](pathdsl.md))
 
