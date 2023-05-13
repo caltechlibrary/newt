@@ -1,6 +1,7 @@
 package newt
 
 import (
+	"log"
 	"testing"
 	"time"
 )
@@ -17,7 +18,7 @@ func TestPathDSLExpression(t *testing.T) {
 		if err != nil {
 			return "", false
 		}
-		return dt.Fomat(`2006`), true
+		return dt.Format(`2006`), true
 	})
 	if err != nil {
 		t.Error(err)
@@ -29,19 +30,19 @@ func TestPathDSLExpression(t *testing.T) {
 		if err != nil {
 			return "", false
 		}
-		return dt.Fomat(`01`), true
+		return dt.Format(`01`), true
 	})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Month", func(expr string, val string) (interface{}, bool) {
+	err = pdsl.RegisterType("Day", func(expr string, val string) (interface{}, bool) {
 		log.Printf("DEBUG expr -> %q", expr)
 		dt, err := time.Parse(`02`, val)
 		if err != nil {
 			return "", false
 		}
-		return dt.Fomat(`02`), true
+		return dt.Format(`02`), true
 	})
 	if err != nil {
 		t.Error(err)
