@@ -1,7 +1,7 @@
 
 # Newt, a new take of the web stack
 
-Newt is my short for "new take" on building web applications from a few off the shelf micro services. The micro services newt explores are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org), Newt a minimalist URL request router.
+Newt is short for "new take". Specific it is my new take on building web applications from a few off the shelf micro services. The micro services newt explores are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org), Newt a minimalist URL request router.
 
 My belief is that many web services and sites used by Archives, Libraries and Museums can benefit from a simplier back-end that allows the application developer to focus on the front-end that impacts both our staff and patrons.
 
