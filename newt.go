@@ -6,115 +6,59 @@
 package newt
 
 import (
-	//"text/scanner"
 	"fmt"
+	"io"
 	"log"
-	"strings"
+	"os"
 )
 
-// RouteFunc implements a "type" rule that returns true of the input
-// string contains an element defined by the func and the string
-// value extracted by the function. If the "type" rule is encounters
-// and error then it returns "false" and an empty string value.
-type RouteFunc func(string) (bool, string)
-
-// A route holds a definition and an pipeline of route functions
-// used to extract the route's parts used to validate a route match
-// and return any extracted values.
-type Route struct {
-	// This holds the source string defining the route and any
-	// embedded variable definitions.
-	Defn string
-	// Pipeline is an array of Route functions used to parse
-	// a input string. The route functions are applied in order
-	// they are added to the router with `AddRoute()`.
-	// If any function returns false the pipeline processing is aborted
-	// The pipeline functions are used by Route's `Eval(string)` which
-	// returns a success booleana and a map to any defined variable
-	// names and their values.
-	Pipeline []*RouteFunc
+type Config struct {
+	DBUser          string `json:"db_user,omitempty"`
+	DBPassword      string `json:"db_name,omitempty"`
+	PostgREST       string `json:"postgrest_url,omitempty"`
+	PandocPort      string `json:"pandoc_port,omitempty"`
+	PandocTemplates string `json:"pandoc_templates,omitempty"`
+	Htdocs          string `json:"htdocs,omitempty"`
 }
 
-// Eval takes an input string and returns true if the string
-// matches the route's definition and a map of variable names
-// and values if found. If the route's defn does not match it
-// returns false and a nil map.
-func (r *Route) Eval(string) (bool, map[string]string) {
-	log.Println("Eval() not implemented")
-	return false, nil
-}
-
-type Router struct {
-	Routes []*Route
-}
-
-// NewRouter returns a new Router where you can add
-// route definitions.
-func NewRouter() *Router {
-	return new(Router)
-}
-
-// AddRoute takes a route definition and adds it to the router
-// or returns an error if the definition fails to parse.
-func (router *Router) AddRoute(defn string) error {
-	r := new(Route)
-	r.Defn = defn
-	// FIXME: Parse the defn into a pipe line of RouteFuncs
-	return fmt.Errorf("r.AddRoute() not implemented")
-}
-
-// GetStringValue evaluates a string and returns a success value and
-// string value. If "l" is negative then true and the whole string.
-// If "l" is greater than -1 then and the string is of that length then
-// true and the string is returned.  If the string is longer than "l"
-// then false and a string of length "l" is returned.
-func GetStringValue(s string, l int) (bool, string) {
-	if l < 0 || len(s) == l {
-		return true, s[:]
+// Run is a runner for Newt URL router
+func Run(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
+	cfg := new(Config)
+	cfg.DBUser = os.Getenv("DB_USER")
+	cfg.DBPassword = os.Getenv("DB_PASSWORD")
+	cfg.PostgREST = os.Getenv("POSTGREST_URL")
+	cfg.PandocPort = os.Getenv("PANDOC_PORT")
+	cfg.PandocTemplates = os.Getenv("PANDOC_TEMPLATES")
+	cfg.Htdocs = os.Getenv("HTDOCS")
+	if len(args) > 0 {
+		// Process a configuration file
+		log.Println("Loading configuration file not implemented")
 	}
-	return false, ""
-}
-
-// GetLiteral returns the longest prefixed literal string in s. If no
-// literal prefix found, stops
-// and return a
-func GetLiteral(s string) (bool, string) {
-	pos := strings.Index(s, "{")
-	if pos > -1 {
-		return true, s[0:pos]
+	if len(args) > 1 {
+		// Process a CSV file of routes
+		log.Println("Loading routes from CSV file is not implemented")
 	}
-	return false, ""
-}
-
-// GetVarDefn returns the next variable definition found
-func GetVarDefn(s string) (bool, string) {
-	start := strings.Index(s, "{")
-	end := strings.Index(s, "}")
-	if (start > -1) && (end > -1) {
-		return true, s[start:end]
+	// Calculate some sane defaults if needed
+	if cfg.PostgREST == "" {
+		if cfg.DBUser != "" && cfg.DBPassword != "" {
+			cfg.PostgREST = fmt.Sprintf("http://%s:%s@localhost:3000", cfg.DBUser, cfg.DBPassword)
+		} else if cfg.DBUser != "" {
+			cfg.PostgREST = fmt.Sprintf("http://%s@localhost:3000", cfg.DBUser)
+		} else {
+			cfg.PostgREST = fmt.Sprintf("http://localhost:3000")
+		}
 	}
-	return false, ""
-}
-
-// EvalRoute takes a list of routes description and a path value and returns
-// a boolean match and if match is true a map of names and values
-//
-// ```
-// routeDef := `/blog/{year year}/{month month}/{day day}/`
-// reqPath := `/blog/2023/05/11/`
-//
-//	if ok, m := newt.HasRoute(routeDef, reqPath); ok {
-//	   // ... using m assemble a PostgREST request, process with Pandoc ...
-//	} else {
-//
-//	   // ... handle 404, requested route is not defined ...
-//	}
-//
-// ```
-func EvalRoute(routes []*Route, reqPath string) (bool, map[string]string) {
-	// Parse route returning literals or variable declarations
-	//for _, routes
-
-	// FIXME: HasRoute not implemented
-	return false, nil
+	if cfg.PandocPort == "" {
+		cfg.PandocPort = "3030"
+	}
+	if cfg.Htdocs == "" {
+		var err error
+		cfg.Htdocs, err = os.Getwd()
+		if err != nil {
+			log.Printf("failed to determine htdocs directory, %s", err)
+			return 1
+		}
+	}
+	log.Println("Run() not fully implemented")
+	return 0
 }

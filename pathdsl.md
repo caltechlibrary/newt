@@ -1,99 +1,192 @@
 
 # A PathDSL, a routing DSL
 
-One of the challenges of implement a a URL router that is general purpose in front of PostgREST is how you describe the requested router coming from the front end web server and transform that into the route you need to use to get data form PostgREST.  While a pipeline conceptually is easy to describe in our table (e.g. req_router, req_method, req_content_type, req_data, actions) how you describe the route mapping needs to be easy to learn, easy to read and easy to maintain.  This is an exploration of an approach to a routing DSL for `newt`, the URL router designed to work with PostgREST and Pandoc server.
-
-NOTE: PathDSL does not describing implementation in a specific programming language. Ideally it should be "easy to implement" in the language of your choice. 
+How to you describe mapping of one path to another? Many web frame works implement the concept of a "route" which is similar to a file path but may include a placeholder notation to easily extract values from the path and assign them to variables. The is what PathDSL seeks to address.
 
 ## Why another yet another routing DSL
 
-Typically server side frameworks include among other things a routing DSL. You see this in frameworks such as Flask, jDango, Ruby on Rails, Sinatra, etc.  In our stack based on Postgres+PostgREST and a front end web server there is now framework to map human friendly URLs to a data API like PostgREST.
+Why another DSL for routes?  Surveying the route descriptions available in several Python and JavaScript fameworks each has chosen its own syntax. There isn't a concensus nor is there one that appears entirely suitable.  In addition the route syntaxes I've seen do not capture enough information about the variable they are working with to fully do their job in terms of identifying a path value that matches the expression or in extracting the variable path elements that will be exposed to the frameworks.
 
-There are numerous implementations and there doesn't appear to be a specific strong case that suggests adopting an existing DSL for routing using our approach to simplifying our back-end.
+In a framework setting this isn't a bad thing as additional validation or conversion can be applied to the variables described by the route syntax.  The Newt router is very simple and does not have the luxury of a general purpose programming language that can further vet a varaible. In addition web applications based around the route concept often embed varaibles which represent known identifiers or data formats.  It would nice to have not just the variable placement in the path but also enough "type" information to apply a validator function before varifying a path value matches the route describe.
+
+One of Newt's routing features is to take an in bound path and transform it into a URL suitable to access another micro service like PostgREST.  It would be nice if there was some visual symetry between describing the route and the template langauge representing the transformed route. Ulitimately these desired properties moved me to thinking about PathDSL that would allow easily implementation of path value matching a route description and a path value that could be easily transformed with a simple template expression into a new URL.
+
+NOTE: This document if focused on discussing the concepts behind PathDSL not how to implement it in a specific language.
 
 ## Blogging URLs, a use case
 
-An example would be translating a traditional blog path to the PostgREST API route.  The PostgREST API has a shallow API that is well suited to a data API. If you can simply describe the route in "blog form" and translate it to a PostgREST API call our `newt` router could be relatively simple.  
+PathDSL should be able to handle simple mappings such as those seen in blogs. Blog paths are often predictable.  A home page is at `/`, a feed of items might be at `/feed/` and individual blog posts might be found in a path formed by embedding four digit year, two digit month, two digit day and a title slug -- `/blog/{year}/{month}/{day}/{title-slug}`.  I've choosen to use curly brackets to delimit the variable elements in the path because handlebars style string formatting is well known.
 
-For the purposes of discussion I am going to delimit our router dynamic elements with curly brackets.
+How do we know when a path value matches a route?  For a literal path you can simply perform a string comparision but for a path with variables embedded you need to vet the variables for a match. This can be though of as a validation of the value held by the variable. What if we annotated the varaible names between the curly braces with some validatin information? A "year" certainly can be validate if we know
+that it conforms to a four digit integer. Month and day could have a simple validation based on being an
+integer with two digits allowing for leading zeros. These are common enough knowns that many languages provide standard libraries for validating date elements so why not just create a validation type for this
+type of data, let's look at what that might look like for a blog post path.
 
-How do form a "route" description to list blogs posts expressed with the path `/blog/{YEAR}/{MONTH}/{DAY}` and translate that into a PostgREST API call that needs to be in the form of `http://user:secret@localhost:3000/blog?year={YEAR}&month={MONTH}&day={DAY}`? 
+~~~
+/blog/{year Year}/{month Month}/{day Day}/{title-slug String}
+~~~
 
-In principle you could simply use regular expression notation to identify matching parameters quickly answer the question of if a given URL path matches our route. The problem I have with regular expressions is they quickly become unreadable and difficulty to maintain with even a moderately complex expressions. Additionally returning an array of matched parts isn't the most developer friendly way to reuse any information you want to extract from your matched route. Regular expression need to remain in our toolbox but should not be used to define our routes.
+Knowing the type (or validation method to use) our we could check a our PathDSL can evaluate if a given route matches the path value provided. Let's look at three path values.
 
-Assuming a route has some embedded data we want to reuse how to me bind those to developer friendly variable names?  If we can delimit variable names in the route expression then we can build a dictionary of mapped names and values which we return when we have a matching route.
+| path value | is it valid? | year | month | day | title-slug |
+| /blog/2023/02/28/my-daily-post | yes | 2023 | 2 | 28 | my-daily-post |
+| /blog/2023/02/31/my-daily-post | no  | 2023 | 2 | invalid day | my-daily-post |
+| /blog/2023/28/02/my-daily-post | no  | 2023 | invalid month | 2 | my-daily-post |
 
-In many template languages variables are identified by some starting delimiter and sometimes and terminating one. Some examples I've commonly seen are `${varname}`, `{varname}`, `$(varname)`, `<VARNAME>`. Many languages that include formatted strings use curly braces to delimit the variable names. I will continue with curly brackets as I explore a minimal useful routing DSL.
+Knowing the type would let the router know that path is not valid even though it matches the general form we expect in a blog post path.
 
-# Exploring Routes
+While the PathDSL would not implement specific type validation it would beable to indicate the type
+of the variable validation to the host language implementing our router. In principle we could implement
+validators for common privitive types like "Integer", "String", "Real", "Date", "Year", "Month", "Day" but
+also common types of identifiers like "ORCID", "DOI", "ROR", "Zipcode", or "PhoneNumber". If you added regular expression you would have a rich type (validation) system for transforming URLs into another URL.
 
-Routes describe a description of a URL path that match the characteristics described in PathDSL.  A route must be uniquely identifiable to be useful in the larger context of a URL routers like `newt`.
+Here's an example of what our PathDSL would enable. Path expression --
 
-# How do we identify a route match?
+~~~
+`/blog/{year Year}/{month Month}/{day Day}/{title-slug}`
+~~~
 
-Our evaluation function that takes a path value and route returns two pieces of information. First is a boolean indicating if the path value provided match the route expressed. If the route matched we also want to returned name and value map (aka dictionary) found when we evaluated if the route matched.
+A transformed version of the input route could then be described simply as a handlebar template.
 
-It is possible the described route is explicit or literal. In the case of a match our evaluation function should return true and an empty name/value map.  The following are examples of explicit routes which would not be associated with any variable names or values.
+~~~
+http://localhost:3000/blog?year={year}&month={month}&day={day}&title_slug={title-slug}
+~~~
 
-- `/about.html`, retrieve the content for "about.html"
-- `/blog/feed/`, retrieve the content of a "blog feed" 
-- `/`, retrieve the homepage of a site (e.g. "index.html")
+If the value matches both form and types of variables then you have enough information to call a microservice like PostgREST.
 
-NOTE: Paths are evaluated from left to right.
+## Use case, representing filenames and extenions in a path
 
-##e Routes with variable names and values
+What if you have a service that can return different documents based on a file extension? How might that be expressed in our PathDSL? Take these three path values.
 
-A more complex route would include one or more variable expressions. Variable expressions are delimited by an opening curly bracket `{` and closed by a closing curly bracket `}`. This indicates where in the path the variable may be found (assuming the route matches). The value associated with the variable name is a sub string of the path. Using examples of a blog URL paths the route might look like
+~~~
+/blog/2023/02/28/my-daily-post.html
+/blog/2023/02/28/my-daily-post.md
+/blog/2023/02/28/my-daily-post.txt
+~~~
 
-1. `/blog/{YEAR}/{MONTH}/{DAY}`, a route to blog posts on a given day, this route evaluate against a request path such that `YEAR`, `MONTH`, `DAY` will contain the values is the requested path.  These could be held in a map or dictionary where the names they keys.
-2. `/blog/{YEAR}/{MONTH}/{DAY}/{TITLE_SLUG}.html`, this route would result with the variables `YEAR`, `MONTH`, `DAY` and `TITLE_SLUG`. Note the title slug would not be expected to include ".html" as that was expressed as a literal part of the string.
-3. `/blog/{YEAR}/{MONTH}/{DAY}/{TITLE_SLUG}.{EXT}`, In this example the "." separating the `TITLE_SLUG` from the `EXT` is a literal. It indicates the separator between two variables.
+Perhaps you're using two microservices behind our theoretical router. These three URL represent the same
+content but returned in different formats has as can be rendered by Pandoc server. In this case you want to
+be able to extract both the "title-slug" and a file extension. Here's how you might represent that in PathDSL.
 
-The question now aside from the liter prefixes in our example how do we know where the value we're going to associate with our variable name ends if we're extracting sub-strings?
+~~~
+`/blog/{year Year}/{month Month}/{day Day}/{title-slug basename}{ext extname}`
+~~~
 
-Many language provide path parsing libraries and can return a list of directories, file basename and extension. In the examples above you could map directory elements into the variables assuming the variables consume the whole element of the path.  This limits the types of routes we can express.
+Many implementation languages support parsing path into directory components, filename and extension. PathDSL should be able to leveraget this. This suggests an algorithmic behavior in our PathDSL evaluation.
 
-Another challenge of this simple mapping based on existing path delimiters and variable names is it lacks even rudimentary validation. Here's two examples that would match example one but are unlikely to both be valid in our blog context - `/blog/2023/02/28` (valid) `/blog/down/is/up` (probably not what we want). It is desirable to have some level of validation for the values we're going to assign to our variable names and in deciding if a route matches.
+First PathDSL should split the path into it's component, then it should determine if the component is a
+literal string or a variable definition. For each component the variable definition needs to conform to
+it's type. The trailing element in a path can also have the types of "basename" (excluding the file extension), extname (including the file extension without the leading period). If you want trailing element to include both the file name and extension then we can use the "String" type to describe it.
 
-Ideally we should be able to specify a path as a sequence of variable names
-and parse them appropriately.
 
-- `/blog/{YEAR}{MONTH}{DAY}`, this is ambiguous without more information describing our route
+## Algorithm for evaluating a path value against a PathDSL expression
 
-## Variable annotations
+- A PathDSL expression decode into it's path components parts
+    - zero or more directory names
+        - directory name can be a literal
+        - directory name can be a variable definition
+    - zero or one filename
+        - a filename can be a literal
+        - a filename can be a variable expression
+- A path value is split into it's components
+    - zero or more directory names
+    - zero or one filename and extension
+- Compare each path value element against each PathDSL expression elements
+    - if both are literals
+        - stop processing if they do not match, return false
+    - if Path DSL component is a variable, valid the path value component against variable type
+        - stop of it does not validate, return false
+- If comparison completes without return false we have a match
 
-How do we know where a `YEAR` value starts and ends? Same for `MONTH` or `DAY`? I think an annotation along side our variable name might be the solution. An easy to implement annotation might be a fixed length string.
+## Variable definitions
 
-- `/blog/{YEAR string 4}{MONTH string 2}{DAY string 2}`, now we know that `YEAR` is four characters long and month and day are two
+In the use cases we've suggested how a variable in a PathDSL expression can include a variable name as well as validation information. Let's specify this in more detail.
 
-A variation might be to use a regular expression (re) approach
+- varaible definition start with an opening curly brace and conclude with a closing curly brace
+- Following the curly brace is a variable name which is formed from a letter and one or more alphanumeric characters or an underscores or dashes, e.g.
+    - `a`, `a1`, `a_long_variable_name`, `title-slug` are valid variable names
+    - `""`, `1a`, `+1`, `{}`, `()`, `$foo` are not valid variable names
+- a variable name is followed by a space and type expression
+- a type expression starts with a letter and can be followed by one or more characters excluding a closing curly brace
 
-- `/blog/{YEAR re 2[0-9][0-9][0-9]}{MONTH:[0-1][0-9]}{DAY [0-3][0-9]}`, now we know that `YEAR` is four characters long starts with '2' and is followed by three digits and similarly and month and day are two long each containing a digit in a specific range.
+Here's some example varaible definitions.
 
-Note I've separated our variable names from our annotations using a space. If an annotation was not present then the assumption of that the variable consumes the remainder of the URL path.  When we process the path value and compare with our route the variable declarations become the delimiting factor. This gives us the ability to describe a match using the whole URL if necessary without relying on a language's implementation of path parsing.
+~~~
+{year Year}
+{month Month}
+{day Day}
+{orcid Regexp '[0-9][0-9][0-9][0-9]\-[0-9][0-9][0-9][0-9]\-[0-9][0-9][0-9][0-9]\-[0-9][0-9][0-9][0-9]'}
+~~~
 
-What do I mean by "type" if what our route evaluation returns matching status and a map of variable names pointing at string values?  The first space indicates that we have a type rule that needs to be validated. After the second space we have any additional parameters need to evaluate the type. In our current examples this is string length or a regular expression. The type annotation describes a validation rule that is to be applied and that rule application should return the match state sub string holding the matched sub-string. This approach makes it straight forward to add additional types.
+These would result in the following type maps expressed in JSON
 
-Going back to our original blog path I can express both a file path delimited string and a numeric date string path and still populate my variable parts.
+~~~
+{
+    "year": "Year",
+    "month": "Month",
+    "day": "Day",
+    "orcid": "Regexp '[0-9][0-9][0-9][0-9]\-[0-9][0-9][0-9][0-9]\-[0-9][0-9][0-9][0-9]\-[0-9][0-9][0-9][0-9]'"
+}
+~~~
 
-- `/blog/{YEAR year}/{MONTH month}/{DAY day}/{TITLE_SLUG basename}{EXT extname}`
+The PathDSL does not define the supported types only that the information can be extracted from a PathDSL expression as a map between variable names and a type description. It is up to the specific PathDSL implementation to define how the type informaiton is interpreted.
 
-The "year" type would check for a four digit sub-string, it then could check if the value is reasonable. Likewise "month" and "day" should make sure the strings are two digits long and in the range of "01" to "12" for months and "01" to "31" for day. The "basename" and "extname" types could evaluate the whole URL path and return an appropriate filename and extension mapped to "TITLE_SLUG" and "EXT". Over time a collection of variable types could validate elements of the URL we wish to map.
+## Variable decoding
 
-The downside of what I've described is adding to yet another routing DSL. But I think the potential in the context of newt is that this trade off is reasonable to eliminate the need to write custom middle ware for many cases where I would like to build a front-end website on a back-end built from micro services like Postgres+PostgREST and Pandoc server.
+If a path value matches a PathDSL expression then when the variables and values can be extracted as a map of variable names and values. The only constraint is that the map be expressable as a valid JSON object. E.g.
 
-## Algorithm for route evaluation
+Given the PathDSL expression
 
-- read the path value from left to write
-- if prefix is literal compare with literal in route
-- else if route has a variable extract validate the value
-    - if valid save the sub-string in our map and continue processing path
-    - else we don't have a match, return false and empty name/value map
+~~~
+/people/{orcid ORCID}
+~~~
+
+and the path value
+
+~~~
+/people/0000-0003-0900-6903
+~~~
+
+The resulting map would look like this JSON
+
+~~~
+{
+    "orcid": "0000-0003-0900-6903"
+}
+~~~
+
+Given the PathDSL expression
+
+~~~
+/blog/{year Year}/{month Month}/{day Day}/{title-slug basename}{ext extname}
+~~~
+
+And the path value
+
+~~~
+/blog/2022/11/07/compiling-pandoc-from-source.html
+~~~
+
+A PathDSL implementation should return a map, dictionary or associative array with the values
+converted to the type suggested in the variable's type definition. The constraint is that the map can be expressed as a JSON object. E.g.
+
+~~~
+{
+    "year": 2022,
+    "month": 11,
+    "day": 7,
+    "title-slug": "compiling-pandoc-from-source",
+    "ext": ".html"
+}
+~~~
+
+In this case our types "Month", "Day", "Year" converted the values to JSON numbers and the rest were left as JSON strings.
 
 ## Reference materials
 
 - [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
-- [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) at MDN, [URLPattern](https://developer.chrome.com/articles/urlpattern/) at Chrome
+- [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) at MDN
+- [URLPattern](https://developer.chrome.com/articles/urlpattern/) at Chrome Developer site
 - [Flask Route tutorial](https://pythonbasics.org/flask-tutorial-routes/)
 - [router.js](https://github.com/tildeio/router.js/)
 - [Azure application gateway routing](https://learn.microsoft.com/en-us/azure/application-gateway/url-route-overview#pathbasedrouting-rule)

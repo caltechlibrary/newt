@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<header>
+<a href="http://library.caltech.edu"><img src="/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-a-new-take-on-making-web-applications">Newt, a new take on
+making web applications</h1>
+<blockquote>
+<p>confessions about my metadata obsession and simplification for the
+data scientist, archivist and librarian</p>
+</blockquote>
+<p>R. S. Doiel Caltech Library, Digital Library Development
+rsdoiel@caltech.edu https://caltechlibrary.github.io/newt</p>
+<h1 id="hello-my-name-is-robert-welcome-to-a-rabbit-warren">Hello, my
+name is Robert, welcome to a rabbit warren</h1>
+<ul>
+<li>Today, Complexity =&gt; LAMP and its legacy
+<ul>
+<li>Apache 2 and NginX (web sites and single sign on)</li>
+<li>Solr, Opensearch, LunrJS and Pagefind (Search)</li>
+<li>Java and Ruby on Rails (Archivesspace)</li>
+<li>Perl (EPrints), PHP (Drupal/Islandora), Python (Invenio, RDM)</li>
+<li>Proxy systems (resolvers, Open Athens)</li>
+<li>Static site generators (Pandoc, Github, R Studio)</li>
+<li>Custom apps and SAAS (DIBs,EBSCO, Folio)</li>
+</ul></li>
+<li>Scaling
+<ul>
+<li>Scaling up, programmable infrastructure (the siren song of Google,
+AWS and Azure)</li>
+<li>Scaling down (pack only what you need) &lt;- this is what interests
+me</li>
+</ul></li>
+<li>Concepts
+<ul>
+<li>Static sites and there generators (a rebillion)</li>
+<li>Structured data JSON, HTML and SQL</li>
+<li>Front-end and Back-end (web server, web browser)</li>
+<li>Microservices (choose only a few)</li>
+</ul></li>
+<li>Goal build a read write web app
+<ul>
+<li>SQL</li>
+<li>Pandoc templates</li>
+<li>Simple data flow described in a spreadsheet (CSV file)</li>
+</ul></li>
+<li>My Toolbox
+<ul>
+<li>Text Editor</li>
+<li>Spreadsheet</li>
+<li>Web browser</li>
+<li>Web server</li>
+<li>Pandoc</li>
+<li>Postgres</li>
+<li>Postgres + PostgREST = A Microservice for to manage data</li>
+<li>Pandoc server = a template engine = A Microservice to transform
+data</li>
+<li>Newt = A Microservice to route data flow</li>
+</ul></li>
+<li>What I am I packing?
+<ul>
+<li>Text editor, web browser, a spreadsheet</li>
+<li>Pandoc</li>
+<li>Postgres</li>
+<li>PostgREST</li>
+<li>Newt</li>
+</ul></li>
+<li>Minimize the source Luke
+<ul>
+<li>HTML + Pandoc</li>
+<li>SQL (Postgres dialect)</li>
+<li>How to map a URL route using a PathDSL in a spreadsheet</li>
+</ul></li>
+<li>Finding our way out of the rabbit warren
+<ul>
+<li>Birds 1, static site (read only)</li>
+<li>Birds 2, Postgres + PostgREST (read write, SQL, HTML, complicated
+JavaScript required)</li>
+<li>Birds 3, Postgres + PostgREST and Pandoc server (read write, SQL,
+HTML, simplified JavaScript requirements)</li>
+<li>Birds 4, Postgres+ PostgREST, Pandoc server and Newt (read write,
+SQL, HTML, no JavaScript)</li>
+</ul></li>
+<li>And then what? (conclusion)
+<ul>
+<li>How far can I take SQL and Pandoc?</li>
+<li>What about file uploads?</li>
+</ul></li>
+</ul>
+<h1 id="concepts">Concepts</h1>
+<ul>
+<li>Web servers</li>
+<li>Static site generators</li>
+<li>Promise of microservices</li>
+<li>Scaling down, a few off the self microservices</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>
