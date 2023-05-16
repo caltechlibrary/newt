@@ -2,15 +2,8 @@
 Installation
 ------------
 
-Quick install with curl
------------------------
+newt is highly experimental. At this time you must install it from source code. It is probably broken and certainly will contain many bugs.
 
-The following shell command should work on most POSIX systems where
-curl is installed.
-
-~~~
-curl https://caltechlibrary.github.io/newt/installer.sh | sh
-~~~
 
 Install from source
 -------------------
