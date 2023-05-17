@@ -12,6 +12,7 @@
 - [x] Documenting ideas
 - [ ] Finish Newt prototype
     - [x] implement Path DSL
+    - [ ] Figure out where resoling the types, values and url request should go
     - [ ] Nail down where table of routes comes from
     - [ ] Nail down and implement configuration file
     - [ ] Add load configuration to Runner

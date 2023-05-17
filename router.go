@@ -51,6 +51,11 @@ type Route struct {
 	ResHeaders     map[string]string
 }
 
+func (route *Route) ResolveApiURL() (string , error) {
+	return route.ReqPath.Resolve(route.ApiURL)
+}
+
+
 type Router struct {
 	Env    map[string]string
 	Routes []*Route
