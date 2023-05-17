@@ -109,6 +109,8 @@ clean:
 	@if [ -d dist ]; then rm -fR dist; fi
 	@if [ -d testout ]; then rm -fR testout; fi
 	@if [ -f "man/man1/*.1" ]; then rm man/man1/*.1; fi
+	@make -f website.mak clean
+	@make -f presentation.mak clean
 
 dist/linux-amd64:
 	@mkdir -p dist/bin
@@ -164,8 +166,11 @@ save:
 	if [ "$(msg)" != "" ]; then git commit -am "$(msg)"; else git commit -am "Quick Save"; fi
 	git push origin $(BRANCH)
 
-website: about.md
+website: about.md presentation
 	make -f website.mak
+
+presentation: newt-presentation.md
+	make -f presentation.mak
 
 publish: build website
 	bash publish.bash

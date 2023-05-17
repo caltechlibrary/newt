@@ -4,14 +4,14 @@
 # This file sets up a "birds" project folder and generates some of
 # the documents needed to build our web application.
 #
-mkdir -p birds/htdocs
+mkdir -p birds2/htdocs
 
 # Generate the empty files we'll use in the demo.
-touch birds/setup.sql
-touch birds/birds.csv
-touch birds/postgrest.conf
-touch birds/htdocs/index.html
-touch birds/htdocs/sightings.js
+touch birds2/setup.sql
+touch birds2/birds.csv
+touch birds2/postgrest.conf
+touch birds2/htdocs/index.html
+touch birds2/htdocs/sightings.js
 
 # Create the database we'll use in the demo.
 if ! createdb birds 2>/dev/null; then
@@ -20,7 +20,7 @@ if ! createdb birds 2>/dev/null; then
 fi
 
 # Generate a README
-cat <<EOT>birds/README.md
+cat <<EOT>birds2/README.md
 
 # Birds, a demo of PostgreSQL 15, PostgREST 11
 
@@ -29,7 +29,7 @@ This directory holds our demo.
 EOT
 
 # Generate our SQL setup modeling our simple data
-cat <<EOT>birds/setup.sql
+cat <<EOT>birds2/setup.sql
 -- Make sure we're in the birds database
 \c birds
 
@@ -80,7 +80,7 @@ GRANT birds_anonymous TO birds;
 EOT
 
 # Generate some test data to load into our models
-cat <<EOT>birds/birds.csv
+cat <<EOT>birds2/birds.csv
 bird,place,sighted
 robin, seen in my backyard,2023-04-16
 humming bird, seen in my backyard, 2023-02-28
@@ -88,14 +88,14 @@ blue jay, seen on my back porch, 2023-01-12
 EOT
 
 # Generate a template of postgrest.conf file.
-cat <<EOT>birds/postgrest.conf
+cat <<EOT>birds2/postgrest.conf
 db-uri = "postgres://birds:my_secret_password@localhost:5432/birds"
 db-schemas = "birds"
 db-anon-role = "birds_anonymous"
 EOT
 
 # Generate index.html
-cat <<EOT>birds/htdocs/index.html
+cat <<EOT>birds2/htdocs/index.html
 <DOCTYPE html lang="en">
 <html>
   <body>
@@ -123,7 +123,7 @@ cat <<EOT>birds/htdocs/index.html
 EOT
 
 # Generate sightings.js
-cat <<EOT>birds/htdocs/sightings.js
+cat <<EOT>birds2/htdocs/sightings.js
 /* sightings.js provides access to our JSON API run by PostgREST
    and assembles the results before updating the web page. */
 (function(document, window) {
