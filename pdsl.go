@@ -7,11 +7,21 @@ import (
 	"strings"
 )
 
-// TypeEval is an function that takes a type expression (everything
-// that would be int he curly braces) and a value.
-// It returns the extracted value and bool indicating
-// is the extraction was succesful.
-type TypeEval func(string, string) (interface{}, bool)
+
+// PathDSLType defines the interface for types bound to
+// a name and Go struct.
+type PathDSLType interface {
+	// EvalType takes an expression string and value string, 
+	// checks the expression against the value string validating
+	// based on the PathDSLType defined.
+	// If the value string is accept a normalized value string and true 
+	// are returned. If they value string does not match expr or fails
+	// type verification then an empty value string and false is return.
+	//
+	// EvalType works like a test and set.
+	EvalType(string,string) (string, bool)
+}
+
 
 // PathDSLExpression holds the attributes need to decode
 // a PathDSL expression, match and decode against path values.
@@ -20,10 +30,10 @@ type PathDSLExpression struct {
 	Dirs []string `json:"dirs,omitempty"`
 	Base string   `json:"base,omitempty"`
 	Ext  string   `json:"ext,omitempty"`
-	// VarToTypes maps the variable name to a var defn
-	VarToTypes map[string]string `json:"var_to_types,omitempty"`
-	// TypeFn maps a type to a tpe eval func
-	TypeFn map[string]TypeEval `json:"-"`
+	// VarToType maps the variable name to a var defn
+	VarToType map[string]string `json:"var_to_types,omitempty"`
+	// Types maps a type name to type implementation
+	Types map[string]PathDSLType `json:"-"`
 }
 
 func (pdsl *PathDSLExpression) String() string {
@@ -66,14 +76,14 @@ func NewPathDSL(src string) (*PathDSLExpression, error) {
 		pdsl.Base = base
 		pdsl.Ext = ""
 	}
-	pdsl.VarToTypes = map[string]string{}
+	pdsl.VarToType = map[string]string{}
 
-	pdsl.TypeFn = map[string]TypeEval{}
+	pdsl.Types = map[string]PathDSLType{}
 	for i, elem := range dirs {
 		if strings.HasPrefix(elem, "{") && strings.HasSuffix(elem, "}") {
 			varName, typeExpr, err := varDefn(elem)
 			if err == nil {
-				pdsl.VarToTypes[varName] = typeExpr
+				pdsl.VarToType[varName] = typeExpr
 			} else {
 				return nil, fmt.Errorf("(%d) %q -> %s", i, elem, err)
 			}
@@ -85,7 +95,7 @@ func NewPathDSL(src string) (*PathDSLExpression, error) {
 	if strings.HasPrefix(pdsl.Base, "{") && strings.HasSuffix(pdsl.Base, "}") {
 		varName, typeExpr, err := varDefn(pdsl.Base)
 		if err == nil {
-			pdsl.VarToTypes[varName] = typeExpr
+			pdsl.VarToType[varName] = typeExpr
 		} else {
 			return nil, fmt.Errorf("(basename) %q -> %s", pdsl.Base, err)
 		}
@@ -95,7 +105,7 @@ func NewPathDSL(src string) (*PathDSLExpression, error) {
 		if strings.HasPrefix(pdsl.Ext, "{") && strings.HasSuffix(pdsl.Ext, "}") {
 			varName, typeExpr, err := varDefn(pdsl.Ext)
 			if err == nil {
-				pdsl.VarToTypes[varName] = typeExpr
+				pdsl.VarToType[varName] = typeExpr
 			} else {
 				return nil, fmt.Errorf("(extname) %q -> %s", pdsl.Ext, err)
 			}
@@ -106,12 +116,12 @@ func NewPathDSL(src string) (*PathDSLExpression, error) {
 }
 
 // RegisterType maps a type name to a function. The function needs to
-// be of the form of TypeEval.
-func (pdsl *PathDSLExpression) RegisterType(tName string, fn TypeEval) error {
-	if _, ok := pdsl.TypeFn[tName]; ok {
+// be of the form of EvalType.
+func (pdsl *PathDSLExpression) RegisterType(tName string, defn PathDSLType) error {
+	if _, ok := pdsl.Types[tName]; ok {
 		return fmt.Errorf("%q previously registered", tName)
 	}
-	pdsl.TypeFn[tName] = fn
+	pdsl.Types[tName] = defn
 	return nil
 }
 
@@ -126,16 +136,16 @@ func (pdsl *PathDSLExpression) evalElement(elem string, src string) (string, int
 	if strings.HasPrefix(elem, `{`) {
 		// handle variable path element
 		vName := varName(elem)
-		tExpr, ok := pdsl.VarToTypes[vName]
+		tExpr, ok := pdsl.VarToType[vName]
 		if !ok {
 			return "", nil, false
 		}
-		fn, ok := pdsl.TypeFn[tExpr]
+		defn, ok := pdsl.Types[tExpr]
 		if !ok {
 			return vName, nil, false
 		}
 		// Now check the type of dDir against the type expression
-		val, ok := fn(tExpr, src)
+		val, ok := defn.EvalType(tExpr, src)
 		if !ok {
 			// Something went wrong, path does not match.
 			return "", "", false
