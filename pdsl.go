@@ -41,6 +41,7 @@ func (pdsl *PathDSLExpression) String() string {
 	return string(src)
 }
 
+
 // varDefn evaluates a varaible expression returning a var name,
 // type expression.
 func varDefn(src string) (string, string, error) {
