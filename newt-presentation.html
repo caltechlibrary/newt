@@ -25,7 +25,7 @@
 <p>Four example systems found in Caltech Library</p>
 <ul>
 <li>EPrints</li>
-<li>Archivesspace</li>
+<li>ArchivesSpace</li>
 <li>Islandora</li>
 <li>Invenio RDM</li>
 </ul>
@@ -56,7 +56,7 @@
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td>EPrint</td>
+<td>EPrints</td>
 <td>Sphynx</td>
 </tr>
 <tr class="odd">
@@ -98,20 +98,20 @@ Community.</p>
 <h1 id="why-are-these-things-so-complex">Why are these things so
 complex?</h1>
 <blockquote>
-<p>WARNING: gross generatilizations ahead</p>
+<p>WARNING: gross generalizations ahead</p>
 </blockquote>
 <ul>
 <li>We want more from our application so more code gets written,
-complexity acrues over time</li>
+complexity accrues over time</li>
 <li>We must build systems to scale!
 <ul>
-<li>a not so subtile influence on developer “best practices” from
-Silicon Valley</li>
+<li>a not so subtle influence on developer “best practices” from Silicon
+Valley</li>
 </ul></li>
 </ul>
 <h1 id="lets-talk-about-scale">Let’s talk about scale</h1>
 <ul>
-<li>Best practice often translates to building for scale, specificly
+<li>Best practice often translates to building for scale, specifically
 scaling up</li>
 <li>Scaling up =&gt; programmable infrastructure, the siren song of
 Google, AWS and Azure
@@ -172,7 +172,7 @@ browser
 practice?</h1>
 <ol type="1">
 <li>Model our data using SQL (Postgres)</li>
-<li>Define our JSON API usng SQL (Postgres+PostgREST)</li>
+<li>Define our JSON API using SQL (Postgres+PostgREST)</li>
 <li>Transform our structured data using Pandoc</li>
 <li>Use Newt to orchestrate</li>
 </ol>
@@ -204,7 +204,7 @@ requirements</h1>
 templates and a little routing.</p>
 <h1 id="why-sql">Why SQL?</h1>
 <p>SQL is really good at describing structured data. It also is good at
-expressing querys. With a little deeper knowledge of SQL you can also
+expressing queries. With a little deeper knowledge of SQL you can also
 define data views, functions and your own procedures. With Postgres +
 PostgREST these provide everything you need in a JSON data API short of
 file upload. SQL does allot of lifting with a little code and usually
@@ -214,13 +214,13 @@ remains readable.</p>
 </blockquote>
 <p>You don’t need to design classes in your favorite programming
 languages and Schema in SQL. You don’t need to learn an ORM. You don’t
-duplicate the code in the data base, again in the middleware and
-inceasingly often in the browser. Data models are defined in one place,
+duplicate the code in the database, again in the middle-ware and
+increasingly often in the browser. Data models are defined in one place,
 Postgres. PostgREST takes care of turning them into a JSON data API.
-Data transformation is hanlde by Pandoc. A program really good at
+Data transformation is handle by Pandoc. A program really good at
 translating things. Newt provides just enough orchestration based on
 defining some routes in a CSV file.</p>
-<h1 id="fewer-cognative-shifts">Fewer cognative shifts</h1>
+<h1 id="fewer-cognitive-shifts">Fewer cognitive shifts</h1>
 <ul>
 <li>SQL (Postgres dialect)</li>
 <li>JSON</li>
@@ -253,8 +253,8 @@ each version of birds?</h1>
 <li><a href="birds1/">birds 1</a>, a static site implementation</li>
 <li><a href="birds2/">birds 2</a>, a dynamic site implementation,
 content viewing requires browser JavaScript</li>
-<li><a href="birds3/">birds 3</a>, a dynamic site implemention, does not
-require browser JavaScript</li>
+<li><a href="birds3/">birds 3</a>, a dynamic site implementation, does
+not require browser JavaScript</li>
 </ul>
 <h1 id="different-birds">Different birds</h1>
 <h2 id="birds-1-static-site-read-only"><a href="birds1/">birds 1</a>
@@ -281,8 +281,8 @@ dynamic site (read/write)</h2>
 <ul>
 <li>Build from SQL (Postgres + PostgREST) and Pandoc</li>
 <li>Add birds you using a web form</li>
-<li>Rendered on server and no longer reqires JavaScript</li>
-<li>Works even in text web browers like Lynx</li>
+<li>Rendered on server and no longer requires JavaScript</li>
+<li>Works even in text web browsers like Lynx</li>
 </ul>
 <h1 id="different-birds-3">Different birds</h1>
 <h2 id="pros-and-cons">Pros and cons</h2>
@@ -360,7 +360,7 @@ Pandoc</li>
 <h1 id="evaluating-postgrespostgrest-pandoc-and-newt">Evaluating
 Postgres+PostgREST, Pandoc and Newt</h1>
 <ul>
-<li>Weeknesses
+<li>Weaknesses
 <ul>
 <li>Newt is limited (doesn’t support file uploads)</li>
 <li>PostgREST is new to me (and probably others)</li>
@@ -381,7 +381,7 @@ Summer/Fall 2023</li>
 <li>Solr/Opensearch should work with Pandoc and Newt, seems
 promising</li>
 </ul>
-<h2 id="somday-maybe">somday, maybe</h2>
+<h2 id="someday-maybe">someday, maybe</h2>
 <ul>
 <li>It’d be nice if Newt could send file uploads to a service like S3
 (via Minio?)</li>
