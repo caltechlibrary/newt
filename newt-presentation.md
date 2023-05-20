@@ -26,7 +26,7 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 Four example systems found in Caltech Library
 
 - EPrints
-- Archivesspace
+- ArchivesSpace
 - Islandora
 - Invenio RDM
 
@@ -37,7 +37,7 @@ App            Languages         Supporting services
 ArchivesSpace  Java, Ruby, SQL   MySQL, Solr, Apache or NginX,
                                  Solr
 EPrints        Perl, SQL, XML,   MySQL, Apache2 (tight integration),
-               EPrint            Sphynx
+               EPrints           Sphynx
                templates
 Invenio RDM    Python,SQL        Postgres, Redis, Elasticsearch,
                JavaScript/React  Docker, Invenio Framework,
@@ -52,15 +52,15 @@ Each listed application is built on a stack. The stacks are complex. Because of 
 
 # Why are these things so complex?
 
-> WARNING: gross generatilizations ahead
+> WARNING: gross generalizations ahead
 
-- We want more from our application so more code gets written, complexity acrues over time
+- We want more from our application so more code gets written, complexity accrues over time
 - We must build systems to scale!
-  - a not so subtile influence on developer "best practices" from Silicon Valley
+  - a not so subtle influence on developer "best practices" from Silicon Valley
 
 # Let's talk about scale
 
-- Best practice often translates to building for scale, specificly scaling up
+- Best practice often translates to building for scale, specifically scaling up
 - Scaling up => programmable infrastructure, the siren song of Google, AWS and Azure
   - Scaling big is hard
   - Scaling big makes things really complex
@@ -110,7 +110,7 @@ Except without the data loss.
 # How would this work in practice?
 
 1. Model our data using SQL (Postgres)
-2. Define our JSON API usng SQL (Postgres+PostgREST)
+2. Define our JSON API using SQL (Postgres+PostgREST)
 3. Transform our structured data using Pandoc
 4. Use Newt to orchestrate
 
@@ -142,13 +142,13 @@ Pandoc templates and a little routing.
 
 # Why SQL?
 
-SQL is really good at describing structured data. It also is good at expressing querys. With a little deeper knowledge of SQL you can also define data views, functions and your own procedures. With Postgres + PostgREST these provide everything you need in a JSON data API short of file upload. SQL does allot of lifting with a little code and usually remains readable.
+SQL is really good at describing structured data. It also is good at expressing queries. With a little deeper knowledge of SQL you can also define data views, functions and your own procedures. With Postgres + PostgREST these provide everything you need in a JSON data API short of file upload. SQL does allot of lifting with a little code and usually remains readable.
 
 > Minimize the source Luke!
 
-You don't need to design classes in your favorite programming languages and Schema in SQL. You don't need to learn an ORM. You don't duplicate the code in the data base, again in the middleware and inceasingly often in the browser. Data models are defined in one place, Postgres. PostgREST takes care of turning them into a JSON data API. Data transformation is hanlde by Pandoc. A program really good at translating things. Newt provides just enough orchestration based on defining some routes in a CSV file.
+You don't need to design classes in your favorite programming languages and Schema in SQL. You don't need to learn an ORM. You don't duplicate the code in the database, again in the middle-ware and increasingly often in the browser. Data models are defined in one place, Postgres. PostgREST takes care of turning them into a JSON data API. Data transformation is handle by Pandoc. A program really good at translating things. Newt provides just enough orchestration based on defining some routes in a CSV file.
 
-# Fewer cognative shifts
+# Fewer cognitive shifts
 
 - SQL (Postgres dialect)
 - JSON
@@ -175,7 +175,7 @@ Let's take a look at three versions of a bird sighting website.
 
 - [birds 1](birds1/), a static site implementation
 - [birds 2](birds2/), a dynamic site implementation, content viewing requires browser JavaScript
-- [birds 3](birds3/), a dynamic site implemention, does not require browser JavaScript
+- [birds 3](birds3/), a dynamic site implementation, does not require browser JavaScript
 
 # Different birds
 
@@ -200,8 +200,8 @@ Let's take a look at three versions of a bird sighting website.
 
 - Build from SQL (Postgres + PostgREST) and Pandoc
 - Add birds you using a web form
-- Rendered on server and no longer reqires JavaScript
-- Works even in text web browers like Lynx
+- Rendered on server and no longer requires JavaScript
+- Works even in text web browsers like Lynx
 
 # Different birds
 
@@ -247,7 +247,7 @@ birds 3    dynamic     read write site, easy to conceptualize
 
 # Evaluating Postgres+PostgREST, Pandoc and Newt
 
-- Weeknesses
+- Weaknesses
   - Newt is limited (doesn't support file uploads)
   - PostgREST is new to me (and probably others)
   - SQL and HTML have a learning curve
@@ -262,7 +262,7 @@ birds 3    dynamic     read write site, easy to conceptualize
 - Newt is an experiment, I am building some staff applications Summer/Fall 2023
 - Solr/Opensearch should work with Pandoc and Newt, seems promising
 
-## somday, maybe
+## someday, maybe
 
 - It'd be nice if Newt could send file uploads to a service like S3 (via Minio?)
 - It might be nice if Newt could function as a static file server

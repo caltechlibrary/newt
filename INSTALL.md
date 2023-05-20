@@ -4,6 +4,17 @@ Installation
 
 newt is highly experimental. At this time you must install it from source code. It is probably broken and certainly will contain many bugs.
 
+<!-- NOTE: There have been no releases yet.
+Quick install with curl
+-----------------------
+
+If you are running macOS or Linux you can install released versions of newt
+with the following curl command.
+
+~~~
+curl https://rsdoiel.github.io/caltechlibrary/newt/installer.sh
+~~~
+-->
 
 Install from source
 -------------------

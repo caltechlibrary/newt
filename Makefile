@@ -3,7 +3,7 @@
 #
 PROJECT = newt
 
-GIT_GROUP = rsdoiel
+GIT_GROUP = caltechlibrary
 
 RELEASE_DATE=$(shell date +'%Y-%m-%d')
 
