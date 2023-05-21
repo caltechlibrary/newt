@@ -50,7 +50,7 @@ class="email">rsdoiel@caltech.edu</a>
 <p>Four example systems found in Caltech Library</p>
 <ul>
 <li>EPrints</li>
-<li>Archivesspace</li>
+<li>ArchivesSpace</li>
 <li>Islandora</li>
 <li>Invenio RDM</li>
 </ul>
@@ -83,30 +83,25 @@ class="email">rsdoiel@caltech.edu</a>
 </tr>
 <tr class="even">
 <td align="left"></td>
-<td>EPrint</td>
+<td>EPrints XML</td>
 <td>Sphynx</td>
 </tr>
 <tr class="odd">
-<td align="left"></td>
-<td>templates</td>
-<td></td>
-</tr>
-<tr class="even">
 <td align="left">Invenio RDM</td>
-<td>Python,SQL</td>
+<td>Python, SQL</td>
 <td>Postgres, Redis, Elasticsearch,</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"></td>
 <td>JavaScript/React</td>
 <td>Docker, Invenio Framework,</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"></td>
 <td>NodeJS/NPM</td>
 <td>Python packaging system</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Islandora</td>
 <td>PHP/SQL</td>
 <td>MySQL, Fedora, Apache 2</td>
@@ -128,22 +123,22 @@ Community.</p>
 <div id="why-are-these-things-so-complex" class="slide section level1">
 <h1>Why are these things so complex?</h1>
 <blockquote>
-<p>WARNING: gross generatilizations ahead</p>
+<p>WARNING: gross generalizations ahead</p>
 </blockquote>
 <ul>
 <li>We want more from our application so more code gets written,
-complexity acrues over time</li>
+complexity accrues over time</li>
 <li>We must build systems to scale!
 <ul>
-<li>a not so subtile influence on developer “best practices” from
-Silicon Valley</li>
+<li>a not so subtle influence on developer “best practices” from Silicon
+Valley</li>
 </ul></li>
 </ul>
 </div>
 <div id="lets-talk-about-scale" class="slide section level1">
 <h1>Let’s talk about scale</h1>
 <ul>
-<li>Best practice often translates to building for scale, specificly
+<li>Best practice often translates to building for scale, specifically
 scaling up</li>
 <li>Scaling up =&gt; programmable infrastructure, the siren song of
 Google, AWS and Azure
@@ -154,8 +149,8 @@ Google, AWS and Azure
 </ul></li>
 </ul>
 </div>
-<div id="the-alternative" class="slide section level1">
-<h1>The alternative</h1>
+<div id="the-alternative-scale-small" class="slide section level1">
+<h1>The alternative, Scale small</h1>
 <ul>
 <li>Scaling down &lt;= pack only what you need</li>
 <li>Simplify!</li>
@@ -194,7 +189,7 @@ with</p>
 <p>Simplify through a clear division of labor.</p>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a> =&gt; JSON DATA API</li>
+href="https://postgrest.org">PostgREST</a> =&gt; JSON data API</li>
 <li><a href="https://pandoc.org">Pandoc</a> =&gt; Powerful template
 engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
@@ -203,19 +198,24 @@ data router</li>
 </div>
 <div id="how-would-this-work-in-practice" class="slide section level1">
 <h1>How would this work in practice?</h1>
-<ol style="list-style-type: decimal">
-<li>Model our data using SQL (Postgres)</li>
-<li>Define our JSON API usng SQL (Postgres+PostgREST)</li>
-<li>Transform our structured data using Pandoc</li>
-<li>Use Newt to orchestrate</li>
-</ol>
 <dl>
-<dt>A game of telephone</dt>
+<dt>Think of a game of telephone</dt>
 <dd>
 web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; Newt =&gt; web
 browser
 </dd>
 </dl>
+<p>Except without the data loss.</p>
+</div>
+<div id="how-would-this-work-in-practice-1"
+class="slide section level1">
+<h1>How would this work in practice?</h1>
+<ol style="list-style-type: decimal">
+<li>Model our data using SQL (Postgres)</li>
+<li>Define our JSON data API using SQL (Postgres+PostgREST)</li>
+<li>Transform our structured data using Pandoc</li>
+<li>Use Newt to orchestrate</li>
+</ol>
 </div>
 <div id="required-toolbox" class="slide section level1">
 <h1>Required Toolbox</h1>
@@ -234,7 +234,7 @@ class="slide section level1">
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
-<li>CSV file describing data flowing through the microservices</li>
+<li>CSV describing data flow through our microservices</li>
 </ul>
 </div>
 <div id="web-browser-knowledge-requirements"
@@ -251,10 +251,10 @@ class="slide section level1">
 <p>We can create interactive applications with some SQL, Pandoc
 templates and a little routing.</p>
 </div>
-<div id="why-sql" class="slide section level1">
-<h1>Why SQL?</h1>
+<div id="but-why-sql" class="slide section level1">
+<h1>But why SQL?</h1>
 <p>SQL is really good at describing structured data. It also is good at
-expressing querys. With a little deeper knowledge of SQL you can also
+expressing queries. With a little deeper knowledge of SQL you can also
 define data views, functions and your own procedures. With Postgres +
 PostgREST these provide everything you need in a JSON data API short of
 file upload. SQL does allot of lifting with a little code and usually
@@ -263,16 +263,16 @@ remains readable.</p>
 <p>Minimize the source Luke!</p>
 </blockquote>
 <p>You don’t need to design classes in your favorite programming
-languages and Schema in SQL. You don’t need to learn an ORM. You don’t
-duplicate the code in the data base, again in the middleware and
-inceasingly often in the browser. Data models are defined in one place,
+languages then write Schema in SQL. You don’t need to learn an ORM. You
+don’t duplicate the code in the database, again in the middle-ware and
+increasingly often in the browser. Data models are defined in one place,
 Postgres. PostgREST takes care of turning them into a JSON data API.
-Data transformation is hanlde by Pandoc. A program really good at
-translating things. Newt provides just enough orchestration based on
-defining some routes in a CSV file.</p>
+Data transformation is handle by Pandoc. Newt provides <strong>just
+enough orchestration</strong> based on route definitions contained in a
+CSV file.</p>
 </div>
-<div id="fewer-cognative-shifts" class="slide section level1">
-<h1>Fewer cognative shifts</h1>
+<div id="fewer-cognitive-shifts" class="slide section level1">
+<h1>Fewer cognitive shifts</h1>
 <ul>
 <li>SQL (Postgres dialect)</li>
 <li>JSON</li>
@@ -311,8 +311,8 @@ class="slide section level1">
 <li><a href="birds1/">birds 1</a>, a static site implementation</li>
 <li><a href="birds2/">birds 2</a>, a dynamic site implementation,
 content viewing requires browser JavaScript</li>
-<li><a href="birds3/">birds 3</a>, a dynamic site implemention, does not
-require browser JavaScript</li>
+<li><a href="birds3/">birds 3</a>, a dynamic site implementation, does
+not require browser JavaScript</li>
 </ul>
 </div>
 <div id="different-birds" class="slide section level1">
@@ -345,8 +345,8 @@ dynamic site (read/write)</h2>
 <ul>
 <li>Build from SQL (Postgres + PostgREST) and Pandoc</li>
 <li>Add birds you using a web form</li>
-<li>Rendered on server and no longer reqires JavaScript</li>
-<li>Works even in text web browers like Lynx</li>
+<li>Rendered on server and no longer requires JavaScript</li>
+<li>Works even in text web browsers like Lynx</li>
 </ul>
 </div>
 <div id="different-birds-3" class="slide section level1">
@@ -436,7 +436,7 @@ Pandoc</li>
 class="slide section level1">
 <h1>Evaluating Postgres+PostgREST, Pandoc and Newt</h1>
 <ul>
-<li>Weeknesses
+<li>Weaknesses
 <ul>
 <li>Newt is limited (doesn’t support file uploads)</li>
 <li>PostgREST is new to me (and probably others)</li>
@@ -459,7 +459,7 @@ Summer/Fall 2023</li>
 <li>Solr/Opensearch should work with Pandoc and Newt, seems
 promising</li>
 </ul>
-<h2 id="somday-maybe">somday, maybe</h2>
+<h2 id="someday-maybe">someday, maybe</h2>
 <ul>
 <li>It’d be nice if Newt could send file uploads to a service like S3
 (via Minio?)</li>
