@@ -21,7 +21,7 @@ routing information. It is part of the Newt Project which is exploring
 building web services, applications and sites using SQL for data modeling
 and define back-end service behaviors along with Pandoc templates used to
 generate HTML consumed by the web browser.  newt supports data
-hosted in Postgres databases via PostgREST JSON API as well as static
+hosted in Postgres databases via PostgREST JSON data API as well as static
 files contained in an "htdocs" directory (e.g. HTML, CSS, JavaScript,
 and image assets). 
 

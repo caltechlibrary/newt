@@ -2,14 +2,14 @@
 # Multipass basics
 
 Multipass is a Ubuntu specific VM manager making it easy to develop
-applications targetting Ubuntu Server and Desktop environments. It is
-available on Linux, MacOS and Windows. See [multipass.run](https://multipass.run) for installation instructions.
+applications targeting Ubuntu Server and Desktop environments. It is
+available on Linux, macOS and Windows. See [multipass.run](https://multipass.run) for installation instructions.
 
 ## Basic commands
 
-The [newstack-demo](https://github.com/caltechlibrary/newstack-demo) provides a [newstack-init.yaml]() to setup a Multipass environment for exploring a web appllication approach focusing on SQL, HTML, JavaScript using PostgreSQL 15, PostgREST 11 and a front end web server.
+The [newt-demo](https://github.com/caltechlibrary/newt) provides a [newt-init.yaml]() to setup a Multipass environment for exploring a web application approach focusing on SQL, HTML, JavaScript using PostgreSQL 15, PostgREST 11 and a front end web server.
 
-Creating our developmenet VM.
+Creating our development VM.
 
 ~~~
 multipass launch --name newstack --cloud-init newstack-init.yaml

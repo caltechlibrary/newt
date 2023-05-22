@@ -1,11 +1,11 @@
 
 # Newt, a new take of the web stack
 
-Newt is short for "new take". Specific it is my new take on building web applications from a few off the shelf micro services. The micro services newt explores are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org), Newt a minimalist URL request router.
+Newt is short for "new take". It is my personal new take on building web applications from a few off the shelf [microservices](https://en.wikipedia.org/wiki/Microservices). The microservices newt explores are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org). The Newt program is a minimalist URL request router that services as a bridge between the other microservices and your frontend web server.
 
 My belief is that many web services used by Archives, Libraries and Museums can benefit from a simplier back-end. If the back-end is "easy" then the limited developer resources can be focused on the front end creating a better user experiences for staff and patrons.
 
-The Newt's vision is the back-end can be defined simply through data models in a SQL database like Postgres.  The models can be exposed as a micro service using PostgREST via via SQL queries, views, functions and procedure  that PostgREST can expose as a JSON API. If you need some sort of server side template engine for content provided by PostgREST then Pandoc server is available and sorts many different types of content transformation as well as a template engine. Finally venerable static files can be served by either your front end web server or a minimalist URL router like that implemetned at part of Newt.
+The Newt's vision is the back-end can be defined simply through data models in a SQL database like Postgres.  The models can be exposed as a microservice using PostgREST via via SQL queries, views, functions and procedure  that PostgREST can expose as a JSON data API. If you need some sort of server side template engine for content provided by PostgREST then Pandoc server is available and sorts many different types of content transformation as well as a template engine. Finally venerable static files can be served by either your front end web server or a minimalist URL router like that implemetned at part of Newt.
 
 I feel if you know SQL, HTML, and perhaps CSS that should be enough to build useful web applications and services without having to know languages like Python, Perl, PHP, Ruby, Go or Java. While I will discuss using browser side JavaScript in the initial exploration of the micro serverice mention above by the time we get to the final demo which features the Newt URL router you'll need to use SQL, HTML and some CSS and you'll have a web application that works equally well in modern browers like Firefox, Safari and Chrome as well as with text mode browsers like Lynx.
 
@@ -43,7 +43,7 @@ In this final demo, now including the Newt URL router, we use SQL to define our 
 
 ## Conclusion
 
-In all our demos we've devided the tasks through a series of flexible micro services can can be used individually or in combination.
+In all our demos we've devided the tasks through a series of flexible microservices can can be used individually or in combination.
 
 - Postgres, data storage, back-end configuration and data services
 - PostgREST, a JSON data API

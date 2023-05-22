@@ -8,12 +8,12 @@ import (
 )
 
 func TestBlogPathEndingWithString(t *testing.T) {
-	pdsl, err := NewPathDSL(`/blog/{year Year}/{month Month}/{day Day}/{title-slug String}`)
+	rdsl, err := NewRouteDSL(`/blog/{year Year}/{month Month}/{day Day}/{title-slug String}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Year", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Year", func(expr string, val string) (interface{}, bool) {
 		dt, err := time.Parse(`2006`, val)
 		if err != nil {
 			return "", false
@@ -24,7 +24,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Month", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Month", func(expr string, val string) (interface{}, bool) {
 		dt, err := time.Parse(`01`, val)
 		if err != nil {
 			return "", false
@@ -35,7 +35,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Day", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Day", func(expr string, val string) (interface{}, bool) {
 		dt, err := time.Parse(`02`, val)
 		if err != nil {
 			return "", false
@@ -46,7 +46,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("String", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("String", func(expr string, val string) (interface{}, bool) {
 		return val, true
 	})
 	if err != nil {
@@ -59,7 +59,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		"/blog/2023/05/13/my-post.html": true,
 	}
 	for p, expected := range testMap {
-		val, ok := pdsl.Eval(p)
+		val, ok := rdsl.Eval(p)
 		if ok != expected {
 			t.Errorf("expected (%q) %t, got (%T) %+v %t", p, expected, val, val, ok)
 		}
@@ -68,12 +68,12 @@ func TestBlogPathEndingWithString(t *testing.T) {
 
 
 func TestBlogPathEndingWithExt(t *testing.T) {
-	pdsl, err := NewPathDSL(`/blog/{year Year}/{month Month}/{day Day}/{title-slug Basename}{ext Extname}`)
+	rdsl, err := NewRouteDSL(`/blog/{year Year}/{month Month}/{day Day}/{title-slug Basename}{ext Extname}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Year", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Year", func(expr string, val string) (interface{}, bool) {
 		dt, err := time.Parse(`2006`, val)
 		if err != nil {
 			return "", false
@@ -84,7 +84,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Month", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Month", func(expr string, val string) (interface{}, bool) {
 		dt, err := time.Parse(`01`, val)
 		if err != nil {
 			return "", false
@@ -95,7 +95,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Day", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Day", func(expr string, val string) (interface{}, bool) {
 		dt, err := time.Parse(`02`, val)
 		if err != nil {
 			return "", false
@@ -106,18 +106,18 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("String", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("String", func(expr string, val string) (interface{}, bool) {
 		return val, true
 	})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = pdsl.RegisterType("Basename", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Basename", func(expr string, val string) (interface{}, bool) {
 		ext := path.Ext(val)
 		return strings.TrimSuffix(val, ext), true
 	})
-	err = pdsl.RegisterType("Extname", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Extname", func(expr string, val string) (interface{}, bool) {
 		return path.Ext(val), true
 	})
 
@@ -127,7 +127,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		"/blog/2023/05/13/my-post.html": true,
 	}
 	for p, expected := range testMap {
-		val, ok := pdsl.Eval(p)
+		val, ok := rdsl.Eval(p)
 		if ok != expected {
 			t.Errorf("expected (%q) %t, got (%T) %+v %t", p, expected, val, val, ok)
 		}
