@@ -7,25 +7,11 @@ import (
 	"strings"
 )
 
+type EvalType func (string, string) (string, bool)
 
-// PathDSLType defines the interface for types bound to
-// a name and Go struct.
-type PathDSLType interface {
-	// EvalType takes an expression string and value string, 
-	// checks the expression against the value string validating
-	// based on the PathDSLType defined.
-	// If the value string is accept a normalized value string and true 
-	// are returned. If they value string does not match expr or fails
-	// type verification then an empty value string and false is return.
-	//
-	// EvalType works like a test and set.
-	EvalType(string,string) (string, bool)
-}
-
-
-// RouteDSLExpression holds the attributes need to decode
+// RouteDSL holds the attributes need to decode
 // a RouteDSL expression, match and decode against path values.
-type RouteDSLExpression struct {
+type RouteDSL struct {
 	Src  string   `json:"src"`
 	Dirs []string `json:"dirs,omitempty"`
 	Base string   `json:"base,omitempty"`
@@ -33,10 +19,12 @@ type RouteDSLExpression struct {
 	// VarToType maps the variable name to a var defn
 	VarToType map[string]string `json:"var_to_types,omitempty"`
 	// Types maps a type name to type implementation
-	Types map[string]PathDSLType `json:"-"`
+	Types map[string]string `json:"-"`
+	// Type name to function map
+	TypeFn map[string]EvalType `json:"-"`
 }
 
-func (rdsl *RouteDSLExpression) String() string {
+func (rdsl *RouteDSL) String() string {
 	src, _ := json.MarshalIndent(rdsl, "", "    ")
 	return string(src)
 }
@@ -62,8 +50,8 @@ func varDefn(src string) (string, string, error) {
 
 // NewRouteDSL takes a RouteDSL expression and returns a
 // RouteDSLExpresion structure and error value.
-func NewRouteDSL(src string) (*RouteDSLExpression, error) {
-	rdsl := new(RouteDSLExpression)
+func NewRouteDSL(src string) (*RouteDSL, error) {
+	rdsl := new(RouteDSL)
 	rdsl.Src = src
 	dir, base := path.Split(src)
 	dirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
@@ -77,14 +65,14 @@ func NewRouteDSL(src string) (*RouteDSLExpression, error) {
 		rdsl.Base = base
 		rdsl.Ext = ""
 	}
-	rdsl.VarToTypes = map[string]string{}
+	rdsl.VarToType = map[string]string{}
 
-	rdsl.TypeFn = map[string]TypeEval{}
+	rdsl.TypeFn = map[string]EvalType{}
 	for i, elem := range dirs {
 		if strings.HasPrefix(elem, "{") && strings.HasSuffix(elem, "}") {
 			varName, typeExpr, err := varDefn(elem)
 			if err == nil {
-				rdsl.VarToTypes[varName] = typeExpr
+				rdsl.VarToType[varName] = typeExpr
 			} else {
 				return nil, fmt.Errorf("(%d) %q -> %s", i, elem, err)
 			}
@@ -96,7 +84,7 @@ func NewRouteDSL(src string) (*RouteDSLExpression, error) {
 	if strings.HasPrefix(rdsl.Base, "{") && strings.HasSuffix(rdsl.Base, "}") {
 		varName, typeExpr, err := varDefn(rdsl.Base)
 		if err == nil {
-			rdsl.VarToTypes[varName] = typeExpr
+			rdsl.VarToType[varName] = typeExpr
 		} else {
 			return nil, fmt.Errorf("(basename) %q -> %s", rdsl.Base, err)
 		}
@@ -106,7 +94,7 @@ func NewRouteDSL(src string) (*RouteDSLExpression, error) {
 		if strings.HasPrefix(rdsl.Ext, "{") && strings.HasSuffix(rdsl.Ext, "}") {
 			varName, typeExpr, err := varDefn(rdsl.Ext)
 			if err == nil {
-				rdsl.VarToTypes[varName] = typeExpr
+				rdsl.VarToType[varName] = typeExpr
 			} else {
 				return nil, fmt.Errorf("(extname) %q -> %s", rdsl.Ext, err)
 			}
@@ -117,8 +105,8 @@ func NewRouteDSL(src string) (*RouteDSLExpression, error) {
 }
 
 // RegisterType maps a type name to a function. The function needs to
-// be of the form of TypeEval.
-func (rdsl *RouteDSLExpression) RegisterType(tName string, fn TypeEval) error {
+// be of the form of EvalType.
+func (rdsl *RouteDSL) RegisterType(tName string, fn EvalType) error {
 	if _, ok := rdsl.TypeFn[tName]; ok {
 		return fmt.Errorf("%q previously registered", tName)
 	}
@@ -132,16 +120,16 @@ func varName(src string) string {
 
 // evalElement takes compares a element against a value (from the path value)
 // returns a variable name, interface value and bool indicating a successful match
-func (rdsl *RouteDSLExpression) evalElement(elem string, src string) (string, interface{}, bool) {
+func (rdsl *RouteDSL) evalElement(elem string, src string) (string, interface{}, bool) {
 	// Check if we workingwith a literal element or a variable defn.
 	if strings.HasPrefix(elem, `{`) {
 		// handle variable path element
 		vName := varName(elem)
-		tExpr, ok := rdsl.VarToTypes[vName]
+		tExpr, ok := rdsl.VarToType[vName]
 		if !ok {
 			return "", nil, false
 		}
-		fn, ok := rdsl.TypeFn[tExpr]
+		_, ok = rdsl.TypeFn[tExpr]
 		if !ok {
 			return vName, nil, false
 		}
@@ -162,7 +150,7 @@ func (rdsl *RouteDSLExpression) evalElement(elem string, src string) (string, in
 
 // Eval takes a path value and compares it with a Path expression.
 // It returns a status boolean, map of variable names to values.
-func (rdsl *RouteDSLExpression) Eval(pathValue string) (map[string]interface{}, bool) {
+func (rdsl *RouteDSL) Eval(pathValue string) (map[string]interface{}, bool) {
 	dir, base := path.Split(pathValue)
 	pDirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	pExt := path.Ext(base)

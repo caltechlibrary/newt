@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -39,7 +40,7 @@ var (
 )
 
 type Route struct {
-	ReqPath        *PathDSLExpression
+	ReqPath        *RouteDSL
 	ReqMethod      string
 	ReqContentType string
 	ApiURL         string
@@ -63,6 +64,16 @@ type Router struct {
 	Routes []*Route
 }
 
+// ReadCSV filename
+func (router *Router) ReadCSV(fName string) error {
+	return fmt.Errorf("ReadCSV not limited")
+}
+
+// Handler implements the http handler used for Routing requests.
+func (router *Router) Handler(w http.ResponseWriter, req *http.Request) {
+	io.WriteString(w, "Handler not implemented yet\n\n")
+}
+
 func isHTTPMethod(s string) bool {
 	s = strings.ToUpper(s)
 	for _, method := range []string{"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"} {
@@ -79,11 +90,11 @@ func rowToRoute(rowNo int, row []string) (*Route, error) {
 		val := strings.TrimSpace(val)
 		switch coNo {
 		case reqPath:
-			pdsl, err := NewPathDSL(val)
+			rdsl, err := NewRouteDSL(val)
 			if err != nil {
 				return nil, fmt.Errorf("row %d req_path %q, %s", rowNo, val, err)
 			}
-			route.ReqPath = pdsl
+			route.ReqPath = rdsl
 		case reqMethod:
 			if !isHTTPMethod(val) {
 				return nil, fmt.Errorf("row %d req_method %q, %s", rowNo, val, "unsupport HTTP method")
@@ -171,8 +182,3 @@ func RouterFromCSV(fName string) (*Router, error) {
 	return router, nil
 }
 
-
-// Handler implements the http handler used for Routing requests.
-func Handler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Handler not implemented yet\n\n")
-}

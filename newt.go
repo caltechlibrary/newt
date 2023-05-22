@@ -6,11 +6,16 @@
 package newt
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
+	"path"
+	"strings"
+	"strconv"
 
 	// 3rd Party
 	"gopkg.in/yaml.v3"
@@ -33,18 +38,15 @@ func LoadConfig(configFName string) (*Config, error) {
 	if configFName != "" {
 		src, err := os.ReadFile(configFName)
 		if err != nil {
-			log.Printf("failed to read %q, %s", configFName, err)
-			return 1
+			return nil, fmt.Errorf("failed to read %q, %s", configFName, err)
 		}
-		if bytes.HasPrefix(src, []byte("{") {
+		if bytes.HasPrefix(src, []byte("{")) {
 			if err := json.Unmarshal(src, &cfg); err != nil {
-				log.Printf("failed JSON parse %q, %s", configFName, err)
-				return 1
+				return nil, fmt.Errorf("failed to read JSON %q, %s", configFName, err)
 			}
 		} else {
 			if err := yaml.Unmarshal(src, &cfg); err != nil {
-				log.Printf("failed YAML parse %q, %s", configFName, err)
-				return 1
+				return nil,fmt.Errorf("failed YAML parse %q, %s", configFName, err)
 			}
 		}
 	}
@@ -55,8 +57,8 @@ func LoadConfig(configFName string) (*Config, error) {
 	if cfg.Routes == "" {
 		cfg.Routes = os.Getenv("NEWT_ROUTES")
 	}
-	if cfg.Env == "" {
-		s := os.GetEnv("NEWT_ENV")
+	if len(cfg.Env) == 0 {
+		s := os.Getenv("NEWT_ENV")
 		if s != "" {
 			for _, envar := range strings.Split(s, ";") {
 				cfg.Env = append(cfg.Env, strings.TrimSpace(envar))
@@ -89,10 +91,13 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
 		return 1
 	}
 
-	router := new(RouteDSL)
-	router.LoadRoutes(cfg.Routes)
+	router := new(Router)
+	if err := router.ReadCSV(cfg.Routes); err != nil {
+		log.Printf("error reading %q, %s", cfg.Routes, err)
+		return 1
+	}
 	http.HandleFunc("/", router.Handler)
-	log.Printf("%s listening on port %s", os.Path(os.Args[0]), cfg.Port)
+	log.Printf("%s listening on port %s", path.Base(os.Args[0]), cfg.Port)
 	http.ListenAndServe(":" + cfg.Port, nil)
 	return 0
 }
