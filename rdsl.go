@@ -7,11 +7,21 @@ import (
 	"strings"
 )
 
-// TypeEval is an function that takes a type expression (everything
-// that would be int he curly braces) and a value.
-// It returns the extracted value and bool indicating
-// is the extraction was succesful.
-type TypeEval func(string, string) (interface{}, bool)
+
+// PathDSLType defines the interface for types bound to
+// a name and Go struct.
+type PathDSLType interface {
+	// EvalType takes an expression string and value string, 
+	// checks the expression against the value string validating
+	// based on the PathDSLType defined.
+	// If the value string is accept a normalized value string and true 
+	// are returned. If they value string does not match expr or fails
+	// type verification then an empty value string and false is return.
+	//
+	// EvalType works like a test and set.
+	EvalType(string,string) (string, bool)
+}
+
 
 // RouteDSLExpression holds the attributes need to decode
 // a RouteDSL expression, match and decode against path values.
@@ -20,16 +30,17 @@ type RouteDSLExpression struct {
 	Dirs []string `json:"dirs,omitempty"`
 	Base string   `json:"base,omitempty"`
 	Ext  string   `json:"ext,omitempty"`
-	// VarToTypes maps the variable name to a var defn
-	VarToTypes map[string]string `json:"var_to_types,omitempty"`
-	// TypeFn maps a type to a tpe eval func
-	TypeFn map[string]TypeEval `json:"-"`
+	// VarToType maps the variable name to a var defn
+	VarToType map[string]string `json:"var_to_types,omitempty"`
+	// Types maps a type name to type implementation
+	Types map[string]PathDSLType `json:"-"`
 }
 
 func (rdsl *RouteDSLExpression) String() string {
 	src, _ := json.MarshalIndent(rdsl, "", "    ")
 	return string(src)
 }
+
 
 // varDefn evaluates a varaible expression returning a var name,
 // type expression.
@@ -135,7 +146,7 @@ func (rdsl *RouteDSLExpression) evalElement(elem string, src string) (string, in
 			return vName, nil, false
 		}
 		// Now check the type of dDir against the type expression
-		val, ok := fn(tExpr, src)
+		val, ok := defn.EvalType(tExpr, src)
 		if !ok {
 			// Something went wrong, path does not match.
 			return "", "", false

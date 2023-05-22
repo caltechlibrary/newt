@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 
 	// Caltech Library Packages
 	"github.com/rsdoiel/newt"
@@ -13,8 +12,8 @@ import (
 
 var (
 	helpText = `---
-title: "{app_name}(1) user manual | Version {version}"
-pubDate: 2023-05-12
+title: "{app_name}(1) user manual | Version {version} {release_hash}"
+pubDate: {release_date}
 author: "R. S. Doiel"
 ---
 
@@ -77,12 +76,13 @@ pandoc-server-port = "3030"
 	showVersion bool
 )
 
-func fmtTxt(txt string, appName string, version string) string {
-	return strings.ReplaceAll(strings.ReplaceAll(txt, `{app_name}`, appName), `{version}`, version)
-}
-
 func main() {
 	appName := path.Base(os.Args[0])
+	// NOTE: The following variables are set when version.go is generated
+	version := newt.Version
+	releaseDate := newt.ReleaseDate
+	releaseHash := newt.ReleaseHash
+	fmtHelp := newt.FmtHelp
 
 	// Standard Options
 	flag.BoolVar(&showHelp, "help", false, "display help")
@@ -98,7 +98,7 @@ func main() {
 	eout := os.Stderr
 
 	if showHelp {
-		fmt.Fprintf(out, "%s\n", fmtTxt(helpText, appName, newt.Version))
+		fmt.Fprintf(out, "%s\n", fmtHelp(helpText, appName, version, releaseDate, releaseHash))
 		os.Exit(0)
 	}
 	if showLicense {
@@ -106,7 +106,7 @@ func main() {
 		os.Exit(0)
 	}
 	if showVersion {
-		fmt.Fprintf(out, "%s %s\n", appName, newt.Version)
+		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
 	os.Exit(newt.Run(in, out, eout, args))

@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="R. S. Doiel, rsdoiel@caltech.edu" />
+  <meta name="date" content="2023-07-14" />
+  <meta name="keywords" content="code4lib, meetup, Postgres, webstack, PostgREST, Pandoc" />
+  <title>Newt, assemble web applications with Pandoc, Postgres and PostgREST</title>
+  <style type="text/css">
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="https://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="https://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Newt, assemble web applications with Pandoc,
+Postgres and PostgREST</h1>
+  <p class="author">
+R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu"
+class="email">rsdoiel@caltech.edu</a>
+  </p>
+  <p class="institute">
+<p>Caltech Library, Digital Library Development</p>
+  </p>
+  <p class="date">July 14, 2023</p>
+</div>
+<div class="slide" id="TOC">
+
+</div>
+<div id="today-lamp-and-its-legacy" class="slide section level1">
+<h1>Today, LAMP and its legacy</h1>
+<p>Four example systems found in Caltech Library</p>
+<ul>
+<li>EPrints</li>
+<li>ArchivesSpace</li>
+<li>Islandora</li>
+<li>Invenio RDM</li>
+</ul>
+</div>
+<div id="required-knowledge" class="slide section level1">
+<h1>Required Knowledge</h1>
+<table>
+<thead>
+<tr class="header">
+<th align="left">App</th>
+<th>Languages</th>
+<th>Supporting services</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ArchivesSpace</td>
+<td>Java, Ruby, SQL</td>
+<td>MySQL, Solr, Apache or NginX,</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td></td>
+<td>Solr</td>
+</tr>
+<tr class="odd">
+<td align="left">EPrints</td>
+<td>Perl, SQL, XML,</td>
+<td>MySQL, Apache2 (tight integration),</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td>EPrints XML</td>
+<td>Sphynx</td>
+</tr>
+<tr class="odd">
+<td align="left">Invenio RDM</td>
+<td>Python, SQL</td>
+<td>Postgres, Redis, Elasticsearch,</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td>JavaScript/React</td>
+<td>Docker, Invenio Framework,</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td>NodeJS/NPM</td>
+<td>Python packaging system</td>
+</tr>
+<tr class="even">
+<td align="left">Islandora</td>
+<td>PHP/SQL</td>
+<td>MySQL, Fedora, Apache 2</td>
+</tr>
+</tbody>
+</table>
+<p>These are all really complicated pieces of software.</p>
+</div>
+<div id="the-problem" class="slide section level1">
+<h1>The problem</h1>
+<p>Each listed application is built on a stack. The stacks are complex.
+Because of the complexity it’s hard to sustain them. Some we’ve
+outsourced to SAAS providers (e.g. ArchivesSpace). Some we treat as a
+back boxes (e.g. EPrints). It’s just not fun supporting applications at
+this level of complexity. It takes too much time and energy. It detracts
+from delivering useful things to our Library, Archives and Caltech
+Community.</p>
+</div>
+<div id="why-are-these-things-so-complex" class="slide section level1">
+<h1>Why are these things so complex?</h1>
+<blockquote>
+<p>WARNING: gross generalizations ahead</p>
+</blockquote>
+<ul>
+<li>We want more from our application so more code gets written,
+complexity accrues over time</li>
+<li>We must build systems to scale!
+<ul>
+<li>a not so subtle influence on developer “best practices” from Silicon
+Valley</li>
+</ul></li>
+</ul>
+</div>
+<div id="lets-talk-about-scale" class="slide section level1">
+<h1>Let’s talk about scale</h1>
+<ul>
+<li>Best practice often translates to building for scale, specifically
+scaling up</li>
+<li>Scaling up =&gt; programmable infrastructure, the siren song of
+Google, AWS and Azure
+<ul>
+<li>Scaling big is hard</li>
+<li>Scaling big makes things really complex</li>
+<li>Do we ever really need to build at Google/Amazon/Azure scale?</li>
+</ul></li>
+</ul>
+</div>
+<div id="the-alternative-scale-small" class="slide section level1">
+<h1>The alternative, Scale small</h1>
+<ul>
+<li>Scaling down &lt;= pack only what you need</li>
+<li>Simplify!</li>
+</ul>
+</div>
+<div id="scaling-down" class="slide section level1">
+<h1>Scaling down</h1>
+<ul>
+<li>Limit the moving parts</li>
+<li>Limit the cognitive shifts</li>
+<li>Minimize the toolbox while maximizing how you use it</li>
+<li>Write less code! But remain readable!</li>
+</ul>
+</div>
+<div id="how-minimal-can-we-go" class="slide section level1">
+<h1>How minimal can we go?</h1>
+<ul>
+<li>Off the self microservices</li>
+<li>Build with SQL and Pandoc</li>
+</ul>
+</div>
+<div id="can-you-make-web-applications-using-only-sql-and-pandoc"
+class="slide section level1">
+<h1>Can you make web applications using only SQL and Pandoc?</h1>
+<p>Just about. Here’s the off the shelf microservices I am experimenting
+with</p>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a></li>
+<li><a href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://pandoc.org">Pandoc</a></li>
+<li><a href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+</ul>
+</div>
+<div id="a-clear-division-of-labor" class="slide section level1">
+<h1>A clear division of labor</h1>
+<p>Simplify through a clear division of labor.</p>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a> =&gt; JSON data API</li>
+<li><a href="https://pandoc.org">Pandoc</a> =&gt; Powerful template
+engine</li>
+<li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
+data router</li>
+</ul>
+</div>
+<div id="how-would-this-work-in-practice" class="slide section level1">
+<h1>How would this work in practice?</h1>
+<dl>
+<dt>Think of a game of telephone</dt>
+<dd>
+web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; Newt =&gt; web
+browser
+</dd>
+</dl>
+<p>Except without the data loss.</p>
+</div>
+<div id="how-would-this-work-in-practice-1"
+class="slide section level1">
+<h1>How would this work in practice?</h1>
+<ol style="list-style-type: decimal">
+<li>Model our data using SQL (Postgres)</li>
+<li>Define our JSON data API using SQL (Postgres+PostgREST)</li>
+<li>Transform our structured data using Pandoc</li>
+<li>Use Newt to orchestrate</li>
+</ol>
+</div>
+<div id="required-toolbox" class="slide section level1">
+<h1>Required Toolbox</h1>
+<ul>
+<li>Text editor</li>
+<li>Spreadsheet (optional)</li>
+<li>Web browser</li>
+<li>Pandoc</li>
+<li>Postgres + PostgREST</li>
+<li>Newt</li>
+</ul>
+</div>
+<div id="server-side-knowledge-requirements"
+class="slide section level1">
+<h1>Server side knowledge requirements</h1>
+<ul>
+<li>SQL</li>
+<li>Pandoc templates</li>
+<li>CSV describing data flow through our microservices</li>
+</ul>
+</div>
+<div id="web-browser-knowledge-requirements"
+class="slide section level1">
+<h1>Web browser knowledge requirements</h1>
+<ul>
+<li>HTML</li>
+<li>CSS (optional)</li>
+<li>JavaScript (optional)</li>
+</ul>
+</div>
+<div id="what-does-this-enable" class="slide section level1">
+<h1>What does this enable?</h1>
+<p>We can create interactive applications with some SQL, Pandoc
+templates and a little routing.</p>
+</div>
+<div id="but-why-sql" class="slide section level1">
+<h1>But why SQL?</h1>
+<p>SQL is really good at describing structured data. It also is good at
+expressing queries. With a little deeper knowledge of SQL you can also
+define data views, functions and your own procedures. With Postgres +
+PostgREST these provide everything you need in a JSON data API short of
+file upload. SQL does allot of lifting with a little code and usually
+remains readable.</p>
+<blockquote>
+<p>Minimize the source Luke!</p>
+</blockquote>
+<p>You don’t need to design classes in your favorite programming
+languages then write Schema in SQL. You don’t need to learn an ORM. You
+don’t duplicate the code in the database, again in the middle-ware and
+increasingly often in the browser. Data models are defined in one place,
+Postgres. PostgREST takes care of turning them into a JSON data API.
+Data transformation is handle by Pandoc. Newt provides <strong>just
+enough orchestration</strong> based on route definitions contained in a
+CSV file.</p>
+</div>
+<div id="fewer-cognitive-shifts" class="slide section level1">
+<h1>Fewer cognitive shifts</h1>
+<ul>
+<li>SQL (Postgres dialect)</li>
+<li>JSON</li>
+<li>Pandoc templates</li>
+<li>Describing data flow in a CSV file using a simple notation</li>
+</ul>
+<dl>
+<dt>data flow</dt>
+<dd>
+web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; Newt =&gt; web
+browser
+</dd>
+</dl>
+</div>
+<div id="helpful-to-know" class="slide section level1">
+<h1>helpful to know</h1>
+<ul>
+<li>HTML 5 related W3C technologies
+<ul>
+<li>HTML 5 markup</li>
+<li>CSS</li>
+<li>JavaScript</li>
+</ul></li>
+<li>Understand how HTTP works, including HTTP methods and Headers</li>
+<li>How to handle static file assets, e.g. image and video files</li>
+</ul>
+</div>
+<div id="but-is-this-really-simpler" class="slide section level1">
+<h1>But is this really simpler?</h1>
+</div>
+<div id="what-was-needed-for-each-version-of-birds"
+class="slide section level1">
+<h1>What was needed for each version of birds?</h1>
+<p>Let’s take a look at three versions of a bird sighting website.</p>
+<ul>
+<li><a href="birds1/">birds 1</a>, a static site implementation</li>
+<li><a href="birds2/">birds 2</a>, a dynamic site implementation,
+content viewing requires browser JavaScript</li>
+<li><a href="birds3/">birds 3</a>, a dynamic site implementation, does
+not require browser JavaScript</li>
+</ul>
+</div>
+<div id="different-birds" class="slide section level1">
+<h1>Different birds</h1>
+<h2 id="birds-1-static-site-read-only"><a href="birds1/">birds 1</a>
+static site (read only)</h2>
+<ul>
+<li>Built with Pandoc from Markdown and CSV file</li>
+<li>Adds bird sightings via updating a CSV file and rebuilding site with
+Pandoc</li>
+</ul>
+</div>
+<div id="different-birds-1" class="slide section level1">
+<h1>Different birds</h1>
+<h2 id="birds-2-dynamic-site-readwrite"><a href="birds2/">birds 2</a>,
+dynamic site (read/write)</h2>
+<ul>
+<li>Built with SQL using Postgres + PostgREST</li>
+<li>Add birds you using a web form</li>
+<li>Requires the web browser to assemble pages via API calls</li>
+<li>JavaScript becomes complex between fetching data and inserting it
+into the page</li>
+<li>Doesn’t work in text only web browsers like Lynx</li>
+</ul>
+</div>
+<div id="different-birds-2" class="slide section level1">
+<h1>Different birds</h1>
+<h2 id="birds-3-dynamic-site-readwrite"><a href="birds3/">birds 3</a>,
+dynamic site (read/write)</h2>
+<ul>
+<li>Build from SQL (Postgres + PostgREST) and Pandoc</li>
+<li>Add birds you using a web form</li>
+<li>Rendered on server and no longer requires JavaScript</li>
+<li>Works even in text web browsers like Lynx</li>
+</ul>
+</div>
+<div id="different-birds-3" class="slide section level1">
+<h1>Different birds</h1>
+<h2 id="pros-and-cons">Pros and cons</h2>
+<table>
+<thead>
+<tr class="header">
+<th>version</th>
+<th>site type</th>
+<th>pros/cons</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>birds 1</td>
+<td>static</td>
+<td>easy to conceptualize / read only</td>
+</tr>
+<tr class="even">
+<td>birds 2</td>
+<td>dynamic</td>
+<td>read write site / requires browser</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>JavaScript, JavaScript is complex</td>
+</tr>
+<tr class="even">
+<td>birds 3</td>
+<td>dynamic</td>
+<td>read write site, easy to conceptualize</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>/ requires SQL and knowledge of Pandoc</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="birds-3-postgrespostgrest-pandoc-and-newt"
+class="slide section level1">
+<h1>Birds 3 =&gt; Postgres+PostgREST, Pandoc and Newt</h1>
+<blockquote>
+<p>The complicated activities are handled by the off the self
+microservices. The remaining complexity is limited to SQL to model data
+and our Pandoc templates.</p>
+</blockquote>
+<ul>
+<li>Avoids browser side page assembly</li>
+<li>Leverages our Pandoc knowledge</li>
+<li>Data is modeled using SQL</li>
+</ul>
+</div>
+<div id="newt-manages-data-flow" class="slide section level1">
+<h1>Newt manages data flow</h1>
+<ul>
+<li>request =&gt; data API =&gt; Pandoc =&gt; response</li>
+<li>Newt’s routes can be managed in spreadsheet!</li>
+</ul>
+</div>
+<div id="developer-workflow" class="slide section level1">
+<h1>Developer workflow</h1>
+<ol style="list-style-type: decimal">
+<li>Model data in Postgres</li>
+<li>Create/edit Pandoc templates</li>
+<li>Create/edit routes CSV file in a spreadsheet</li>
+<li>(Re)start Newt and PostgREST to (re)load models and routes</li>
+</ol>
+<p><strong>Repeat as needed</strong></p>
+</div>
+<div id="minimizing-newness" class="slide section level1">
+<h1>Minimizing newness</h1>
+<ul>
+<li>If you’ve attended a data science workshop you are likely know
+enough SQL</li>
+<li>If you’ve built a static website with Pandoc you know how Pandoc
+works</li>
+<li>I think there is community that knows some SQL, CSV files and knows
+Pandoc</li>
+</ul>
+<p>=&gt; Is this useful for Libraries, Archives and Museums?</p>
+</div>
+<div id="evaluating-postgrespostgrest-pandoc-and-newt"
+class="slide section level1">
+<h1>Evaluating Postgres+PostgREST, Pandoc and Newt</h1>
+<ul>
+<li>Weaknesses
+<ul>
+<li>Newt is limited (doesn’t support file uploads)</li>
+<li>PostgREST is new to me (and probably others)</li>
+<li>SQL and HTML have a learning curve</li>
+</ul></li>
+<li>Strengths
+<ul>
+<li>SQL is proven and likely to be around a very long time</li>
+<li>HTML is proven and likely to be around a very long time</li>
+<li>Postgres and Pandoc are very mature software</li>
+<li>PostgREST and Newt are useful today and worth exploring</li>
+</ul></li>
+</ul>
+</div>
+<div id="next-steps-for-newt" class="slide section level1">
+<h1>Next steps for Newt?</h1>
+<ul>
+<li>Newt is an experiment, I am building some staff applications
+Summer/Fall 2023</li>
+<li>Solr/Opensearch should work with Pandoc and Newt, seems
+promising</li>
+</ul>
+<h2 id="someday-maybe">someday, maybe</h2>
+<ul>
+<li>It’d be nice if Newt could send file uploads to a service like S3
+(via Minio?)</li>
+<li>It might be nice if Newt could function as a static file server</li>
+</ul>
+</div>
+<div id="thank-you" class="slide section level1">
+<h1>Thank you!</h1>
+<ul>
+<li>Presentation <a
+href="https://caltechlibrary.github.io/newt/presentation/"
+class="uri">https://caltechlibrary.github.io/newt/presentation/</a></li>
+<li>Project: <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Email: rsdoiel@caltech.edu</li>
+</ul>
+</div>
+</body>
+</html>

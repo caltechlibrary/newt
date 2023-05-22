@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1
+id="building-a-web-application-using-sql-static-html-and-javascript">Building
+a web application using SQL, static HTML and JavaScript</h1>
+<p>Caltech Library recently started using Postgres for our SQL based
+applications. I stumbled upon an application called PostgREST. PostgREST
+provides a JSON API (aka micro service) for Postgres databases. It does
+this because PostgREST understands Postgres schema including tables,
+views, functions and procedures. I used to write a fair amount of code
+in Go or Python to build a JSON API wrapping a SQL database. I now use
+PostgREST and skip writing wrapper code completely.</p>
+<p>In this presentation I will introduce PostgREST through building an
+application using SQL, static HTML and browser side JavaScript. The
+infrastructure is provided via Postgres, PostgREST and a static web
+server of your choice. This approach fits well in the academic setting
+where we often build applications that integrate with single sign-on
+systems like Shibboleth via a front-end web service like Apache 2 or
+NginX. Postgres+PostgREST also plays nice with container style
+development as well.</p>
+<p>Included will be an exploration of how Postgres+PostgREST provides
+rich opportunities for “development on the edges” for existing
+applications built on Postgres such as Invenio RDM.</p>
+<p>With just a little SQL, a little HTML and some JavaScript you’re on
+your way to building micro service based on web applications and
+services.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

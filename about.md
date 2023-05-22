@@ -8,7 +8,7 @@ using Postgres, PostgREST, a URL router and front end web server."
 authors:
   - family-names: Doiel
     given-names: R. S.
-    orcid: ""
+    orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/rsdoiel/newt"
 version: 0.0.1
@@ -50,7 +50,7 @@ Postgres, PostgREST, a URL router and front end web server.
 
 ### Software Requiremets
 
-- Postgres \>= 15
-- PostgREST \>= 11
-- Pandoc \>= 3
+- Postgres &gt;= 15
+- PostgREST &gt;= 11
+- Pandoc &gt;= 3
 - A front end web server supporting reverse proxy (e.g. Apache2, NginX)

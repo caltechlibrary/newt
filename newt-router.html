@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-url-router">Newt URL Router</h1>
+<p>To extend the Postgres+PostgREST to support server side web page
+assembly with Pandoc server we need to be able to map a requested URL
+path to both PostgREST for content and a template for processing the
+data with Pandoc server before returning an assembled webpage to the
+front end web server. What information is needed to define this
+behavior?</p>
+<ol type="1">
+<li>request information</li>
+<li>PostgREST API request information</li>
+<li>Pandoc URL and template data</li>
+</ol>
+<p>I think of this as</p>
+<ul>
+<li>request
+<ul>
+<li>request route</li>
+<li>request HTTP method</li>
+<li>request content type</li>
+</ul></li>
+<li>data api
+<ul>
+<li>api url</li>
+<li>api HTTP method</li>
+<li>api content type</li>
+</ul></li>
+<li>pandoc request
+<ul>
+<li>pandoc port number</li>
+<li>pandoc server query string (to set pandoc options)</li>
+<li>pandoc template name</li>
+</ul></li>
+</ul>
+<p>This can be easily represented in a table (e.g. a CSV file) and
+managed from a spreadsheet. Here’s the columns need in a csv file.</p>
+<pre class="csv"><code>req_route, req_method, req_content_type, api_url, api_method, api_content_type, pandoc_port, pandoc_query_string, pandoc_template</code></pre>
+<p>Newt itself needs to know four things to run.</p>
+<ol type="1">
+<li>url to listen on (e.g. http://localhost:4242)</li>
+<li>path to CSV file with routes</li>
+<li>path to the directory for static content</li>
+<li>The names of environment varaibles to store things like PostgREST
+user and password information when forming a URL for a data API
+request</li>
+</ol>
+<h2 id="what-is-a-request-route">What is a request route?</h2>
+<p>A route is a URL path similar to a Unix file path. It main be an
+explicit route or one that describes an expression expressed in a <a
+href="pathdsl.html" title="path domain specific language">PathDSL</a>.
+The PathDSL enables a request route to be parsed and transformed into a
+data API request and Pandoc template.</p>
+<pre><code>/about.html
+/blog/{year year}/{month month}/{day day}/</code></pre>
+<p>Routes can contain variables that are re-used in forming a data API
+request or used by Pandoc server if that is defined for the route.</p>
+<h2 id="what-does-a-data-api-url-look-like">What does a data API URL
+look like?</h2>
+<p>While Newt is inspired by Postges+PostgREST microservice it can work
+with any data source that can be reached by a URL (e.g. Opensearch). The
+data API URL can be composed as a literal string from the variables
+captured in the request route. It can also include variables defined in
+the environment (e.g. so you don’t have to hardcore a username, password
+combination in your routes CSV file).</p>
+<p>Here’s an example of a data URL that uses the route information from
+our “blog” path as well as two variables defined in the environment
+(i.e. DB_USER, DB_PASSWD).</p>
+<pre><code>http://{DB_USER}:{DB_PASSWD}@localhost:3000/blog?year={year}&amp;month={month}&amp;day={day}</code></pre>
+<p>In the template values for “{year}”, “{month}”, “{day}” came from our
+request route while “{DB_USER}” and “{DB_PASSWD}” came from the
+environment.</p>
+<h2 id="the-routes-csv-columns-defined">The routes CSV columns
+defined</h2>
+<p>api_url, api_method, api_content_type, pandoc_port,
+pandoc_query_string, pandoc_template</p>
+<dl>
+<dt>req_route</dt>
+<dd>
+route description (see <a href="pathdsl.html">Path DSL concept</a>)
+</dd>
+<dt>req_method</dt>
+<dd>
+required HTTP method (e.g. GET, POST, HEAD, PATCH, PUT)
+</dd>
+<dt>req_content_type</dt>
+<dd>
+requested content type (e.g. “text/html”)
+</dd>
+<dt>api_url</dt>
+<dd>
+the URL template used to contact a data API, e.g. PostgREST API or other
+services like Solr or Elasticsearch
+</dd>
+<dt>api_method</dt>
+<dd>
+the HTTP method used when contacting the data source
+</dd>
+<dt>api_content_type</dt>
+<dd>
+the mime type requested from the data source (e.g. “applicaiton/json”)
+</dd>
+<dt>pandoc_port</dt>
+<dd>
+the port number the Pandoc server is running on
+</dd>
+<dt>pandoc_query_string</dt>
+<dd>
+this is the query string (e.g. <code>from=json&amp;to=markdown</code>)
+used by the Pandoc server to process the request
+</dd>
+<dt>pandoc_template</dt>
+<dd>
+the filename that will be loaded at start up of Newt and sent with the
+Pandoc service request for Pandoc to process
+</dd>
+<dt>resp_headers</dt>
+<dd>
+(optional) additional response headers returned to by Newt based on the
+output data. These are expression as a JSON object
+(e.g. `{“Content-Type”: “text/plain”})
+</dd>
+</dl>
+<p>These fields are represented as a row in a table. In the Newt
+prototype these are included in a CSV file. Concievable other sources
+could be used like a SQL table or Excel file.</p>
+<h2 id="newt-prototype-behavior">Newt prototype behavior</h2>
+<p>When Newt router starts up it reads a configuration file, it then
+reads the routes CSV file indicated in the configuration. It remembers
+any additional enviroment variables indicated in the configuration. When
+that is done it starts listening for requests.</p>
+<h2 id="misc">Misc</h2>
+<p>The Newt prototype does not directly provide a static file service
+but another microservice could provide that assuming the URL request
+maps to a route that defines that behavior.</p>
+<p>If a requested route is not defined in our table then a 404 is
+returned.</p>
+<p>The Newt router only supports http and runs on localhost. This is the
+same approach taken by Pandoc server.</p>
+<p>The prototype does not support file uploads. That’s something that
+could be added in the future should this experiment work out.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

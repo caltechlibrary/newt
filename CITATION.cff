@@ -7,7 +7,7 @@ using Postgres, PostgREST, a URL router and front end web server."
 authors:
   - family-names: Doiel
     given-names: R. S.
-    orcid: ""
+    orcid: "https://orcid.org/0000-0003-0900-6903"
 
 
 
