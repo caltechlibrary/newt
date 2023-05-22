@@ -23,18 +23,17 @@
 <section>
 <h1 id="multipass-basics">Multipass basics</h1>
 <p>Multipass is a Ubuntu specific VM manager making it easy to develop
-applications targetting Ubuntu Server and Desktop environments. It is
-available on Linux, MacOS and Windows. See <a
+applications targeting Ubuntu Server and Desktop environments. It is
+available on Linux, macOS and Windows. See <a
 href="https://multipass.run">multipass.run</a> for installation
 instructions.</p>
 <h2 id="basic-commands">Basic commands</h2>
-<p>The <a
-href="https://github.com/caltechlibrary/newstack-demo">newstack-demo</a>
-provides a <a href="">newstack-init.yaml</a> to setup a Multipass
-environment for exploring a web appllication approach focusing on SQL,
+<p>The <a href="https://github.com/caltechlibrary/newt">newt-demo</a>
+provides a <a href="">newt-init.yaml</a> to setup a Multipass
+environment for exploring a web application approach focusing on SQL,
 HTML, JavaScript using PostgreSQL 15, PostgREST 11 and a front end web
 server.</p>
-<p>Creating our developmenet VM.</p>
+<p>Creating our development VM.</p>
 <pre><code>multipass launch --name newstack --cloud-init newstack-init.yaml</code></pre>
 <p>Seeing if our VM is running</p>
 <pre><code>multipass list</code></pre>

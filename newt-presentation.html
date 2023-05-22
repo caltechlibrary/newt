@@ -147,7 +147,7 @@ with</p>
 <p>Simplify through a clear division of labor.</p>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a> =&gt; JSON DATA API</li>
+href="https://postgrest.org">PostgREST</a> =&gt; JSON data API</li>
 <li><a href="https://pandoc.org">Pandoc</a> =&gt; Powerful template
 engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
@@ -167,7 +167,7 @@ browser
 practice?</h1>
 <ol type="1">
 <li>Model our data using SQL (Postgres)</li>
-<li>Define our JSON API using SQL (Postgres+PostgREST)</li>
+<li>Define our JSON data API using SQL (Postgres+PostgREST)</li>
 <li>Transform our structured data using Pandoc</li>
 <li>Use Newt to orchestrate</li>
 </ol>
@@ -185,7 +185,7 @@ requirements</h1>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
-<li>CSV file describing data flowing through the microservices</li>
+<li>CSV describing data flow through our microservices</li>
 </ul>
 <h1 id="web-browser-knowledge-requirements">Web browser knowledge
 requirements</h1>
@@ -197,7 +197,7 @@ requirements</h1>
 <h1 id="what-does-this-enable">What does this enable?</h1>
 <p>We can create interactive applications with some SQL, Pandoc
 templates and a little routing.</p>
-<h1 id="why-sql">Why SQL?</h1>
+<h1 id="but-why-sql">But why SQL?</h1>
 <p>SQL is really good at describing structured data. It also is good at
 expressing queries. With a little deeper knowledge of SQL you can also
 define data views, functions and your own procedures. With Postgres +
@@ -208,13 +208,13 @@ remains readable.</p>
 <p>Minimize the source Luke!</p>
 </blockquote>
 <p>You don’t need to design classes in your favorite programming
-languages and Schema in SQL. You don’t need to learn an ORM. You don’t
-duplicate the code in the database, again in the middle-ware and
+languages then write Schema in SQL. You don’t need to learn an ORM. You
+don’t duplicate the code in the database, again in the middle-ware and
 increasingly often in the browser. Data models are defined in one place,
 Postgres. PostgREST takes care of turning them into a JSON data API.
-Data transformation is handle by Pandoc. A program really good at
-translating things. Newt provides just enough orchestration based on
-defining some routes in a CSV file.</p>
+Data transformation is handle by Pandoc. Newt provides <strong>just
+enough orchestration</strong> based on route definitions contained in a
+CSV file.</p>
 <h1 id="fewer-cognitive-shifts">Fewer cognitive shifts</h1>
 <ul>
 <li>SQL (Postgres dialect)</li>

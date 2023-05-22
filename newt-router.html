@@ -24,16 +24,14 @@
 <h1 id="newt-url-router">Newt URL Router</h1>
 <p>To extend the Postgres+PostgREST to support server side web page
 assembly with Pandoc server we need to be able to map a requested URL
-path to both PostgREST for content and a template for processing the
-data with Pandoc server before returning an assembled webpage to the
-front end web server. What information is needed to define this
-behavior?</p>
+path to both PostgREST and Pandoc server. The information required for
+this is what I am exploring in this document.</p>
 <ol type="1">
 <li>request information</li>
 <li>PostgREST API request information</li>
 <li>Pandoc URL and template data</li>
 </ol>
-<p>I think of this as</p>
+<p>I conceptualize this with the following.</p>
 <ul>
 <li>request
 <ul>
@@ -111,7 +109,7 @@ requested content type (e.g. “text/html”)
 <dt>api_url</dt>
 <dd>
 the URL template used to contact a data API, e.g. PostgREST API or other
-services like Solr or Elasticsearch
+services like Solr or Opensearch
 </dd>
 <dt>api_method</dt>
 <dd>
@@ -149,17 +147,22 @@ could be used like a SQL table or Excel file.</p>
 <p>When Newt router starts up it reads a configuration file, it then
 reads the routes CSV file indicated in the configuration. It remembers
 any additional enviroment variables indicated in the configuration. When
-that is done it starts listening for requests.</p>
+that is done it starts listening for requests and performs the routing
+dance of rejecting the request for undefind or invalid routes or
+contacting the JSON data API and if needed Pandoc server for processing
+the request.</p>
 <h2 id="misc">Misc</h2>
-<p>The Newt prototype does not directly provide a static file service
-but another microservice could provide that assuming the URL request
-maps to a route that defines that behavior.</p>
 <p>If a requested route is not defined in our table then a 404 is
-returned.</p>
-<p>The Newt router only supports http and runs on localhost. This is the
-same approach taken by Pandoc server.</p>
+returned. If the request is otherwise invalid based on what the router
+knows about the request then a suitable HTTP error should be returned
+(e.g. The URL might be defined but the HTTP method might not match).</p>
+<p>The Newt router will only support http and run on localhost. This is
+the same approach taken by Pandoc server. It minimize configuration and
+also discorages use as a front end service (which is beyond the scope of
+this project).</p>
 <p>The prototype does not support file uploads. That’s something that
-could be added in the future should this experiment work out.</p>
+could be added in the future and would probably function by pass data
+through to anther service like MinIO or S3.</p>
 </section>
 
 <footer>
