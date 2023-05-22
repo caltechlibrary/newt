@@ -170,3 +170,9 @@ func RouterFromCSV(fName string) (*Router, error) {
 	}
 	return router, nil
 }
+
+
+// Handler implements the http handler used for Routing requests.
+func Handler(w http.ResponseWriter, req *http.Request) {
+	io.WriteString(w, "Handler not implemented yet\n\n")
+}
