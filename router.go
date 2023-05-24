@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
+	//"net/url"
 	"os"
 	"strings"
 )
@@ -18,7 +18,7 @@ const (
 	apiURL
 	apiMethod
 	apiContentType
-	pandocPort
+	pandoc
 	pandocOptions
 	pandocTemplate
 	resHeaders
@@ -32,31 +32,43 @@ var (
 		"api_url",
 		"api_method",
 		"api_content_type",
-		"pandoc_port",
+		"pandoc",
 		"pandoc_options",
 		"pandoc_template",
 		"res_headers",
 	}
 )
 
+// Route describes an individual route, maps to the columns of
+// a route CSV file.
 type Route struct {
+	// ReqPath, a path described by RouteDSL from a browser or front end web server
 	ReqPath        *RouteDSL
+	// ReqMethod, the request HTTP method (e.g. GET, POST, PUT, DELETE, PATCH, HEAD)
 	ReqMethod      string
+	// ReqContentType, content of request, e.g. text/html, application/json
 	ReqContentType string
+	// ApiURL is the URL used to contact the data source (e.g. PostgREST, Solr, Elasticsearch)
 	ApiURL         string
+	// ApiMethod indicates the HTTP method to be used to contact the data source api
 	ApiMethod      string
+	// ApiContentType is the content type to be used to contact the data source api
 	ApiContentType string
-	PandocPort     string
+	// Pandoc if true route the data source content through Pandoc server
+	Pandoc         bool
+	// PandocOptions is a URL query string to pass to the Pandoc server
 	PandocOptions  string
-	PandocTemplate string
+	// PandocTemplate holds the source to a Pandoc template
+	PandocTemplate []byte
+	// ResHeaders holds any additional response headers to send back to the 
+	// browser or front end web server
 	ResHeaders     map[string]string
 }
 
-/*FIXME:
-func (route *Route) ResolveApiURL() (string , error) {
-	return route.ReqPath.Resolve(route.ApiURL)
+func (route *Route) String() string {
+	src, _ := json.MarshalIndent(route, "", "    ")
+	return fmt.Sprintf("%s", src)
 }
-*/
 
 
 type Router struct {
@@ -64,9 +76,82 @@ type Router struct {
 	Routes []*Route
 }
 
+
 // ReadCSV filename
 func (router *Router) ReadCSV(fName string) error {
-	return fmt.Errorf("ReadCSV not limited")
+	in, err := os.Open(fName) 
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	r := csv.NewReader(in)
+	rowNo := 1
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("%q line %d: %s", fName, rowNo, err)
+		}
+		if rowNo == 1 {
+			if len(record) < len(routerColumns) {
+				return fmt.Errorf("missing columns %q, line %d", fName, rowNo)
+			}
+			for i, k := range routerColumns {
+				if record[i] != k {
+					return fmt.Errorf("invalid column name (%d), expected %q got %q", i, k, record[i])
+				}
+			}
+		} else {
+			if len(record) < len(routerColumns) {
+				return fmt.Errorf("missing columns for routes line %d in %q", rowNo, fName)
+			} 
+			var err error
+			route := new(Route)
+			route.ReqPath, err = NewRouteDSL(record[reqPath])
+			if err != nil {
+				return fmt.Errorf("req_path error, line %d in %q, %s", rowNo, fName, err)
+			}
+			// FIXME: validate method
+			route.ReqMethod  = record[reqMethod]
+			// FIXME: validate content type
+			route.ReqContentType = record[reqContentType]
+			// FIXME: need to make sure this make sense
+			route.ApiURL = record[apiURL]
+			// FIXME: validate method
+			route.ApiMethod = record[apiMethod]
+			// FIXME: validate content type
+			route.ApiContentType = record[apiContentType]
+			// FIXME: make sure this is a port number
+			if (strings.ToLower(record[pandoc]) == "true") || (record[pandoc] == "1") {
+				route.Pandoc = true
+			} else {
+				route.Pandoc = false
+			}
+			// FIXME: make sure this is formed as a query string
+			route.PandocOptions = record[pandocOptions]
+			// FIXME: validate template name, save template source
+			templateName := record[pandocTemplate]
+			if templateName != "" {
+				route.PandocTemplate, err = os.ReadFile(templateName)
+				if err != nil {
+					return fmt.Errorf("failed to load template %q, line %d in %q, %s",  templateName, rowNo, fName, err)
+				}
+			}
+			if record[resHeaders] != "" {
+				headers := map[string]string{}
+				if err := json.Unmarshal([]byte(record[resHeaders]), &headers); err != nil {
+					return fmt.Errorf("failed to parse JSON expression for headers, line %d in %q, %s", rowNo, fName, err)
+				}
+				route.ResHeaders = headers
+			}
+			fmt.Fprintf(os.Stderr, "DEBUG adding route %s\n", route.String())
+			router.Routes = append(router.Routes, route)
+		}
+		rowNo++
+	}
+	return nil
 }
 
 // Handler implements the http handler used for Routing requests.
@@ -84,101 +169,4 @@ func isHTTPMethod(s string) bool {
 	return false
 }
 
-func rowToRoute(rowNo int, row []string) (*Route, error) {
-	route := new(Route)
-	for coNo, val := range row {
-		val := strings.TrimSpace(val)
-		switch coNo {
-		case reqPath:
-			rdsl, err := NewRouteDSL(val)
-			if err != nil {
-				return nil, fmt.Errorf("row %d req_path %q, %s", rowNo, val, err)
-			}
-			route.ReqPath = rdsl
-		case reqMethod:
-			if !isHTTPMethod(val) {
-				return nil, fmt.Errorf("row %d req_method %q, %s", rowNo, val, "unsupport HTTP method")
-			}
-			route.ReqMethod = strings.ToUpper(val)
-		case reqContentType:
-			route.ReqContentType = val
-		case apiURL:
-			_, err := url.Parse(strings.ReplaceAll(strings.ReplaceAll(val, "{", ""), "}", ""))
-			if err != nil {
-				return nil, fmt.Errorf("row %d api_url %q, %s", rowNo, val, err)
-			}
-			route.ApiURL = val
-		case apiMethod:
-			if !isHTTPMethod(val) {
-				return nil, fmt.Errorf("row %d api_method %q, %s", rowNo, val, "unsupport HTTP method")
-			}
-			route.ApiMethod = val
-		case apiContentType:
-			route.ApiContentType = val
-		case pandocPort:
-			route.PandocPort = strings.TrimPrefix(val, ":")
-		case pandocOptions:
-			route.PandocOptions = val
-		case pandocTemplate:
-			if val != "" {
-				data, err := os.ReadFile(val)
-				if err != nil {
-					return nil, fmt.Errorf("row %d, template %q, %s", rowNo, val, err)
-				}
-				route.PandocTemplate = fmt.Sprintf("%s", data)
-			}
-		case resHeaders:
-			if val != "" {
-				m := map[string]string{}
-				if err := json.Unmarshal([]byte(val), &m); err != nil {
-					return nil, fmt.Errorf("row %d, res_headers %q, %s", rowNo, val, err)
-				}
-				route.ResHeaders = m
-			}
-		}
-	}
-	return route, nil
-}
-
-func RouterFromCSV(fName string) (*Router, error) {
-	in, err := os.Open(fName)
-	if err != nil {
-		return nil, err
-	}
-	defer in.Close()
-
-	router := new(Router)
-	r := csv.NewReader(in)
-	rowNo := 0
-	for {
-		row, err := r.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, fmt.Errorf("row %d: %s", rowNo+1, err)
-		}
-		if rowNo == 0 {
-			// Verify column names
-			if len(row) < len(routerColumns) {
-				return nil, fmt.Errorf("missing column names")
-			}
-			for i, colName := range routerColumns {
-				if strings.Compare(colName, row[i]) != 0 {
-					return nil, fmt.Errorf("expected column %q, got %q", colName, row[i])
-				}
-			}
-		} else {
-			route, err := rowToRoute(rowNo, row)
-			if err != nil {
-				return nil, err
-			}
-			if route.ReqPath != nil {
-				router.Routes = append(router.Routes, route)
-			}
-		}
-		rowNo++
-	}
-	return router, nil
-}
 

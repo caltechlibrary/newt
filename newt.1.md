@@ -1,6 +1,6 @@
 ---
-title: "newt(1) user manual | Version 0.0.1 6546601"
-pubDate: 2023-05-20
+title: "newt(1) user manual | Version 0.0.1 5b02491"
+pubDate: 2023-05-24
 author: "R. S. Doiel"
 ---
 
@@ -16,17 +16,17 @@ newt [CONFIG_FILE]
 
 *newt* is a microservice designed to work along side Postgres,
 PostgREST, and Pandoc server. It provides URL routing and data flow
-between the microserves based on a simple configuration table holding
-routing information. It is part of the Newt Project which is exploring
+between the microservices based on a list of "routes" described in a
+CSV file.  newt is part of the Newt Project which is exploring
 building web services, applications and sites using SQL for data modeling
 and define back-end service behaviors along with Pandoc templates used to
 generate HTML consumed by the web browser.  newt supports data
-hosted in Postgres databases via PostgREST JSON data API as well as static
+hosted in Postgres databases via PostgREST JSON API as well as static
 files contained in an "htdocs" directory (e.g. HTML, CSS, JavaScript,
 and image assets). 
 
-This goel of Newt project is to be able to assemble an entire backend
-from off the self services only requiring data modeling and route
+This goal of Newt Project is to be able to assemble an entire backend
+from off the self services only requiring data modeling and end point
 definitions using SQL and a Postgres database. Reducing the back-end
 to SQL may simplify application management (it reduces it to a
 database administrator activity) and free up developer time to focus
@@ -36,24 +36,53 @@ a more consistent and reliable back-end.
 
 # CONFIGURATION
 
-newt can be configured through the environment or through
-a PostgREST is configuration file. It adds only an optional
-uri for the Pandoc server (if used) when it runs on a non-standard
-port.
+The three things newt needs to know to run are port number,
+where to find the "routes" CSV file and a list of any POSIX environment
+variables to import and make available inside the router.
+
+{app_mame} can be configured via a POSIX environment.
 
 ~~~
-db-uri = "postgres://birds:my_secret_password@localhost:5432/birds"
-db-schemas = "birds"
-db-anon-role = "birds_anonymous"
-# This is used by Newt to know where to find the Pandoc server
-# on localhost.
-pandoc-server-port = "3030"
+NEWT_PORT="3030"
+NEWT_ROUTES="routes.csv"
+NEWT_ENV="DB_USER;DB_PASSWORD"
+export NEWT_PORT
+export NEWT_ROUTES
+export NEWT_ENV
 ~~~
 
-# EXAMPLE
+It can also be configured using a configuration file.
+
 
 ~~~
-	newt postgrest.conf
+newt_port = "3030"
+newt_routes = "routes.csv"
+newt_env = [ "DB_USER", "DB_PASSWORD" ]
+~~~
+
+
+The environment will load first then the configuration file if
+provided. The configuration file takes presidence to the environment.
+
+newt does not have secrets but could use secrets passed
+in via the environment. This allows your routes CSV file to be safely
+saved along side your SQL source code for your Newt Project.
+
+# EXAMPLES
+
+Configuration from the environment
+
+~~~
+	export NEWT_PORT="3030"
+	export NEWT_ROUTES="routes.csv"
+	export NEWT_ENV="DB_USER;DB_PASSWORD"
+	newt
+~~~
+
+Configuration from a YAML file called "newt.yaml"
+
+~~~
+newt newt.yaml
 ~~~
 
 

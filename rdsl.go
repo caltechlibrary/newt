@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+const (
+	StartVar = "{{"
+	EndVar = "}}"
+)
+
 type EvalType func (string, string) (string, bool)
 
 // RouteDSL holds the attributes need to decode
@@ -18,9 +23,10 @@ type RouteDSL struct {
 	Ext  string   `json:"ext,omitempty"`
 	// VarToType maps the variable name to a var defn
 	VarToType map[string]string `json:"var_to_types,omitempty"`
-	// Types maps a type name to type implementation
+	// Types maps type implementation description
 	Types map[string]string `json:"-"`
-	// Type name to function map
+	// Type name to function to Eval function (validates a variable's
+	// value and extracts a value)
 	TypeFn map[string]EvalType `json:"-"`
 }
 
@@ -33,7 +39,7 @@ func (rdsl *RouteDSL) String() string {
 // varDefn evaluates a varaible expression returning a var name,
 // type expression.
 func varDefn(src string) (string, string, error) {
-	expr := strings.TrimSuffix(strings.TrimPrefix(src, "{"), "}")
+	expr := strings.TrimSuffix(strings.TrimPrefix(src, StartVar), EndVar)
 	if strings.Compare(src, expr) == 0 {
 		return "", "", fmt.Errorf("missing opening or closing curly braces")
 	}
@@ -57,9 +63,9 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 	dirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	rdsl.Dirs = []string{}
 	// We only evalaute the extension if here are two variables defined for the last element of path.
-	if strings.Count(base, "{") == 2 {
-		parts := strings.SplitN(base, "}", 2)
-		rdsl.Base = parts[0] + "}"
+	if strings.Count(base, StartVar) == 2 {
+		parts := strings.SplitN(base, EndVar, 2)
+		rdsl.Base = parts[0] + EndVar
 		rdsl.Ext = parts[1]
 	} else {
 		rdsl.Base = base
@@ -69,36 +75,36 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 
 	rdsl.TypeFn = map[string]EvalType{}
 	for i, elem := range dirs {
-		if strings.HasPrefix(elem, "{") && strings.HasSuffix(elem, "}") {
+		if strings.HasPrefix(elem, StartVar) && strings.HasSuffix(elem, EndVar) {
 			varName, typeExpr, err := varDefn(elem)
 			if err == nil {
 				rdsl.VarToType[varName] = typeExpr
 			} else {
 				return nil, fmt.Errorf("(%d) %q -> %s", i, elem, err)
 			}
-			rdsl.Dirs = append(rdsl.Dirs, fmt.Sprintf("{%s}", varName))
+			rdsl.Dirs = append(rdsl.Dirs, fmt.Sprintf(StartVar + "%s" + EndVar, varName))
 		} else {
 			rdsl.Dirs = append(rdsl.Dirs, elem)
 		}
 	}
-	if strings.HasPrefix(rdsl.Base, "{") && strings.HasSuffix(rdsl.Base, "}") {
+	if strings.HasPrefix(rdsl.Base, StartVar) && strings.HasSuffix(rdsl.Base, EndVar) {
 		varName, typeExpr, err := varDefn(rdsl.Base)
 		if err == nil {
 			rdsl.VarToType[varName] = typeExpr
 		} else {
 			return nil, fmt.Errorf("(basename) %q -> %s", rdsl.Base, err)
 		}
-		rdsl.Base = fmt.Sprintf("{%s}", varName)
+		rdsl.Base = fmt.Sprintf(StartVar + "%s" + EndVar, varName)
 	}
 	if rdsl.Ext != "" {
-		if strings.HasPrefix(rdsl.Ext, "{") && strings.HasSuffix(rdsl.Ext, "}") {
+		if strings.HasPrefix(rdsl.Ext, StartVar) && strings.HasSuffix(rdsl.Ext, EndVar) {
 			varName, typeExpr, err := varDefn(rdsl.Ext)
 			if err == nil {
 				rdsl.VarToType[varName] = typeExpr
 			} else {
 				return nil, fmt.Errorf("(extname) %q -> %s", rdsl.Ext, err)
 			}
-			rdsl.Ext = fmt.Sprintf("{%s}", varName)
+			rdsl.Ext = fmt.Sprintf(StartVar + "{%s}" + EndVar, varName)
 		}
 	}
 	return rdsl, nil
@@ -115,26 +121,26 @@ func (rdsl *RouteDSL) RegisterType(tName string, fn EvalType) error {
 }
 
 func varName(src string) string {
-	return strings.TrimSuffix(strings.TrimPrefix(src, "{"), "}")
+	return strings.TrimSuffix(strings.TrimPrefix(src, StartVar), EndVar)
 }
 
 // evalElement takes compares a element against a value (from the path value)
 // returns a variable name, interface value and bool indicating a successful match
-func (rdsl *RouteDSL) evalElement(elem string, src string) (string, interface{}, bool) {
+func (rdsl *RouteDSL) evalElement(elem string, src string) (string, string, bool) {
 	// Check if we workingwith a literal element or a variable defn.
 	if strings.HasPrefix(elem, `{`) {
 		// handle variable path element
 		vName := varName(elem)
 		tExpr, ok := rdsl.VarToType[vName]
 		if !ok {
-			return "", nil, false
+			return "", "", false
 		}
-		_, ok = rdsl.TypeFn[tExpr]
+		fn, ok := rdsl.TypeFn[tExpr]
 		if !ok {
-			return vName, nil, false
+			return vName, "", false
 		}
 		// Now check the type of dDir against the type expression
-		val, ok := defn.EvalType(tExpr, src)
+		val, ok := fn(tExpr, src)
 		if !ok {
 			// Something went wrong, path does not match.
 			return "", "", false
@@ -150,7 +156,7 @@ func (rdsl *RouteDSL) evalElement(elem string, src string) (string, interface{},
 
 // Eval takes a path value and compares it with a Path expression.
 // It returns a status boolean, map of variable names to values.
-func (rdsl *RouteDSL) Eval(pathValue string) (map[string]interface{}, bool) {
+func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 	dir, base := path.Split(pathValue)
 	pDirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	pExt := path.Ext(base)
@@ -162,7 +168,7 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]interface{}, bool) {
 	if len(pDirs) != len(rdsl.Dirs) {
 		return nil, false
 	}
-	m := map[string]interface{}{}
+	m := map[string]string{}
 	for i, elem := range rdsl.Dirs {
 		vName, val, ok := rdsl.evalElement(elem, pDirs[i])
 		if !ok {

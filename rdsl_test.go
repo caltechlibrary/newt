@@ -13,7 +13,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Year", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Year", func(expr string, val string) (string, bool) {
 		dt, err := time.Parse(`2006`, val)
 		if err != nil {
 			return "", false
@@ -24,7 +24,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Month", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Month", func(expr string, val string) (string, bool) {
 		dt, err := time.Parse(`01`, val)
 		if err != nil {
 			return "", false
@@ -35,7 +35,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Day", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Day", func(expr string, val string) (string, bool) {
 		dt, err := time.Parse(`02`, val)
 		if err != nil {
 			return "", false
@@ -46,7 +46,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("String", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("String", func(expr string, val string) (string, bool) {
 		return val, true
 	})
 	if err != nil {
@@ -73,7 +73,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Year", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Year", func(expr string, val string) (string, bool) {
 		dt, err := time.Parse(`2006`, val)
 		if err != nil {
 			return "", false
@@ -84,7 +84,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Month", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Month", func(expr string, val string) (string, bool) {
 		dt, err := time.Parse(`01`, val)
 		if err != nil {
 			return "", false
@@ -95,7 +95,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Day", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Day", func(expr string, val string) (string, bool) {
 		dt, err := time.Parse(`02`, val)
 		if err != nil {
 			return "", false
@@ -106,18 +106,18 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("String", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("String", func(expr string, val string) (string, bool) {
 		return val, true
 	})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Basename", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Basename", func(expr string, val string) (string, bool) {
 		ext := path.Ext(val)
 		return strings.TrimSuffix(val, ext), true
 	})
-	err = rdsl.RegisterType("Extname", func(expr string, val string) (interface{}, bool) {
+	err = rdsl.RegisterType("Extname", func(expr string, val string) (string, bool) {
 		return path.Ext(val), true
 	})
 
