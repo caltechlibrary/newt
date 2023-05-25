@@ -113,13 +113,17 @@ func (router *Router) ReadCSV(fName string) error {
 			if err != nil {
 				return fmt.Errorf("req_path error, line %d in %q, %s", rowNo, fName, err)
 			}
-			// FIXME: validate method
+			if ! isHTTPMethod(record[reqMethod]) {
+				return fmt.Errorf("rep_method error, line %d in %q, unsupported method %q", rowNo, fName, record[reqMethod])
+			}
 			route.ReqMethod  = record[reqMethod]
 			// FIXME: validate content type
 			route.ReqContentType = record[reqContentType]
 			// FIXME: need to make sure this make sense
 			route.ApiURL = record[apiURL]
-			// FIXME: validate method
+			if ! isHTTPMethod(record[reqMethod]) {
+				return fmt.Errorf("api_method error, line %d in %q, unsupported method %q", rowNo, fName, record[reqMethod])
+			}
 			route.ApiMethod = record[apiMethod]
 			// FIXME: validate content type
 			route.ApiContentType = record[apiContentType]
