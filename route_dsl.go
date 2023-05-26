@@ -2,17 +2,18 @@ package newt
 
 import (
 	"encoding/json"
-	"fmt"
+	 "fmt" 
+	//"os" // DEBUG
 	"path"
 	"strings"
 )
 
 const (
 	StartVar = "{{"
-	EndVar = "}}"
+	EndVar   = "}}"
 )
 
-type EvalType func (string, string) (string, bool)
+type EvalType func(string, string) (string, bool)
 
 // RouteDSL holds the attributes need to decode
 // a RouteDSL expression, match and decode against path values.
@@ -35,14 +36,22 @@ func (rdsl *RouteDSL) String() string {
 	return string(src)
 }
 
-
-// varDefn evaluates a varaible expression returning a var name,
+// varDefn evaluates a variable expression returning a var name,
 // type expression.
 func varDefn(src string) (string, string, error) {
-	expr := strings.TrimSuffix(strings.TrimPrefix(src, StartVar), EndVar)
-	if strings.Compare(src, expr) == 0 {
-		return "", "", fmt.Errorf("missing opening or closing curly braces")
+	if !(strings.HasPrefix(src, StartVar) && strings.HasSuffix(src, EndVar)) {
+		return "", "", fmt.Errorf("missing opening or closing curly brace delimiters")
 	}
+	expr := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(src, StartVar), EndVar))
+	//fmt.Fprintf(os.Stderr, "DEBUG src -> %q -> expr -> %q\n", src, expr)
+	if expr == "" {
+		return "", "", fmt.Errorf("missing varname and type info")
+	}
+	// Check if we both have varname and type expression
+	if ! strings.Contains(expr, " ") {
+		return "", "", fmt.Errorf("Invalid declaration %q missing type info", src)
+	}
+	// Split varname from type expression
 	parts := strings.SplitN(expr, " ", 2)
 	vName, tExpr := parts[0], parts[1]
 	if vName == "" {
@@ -64,6 +73,7 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 	rdsl.Dirs = []string{}
 	// We only evalaute the extension if here are two variables defined for the last element of path.
 	if strings.Count(base, StartVar) == 2 {
+		//fmt.Fprintf(os.Stderr, "DEBUG have a base/ext definitions -> %q\n", base)
 		parts := strings.SplitN(base, EndVar, 2)
 		rdsl.Base = parts[0] + EndVar
 		rdsl.Ext = parts[1]
@@ -73,7 +83,6 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 	}
 	rdsl.VarToType = map[string]string{}
 
-	rdsl.TypeFn = map[string]EvalType{}
 	for i, elem := range dirs {
 		if strings.HasPrefix(elem, StartVar) && strings.HasSuffix(elem, EndVar) {
 			varName, typeExpr, err := varDefn(elem)
@@ -82,7 +91,7 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 			} else {
 				return nil, fmt.Errorf("(%d) %q -> %s", i, elem, err)
 			}
-			rdsl.Dirs = append(rdsl.Dirs, fmt.Sprintf(StartVar + "%s" + EndVar, varName))
+			rdsl.Dirs = append(rdsl.Dirs, fmt.Sprintf(StartVar+"%s"+EndVar, varName))
 		} else {
 			rdsl.Dirs = append(rdsl.Dirs, elem)
 		}
@@ -94,7 +103,7 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 		} else {
 			return nil, fmt.Errorf("(basename) %q -> %s", rdsl.Base, err)
 		}
-		rdsl.Base = fmt.Sprintf(StartVar + "%s" + EndVar, varName)
+		rdsl.Base = fmt.Sprintf(StartVar+"%s"+EndVar, varName)
 	}
 	if rdsl.Ext != "" {
 		if strings.HasPrefix(rdsl.Ext, StartVar) && strings.HasSuffix(rdsl.Ext, EndVar) {
@@ -104,19 +113,21 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 			} else {
 				return nil, fmt.Errorf("(extname) %q -> %s", rdsl.Ext, err)
 			}
-			rdsl.Ext = fmt.Sprintf(StartVar + "{%s}" + EndVar, varName)
+			rdsl.Ext = fmt.Sprintf(StartVar+"{%s}"+EndVar, varName)
 		}
 	}
+	// Finally include all the types defined route_dsl_types.go
+	rdsl.TypeFn = RouteTypes
 	return rdsl, nil
 }
 
-// RegisterType maps a type name to a function. The function needs to
-// be of the form of EvalType.
-func (rdsl *RouteDSL) RegisterType(tName string, fn EvalType) error {
+// RegisterType maps a type name to a a RouteDSLType interface.
+// RouteDSLType interface must defined EvalType.
+func (rdsl *RouteDSL) RegisterType(tName string, t RouteDSLType) error {
 	if _, ok := rdsl.TypeFn[tName]; ok {
 		return fmt.Errorf("%q previously registered", tName)
 	}
-	rdsl.TypeFn[tName] = fn
+	rdsl.TypeFn[tName] = t.EvalType
 	return nil
 }
 
@@ -128,7 +139,7 @@ func varName(src string) string {
 // returns a variable name, interface value and bool indicating a successful match
 func (rdsl *RouteDSL) evalElement(elem string, src string) (string, string, bool) {
 	// Check if we workingwith a literal element or a variable defn.
-	if strings.HasPrefix(elem, `{`) {
+	if strings.HasPrefix(elem, StartVar) {
 		// handle variable path element
 		vName := varName(elem)
 		tExpr, ok := rdsl.VarToType[vName]
@@ -161,6 +172,14 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 	pDirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	pExt := path.Ext(base)
 	pBase := strings.TrimSuffix(base, pExt)
+	/*
+	if pExt != "" { // DEBUG
+		fmt.Fprintf(os.Stderr, "DEBUG pathValue -> %q\n", pathValue)
+		fmt.Fprintf(os.Stderr, "DEBUG pDirs -> %+v\n", pDirs)
+		fmt.Fprintf(os.Stderr, "DEBUG pBase -> %q\n", pBase)
+		fmt.Fprintf(os.Stderr, "DEBUG pExt -> %q\n", pExt)
+	} //DEBUG
+	*/
 	if rdsl.Ext == "" {
 		pExt = ""
 		pBase = base
@@ -171,6 +190,7 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 	m := map[string]string{}
 	for i, elem := range rdsl.Dirs {
 		vName, val, ok := rdsl.evalElement(elem, pDirs[i])
+		//fmt.Fprintf(os.Stderr, "DEBUG (dir) vName -> %q, val -> %q, ok -> %t\n", vName, val, ok)
 		if !ok {
 			return nil, false
 		}
@@ -179,25 +199,46 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 			m[vName] = val
 		}
 	}
-	// Match Basename
-	if vName, val, ok := rdsl.evalElement(rdsl.Base, pBase); ok {
-		// Check if we need to store the variable
-		if vName != "" {
-			m[vName] = val
-		}
-	} else {
-		return nil, false
-	}
 	// Match the extension, if it contains a
 	if rdsl.Ext != "" {
 		if vName, val, ok := rdsl.evalElement(rdsl.Ext, pExt); ok {
+			//fmt.Fprintf(os.Stderr, "DEBUG (ext) vName -> %q, val -> %q, ok -> %t\n", vName, val, ok)
 			// Check if we need to store the variable
 			if vName != "" {
 				m[vName] = val
+			} else {
+				return nil, false
 			}
+		}
+	}
+	// Match Basename
+	if vName, val, ok := rdsl.evalElement(rdsl.Base, pBase); ok {
+		//fmt.Fprintf(os.Stderr, "DEBUG (basename) vName -> %q, val -> %q, ok -> %t\n", vName, val, ok)
+		// Check if we need to store the variable
+		if vName != "" {
+			m[vName] = val
 		} else {
 			return nil, false
 		}
 	}
+	//fmt.Fprintf(os.Stderr, "DEBUG final m -> %+v\n", m)
 	return m, true
 }
+
+// Resolve takes a map of varnames and values and replaces any
+// occurrences found in src string resulting to a new string..
+func  (rdsl *RouteDSL) Resolve(m map[string]string, src string) string {
+	//fmt.Fprintf(os.Stderr, "DEBUG src -> %q, m -> %+v\n", src, m)
+	res := src[0:]
+	for k, v := range m {
+		k = StartVar + k + EndVar
+		//fmt.Fprintf(os.Stderr, "DEBUG k -> %q, v -> %q\n", k, v)
+		if strings.Contains(res, k) {
+			res = strings.ReplaceAll(res, k, v)
+		}
+	}
+	//fmt.Fprintf(os.Stderr, "DEBUG res -> %q\n", res)
+	return res
+}
+
+

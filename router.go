@@ -76,6 +76,22 @@ type Router struct {
 	Routes []*Route
 }
 
+// Setenv adds an explicit environment name and value to Router.Env
+func (router *Router) Setenv(key string, val string) {
+	if router.Env == nil {
+		router.Env = map[string]string{}
+	}
+	router.Env[key] = val
+}
+
+// Getenv retrieves an environment value using a name
+func (router *Router) Getenv(key string) string {
+	if val, ok := router.Env[key]; ok {
+		return val
+	}
+	return ""
+}
+
 
 // ReadCSV filename
 func (router *Router) ReadCSV(fName string) error {
@@ -150,13 +166,46 @@ func (router *Router) ReadCSV(fName string) error {
 				}
 				route.ResHeaders = headers
 			}
-			fmt.Fprintf(os.Stderr, "DEBUG adding route %s\n", route.String())
+			//fmt.Fprintf(os.Stderr, "DEBUG adding route %s\n", route.String())
 			router.Routes = append(router.Routes, route)
 		}
 		rowNo++
 	}
 	return nil
 }
+
+// ResolveApiURL takes an in bound Request URL, matches it to a route
+// and returns a resolved JSON data API URL based the related api_url.
+// It included an error if something went wrong.
+func (router *Router) ResolveApiURL(no int, m map[string]string, u string) (string, bool) {
+	if no >= 0 && no < len(router.Routes) {
+		return router.Routes[no].ReqPath.Resolve(m, router.Routes[no].ApiURL), true
+	}
+	return "", false
+}
+
+func (router *Router) ResolveRoute(u string, method string, contentType string) (int, map[string]string, bool) {
+	for i, r := range router.Routes {
+		// Compare our HTTP method and Content Type specrified
+		if router.Routes[i].ReqMethod == method && 
+				router.Routes[i].ReqContentType == contentType {
+			// Now see if the path matches
+			if m, ok := r.ReqPath.Eval(u); ok {
+				// Merge the environent map of router.Env with the 
+				// returned map from Eval.
+				//
+				// NOTE: environment overwrites the returned map!
+				// This is deliberate.
+				for k, v := range router.Env {
+					m[k] = v
+				}
+				return i, m, true
+			}
+		}
+	}
+	return -1, nil, false
+}
+
 
 // Handler implements the http handler used for Routing requests.
 func (router *Router) Handler(w http.ResponseWriter, req *http.Request) {

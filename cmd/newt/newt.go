@@ -47,6 +47,21 @@ more on front end development and human interaction. It is also
 hoped that focusing the back-end on a declaritive model will allow for
 a more consistent and reliable back-end.
 
+# OPTIONS
+
+-help
+: display help
+
+-license
+: display license
+
+-version
+: display version
+
+-dry-run
+: Load configuration and routes CSV but don't start web service
+
+
 # CONFIGURATION
 
 The three things {app_name} needs to know to run are port number,
@@ -58,7 +73,7 @@ variables to import and make available inside the router.
 ~~~
 NEWT_PORT="3030"
 NEWT_ROUTES="routes.csv"
-NEWT_ENV="DB_USER;DB_PASSWORD"
+NEWT_ENV="DB_NAME;DB_USER;DB_PASSWORD"
 export NEWT_PORT
 export NEWT_ROUTES
 export NEWT_ENV
@@ -70,9 +85,8 @@ It can also be configured using a configuration file.
 ~~~
 newt_port = "3030"
 newt_routes = "routes.csv"
-newt_env = [ "DB_USER", "DB_PASSWORD" ]
+newt_env = [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
 ~~~
-
 
 The environment will load first then the configuration file if
 provided. The configuration file takes presidence to the environment.
@@ -103,6 +117,7 @@ Configuration from a YAML file called "newt.yaml"
 	showHelp    bool
 	showLicense bool
 	showVersion bool
+	dryRun      bool
 )
 
 func main() {
@@ -117,6 +132,9 @@ func main() {
 	flag.BoolVar(&showHelp, "help", false, "display help")
 	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.BoolVar(&showVersion, "version", false, "display version")
+
+	// App option(s)
+	flag.BoolVar(&dryRun, "dry-run", false, "evaluate configuration and routes but don't start web service")
 
 	// We're ready to process args
 	flag.Parse()
@@ -138,5 +156,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.Run(in, out, eout, args))
+	os.Exit(newt.Run(in, out, eout, args, dryRun))
 }

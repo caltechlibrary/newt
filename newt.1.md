@@ -1,6 +1,6 @@
 ---
-title: "newt(1) user manual | Version 0.0.1 5b02491"
-pubDate: 2023-05-24
+title: "newt(1) user manual | Version 0.0.1 95f0d0a"
+pubDate: 2023-05-25
 author: "R. S. Doiel"
 ---
 
@@ -34,6 +34,21 @@ more on front end development and human interaction. It is also
 hoped that focusing the back-end on a declaritive model will allow for
 a more consistent and reliable back-end.
 
+# OPTIONS
+
+-help
+: display help
+
+-license
+: display license
+
+-version
+: display version
+
+-dry-run
+: Load configuration and routes CSV but don't start web service
+
+
 # CONFIGURATION
 
 The three things newt needs to know to run are port number,
@@ -45,7 +60,7 @@ variables to import and make available inside the router.
 ~~~
 NEWT_PORT="3030"
 NEWT_ROUTES="routes.csv"
-NEWT_ENV="DB_USER;DB_PASSWORD"
+NEWT_ENV="DB_NAME;DB_USER;DB_PASSWORD"
 export NEWT_PORT
 export NEWT_ROUTES
 export NEWT_ENV
@@ -57,9 +72,8 @@ It can also be configured using a configuration file.
 ~~~
 newt_port = "3030"
 newt_routes = "routes.csv"
-newt_env = [ "DB_USER", "DB_PASSWORD" ]
+newt_env = [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
 ~~~
-
 
 The environment will load first then the configuration file if
 provided. The configuration file takes presidence to the environment.

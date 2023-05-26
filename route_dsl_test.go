@@ -1,64 +1,46 @@
 package newt
 
 import (
-	"path"
-	"strings"
+	//"fmt" // DEBUG
+	//"os" // DEBUG
 	"testing"
-	"time"
 )
 
 func TestBlogPathEndingWithString(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/{year Year}/{month Month}/{day Day}/{title-slug String}`)
+	rdsl, err := NewRouteDSL(`/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Year", func(expr string, val string) (string, bool) {
-		dt, err := time.Parse(`2006`, val)
-		if err != nil {
-			return "", false
+	testMap := map[string]bool{
+		"/":                        false,
+		"/not-a-post.html":         false,
+		"/also-not-a-post":         false,
+		"/blog/2023/05/13/my-post": true,
+	}
+	for p, expected := range testMap {
+		//fmt.Fprintf(os.Stderr, "DEBUG p -> %q\n", p)
+		val, ok := rdsl.Eval(p)
+		//fmt.Fprintf(os.Stderr, "DEBUG val -> %q, ok -> %t\n", val, ok)
+		if ok != expected {
+			t.Errorf("expected (%q) %t, got (%T) %+v %t", p, expected, val, val, ok)
 		}
-		return dt.Format(`2006`), true
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
 	}
-	err = rdsl.RegisterType("Month", func(expr string, val string) (string, bool) {
-		dt, err := time.Parse(`01`, val)
-		if err != nil {
-			return "", false
-		}
-		return dt.Format(`01`), true
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	err = rdsl.RegisterType("Day", func(expr string, val string) (string, bool) {
-		dt, err := time.Parse(`02`, val)
-		if err != nil {
-			return "", false
-		}
-		return dt.Format(`02`), true
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	err = rdsl.RegisterType("String", func(expr string, val string) (string, bool) {
-		return val, true
-	})
+}
+
+func TestBlogPathEndingWithExt(t *testing.T) {
+	rdsl, err := NewRouteDSL(`/blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug Basename}}{{ext Extname}}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	testMap := map[string]bool{
 		"/":                             false,
-		"/my-post.html":  false,
+		"/not-a-post.html":              false,
 		"/blog/2023/05/13/my-post.html": true,
 	}
 	for p, expected := range testMap {
+		//fmt.Fprintf(os.Stderr, "DEBUG p -> %q\n", p)
 		val, ok := rdsl.Eval(p)
 		if ok != expected {
 			t.Errorf("expected (%q) %t, got (%T) %+v %t", p, expected, val, val, ok)
@@ -66,70 +48,25 @@ func TestBlogPathEndingWithString(t *testing.T) {
 	}
 }
 
-
-func TestBlogPathEndingWithExt(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/{year Year}/{month Month}/{day Day}/{title-slug Basename}{ext Extname}`)
+func TestEvalAndResolve(t *testing.T) {
+	rdsl, err := NewRouteDSL(`/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = rdsl.RegisterType("Year", func(expr string, val string) (string, bool) {
-		dt, err := time.Parse(`2006`, val)
-		if err != nil {
-			return "", false
-		}
-		return dt.Format(`2006`), true
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	pData := map[string]string {
+	"/blog/2023/05/29/newt-presentation": "/blog?post_date=2023-05-29&title_slug=newt-presentation",
 	}
-	err = rdsl.RegisterType("Month", func(expr string, val string) (string, bool) {
-		dt, err := time.Parse(`01`, val)
-		if err != nil {
-			return "", false
-		}
-		return dt.Format(`01`), true
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	err = rdsl.RegisterType("Day", func(expr string, val string) (string, bool) {
-		dt, err := time.Parse(`02`, val)
-		if err != nil {
-			return "", false
-		}
-		return dt.Format(`02`), true
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	err = rdsl.RegisterType("String", func(expr string, val string) (string, bool) {
-		return val, true
-	})
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	err = rdsl.RegisterType("Basename", func(expr string, val string) (string, bool) {
-		ext := path.Ext(val)
-		return strings.TrimSuffix(val, ext), true
-	})
-	err = rdsl.RegisterType("Extname", func(expr string, val string) (string, bool) {
-		return path.Ext(val), true
-	})
-
-	testMap := map[string]bool{
-		"/":                             false,
-		"/my-post.html":  false,
-		"/blog/2023/05/13/my-post.html": true,
-	}
-	for p, expected := range testMap {
-		val, ok := rdsl.Eval(p)
-		if ok != expected {
-			t.Errorf("expected (%q) %t, got (%T) %+v %t", p, expected, val, val, ok)
+	for p, expected := range pData {
+		m, ok := rdsl.Eval(p)
+		if !ok  {
+			t.Errorf("expected to eval p %q, failed", p)
+			t.FailNow()
+		} else {
+			src := rdsl.Resolve(m, "/blog?post_date={{yr}}-{{mo}}-{{dy}}&title_slug={{title-slug}}")
+			if src != expected {
+				t.Errorf("expected %q, got %q", expected, src)
+			}
 		}
 	}
 }
