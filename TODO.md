@@ -5,15 +5,19 @@
 
 ## Next
 
-- [ ] Finish Newt prototype
+- [x] Finish Newt prototype
+    - [ ] Debug interaction between static file service and Router
+    - [ ] Test assembled Newt static file handling
+    - [ ] Test newt router only handling
+    - [ ] Test newt birds3 demo and debug
     - [x] implement Path DSL
-    - [ ] Figure out where resoling the types, values and url request should go
-    - [ ] Nail down where table of routes comes from
-    - [ ] Nail down and implement configuration file
-    - [ ] Add load configuration to Runner
-    - [ ] Add load routes to Runner
-    - [ ] Implement web service for Newt router
-    - [ ] Add start up web service to Runner
+    - [x] Figure out where resoling the types, values and url request should go
+    - [x] Nail down where table of routes comes from
+    - [x] Nail down and implement configuration file
+    - [x] Add load configuration to Runner
+    - [x] Add load routes to Runner
+    - [x] Implement web service for Newt router
+    - [x] Dry run and start up web service to Runner
 - [ ] Create birds demo 3 (using Postgres+PostgREST, Pandoc, Newt)
 - [ ] Demo for DLD staff
 - [ ] Present at Code4Lib meetup, July 14, 2023

@@ -29,10 +29,10 @@ This directory holds our demo.
 ## Setup Database
 
 1. Start psql and connect to the birds database
-1. Run [setup.sql](setup.sql)
-2. Load [birds.csv](birds.csv)
-3. Run a select query and confirm the data loaded
-4. Quit psql, you are ready to setup PostgREST
+2. Run [setup.sql](setup.sql)
+3. Load [birds.csv](birds.csv)
+4. Run a select query and confirm the data loaded
+5. Quit psql, you are ready to setup PostgREST
 
 ~~~
 psql

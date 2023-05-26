@@ -12,7 +12,7 @@ The [newt-demo](https://github.com/caltechlibrary/newt) provides a [newt-init.ya
 Creating our development VM.
 
 ~~~
-multipass launch --name newstack --cloud-init newstack-init.yaml
+multipass launch --name newt --cloud-init newt-init.yaml
 ~~~
 
 Seeing if our VM is running
@@ -21,29 +21,31 @@ Seeing if our VM is running
 multipass list
 ~~~
 
-Copy [setup-birds.bash](setup-birds.bash) to our VM to save some type setting up our
+Copy [setup-birds1.bash](setup-birds1.bash), [setup-birds2.bash](setup-birds2.bash) or [setup-birds3.bash](setup-birds3.bash) to our VM to save some type setting up our
 demo.
 
 ~~~
-multipass transfer setup-birds.bash newstack:.
+multipass transfer setup-birds1.bash newt:.
+multipass transfer setup-birds2.bash newt:.
+multipass transfer setup-birds3.bash newt:.
 ~~~
 
 Access our VM's shell
 
 ~~~
-multipass shell newstack
+multipass shell newt
 ~~~
 
 Stopping our VM
 
 ~~~
-multipass stop newstack
+multipass stop newt
 ~~~
 
 Removing the VM completely
 
 ~~~
-multipass delete newstack && multipass purge
+multipass delete newt && multipass purge
 ~~~
 
 

@@ -1,5 +1,5 @@
 
-# Newt URL Router
+# Newt as a data router
 
 To extend the Postgres+PostgREST to support server side web page assembly with Pandoc server we need to be able to map a requested URL path to both PostgREST and Pandoc server. The information required for this is what I am exploring in this document.
 
@@ -33,13 +33,14 @@ Newt itself needs to know four things to run.
 
 1. url to listen on (e.g. http://localhost:4242)
 2. path to CSV file with routes
-3. path to the directory for static content
+3. path to any static content
 4. The names of environment varaibles to store things like PostgREST user and password information when forming a URL for a data API request
 
+From this Newt can build a service that talks to microservices that provide data sources, route those results through Pandoc or serve up static files.
 
 ## What is a request route?
 
-A route is a URL path similar to a Unix file path. It main be an explicit route or one that describes an expression expressed in a [PathDSL](pathdsl.md "path domain specific language").  The PathDSL enables a request route to be parsed and transformed into a data API request and Pandoc template.
+A route is a URL path similar to a Unix file path. It main be an explicit route or one that describes an expression expressed in a [RouteDSL](route_dsl.md "route domain specific language").  The RouteDSL enables a request route to be parsed and transformed into a data API request and Pandoc template.
 
 ~~~
 /about.html
@@ -101,12 +102,13 @@ These fields are represented as a row in a table. In the Newt prototype these ar
 
 ## Newt prototype behavior
 
-When Newt router starts up it reads a configuration file, it then reads the routes CSV file indicated in the configuration. It remembers any additional enviroment variables indicated in the configuration. When that is done it starts listening for requests and performs the routing dance of rejecting the request for undefind or invalid routes or contacting the JSON data API and if needed Pandoc server for processing the request.
+When Newt router starts up it reads a configuration file if provided then looks for additional configuration from the environment. It must have a routes CSV file defined in the configuration. It can remember additional enviroment variables indicated in the configuration and pass those through to the routes. When that is done it starts listening for requests and performs the routing dance of rejecting the request for undefind or invalid routes or contacting the JSON data API and if needed Pandoc server for processing the request.
 
 ## Misc
 
-If a requested route is not defined in our table then a 404 is returned. If the request is otherwise invalid based on what the router knows about the request then a suitable HTTP error should be returned (e.g. The URL might be defined but the HTTP method might not match).
+If a requested route is not defined in our table then it looks for a static file matching the description and if that fails returns a 404. If the request is otherwise invalid based on what the router knows it'll return other http status codes. For a request route to match it must match the resolved path, the HTTP method and included content type. If any of these don't match then the route is not considered a match and will return an appropriate HTTP status and code.
 
 The Newt router will only support http and run on localhost. This is the same approach taken by Pandoc server. It minimize configuration and also discorages use as a front end service (which is beyond the scope of this project).
 
 The prototype does not support file uploads. That's something that could be added in the future and would probably function by pass data through to anther service like MinIO or S3.
+

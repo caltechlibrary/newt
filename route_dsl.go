@@ -2,7 +2,7 @@ package newt
 
 import (
 	"encoding/json"
-	 "fmt" 
+	"fmt"
 	//"os" // DEBUG
 	"path"
 	"strings"
@@ -48,7 +48,7 @@ func varDefn(src string) (string, string, error) {
 		return "", "", fmt.Errorf("missing varname and type info")
 	}
 	// Check if we both have varname and type expression
-	if ! strings.Contains(expr, " ") {
+	if !strings.Contains(expr, " ") {
 		return "", "", fmt.Errorf("Invalid declaration %q missing type info", src)
 	}
 	// Split varname from type expression
@@ -173,12 +173,12 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 	pExt := path.Ext(base)
 	pBase := strings.TrimSuffix(base, pExt)
 	/*
-	if pExt != "" { // DEBUG
-		fmt.Fprintf(os.Stderr, "DEBUG pathValue -> %q\n", pathValue)
-		fmt.Fprintf(os.Stderr, "DEBUG pDirs -> %+v\n", pDirs)
-		fmt.Fprintf(os.Stderr, "DEBUG pBase -> %q\n", pBase)
-		fmt.Fprintf(os.Stderr, "DEBUG pExt -> %q\n", pExt)
-	} //DEBUG
+		if pExt != "" { // DEBUG
+			fmt.Fprintf(os.Stderr, "DEBUG pathValue -> %q\n", pathValue)
+			fmt.Fprintf(os.Stderr, "DEBUG pDirs -> %+v\n", pDirs)
+			fmt.Fprintf(os.Stderr, "DEBUG pBase -> %q\n", pBase)
+			fmt.Fprintf(os.Stderr, "DEBUG pExt -> %q\n", pExt)
+		} //DEBUG
 	*/
 	if rdsl.Ext == "" {
 		pExt = ""
@@ -227,7 +227,7 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 
 // Resolve takes a map of varnames and values and replaces any
 // occurrences found in src string resulting to a new string..
-func  (rdsl *RouteDSL) Resolve(m map[string]string, src string) string {
+func (rdsl *RouteDSL) Resolve(m map[string]string, src string) string {
 	//fmt.Fprintf(os.Stderr, "DEBUG src -> %q, m -> %+v\n", src, m)
 	res := src[0:]
 	for k, v := range m {
@@ -240,5 +240,3 @@ func  (rdsl *RouteDSL) Resolve(m map[string]string, src string) string {
 	//fmt.Fprintf(os.Stderr, "DEBUG res -> %q\n", res)
 	return res
 }
-
-

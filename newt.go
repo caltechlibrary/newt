@@ -17,19 +17,26 @@ import (
 	"strconv"
 	"strings"
 
+	// Caltech Library Packages
+	"github.com/caltechlibrary/wsfn"
+
 	// 3rd Party
 	"gopkg.in/yaml.v3"
 )
 
+
 type Config struct {
 	// Port is the name of the localhost port Newt will listen on.
 	Port string `json:"newt_port,omitempty" yaml:"newt_port,omitempty"`
-	// Routes is the CSV filename that routes are read from
+	// Routes is the CSV filename that data API routes are read from
 	Routes string `json:"newt_routes,omitempty" yaml:"newt_routes,omitempty"`
 	// Env is a list of environment variables that can be passed
 	// through to the RouteDSL when rendering JSON data API calls or
 	// calls to Pandoc server.
 	Env []string `json:"newt_env,omitempty" yaml:"newt_env,omitempty"`
+	// Htdocs holds any static files you want to make available through
+	// Newt router.
+	Htdocs string `json:"newt_htdocs,omitempty" yaml:"newt_htdocs,omitempty"`
 }
 
 // parseConf will parse a simple key equal value relationship like used in
@@ -69,43 +76,89 @@ func LoadConfig(configFName string) (*Config, error) {
 			}
 		}
 	}
-	// Sanity check the configuration.
+	if cfg.Htdocs == "" {
+		cfg.Htdocs = os.Getenv("NEWT_HTDOCS")
+	}
 	if cfg.Port == "" {
 		cfg.Port = "4040"
-	} else {
-		if strings.HasPrefix(cfg.Port, ":") {
-			cfg.Port = cfg.Port[1:]
+	} 
+	if strings.HasPrefix(cfg.Port, ":") {
+		cfg.Port = cfg.Port[1:]
+	}
+	//
+	// Sanity check the configuration.
+	//
+
+	// Make sure port is an integer.
+	if _, err := strconv.Atoi(cfg.Port); err != nil {
+		return nil, fmt.Errorf("Expected port to be an integer, %s", err)
+	}
+	// Make sure Routes CSV
+	if cfg.Routes != "" {
+		if _, err := os.Stat(cfg.Routes); err != nil {
+			return nil, fmt.Errorf("Can't read %q, %s", cfg.Routes, err)
 		}
-		if _, err := strconv.Atoi(cfg.Port); err != nil {
-			return nil, fmt.Errorf("Expected port to be an integer, %s", err)
+	}
+	// Make sure Htdocs exists
+	if cfg.Htdocs != "" {
+		if _, err := os.Stat(cfg.Htdocs); err != nil {
+			return nil, fmt.Errorf("Can't read %q, %s", cfg.Htdocs, err)
 		}
+	}
+	// Finally make sure we have cfg.Htdocs or cfg.Routes set.
+	if cfg.Routes == "" && cfg.Htdocs == "" {
+		return nil, fmt.Errorf("newt_routes and newt_htdocs are missing in configuration.")
 	}
 	return cfg, nil
 }
 
-// Run is a runner for Newt URL router
-func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool) int {
+// Run is a runner for Newt URL router and static file server
+func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool, debug bool) int {
 	configFName := ""
 	if len(args) > 0 {
 		configFName = args[0]
 	}
 	cfg, err := LoadConfig(configFName)
 	if err != nil {
-		log.Printf("%s", err)
+		fmt.Fprintf(eout, "%s\n", err)
 		return 1
 	}
 
 	router := new(Router)
-	if err := router.ReadCSV(cfg.Routes); err != nil {
-		log.Printf("error reading %q, %s", cfg.Routes, err)
-		return 1
+	router.Debug = debug
+	if cfg.Routes != "" {
+		if err := router.ReadCSV(cfg.Routes); err != nil {
+			fmt.Fprintf(eout, "error reading routes from %q, %s\n", cfg.Routes, err)
+			return 1
+		}
 	}
 	if dryRun {
-		log.Printf("configuration and routes successfully processed")
+		fmt.Fprintf(out, "configuration and routes successfully processed\n")
 		return 0
 	}
-	http.HandleFunc("/", router.Handler)
-	log.Printf("%s listening on port %s", path.Base(os.Args[0]), cfg.Port)
-	http.ListenAndServe(":"+cfg.Port, nil)
+
+
+	appName := path.Base(os.Args[0])
+	mux := http.NewServeMux()
+	if cfg.Routes != "" {
+		log.Printf("%s using %s for routing", appName, cfg.Routes)
+	}
+	switch {
+	case cfg.Htdocs != "" && cfg.Routes != "":
+		log.Printf("%s using %s for static content and %s for router", appName, cfg.Htdocs, cfg.Routes)
+		mux.Handle("/", router.Newt(http.FileServer(http.Dir(cfg.Htdocs))))
+	case cfg.Htdocs != "" && cfg.Routes == "":
+		log.Printf("%s using %s for static content only", appName, cfg.Htdocs)
+		mux.Handle("/", http.FileServer(http.Dir(cfg.Htdocs)))
+	case cfg.Htdocs == "" && cfg.Routes != "":
+		log.Printf("%s using %s for router only", appName, cfg.Routes)
+		mux.Handle("/", router.Newt(http.NotFoundHandler()))
+	default:
+		fmt.Fprintf(eout, "Nothing configured, aborting\n")
+		return 1
+	}
+
+	log.Printf("%s listening on port %s", appName, cfg.Port)
+	http.ListenAndServe(":"+cfg.Port, wsfn.RequestLogger(mux))
 	return 0
 }

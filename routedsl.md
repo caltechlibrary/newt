@@ -1,32 +1,31 @@
 
 # A RouteDSL, a domain specific language describing routing
 
-How do you describe mapping of one path to another? Many web frameworks implement the concept of a "route" which is similar to a file path but may include a placeholder notation which hold values bound to variable names. The variable names are then avaialble to route handler functions.
+How do you describe mapping of one path to another? Many web frameworks implement the concept of a "route" which is similar to a file path but may include a placeholder notation for values bound to variable names. The variable names are then avaialble to route handler functions.
 
-Newt's route handler capability is fixed. It can perform a mapping from a request to JSON data API, and optional to Pandoc when the data is returned from the JSON data API. Aside for validating the varaible (RouteDSL uses typed varaibles) Newt does not perform additional processing.
+Newt's route handler capability is fixed. It can perform a mapping from a request to data API, and optional run the results through Pandoc. A route in Newt is defined using variables including a type. A given type can be validated before transforming the request to a data API call or Pandoc. This provides a level of assurence that the URL requested is what is expected by the back-end data source like PostgREST, Solr or Elasticsearch.
 
 ## Why create yet another DSL?
 
-I surveyed the route descriptions available in several Python and JavaScript fameworks. There was no concensus. None provided a mechanism to validate the variables captured int he in-bound request. Since Newt's skope is strickly limited this lead me to think about a simple, light weight markup that would be intuitive for web developers who were already familiar with template markup like [Mustashe](https://mustache.github.io/) and [Handlerbars](https://handlebarsjs.com/).  What was missing a type annotation for in-bound requests.  Injecting a type annocation for the request URL pattern mean that the URL composed or the JSON data API request or Pandoc server request could just be simple handlebars template strings. This means the is only one added concept for a well known template notation.
-
-NOTE: This document if focused on discussing the concepts behind RouteDSL not how to implement it in a specific language.
+I surveyed the route descriptions available in several Python and JavaScript fameworks. There was no concensus. None provided a mechanism to validate the variables captured int he in-bound request. Since Newt's skope is extremely limited this lead me to think about a simple, light weight markup that would be intuitive for web developers who were already familiar with template markup like [Mustashe](https://mustache.github.io/) and [Handlerbars](https://handlebarsjs.com/).  What was missing a type annotation for in-bound requests.  Injecting a type annocation for the request URL pattern mean that the URL composed or the JSON data API request or Pandoc server request could just be simple handlebars template strings. This means the is only one added concept for a well known template notation.
 
 ## Blogging URLs, a use case
 
 RouteDSL should be able to handle simple mappings such as those seen in blogs. Blog paths are often predictable.  A home page is at `/`, a feed of items might be at `/feed/` and individual blog posts might be found in a path formed by embedding four digit year, two digit month, two digit day and a title slug. Let's first look at how that would be discribed as a Mustache tempalte -- `/blog/{{year}}/{{month}}/{{day}}/{{title-slug}}`.  This is pretty easy to read. 
 
-How do we know when a path value matches a route?  For a literal path you can simply perform a string comparision but for a path with embedded variables you need to vet the variables to make sure they make sense. In effect you need to do a type check. In our simple Mustasche version though there is no type information. The place holder `{{year}}` hold a integer year or maybeone something completely unrelated.  What if we added an annotation about the variables type? A "year" certainly can be validate. Years are normally four digit numbers.  Likewise month and day could have a simple validation based on being an integer with two digits allowing for leading zeros. These are common enough date formats that many languages provide via standard libraries. Creating types for these types becomes a matter of wrapping an implementations existing type system.
+How do we know when a path value matches a route?  For a literal path you can simply perform a string comparision but for a path with embedded variables you need to vet the variables to make sure they make sense. A type check needs to be done. In our simple Mustasche version though there is no type information. The place holder `{{year}}` might hold an integer or maybe something completely unrelated.  What if we added an annotation about the variables type? A "year" certainly can be validate. Years are normally four digit numbers.  Likewise month and day could have a simple validation based on being an integer with two digits allowing for leading zeros. These are common enough date formats that many languages provide via standard libraries. Creating types for these types becomes a matter of wrapping an implementations existing type system.
 
 ~~~
 /blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug String}}
 ~~~
 
-Now we know the type and validation method to apply to the embedded varaible.
+Now we know the type and validation method to apply to the embedded varaible. Let's explore some values and see if thay can be validated.
 
-| path value | is it valid? | year | month | day | title-slug |
-| /blog/2023/02/28/my-daily-post | yes | 2023 | 2 | 28 | my-daily-post |
-| /blog/2023/02/31/my-daily-post | no  | 2023 | 2 | invalid day | my-daily-post |
-| /blog/2023/28/02/my-daily-post | no  | 2023 | invalid month | 2 | my-daily-post |
+path value                      year month day title-slug    is it valid?
+------------------------------  ---- ----- --- ------------- -----------------
+/blog/2023/02/28/my-daily-post  2023 02    28  my-daily-post yes
+/blog/2023/02/31/my-daily-post  2023 02    31  my-daily-post no, invalid day
+/blog/2023/28/02/my-daily-post  2023 28    01  my-daily-post no, invalid month
 
 Knowing the type lets the router know that path is not valid and reject it if it is not without contacting other services. 
 

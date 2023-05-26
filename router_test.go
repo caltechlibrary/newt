@@ -29,7 +29,7 @@ func TestResolveApiURL(t *testing.T) {
 			t.Errorf("expedcted to resolve the router %q, failed", src)
 			t.FailNow()
 		}
-		res, ok := router.ResolveApiURL(no, m, src);
+		res, ok := router.ResolveApiURL(no, m);
 		if ! ok {
 			t.Errorf("expected ResolveApiURL to find router %d, for %q", no, src)
 			t.FailNow()
