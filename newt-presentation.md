@@ -37,9 +37,8 @@ App            Languages         Supporting services
 ArchivesSpace  Java, Ruby, SQL   MySQL, Solr, Apache or NginX,
                                  Solr
 EPrints        Perl, SQL, XML,   MySQL, Apache2 (tight integration),
-               EPrints           Sphynx
-               templates
-Invenio RDM    Python,SQL        Postgres, Redis, Elasticsearch,
+               EPrints XML       Sphynx
+Invenio RDM    Python, SQL       Postgres, Redis, Elasticsearch,
                JavaScript/React  Docker, Invenio Framework,
                NodeJS/NPM        Python packaging system
 Islandora      PHP/SQL           MySQL, Fedora, Apache 2
@@ -96,7 +95,7 @@ Just about. Here's the off the shelf microservices I am experimenting with
 
 Simplify through a clear division of labor.
 
-- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON DATA API
+- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON data API
 - [Pandoc](https://pandoc.org) =>  Powerful template engine
 - [Newt](https://github.com/caltechlibrary/newt/) => data router
 
@@ -110,7 +109,7 @@ Except without the data loss.
 # How would this work in practice?
 
 1. Model our data using SQL (Postgres)
-2. Define our JSON API using SQL (Postgres+PostgREST)
+2. Define our JSON data API using SQL (Postgres+PostgREST)
 3. Transform our structured data using Pandoc
 4. Use Newt to orchestrate
 
@@ -127,7 +126,7 @@ Except without the data loss.
 
 - SQL
 - Pandoc templates
-- CSV file describing data flowing through the microservices
+- CSV describing data flow through our microservices
 
 # Web browser knowledge requirements
 
@@ -140,25 +139,24 @@ Except without the data loss.
 We can create interactive applications with some SQL,
 Pandoc templates and a little routing.
 
-# Why SQL?
+# But why SQL?
 
 SQL is really good at describing structured data. It also is good at expressing queries. With a little deeper knowledge of SQL you can also define data views, functions and your own procedures. With Postgres + PostgREST these provide everything you need in a JSON data API short of file upload. SQL does allot of lifting with a little code and usually remains readable.
 
 > Minimize the source Luke!
 
-You don't need to design classes in your favorite programming languages and Schema in SQL. You don't need to learn an ORM. You don't duplicate the code in the database, again in the middle-ware and increasingly often in the browser. Data models are defined in one place, Postgres. PostgREST takes care of turning them into a JSON data API. Data transformation is handle by Pandoc. A program really good at translating things. Newt provides just enough orchestration based on defining some routes in a CSV file.
+You don't need to design classes in your favorite programming languages then write Schema in SQL. You don't need to learn an ORM. You don't duplicate the code in the database, again in the middle-ware and increasingly often in the browser. Data models are defined in one place, Postgres. PostgREST takes care of turning them into a JSON data API. Data transformation is handle by Pandoc. Newt provides __just enough orchestration__ based on route definitions contained in a CSV file.
 
-# Fewer cognitive shifts
+# Three cognitive shifts
 
-- SQL (Postgres dialect)
-- JSON
-- Pandoc templates
-- Describing data flow in a CSV file using a simple notation
+- Use SQL to generate JSON
+- Use Pandoc to transform JSON to HTML (or other formats)
+- Use CSV file define the routes your application supports
 
-data flow
+The resulting data flow
 : web browser => Newt => PostgREST => Pandoc => Newt => web browser
 
-# helpful to know
+# Still Helpful to know
 
 - HTML 5 related W3C technologies
   - HTML 5 markup
@@ -166,6 +164,8 @@ data flow
   - JavaScript
 - Understand how HTTP works, including HTTP methods and Headers
 - How to handle static file assets, e.g. image and video files
+
+> the front-end remains complex as it ever was
 
 # But is this really simpler?
 
@@ -231,9 +231,9 @@ birds 3    dynamic     read write site, easy to conceptualize
 # Developer workflow
 
 1. Model data in Postgres
-2. Create/edit Pandoc templates
-3. Create/edit routes CSV file in a spreadsheet
-4. (Re)start Newt and PostgREST to (re)load models and routes
+2. Create/update Pandoc templates
+3. Create/update routes CSV file in a spreadsheet
+4. (Re)start PostgREST and Newt to (re)load models and routes
 
 **Repeat as needed**
 
@@ -248,24 +248,26 @@ birds 3    dynamic     read write site, easy to conceptualize
 # Evaluating Postgres+PostgREST, Pandoc and Newt
 
 - Weaknesses
-  - Newt is limited (doesn't support file uploads)
-  - PostgREST is new to me (and probably others)
+  - Newt is **limited and experimental**
   - SQL and HTML have a learning curve
 - Strengths
   - SQL is proven and likely to be around a very long time
   - HTML is proven and likely to be around a very long time
-  - Postgres and Pandoc are very mature software
-  - PostgREST and Newt are useful today and worth exploring
+  - Postgres and Pandoc are **very mature software**
+  - PostgREST is **mature** (commit dates going back to June 2014)
 
 # Next steps for Newt?
 
-- Newt is an experiment, I am building some staff applications Summer/Fall 2023
-- Solr/Opensearch should work with Pandoc and Newt, seems promising
+- Newt is an experiment
+    - I am building some staff applications Summer/Fall 2023
+- Experimenting with Solr/Opensearch as a JSON data API source
 
 ## someday, maybe
 
-- It'd be nice if Newt could send file uploads to a service like S3 (via Minio?)
-- It might be nice if Newt could function as a static file server
+- It would be nice if ....
+    - A better DSL to describe URL transforms
+    - Newt could send file uploads to a service like S3
+    - If Newt provided a static file service
 
 
 # Thank you!
@@ -273,3 +275,4 @@ birds 3    dynamic     read write site, easy to conceptualize
 - Presentation <https://caltechlibrary.github.io/newt/presentation/>
 - Project: <https://github.com/caltechlibrary/newt>
 - Email: rsdoiel@caltech.edu
+

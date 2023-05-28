@@ -1,43 +1,39 @@
 
 # Newt, a new take of the web stack
 
-Newt is short for "new take". Specific it is my new take on building web applications from a few off the shelf microservices. The microservices that inspired Newt are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org). Newt it a minimalist URL request router designed to work with requests mapped to a data source and optional run through Pandoc service.
+Newt is two things. Newt is short for "new take". Newt is also an experimental web service for working with off the shelf [microservices](https://en.wikipedia.org/wiki/Microservices). The specific microservices Newt is intend to help explore are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org). The Newt program can be thought of as both a data router (i.e. make requests to PostgREST and Pandoc) an a light weight static file server. It only runs on localhost so normally would be behind a front-end web server like NginX or Apache 2.
 
 ## Motivation
 
-My belief is that many web services used by Archives, Libraries and Museums can benefit from a simplier back-end. If the back-end is "easy" then the limited developer resources can be focused on the front end creating a more humane user experience for staff and patrons.
+My belief is that many web services used by Archives, Libraries and Museums can benefit from a simplier back-end. If the back-end is "easy" then the limited developer resources can be focused on the front-end. An improved front-end offers opportunities to provide a more humane user experience for staff and patrons.
 
-## A basic Newt stack setup
+## A basic Newt approach
 
 From back to front
 
-- Postgres+PostgREST (provides a data source API, is programmed in SQL)
+- Postgres+PostgREST (provides a data API, it is programmed in SQL)
 - Pandoc server (provides a templating engine to transform data sources)
-- Newt URL router (uses a CSV file for defining routes)
-- A front end web server (e.g. Apache 2, NginX) integrated providing access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
+- Newt is a URL router (uses a CSV file for defining routes) and provides static file services
+- A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
 
-All these can be treated as "off the shelf". Aside from configuration they run as traditional services on POSIX systems.  Your application is primarily developed using SQL (defining the behavior our PostgREST), Pandoc templates used to turn JSON into HTML. Any additional static content (e.g. web pages, CSS, JavaScript for the web browser) are provided by the front end web server. This is just an example. 
+All these can be treated as "off the shelf". Aside from configuration they run as traditional services on POSIX systems.  Your application is primarily developed using SQL (defining the behavior our PostgREST), Pandoc templates used to turn JSON into HTML. Any additional static content (e.g. web pages, CSS, JavaScript for the web browser) may also be provided by Newt.
 
-## Two more example "stacks"
+## A more complex stack
 
-Similar to the above example you could include full text search via Solr or Opensearch. In that case the stack from back to front would look like.
-
-- Postgres+PostgREST (provides a data source API, is programmed in SQL)
-- Search Engine (e.g. Solr, Opensearch)
-- Pandoc server (provides a templating engine to transform data sources)
-- Newt URL router (uses a CSV file for defining routes)
-- A front end web server (e.g. Apache 2, NginX) integrated providing access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
-
-Or you could integrate static file services with a localhost web services so that Newt presents all content to the Front end web server.
+Similar to the above example you could include full text search via Solr, Elasticsearch or Opensearch. In that case the stack from back to front would look like.
 
 - Postgres+PostgREST (provides a data source API, is programmed in SQL)
 - Search Engine (e.g. Solr, Opensearch)
-- Back end static file server
 - Pandoc server (provides a templating engine to transform data sources)
 - Newt URL router (uses a CSV file for defining routes)
 - A front end web server (e.g. Apache 2, NginX) integrated providing access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
 
-It's basically include as little as you want or as much as you want. Newt manages contacting the data source, sends it to Pandoc server and returns the result to the font-end web server.
+The routes your define for Newt would select the appropriate data source.
+
+The increase in complexity would be the additional routes you define in our
+CSV file as well as any additional templating needed to render the search
+engine results via Pandoc.
+
 
 ## Explore Newt and friends
 
@@ -58,38 +54,27 @@ The combination of Postgres and PostgREST provides a rich data API defined from 
 
 ## Step 3, what we've learned togher with Newt
 
-Managing page assembly browser side is a chore. Since we have Pandoc and it can run as a microservice we can also run Newt. Newt knows how to talk to a data source and send the results to Pandoc server before returning he transformed data to a web browser (or more normally font-end web server). The [birds 3](birds3/) demo shows how this works. With just SQL and Pandoc tempaltes we can build a web application.
+Managing page assembly browser side is a chore. We can skip the complex JavaScript for that and use Newt to route data from PostgREST or a search engine through Pandoc before returning it to the web browser. The [birds 3](birds3/) demo shows how this works. With just SQL and Pandoc templates we can build a web application.
 
-- [Building with Postgres, PostgREST, Pandoc Server and Newt](
-
-
-The second demo, [bees](bees/), builds on the birds demo by adding Pandoc server as a template engine for rendering content retrieved from Postgres via PostgREST. Pandoc service provide much of the same capability of the Pandoc command line program does. It is simple and safe to run as a localhost web service.  In bees I am presenting a bee spotting application with reports rendered via data from PostgREST and processed by Pandoc server.
-
-- [Building with Postgres, PostgREST and Pandoc server](building-with-postgres-postgrest-and-pandoc-server.md)
-- Extras for setting up demo (assumes you've already setup birds)
-    - [setup-bees.bash](setup-bees.bash), a bash script that generates the contents of demo's running code
-
-## Introducing Newt, a minimalist URL router
-
-There are times when relying on JavaScript in the web browser to assemble a web page is not appropriate or just too much work. Newt URL router was developed to eleminate assembling the content provided by Postgres, PostgREST and Pandoc server.   Newt URL router takes care of mapping a public facing URL path to PostgREST and can optional send the content from PostgREST through Pandoc via Pandoc server. 
-
-Newt URL router just needs to know where to contact PostgREST and Pandoc server and optional if you have a directory of static content you wish to expose too. Newt reads a table (e.g. a CSV file) to get the description of the routes, the transforms needed to query PostgREST and any template or Pandoc options desired if you want to run the retrieved content through Pandoc server. Newt takes care of coordinating the other microservices return content directly back to the web browser (in the developer setting) or to a front-end web server like Apache2 or NginX (e.g. in a production setting).
+Configuring Newt can be done in a YAML file or through the shell's enviroment. A minimum setup requires a pointer to the CSV file container your route definitions. The environment variable needed is `NEWT_ROUTES` in the YAML file the attribute is `newt_routes`. If you also wish to have static file service support then you would set `NEWT_HTDOCS` in the environment or `newt_htdocs` in the YAML configuration file. 
 
 - [Building web Postgres, PostgREST, Pandoc and Newt](building with postgres-postgrest-pandoc-and-newt.md)
-- Extras for setting up demo (assumes you've already setup birds and bees)
-    - [setup-flowers.bash](setup-flowers.bash), a bash script that generates the contents of demo's running code
-
-In this final demo, now including the Newt URL router, we use SQL to define our back-end service, Pandoc (via Pandoc server) to format our dynamic web poages and static files to complete our website implementation.
 
 ## Conclusion
 
-In all our demos we've devided the tasks through a series of flexible microservices can can be used individually or in combination.
+In all our demos we've devided the tasks through a series of flexible microservices.
 
-- Postgres, data storage, back-end configuration and data services
-- PostgREST, a JSON data API
-- Pandoc server as a template engine
-- Newt a URL router for PostgREST, Pandoc server and static files
-- (in production setting) a front end web server providing access control and user authentication (e.g. Apache2, NginX)
+Postgres
+: provides data storage, back-end configuration and data services
 
-The "coding" left to someone developing a website or service can be as minimal as knowning some SQL, HTML and Pandoc.
+PostgREST
+: Turns a Postgres database into a DATA API
+
+Pandoc
+: Run in server mode is a powerful template engine
+
+Newt
+: Is a data router and stastic file server. Newt knows how to talk to a data source like PostgREST or Solr and then run the results through Pandoc.
+
+The "coding" of the back-end is reduced to SQL and Pandoc templates. The front-end can be as complex as you like given the full capabilities of your web browser to handle HTML, CSS and JavaScript.
 

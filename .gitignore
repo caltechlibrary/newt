@@ -1,4 +1,8 @@
+.DS_Store
 *~
 *.swp
 *.bak
 bin/*
+*csv#
+htdocs/*
+*.env

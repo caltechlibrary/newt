@@ -23,30 +23,33 @@
 <section>
 <h1 id="multipass-basics">Multipass basics</h1>
 <p>Multipass is a Ubuntu specific VM manager making it easy to develop
-applications targetting Ubuntu Server and Desktop environments. It is
-available on Linux, MacOS and Windows. See <a
+applications targeting Ubuntu Server and Desktop environments. It is
+available on Linux, macOS and Windows. See <a
 href="https://multipass.run">multipass.run</a> for installation
 instructions.</p>
 <h2 id="basic-commands">Basic commands</h2>
-<p>The <a
-href="https://github.com/caltechlibrary/newstack-demo">newstack-demo</a>
-provides a <a href="">newstack-init.yaml</a> to setup a Multipass
-environment for exploring a web appllication approach focusing on SQL,
+<p>The <a href="https://github.com/caltechlibrary/newt">newt-demo</a>
+provides a <a href="">newt-init.yaml</a> to setup a Multipass
+environment for exploring a web application approach focusing on SQL,
 HTML, JavaScript using PostgreSQL 15, PostgREST 11 and a front end web
 server.</p>
-<p>Creating our developmenet VM.</p>
-<pre><code>multipass launch --name newstack --cloud-init newstack-init.yaml</code></pre>
+<p>Creating our development VM.</p>
+<pre><code>multipass launch --name newt --cloud-init newt-init.yaml</code></pre>
 <p>Seeing if our VM is running</p>
 <pre><code>multipass list</code></pre>
-<p>Copy <a href="setup-birds.bash">setup-birds.bash</a> to our VM to
-save some type setting up our demo.</p>
-<pre><code>multipass transfer setup-birds.bash newstack:.</code></pre>
+<p>Copy <a href="setup-birds1.bash">setup-birds1.bash</a>, <a
+href="setup-birds2.bash">setup-birds2.bash</a> or <a
+href="setup-birds3.bash">setup-birds3.bash</a> to our VM to save some
+type setting up our demo.</p>
+<pre><code>multipass transfer setup-birds1.bash newt:.
+multipass transfer setup-birds2.bash newt:.
+multipass transfer setup-birds3.bash newt:.</code></pre>
 <p>Access our VM’s shell</p>
-<pre><code>multipass shell newstack</code></pre>
+<pre><code>multipass shell newt</code></pre>
 <p>Stopping our VM</p>
-<pre><code>multipass stop newstack</code></pre>
+<pre><code>multipass stop newt</code></pre>
 <p>Removing the VM completely</p>
-<pre><code>multipass delete newstack &amp;&amp; multipass purge</code></pre>
+<pre><code>multipass delete newt &amp;&amp; multipass purge</code></pre>
 </section>
 
 <footer>

@@ -2,7 +2,7 @@
 Installation
 ------------
 
-newt is highly experimental. At this time you must install it from source code. It is probably broken and certainly will contain many bugs.
+newt is an experimental web service for working with Pandoc+PostgREST and PAndoc. It also provides a simple static file web service. At this time you must install it from source code. It is probably broken and certainly will contain many bugs. It's a prototype!
 
 <!-- NOTE: There have been no releases yet.
 Quick install with curl

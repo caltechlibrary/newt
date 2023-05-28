@@ -56,30 +56,25 @@
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td>EPrints</td>
+<td>EPrints XML</td>
 <td>Sphynx</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"></td>
-<td>templates</td>
-<td></td>
-</tr>
-<tr class="even">
 <td style="text-align: left;">Invenio RDM</td>
-<td>Python,SQL</td>
+<td>Python, SQL</td>
 <td>Postgres, Redis, Elasticsearch,</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;"></td>
 <td>JavaScript/React</td>
 <td>Docker, Invenio Framework,</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"></td>
 <td>NodeJS/NPM</td>
 <td>Python packaging system</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Islandora</td>
 <td>PHP/SQL</td>
 <td>MySQL, Fedora, Apache 2</td>
@@ -152,7 +147,7 @@ with</p>
 <p>Simplify through a clear division of labor.</p>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a> =&gt; JSON DATA API</li>
+href="https://postgrest.org">PostgREST</a> =&gt; JSON data API</li>
 <li><a href="https://pandoc.org">Pandoc</a> =&gt; Powerful template
 engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
@@ -172,7 +167,7 @@ browser
 practice?</h1>
 <ol type="1">
 <li>Model our data using SQL (Postgres)</li>
-<li>Define our JSON API using SQL (Postgres+PostgREST)</li>
+<li>Define our JSON data API using SQL (Postgres+PostgREST)</li>
 <li>Transform our structured data using Pandoc</li>
 <li>Use Newt to orchestrate</li>
 </ol>
@@ -190,7 +185,7 @@ requirements</h1>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
-<li>CSV file describing data flowing through the microservices</li>
+<li>CSV describing data flow through our microservices</li>
 </ul>
 <h1 id="web-browser-knowledge-requirements">Web browser knowledge
 requirements</h1>
@@ -202,7 +197,7 @@ requirements</h1>
 <h1 id="what-does-this-enable">What does this enable?</h1>
 <p>We can create interactive applications with some SQL, Pandoc
 templates and a little routing.</p>
-<h1 id="why-sql">Why SQL?</h1>
+<h1 id="but-why-sql">But why SQL?</h1>
 <p>SQL is really good at describing structured data. It also is good at
 expressing queries. With a little deeper knowledge of SQL you can also
 define data views, functions and your own procedures. With Postgres +
@@ -213,28 +208,27 @@ remains readable.</p>
 <p>Minimize the source Luke!</p>
 </blockquote>
 <p>You don’t need to design classes in your favorite programming
-languages and Schema in SQL. You don’t need to learn an ORM. You don’t
-duplicate the code in the database, again in the middle-ware and
+languages then write Schema in SQL. You don’t need to learn an ORM. You
+don’t duplicate the code in the database, again in the middle-ware and
 increasingly often in the browser. Data models are defined in one place,
 Postgres. PostgREST takes care of turning them into a JSON data API.
-Data transformation is handle by Pandoc. A program really good at
-translating things. Newt provides just enough orchestration based on
-defining some routes in a CSV file.</p>
-<h1 id="fewer-cognitive-shifts">Fewer cognitive shifts</h1>
+Data transformation is handle by Pandoc. Newt provides <strong>just
+enough orchestration</strong> based on route definitions contained in a
+CSV file.</p>
+<h1 id="three-cognitive-shifts">Three cognitive shifts</h1>
 <ul>
-<li>SQL (Postgres dialect)</li>
-<li>JSON</li>
-<li>Pandoc templates</li>
-<li>Describing data flow in a CSV file using a simple notation</li>
+<li>Use SQL to generate JSON</li>
+<li>Use Pandoc to transform JSON to HTML (or other formats)</li>
+<li>Use CSV file define the routes your application supports</li>
 </ul>
 <dl>
-<dt>data flow</dt>
+<dt>The resulting data flow</dt>
 <dd>
 web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; Newt =&gt; web
 browser
 </dd>
 </dl>
-<h1 id="helpful-to-know">helpful to know</h1>
+<h1 id="still-helpful-to-know">Still Helpful to know</h1>
 <ul>
 <li>HTML 5 related W3C technologies
 <ul>
@@ -245,6 +239,9 @@ browser
 <li>Understand how HTTP works, including HTTP methods and Headers</li>
 <li>How to handle static file assets, e.g. image and video files</li>
 </ul>
+<blockquote>
+<p>the front-end remains complex as it ever was</p>
+</blockquote>
 <h1 id="but-is-this-really-simpler">But is this really simpler?</h1>
 <h1 id="what-was-needed-for-each-version-of-birds">What was needed for
 each version of birds?</h1>
@@ -342,9 +339,9 @@ and our Pandoc templates.</p>
 <h1 id="developer-workflow">Developer workflow</h1>
 <ol type="1">
 <li>Model data in Postgres</li>
-<li>Create/edit Pandoc templates</li>
-<li>Create/edit routes CSV file in a spreadsheet</li>
-<li>(Re)start Newt and PostgREST to (re)load models and routes</li>
+<li>Create/update Pandoc templates</li>
+<li>Create/update routes CSV file in a spreadsheet</li>
+<li>(Re)start PostgREST and Newt to (re)load models and routes</li>
 </ol>
 <p><strong>Repeat as needed</strong></p>
 <h1 id="minimizing-newness">Minimizing newness</h1>
@@ -362,30 +359,34 @@ Postgres+PostgREST, Pandoc and Newt</h1>
 <ul>
 <li>Weaknesses
 <ul>
-<li>Newt is limited (doesn’t support file uploads)</li>
-<li>PostgREST is new to me (and probably others)</li>
+<li>Newt is <strong>limited and experimental</strong></li>
 <li>SQL and HTML have a learning curve</li>
 </ul></li>
 <li>Strengths
 <ul>
 <li>SQL is proven and likely to be around a very long time</li>
 <li>HTML is proven and likely to be around a very long time</li>
-<li>Postgres and Pandoc are very mature software</li>
-<li>PostgREST and Newt are useful today and worth exploring</li>
+<li>Postgres and Pandoc are <strong>very mature software</strong></li>
+<li>PostgREST is <strong>mature</strong> (commit dates going back to
+June 2014)</li>
 </ul></li>
 </ul>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
 <ul>
-<li>Newt is an experiment, I am building some staff applications
-Summer/Fall 2023</li>
-<li>Solr/Opensearch should work with Pandoc and Newt, seems
-promising</li>
+<li>Newt is an experiment
+<ul>
+<li>I am building some staff applications Summer/Fall 2023</li>
+</ul></li>
+<li>Experimenting with Solr/Opensearch as a JSON data API source</li>
 </ul>
 <h2 id="someday-maybe">someday, maybe</h2>
 <ul>
-<li>It’d be nice if Newt could send file uploads to a service like S3
-(via Minio?)</li>
-<li>It might be nice if Newt could function as a static file server</li>
+<li>It would be nice if ….
+<ul>
+<li>A better DSL to describe URL transforms</li>
+<li>Newt could send file uploads to a service like S3</li>
+<li>If Newt provided a static file service</li>
+</ul></li>
 </ul>
 <h1 id="thank-you">Thank you!</h1>
 <ul>

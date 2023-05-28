@@ -25,13 +25,13 @@
 and PostgREST</h1>
 <p>I would like to suggest a simplification in building web
 applications. I will show you how to create a complete web application
-using SQL, HTML and JavaScript. The application uses a micro service
+using SQL, HTML and JavaScript. The application uses a microservice
 model. Data is modeled and access via a Postgres 15 database. The
-database content is managed through a JSON API provided by PostgREST 11.
-I will use Python 3’s http.server to service my static content
-(index.html and sightings.js). The index.html and sightings.js files
-access the JSON API micro service to provide a human friendly view of
-our application data.</p>
+database content is managed through a JSON data API provided by
+PostgREST 11. I will use Python 3’s http.server to service my static
+content (index.html and sightings.js). The index.html and sightings.js
+files access the JSON data API microservice to provide a human friendly
+view of our application data.</p>
 <blockquote>
 <p>This demo focuses on the impact in the development process not how
 you would configure a similarly application in a public or production
@@ -52,7 +52,7 @@ happen without changing the SQL code modeling data or application
 behaviors. These enhancement will not be covered in this presentation
 and are left as an exercise for the reader.</p>
 <p>PostgREST provides a generic middle ware that transforms a Postgres
-database into a RESTful JSON API that can be OpenAPI compliant if
+database into a RESTful JSON data API that can be OpenAPI compliant if
 desired. PostgREST knows the schema for the database because it knows
 how Postgres works. It provides simplified routes (URL paths) for
 interacting with a database, queries, views and stored procedures. That
@@ -65,7 +65,7 @@ would need to write SOME CREATE statements to model the data and
 understand the SELECT statement. An improvement would be to understand
 SQL VIEWS. With SQL VIEWS you can organize more complicated SELECT
 statements into a single name that becomes an end point in your JSON
-API. The demo will use this approach.</p>
+data API. The demo will use this approach.</p>
 <p>A more realistic minimum knowledge for a read write application would
 be able to write CREATE, DROP, INSERT, UPDATE and DELETE statements.
 Have an understanding of Postgres VIEWS[2] and SCHEMA[3] (helpful in
@@ -87,15 +87,16 @@ Language</a></p>
 application responsibilities</h2>
 <p>The architecture I am suggesting is traditional. The novel feature is
 relying only on off the shelf middle ware implemented by PostgREST. How
-the JSON API works is defined and managed directly in our Postgres
+the JSON data API works is defined and managed directly in our Postgres
 database after configuring PostgREST to access our Postgres
 database.</p>
 <ol type="1">
-<li>Two micro services provide data manage and transformation</li>
+<li>Two microservices provide data manage and transformation</li>
 </ol>
 <ul>
 <li>PostgreSQL, data modeling, data and role management</li>
-<li>PostgREST, turning what we have in Postgres into a JSON API</li>
+<li>PostgREST, turning what we have in Postgres into a JSON data
+API</li>
 </ul>
 <ol start="2" type="1">
 <li>The front end web server and web browser provides our human facing
@@ -344,12 +345,12 @@ JavaScript.</p>
 <p>This is the basic data flow:</p>
 <ol type="1">
 <li>Get a handle on the “bird-list” div</li>
-<li>Contact the JSON API to get back our list of birds</li>
+<li>Contact the JSON data API to get back our list of birds</li>
 <li>When we have read it back generate HTML to insert inside
 “bird-list”</li>
 </ol>
 <p>Here’s the JavaScript to make the bird list appear.</p>
-<pre><code>/* sightings.js provides access to our JSON API run by PostgREST
+<pre><code>/* sightings.js provides access to our JSON data API run by PostgREST
    and assembles the results before updating the web page. */
 (function(document, window) {
   let list_url = &#39;http://localhost:3000/bird_view&#39;,
@@ -420,7 +421,7 @@ a bird” and pressing the button “Add Bird Sighting”.</p>
 in writing a read/write web application based on PostgreSQL 15,
 PostgREST 11 and static pages. In the real world you’d do must more than
 this like use a web server like NginX or Apache 2 and reverse proxy to
-the static file system and the PostgREST micro service. The web server
+the static file system and the PostgREST microservice. The web server
 can also proxy for other services too. An interesting one to support
 would be Markdown rendering via Pandoc server. You still might want to
 add some middle ware like Opensearch. I leave theses as exercises for

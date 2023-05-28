@@ -6,7 +6,7 @@ author: "R. S. Doiel"
 
 # Building with PostgreSQL and PostgREST
 
-I would like to suggest a simplification in building web applications. I will show you how to create a complete web application using SQL, HTML and JavaScript. The application uses a micro service model. Data is modeled and access via a Postgres 15 database. The database content is managed through a JSON API provided by PostgREST 11. I will use Python 3's http.server to service my static content (index.html and sightings.js). The index.html and sightings.js files access the JSON API micro service to provide a human friendly view of our application data.
+I would like to suggest a simplification in building web applications. I will show you how to create a complete web application using SQL, HTML and JavaScript. The application uses a microservice model. Data is modeled and access via a Postgres 15 database. The database content is managed through a JSON data API provided by PostgREST 11. I will use Python 3's http.server to service my static content (index.html and sightings.js). The index.html and sightings.js files access the JSON data API microservice to provide a human friendly view of our application data.
 
 > This demo focuses on the impact in the development process not how you would configure a similarly application in a public or production settings.  As a result PostgREST and our web server run on localhost.
 
@@ -15,12 +15,12 @@ How does this approach simplify creating and managing web applications?
 I believe this approach simplifies the number of layers that need to be managed by the developer. It provides clear lines dividing responsibilities of the back end (PostgreSQL and PostgREST) and the front end (the web server in combination with the web browser). It reduces the required number of language context switches to primarily SQL and JavaScript. It provides the option of integration with other layers (e.g. single sign on if you were using a real web server like NginX or Apache 2) and scaling wide via configuring Postgres in a HA setup along with load balancing. Scaling and adding access controls can happen without changing the SQL code modeling data or application behaviors. These enhancement will not be covered in this presentation and are left as an exercise for the reader.
 
 
-PostgREST provides a generic middle ware that transforms a Postgres database into a RESTful JSON API that can be OpenAPI compliant if desired. PostgREST knows the schema for the database because it knows how Postgres works. It provides simplified routes (URL paths) for interacting with a database, queries, views and stored procedures. That later two will help keep the URLs simple when used by your front end. Aside from configuration the database and PostgREST you only need to write SQL to develop the back end.
+PostgREST provides a generic middle ware that transforms a Postgres database into a RESTful JSON data API that can be OpenAPI compliant if desired. PostgREST knows the schema for the database because it knows how Postgres works. It provides simplified routes (URL paths) for interacting with a database, queries, views and stored procedures. That later two will help keep the URLs simple when used by your front end. Aside from configuration the database and PostgREST you only need to write SQL to develop the back end.
 
 
 How much SQL do I need to know to use Postgres with PostgREST?
 
-The bare minimum would be for a read only style web application. You would need to write SOME CREATE statements to model the data and understand the SELECT statement.  An improvement would be to understand SQL VIEWS. With SQL VIEWS you can organize more complicated SELECT statements into a single name that becomes an end point in your JSON API. The demo will use this approach.
+The bare minimum would be for a read only style web application. You would need to write SOME CREATE statements to model the data and understand the SELECT statement.  An improvement would be to understand SQL VIEWS. With SQL VIEWS you can organize more complicated SELECT statements into a single name that becomes an end point in your JSON data API. The demo will use this approach.
 
 A more realistic minimum knowledge for a read write application would be able to write CREATE, DROP, INSERT, UPDATE and DELETE statements. Have an understanding of Postgres VIEWS[2] and SCHEMA[3] (helpful in debugging permission issues) and a basic understanding of stored procedures[4].
 
@@ -33,11 +33,11 @@ A more realistic minimum knowledge for a read write application would be able to
 
 ## Dividing up application responsibilities
 
-The architecture I am suggesting is traditional. The novel feature is relying only on off the shelf middle ware implemented by PostgREST. How the JSON API works is defined and managed directly in our Postgres database after configuring PostgREST to access our Postgres database.
+The architecture I am suggesting is traditional. The novel feature is relying only on off the shelf middle ware implemented by PostgREST. How the JSON data API works is defined and managed directly in our Postgres database after configuring PostgREST to access our Postgres database.
 
-1. Two micro services provide data manage and transformation
+1. Two microservices provide data manage and transformation
   - PostgreSQL, data modeling, data and role management
-  - PostgREST, turning what we have in Postgres into a JSON API
+  - PostgREST, turning what we have in Postgres into a JSON data API
 2. The front end web server and web browser provides our human facing interface through static HTML and JavaScript
 
 ## Requirements
@@ -293,13 +293,13 @@ We now need to populate our "bird-list" div element via JavaScript.
 This is the basic data flow:
 
 1. Get a handle on the "bird-list" div
-2. Contact the JSON API to get back our list of birds
+2. Contact the JSON data API to get back our list of birds
 3. When we have read it back generate HTML to insert inside "bird-list"
 
 Here's the JavaScript to make the bird list appear.
 
 ~~~
-/* sightings.js provides access to our JSON API run by PostgREST
+/* sightings.js provides access to our JSON data API run by PostgREST
    and assembles the results before updating the web page. */
 (function(document, window) {
   let list_url = 'http://localhost:3000/bird_view',
@@ -370,6 +370,6 @@ and pressing the button "Add Bird Sighting".
 
 ## Closing thoughts
 
-This is just a proof of concept demo to show what would be involved in writing a read/write web application based on PostgreSQL 15, PostgREST 11 and static pages. In the real world you'd do must more than this like use a web server like NginX or Apache 2 and reverse proxy to the static file system and the PostgREST micro service.  The web server can also proxy for other services too. An interesting one to support would be Markdown rendering via Pandoc server. You still might want to add some middle ware like Opensearch. I leave theses as exercises for the future.  This demo establishes that you can write a web application using just SQL, HTML and JavaScript. If you are interested in exploring this further I recommend going to both the Postgres website and follow their tutorials and documentation for what Postgres can do (it's allot) and go to the PostgREST site and explore both the documentation and examples. I've barely scratched the surface with this demo.
+This is just a proof of concept demo to show what would be involved in writing a read/write web application based on PostgreSQL 15, PostgREST 11 and static pages. In the real world you'd do must more than this like use a web server like NginX or Apache 2 and reverse proxy to the static file system and the PostgREST microservice.  The web server can also proxy for other services too. An interesting one to support would be Markdown rendering via Pandoc server. You still might want to add some middle ware like Opensearch. I leave theses as exercises for the future.  This demo establishes that you can write a web application using just SQL, HTML and JavaScript. If you are interested in exploring this further I recommend going to both the Postgres website and follow their tutorials and documentation for what Postgres can do (it's allot) and go to the PostgREST site and explore both the documentation and examples. I've barely scratched the surface with this demo.
 
 

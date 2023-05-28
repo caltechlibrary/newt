@@ -26,6 +26,35 @@ cat <<EOT>birds2/README.md
 
 This directory holds our demo.
 
+## Setup Database
+
+1. Start psql and connect to the birds database
+2. Run [setup.sql](setup.sql)
+3. Load [birds.csv](birds.csv)
+4. Run a select query and confirm the data loaded
+5. Quit psql, you are ready to setup PostgREST
+
+~~~
+psql
+\\c birds
+\\i setup.sql
+\\copy sighting from 'birds.csv' with (FORMAT CSV, HEADER);
+SELECT * FROM sighting;
+\\q
+~~~
+
+## Startup PostgREST
+
+1. start PostgREST 'postgrest postgrest.conf'
+2. Using curl make sure it is available 'https://localhost:3000/bird_view'
+
+## Startup static web server on local host
+
+1. in another shell session go to the htdocs directory
+2. start a static web server on localhost, e.g. 'python3 -m http http.server'
+3. Point your web browser at the static web server and see what happens
+
+
 EOT
 
 # Generate our SQL setup modeling our simple data
@@ -81,7 +110,7 @@ EOT
 
 # Generate some test data to load into our models
 cat <<EOT>birds2/birds.csv
-bird,place,sighted
+bird_name,place,sighted
 robin, seen in my backyard,2023-04-16
 humming bird, seen in my backyard, 2023-02-28
 blue jay, seen on my back porch, 2023-01-12
@@ -123,8 +152,8 @@ cat <<EOT>birds2/htdocs/index.html
 EOT
 
 # Generate sightings.js
-cat <<EOT>birds2/htdocs/sightings.js
-/* sightings.js provides access to our JSON API run by PostgREST
+cat <<EOT>birds/htdocs/sightings.js
+/* sightings.js provides access to our JSON data API run by PostgREST
    and assembles the results before updating the web page. */
 (function(document, window) {
   let list_url = 'http://localhost:3000/bird_view',
@@ -188,3 +217,5 @@ cat <<EOT>birds2/htdocs/sightings.js
   getData(list_elem, list_url, updateList);
 })(document, window);
 EOT
+
+

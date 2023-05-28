@@ -52,11 +52,10 @@
     postData(birdRecord(bird_elem, place_elem, sighted_elem), record_url);
 	/* Now we need to update our listing! */
 	list_elem.innerHTML = '';
-	console.log("DEBUG cleared list element, waiting");
 	setTimeout(() => {
+  		console.log("Delayed for 10 second.");
   		getData(list_elem, list_url, updateList);
-  		console.log("Delayed for 1 second.");
-	}, "1 second");
+	}, "10 second");
     evt.preventDefault();
   });
 
