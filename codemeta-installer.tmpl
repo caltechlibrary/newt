@@ -3,11 +3,10 @@
 #
 # Set the package name and version to install
 #
-REPO_NAME="newt"
-GIT_USER_OR_GROUP="caltechlibrary"
 PACKAGE="$name$"
-VERSION="v$version$"
-RELEASE="https://github.com/$$GIT_USER_OR_GROUP/$$REPO_NAME/releases/tag/$$VERSION"
+VERSION="$version$"
+GIT_GROUP="$git_org_or_person$"
+RELEASE="https://github.com/$$GIT_GROUP/$$PACKAGE/releases/tag/v$$VERSION"
 
 #
 # Get the name of this script.
@@ -21,15 +20,19 @@ OS_NAME="$$(uname -o)"
 MACHINE="$$(uname -m)"
 case "$$OS_NAME" in
    Darwin)
-   OS_NAME="macos"
+   OS_NAME="macOS"
+   ;;
+   "GNU/Linux")
+   OS_NAME="Linux"
    ;;
 esac
-ZIPFILE="$$PACKAGE-$$VERSION-$$OS_NAME-$$MACHINE.zip"
+
+ZIPFILE="$$PACKAGE-v$$VERSION-$$OS_NAME-$$MACHINE.zip"
 
 #
 # Check to see if this zip file has been downloaded.
 #
-DOWNLOAD_URL="https://github.com/$$GIT_USER_OR_GROUP/$$REPO_NAME/releases/download/$$VERSION/$$ZIPFILE"
+DOWNLOAD_URL="https://github.com/$$GIT_GROUP/$$PACKAGE/releases/download/v$$VERSION/$$ZIPFILE"
 if ! curl -L -o "$$HOME/Downloads/$$ZIPFILE" "$$DOWNLOAD_URL"; then
 	echo "Curl failed to get $$DOWNLOAD_URL"
 fi
@@ -70,31 +73,27 @@ mkdir -p "$$HOME/bin"
 EXPLAIN_OS_POLICY="yes"
 find bin -type f >.binfiles.tmp
 while read -r APP; do
-        V=$$("./$$APP" --version)
-        if [ "$$V" = ""  ]; then
-                EXPLAIN_OS_POLICY="yes"
-        fi
-        mv "$$APP" "$$HOME/bin/"
+	V=$$("./$$APP" --version)
+	if [ "$$V" = ""  ]; then
+		EXPLAIN_OS_POLICY="yes"
+	fi
+	mv "$$APP" "$$HOME/bin/"
 done <.binfiles.tmp
 rm .binfiles.tmp
 
 #
 # Make sure $$HOME/bin is in the path
 #
-DIR_IN_PATH='no'
-for P in $$PATH; do
-  if [ "$$P" = "$$HOME/bin" ]; then
-	 DIR_IN_PATH='yes'
-  fi
-done
-if [ "$$DIR_IN_PATH" = "no" ]; then
+case :$$PATH: in
+	*:$$HOME/bin:*) 
+	;;
+	*)
 	# shellcheck disable=SC2016
 	echo 'export PATH="$$HOME/bin:$$PATH"' >>"$$HOME/.bashrc"
 	# shellcheck disable=SC2016
 	echo 'export PATH="$$HOME/bin:$$PATH"' >>"$$HOME/.zshrc"
-fi
-rm -fR "$$HOME/.$$PACKAGE/installer"
-cd "$$START" || exit 1
+    ;;	
+esac
 
 # shellcheck disable=SC2031
 if [ "$$EXPLAIN_OS_POLICY" = "no" ]; then
@@ -102,7 +101,7 @@ if [ "$$EXPLAIN_OS_POLICY" = "no" ]; then
 
   You need to take additional steps to complete installation.
 
-  Your operating systems' security policied need to "allow" 
+  Your operating system security policied needs to "allow" 
   running programs from $$PACKAGE.
 
   Example: on macOS you can type open the programs in finder.
@@ -121,7 +120,7 @@ fi
 #
 EXPLAIN_MAN_PATH="no"
 for SECTION in 1 2 3 4 5 6 7; do
-    if [ -f "man/man$${SECTION}" ]; then
+    if [ -d "man/man$${SECTION}" ]; then
         EXPLAIN_MAN_PATH="yes"
         mkdir -p "$$HOME/man/man$${SECTION}"
         find "man/man$${SECTION}" -type f | while read -r MAN; do
@@ -143,3 +142,5 @@ EOT
 
 fi
 
+rm -fR "$$HOME/.$$PACKAGE/installer"
+cd "$$START" || exit 1
