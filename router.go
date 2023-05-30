@@ -244,13 +244,13 @@ func (router *Router) ResolveApiURL(no int, m map[string]string) (string, bool) 
 
 // RequestDataAPI
 func (router *Router) RequestDataAPI(rNo int, apiURL string) ([]byte, string, int) {
-	// Make an http call to the JSON data API
+	// FIXME: Make an http call to the JSON data API
 	return nil, http.StatusText(501), 501
 }
 
 // RequestPandoc
 func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
-	// Make an http call to Pandoc server
+	// FIXME: Make an http call to Pandoc server
 	return nil, http.StatusText(501), 501
 }
 
