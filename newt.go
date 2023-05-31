@@ -80,7 +80,7 @@ func LoadConfig(configFName string) (*Config, error) {
 		cfg.Htdocs = os.Getenv("NEWT_HTDOCS")
 	}
 	if cfg.Port == "" {
-		cfg.Port = "4040"
+		cfg.Port = "8040"
 	} 
 	if strings.HasPrefix(cfg.Port, ":") {
 		cfg.Port = cfg.Port[1:]
@@ -140,25 +140,22 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 
 	appName := path.Base(os.Args[0])
 	mux := http.NewServeMux()
-	if cfg.Routes != "" {
-		log.Printf("%s using %s for routing", appName, cfg.Routes)
-	}
 	switch {
 	case cfg.Htdocs != "" && cfg.Routes != "":
 		log.Printf("%s using %s for static content and %s for router", appName, cfg.Htdocs, cfg.Routes)
-		mux.Handle("/", router.Newt(http.FileServer(http.Dir(cfg.Htdocs))))
-	case cfg.Htdocs != "" && cfg.Routes == "":
-		log.Printf("%s using %s for static content only", appName, cfg.Htdocs)
-		mux.Handle("/", http.FileServer(http.Dir(cfg.Htdocs)))
+		mux.Handle("/", wsfn.RequestLogger(router.Newt(http.FileServer(http.Dir(cfg.Htdocs)))))
 	case cfg.Htdocs == "" && cfg.Routes != "":
 		log.Printf("%s using %s for router only", appName, cfg.Routes)
-		mux.Handle("/", router.Newt(http.NotFoundHandler()))
+		mux.Handle("/", wsfn.RequestLogger(router.Newt(http.NotFoundHandler())))
+	case cfg.Htdocs != "" && cfg.Routes == "":
+		log.Printf("%s using %s for static content only", appName, cfg.Htdocs)
+		mux.Handle("/", wsfn.RequestLogger(http.FileServer(http.Dir(cfg.Htdocs))))
 	default:
-		fmt.Fprintf(eout, "Nothing configured, aborting\n")
+		log.Printf("Not configured, aborting")
 		return 1
 	}
 
 	log.Printf("%s listening on port %s", appName, cfg.Port)
-	http.ListenAndServe(":"+cfg.Port, wsfn.RequestLogger(mux))
+	http.ListenAndServe(":"+cfg.Port, mux)
 	return 0
 }

@@ -1,0 +1,31 @@
+<DOCTYPE html lang="en"\>
+<html>
+  <head><title>Birds 3 Demo</title></head>
+  <body>
+    <header>Birds 3 Demo</header>
+	<p>
+    <h1>Welcome to the bird list!</h1>
+    <p>
+<h2>Bird List</h2>
+<table>
+<thead>
+<tr class="header">
+<th>bird_name</th>
+<th>place</th>
+<th>sighted</th>
+</tr>
+</thead>
+<tbody>
+$for(birds)$
+<tr>
+<td>$it.name$</td>
+<td>$it.place$</td>
+<td>$it.sighted$</td>
+</tr>
+$endfor$
+</tbody>
+</table>
+	<p>
+	<footer></footer>
+  </body>
+</html>

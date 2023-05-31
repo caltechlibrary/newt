@@ -30,16 +30,14 @@ This directory holds our demo.
 
 1. Start psql and connect to the birds database
 2. Run [setup.sql](setup.sql)
-3. Load [birds.csv](birds.csv)
-4. Run a select query and confirm the data loaded
-5. Quit psql, you are ready to setup PostgREST
+3. Run a select query and confirm the data loaded
+4. Quit psql, you are ready to setup PostgREST
 
 ~~~
 psql
 \\c birds
 \\i setup.sql
-\\copy sighting from 'birds.csv' with (FORMAT CSV, HEADER);
-SELECT * FROM sighting;
+SELECT * FROM birds.sighting;
 \\q
 ~~~
 
@@ -106,6 +104,9 @@ DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
 GRANT birds_anonymous TO birds;
 
+-- Now import our CSV file of birds.csv
+\\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
+
 EOT
 
 # Generate some test data to load into our models
@@ -152,7 +153,7 @@ cat <<EOT>birds2/htdocs/index.html
 EOT
 
 # Generate sightings.js
-cat <<EOT>birds/htdocs/sightings.js
+cat <<EOT>birds2/htdocs/sightings.js
 /* sightings.js provides access to our JSON data API run by PostgREST
    and assembles the results before updating the web page. */
 (function(document, window) {

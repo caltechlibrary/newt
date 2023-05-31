@@ -1,2 +1,1 @@
-req_path,req_method,req_content_type,api_url,api_method,api_content_type,pandoc,pandoc_options,pandoc_template,res_headers
-/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/,GET,text/html,http://{{DB_USERNAME}}:{{DB_PASSWORD}}@localhost:3000/{{DB_NAME}}/?post_date={{yr}}-{{mo}}-{{dy}},GET,application/json,3030,from=json&to=html&standalone=true,,"{""content-type"":""text/html""}"
+req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers /blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/,GET,http://{{DB_USERNAME}}:{{DB_PASSWORD}}@localhost:3000/{{DB_NAME}}/?post_date={{yr}}-{{mo}}-{{dy}},GET,"application/json","","{""content-type"":""text/html""}"

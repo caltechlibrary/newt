@@ -1,4 +1,4 @@
-/* sightings.js provides access to our JSON API run by PostgREST
+/* sightings.js provides access to our JSON data API run by PostgREST
    and assembles the results before updating the web page. */
 (function(document, window) {
   let list_url = 'http://localhost:3000/bird_view',

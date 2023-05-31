@@ -1,10 +1,12 @@
 package newt
 
 import (
+	"bytes"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	//"net/url"
 	"os"
@@ -14,12 +16,9 @@ import (
 const (
 	reqPath = iota
 	reqMethod
-	reqContentType
 	apiURL
 	apiMethod
 	apiContentType
-	pandoc
-	pandocOptions
 	pandocTemplate
 	resHeaders
 )
@@ -28,12 +27,9 @@ var (
 	routerColumns = []string{
 		"req_path",
 		"req_method",
-		"req_content_type",
 		"api_url",
 		"api_method",
 		"api_content_type",
-		"pandoc",
-		"pandoc_options",
 		"pandoc_template",
 		"res_headers",
 	}
@@ -46,18 +42,12 @@ type Route struct {
 	ReqPath *RouteDSL
 	// ReqMethod, the request HTTP method (e.g. GET, POST, PUT, DELETE, PATCH, HEAD)
 	ReqMethod string
-	// ReqContentType, content of request, e.g. text/html, application/json
-	ReqContentType string
 	// ApiURL is the URL used to contact the data source (e.g. PostgREST, Solr, Elasticsearch)
 	ApiURL string
 	// ApiMethod indicates the HTTP method to be used to contact the data source api
 	ApiMethod string
 	// ApiContentType is the content type to be used to contact the data source api
 	ApiContentType string
-	// Pandoc if true route the data source content through Pandoc server
-	Pandoc bool
-	// PandocOptions is a URL query string to pass to the Pandoc server
-	PandocOptions string
 	// PandocTemplate holds the source to a Pandoc template
 	PandocTemplate []byte
 	// ResHeaders holds any additional response headers to send back to the
@@ -103,7 +93,7 @@ func (router *Router) OverlayEnv(m map[string]string) map[string]string {
 
 func isHTTPMethod(s string) bool {
 	s = strings.ToUpper(s)
-	for _, method := range []string{"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"} {
+	for _, method := range []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodHead} {
 		if strings.Compare(method, s) == 0 {
 			return true
 		}
@@ -151,8 +141,6 @@ func (router *Router) ReadCSV(fName string) error {
 				return fmt.Errorf("rep_method error, line %d in %q, unsupported method %q", rowNo, fName, record[reqMethod])
 			}
 			route.ReqMethod = record[reqMethod]
-			// FIXME: validate content type
-			route.ReqContentType = record[reqContentType]
 			// FIXME: need to make sure this make sense
 			route.ApiURL = record[apiURL]
 			if !isHTTPMethod(record[reqMethod]) {
@@ -161,15 +149,6 @@ func (router *Router) ReadCSV(fName string) error {
 			route.ApiMethod = record[apiMethod]
 			// FIXME: validate content type
 			route.ApiContentType = record[apiContentType]
-			// FIXME: make sure this is a port number
-			if (strings.ToLower(record[pandoc]) == "true") || (record[pandoc] == "1") {
-				route.Pandoc = true
-			} else {
-				route.Pandoc = false
-			}
-			// FIXME: make sure this is formed as a query string
-			route.PandocOptions = record[pandocOptions]
-			// FIXME: validate template name, save template source
 			templateName := record[pandocTemplate]
 			if templateName != "" {
 				route.PandocTemplate, err = os.ReadFile(templateName)
@@ -194,13 +173,6 @@ func (router *Router) ReadCSV(fName string) error {
 	return nil
 }
 
-func (route *Route) HasContentType(contentTypes string) bool {
-	if strings.Contains(contentTypes, route.ReqContentType) {
-		return true
-	}
-	return false
-}
-
 func (route *Route) HasReqMethod(method string) bool {
 	if route.ReqMethod == method {
 		return true
@@ -208,12 +180,12 @@ func (route *Route) HasReqMethod(method string) bool {
 	return false
 }
 
-func (router *Router) ResolveRoute(u string, method string, contentType string) (int, map[string]string, bool) {
+func (router *Router) ResolveRoute(u string, method string) (int, map[string]string, bool) {
 	for i, r := range router.Routes {
-		// Compare our HTTP method and make sure Content Types
-		// are supported by request route.
-		if router.Routes[i].HasReqMethod(method) && router.Routes[i].HasContentType(contentType) {
+		// Compare our HTTP method then route to determine response.
+		if router.Routes[i].HasReqMethod(method) {
 			// Now see if the path matches
+			fmt.Fprintf(os.Stderr, "DEBUG r.Req.Path.Eval(%q)\n", u)
 			if m, ok := r.ReqPath.Eval(u); ok {
 				// Merge the environent map of router.Env with the
 				// returned map from Eval.
@@ -233,25 +205,72 @@ func (router *Router) ResolveRoute(u string, method string, contentType string) 
 // It included an error if something went wrong.
 func (router *Router) ResolveApiURL(no int, m map[string]string) (string, bool) {
 	if no >= 0 && no < len(router.Routes) {
-		res, ok := router.Routes[no].ReqPath.Resolve(m, router.Routes[no].ApiURL), true
-		if router.Debug {
-			fmt.Fprintf(os.Stderr, "DEBUG resolved api URL %q\n", res)
-		}
-		return res, ok
+		return router.Routes[no].ReqPath.Resolve(m, router.Routes[no].ApiURL), true
 	}
 	return "", false
 }
 
 // RequestDataAPI
-func (router *Router) RequestDataAPI(rNo int, apiURL string) ([]byte, string, int) {
+func (router *Router) RequestDataAPI(rNo int, apiURL string, body []byte) ([]byte, string, int) {
 	// FIXME: Make an http call to the JSON data API
-	return nil, http.StatusText(501), 501
+	method, contentType := strings.ToUpper(router.Routes[rNo].ApiMethod), router.Routes[rNo].ApiContentType
+	var (
+		res *http.Response
+		err error
+	)
+	buf := bytes.NewBuffer(body)
+	switch method {
+		case http.MethodGet:
+			res, err = http.Get(apiURL)
+		case http.MethodPost:
+			res, err = http.Post(apiURL, contentType, buf)
+		default:
+			log.Printf("http method not supported %s", method)
+			return nil, http.StatusText(502), 502
+	}
+	if err != nil {
+		log.Printf("%s", err)
+		// Bad Gateway
+		return nil, http.StatusText(502), 502
+	}
+	defer res.Body.Close()
+	src, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Printf("%s", err)
+		// Bad Gateway
+		return nil, http.StatusText(502), 502
+	}
+	return src, http.StatusText(200), 200
 }
 
 // RequestPandoc
 func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
+    template := router.Routes[rNo].PandocTemplate
+	u := "http://localhost:3030"
+	m := map[string]interface{}{}
+	m["standalone"] = true
+	m["metadata"] = src
+	if len(template) > 0 {
+		m["template"] = template
+	}
 	// FIXME: Make an http call to Pandoc server
-	return nil, http.StatusText(501), 501
+	buf, err := json.Marshal(m)
+	if err != nil {
+		log.Printf("RequestPandoc(%d, src), %s", rNo, err)
+		return nil, http.StatusText(502), 502
+	}
+	res, err := http.Post(u, "application/json", bytes.NewBuffer(buf))
+	if err != nil {
+		log.Printf("RequestPandoc(%d, src), %s", rNo, err)
+		return nil, http.StatusText(502), 502
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Printf("RequestPandoc(%d, src), %s", rNo, err)
+		return nil, http.StatusText(res.StatusCode), res.StatusCode
+	}
+	return body, http.StatusText(res.StatusCode), res.StatusCode
 }
 
 // WriteResponse
@@ -272,17 +291,23 @@ func (router *Router) WriteResponse(w http.ResponseWriter, rNo int, src []byte) 
 // the Newt application be both a data router and static file server.
 func (router *Router) Newt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		contentTypes := req.Header.Get("Content-Type")
-		rNo, m, ok := router.ResolveRoute(req.URL.Path, req.Method, contentTypes)
+		rNo, m, ok := router.ResolveRoute(req.URL.Path, req.Method)
+		log.Printf("DEBUG rNo %d, reg.Method %s, req.URL %s, ok %t", rNo, req.Method, req.URL.String(), ok)
 		if !ok {
-			/*
-				// Handle 404
-				http.Error(w, http.StatusText(404), 404)
-				return
-			*/
-			// We don't match a route, pass this on to the next handler
+			// NOTE: We don't match a route, pass this on to the next handler
 			next.ServeHTTP(w, req)
 			return
+		}
+		var (
+			body []byte
+			err error
+		)
+		if  req.Method != http.MethodGet {
+			body, err = io.ReadAll(req.Body)
+			if err != nil {
+				log.Printf("request body error %s", err)
+				return
+			}
 		}
 		// Get content from the JSON Data API
 		apiURL, ok := router.ResolveApiURL(rNo, m)
@@ -291,14 +316,14 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 			http.Error(w, http.StatusText(502), 502)
 			return
 		}
-		src, statusText, statusCode := router.RequestDataAPI(rNo, apiURL)
+		src, statusText, statusCode := router.RequestDataAPI(rNo, apiURL, body)
 		if statusCode < 200 || statusCode >= 300 {
 			// echo back the data request status code and text
 			http.Error(w, statusText, statusCode)
 			return
 		}
 		// NOTE: if Pandoc transform data request
-		if router.Routes[rNo].Pandoc {
+		if router.Routes[rNo].PandocTemplate != nil {
 			src, statusText, statusCode = router.RequestPandoc(rNo, src)
 			if statusCode < 200 || statusCode >= 300 {
 				// echo back the pandoc request status code and text
