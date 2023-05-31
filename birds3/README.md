@@ -1,5 +1,5 @@
 
-# Birds, a demo of PostgreSQL 15, PostgREST 11
+# Birds 3, a demo of PostgreSQL 15, PostgREST 11 and Newt
 
 This directory holds our demo.
 
@@ -14,6 +14,7 @@ This directory holds our demo.
 psql
 \c birds
 \i setup.sql
+\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
 SELECT * FROM birds.sighting;
 \q
 ~~~
@@ -23,10 +24,11 @@ SELECT * FROM birds.sighting;
 1. start PostgREST 'postgrest postgrest.conf'
 2. Using curl make sure it is available 'https://localhost:3000/bird_view'
 
-## Startup static web server on local host
+## Setup Newt
 
-1. in another shell session go to the htdocs directory
-2. start a static web server on localhost, e.g. 'python3 -m http http.server'
-3. Point your web browser at the static web server and see what happens
+1. Create a birds-routes.csv file holding the routes for our birds application
+2. Create birds.yaml file with 'newt_routes' and 'new_htdocs' defined.
+3. Start up Newt service using the YAML file.
+4. Point your web browser at the Newt and see what happens
 
 

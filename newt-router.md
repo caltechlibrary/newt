@@ -12,21 +12,18 @@ I conceptualize this with the following.
 - request
     - request route
     - request HTTP method
-    - request content type
 - data api
     - api url
     - api HTTP method
     - api content type
 - pandoc request
-    - pandoc port number
-    - pandoc server query string (to set pandoc options)
-    - pandoc template name
+    - pandoc template name (if this is empty then Pandoc is not used)
 
 This can be easily represented in a table (e.g. a CSV file) and managed from
 a spreadsheet. Here's the columns need in a csv file.
 
 ```csv
-req_route, req_method, req_content_type, api_url, api_method, api_content_type, pandoc_port, pandoc_query_string, pandoc_template
+req_route, req_method, req_content_type, api_url, api_method, api_content_type, pandoc_template
 ```
 
 Newt itself needs to know four things to run.
@@ -66,13 +63,11 @@ In the template values for "{year}", "{month}", "{day}" came from our request ro
 
 ## The routes CSV columns defined
 
-api_url, api_method, api_content_type, pandoc_port, pandoc_query_string, pandoc_template
-
 req_route
 : route description (see [Path DSL concept](pathdsl.md))
 
 req_method
-: required HTTP method (e.g. GET, POST, HEAD, PATCH, PUT)
+: required HTTP method (e.g. GET, POST)
 
 req_content_type
 : requested content type (e.g. "text/html")
@@ -85,12 +80,6 @@ api_method
 
 api_content_type
 : the mime type requested from the data source (e.g. "applicaiton/json")
-
-pandoc_port
-: the port number the Pandoc server is running on
-
-pandoc_query_string
-: this is the query string (e.g. `from=json&to=markdown`) used by the Pandoc server to process the request
 
 pandoc_template
 : the filename that will be loaded at start up of Newt and sent with the Pandoc service request for Pandoc to process

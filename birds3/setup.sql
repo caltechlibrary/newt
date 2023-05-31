@@ -45,6 +45,6 @@ DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
 GRANT birds_anonymous TO birds;
 
--- Now import our CSV file of birds.csv
+-- Import our CSV data into birds.sighting
 \copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
 

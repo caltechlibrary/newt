@@ -1,11 +1,6 @@
 ---
-<<<<<<< HEAD
-title: "newt(1) user manual | Version 0.0.1 a191ba4"
-pubDate: 2023-05-20
-=======
-title: "newt(1) user manual | Version 0.0.1 3db768b"
-pubDate: 2023-05-26
->>>>>>> 17da2eec9b8f816c2d8e8b64c743425cd5e957ba
+title: "newt(1) user manual | Version 0.0.1 118f198"
+pubDate: 2023-05-31
 author: "R. S. Doiel"
 ---
 

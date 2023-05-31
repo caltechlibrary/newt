@@ -30,16 +30,15 @@ This directory holds our demo.
 
 1. Start psql and connect to the birds database
 2. Run [setup.sql](setup.sql)
-3. Load [birds.csv](birds.csv)
-4. Run a select query and confirm the data loaded
-5. Quit psql, you are ready to setup PostgREST
+3. Run a select query and confirm the data loaded
+4. Quit psql, you are ready to setup PostgREST
 
 ~~~
 psql
 \\c birds
 \\i setup.sql
-\\copy sighting from 'birds.csv' with (FORMAT CSV, HEADER);
-SELECT * FROM sighting;
+\\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
+SELECT * FROM birds.sighting;
 \\q
 ~~~
 
@@ -107,6 +106,9 @@ DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
 GRANT birds_anonymous TO birds;
 
+-- Import our CSV data into birds.sighting
+\\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
+
 EOT
 
 # Generate some test data to load into our models
@@ -126,8 +128,9 @@ EOT
 
 # Generate birds-routes.csv
 cat <<EOT >birds3/birds-routes.csv
-req_path,req_method,req_content_type,api_url,api_method,api_content_type,pandoc,pandoc_options,pandoc_template,res_headers
-/sightings,GET,text/html,https://localhost:3000/bird_view,GET,application/json,true,from=json&to=html5&standalone=true,page.tmpl,"{""content-type"": ""text/html""}"
+req_path,req_method,req_content_type,api_url,api_method,api_content_type,pandoc_template,res_headers
+/,GET,text/html,https://localhost:3000/sighting,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
+/bird_views,GET,text/html,https://localhost:3000/bird_view,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
 EOT
 
 # Generate birds.yaml configuration file

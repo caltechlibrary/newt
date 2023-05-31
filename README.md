@@ -1,24 +1,25 @@
 
-# Newt, a new take of the web stack
+# Newt, my new take on the web stack
 
-Newt is two things. Newt is short for "new take". Newt is also an experimental web service for working with off the shelf [microservices](https://en.wikipedia.org/wiki/Microservices). The specific microservices Newt is intend to help explore are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org). The Newt program can be thought of as both a data router (i.e. make requests to PostgREST and Pandoc) an a light weight static file server. It only runs on localhost so normally would be behind a front-end web server like NginX or Apache 2.
+Newt is two things. Newt is short for "new take". Newt is also an experimental web server for working with off the shelf [microservices](https://en.wikipedia.org/wiki/Microservices). The specific microservices Newt is intend to help explore are [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org), [Pandoc server](https://pandoc.org). The Newt program can be thought of as both a data router (i.e. make requests to PostgREST and Pandoc) and as a light weight static file server. It runs on localhost only. It would normally would be behind a front-end web server like NginX or Apache 2.
+
 
 ## Motivation
 
-My belief is that many web services used by Archives, Libraries and Museums can benefit from a simplier back-end. If the back-end is "easy" then the limited developer resources can be focused on the front-end. An improved front-end offers opportunities to provide a more humane user experience for staff and patrons.
+My belief is that many web services used by Archives, Libraries and Museums can benefit from a simplifying back-end. If the back-end is "easy" then the limited developer resources can be focused on the front-end. **An improved front-end offers opportunities to provide a more humane user experience for staff and patrons.**
 
 ## A basic Newt approach
 
-From back to front
+From front-end to back-end
 
+- A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
+- Newt is a URL router (uses a CSV file for defining routes) and provides static file services
 - Postgres+PostgREST (provides a data API, it is programmed in SQL)
 - Pandoc server (provides a templating engine to transform data sources)
-- Newt is a URL router (uses a CSV file for defining routes) and provides static file services
-- A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
 
-All these can be treated as "off the shelf". Aside from configuration they run as traditional services on POSIX systems.  Your application is primarily developed using SQL (defining the behavior our PostgREST), Pandoc templates used to turn JSON into HTML. Any additional static content (e.g. web pages, CSS, JavaScript for the web browser) may also be provided by Newt.
+All these can be treated as "off the shelf". Aside from configuration they run as traditional services on POSIX systems.  Your application is primarily developed using SQL (defining the behavior our PostgREST), Pandoc templates used to turn JSON into HTML. Any additional static content (e.g. web pages, CSS, JavaScript for the web browser) may also be provided by Newt since it includes a static file service ability.
 
-## A more complex stack
+## Extending beyond Postgres+PostgREST
 
 Similar to the above example you could include full text search via Solr, Elasticsearch or Opensearch. In that case the stack from back to front would look like.
 

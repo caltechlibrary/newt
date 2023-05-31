@@ -24,9 +24,9 @@ func TestResolveApiURL(t *testing.T) {
 	for src, expected := range pData {
 		// NOTE: we need to ResolveRoute to get a parsed Route DSL merged
 		// with any environment vars.
-		no, m, ok := router.ResolveRoute(src, "GET", "text/html")
+		no, m, ok := router.ResolveRoute(src, "GET")
 		if ! ok {
-			t.Errorf("expedcted to resolve the router %q, failed", src)
+			t.Errorf("expected to resolve the router %q, failed", src)
 			t.FailNow()
 		}
 		res, ok := router.ResolveApiURL(no, m);
