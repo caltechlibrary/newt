@@ -118,7 +118,6 @@ Configuration from a YAML file called "newt.yaml"
 	showLicense bool
 	showVersion bool
 	dryRun      bool
-	debug 		bool
 )
 
 func main() {
@@ -133,7 +132,6 @@ func main() {
 	flag.BoolVar(&showHelp, "help", false, "display help")
 	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&debug, "debug", false, "log debugging content")
 
 	// App option(s)
 	flag.BoolVar(&dryRun, "dry-run", false, "evaluate configuration and routes but don't start web service")
@@ -158,5 +156,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.Run(in, out, eout, args, dryRun, debug))
+	os.Exit(newt.Run(in, out, eout, args, dryRun))
 }

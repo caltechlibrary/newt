@@ -3,7 +3,7 @@ package newt
 import (
 	"encoding/json"
 	"fmt"
-	"os" // DEBUG
+	//"os" // DEBUG
 	"path"
 	"strings"
 )
@@ -43,7 +43,6 @@ func varDefn(src string) (string, string, error) {
 		return "", "", fmt.Errorf("missing opening or closing curly brace delimiters")
 	}
 	expr := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(src, StartVar), EndVar))
-	//fmt.Fprintf(os.Stderr, "DEBUG src -> %q -> expr -> %q\n", src, expr)
 	if expr == "" {
 		return "", "", fmt.Errorf("missing varname and type info")
 	}
@@ -73,7 +72,6 @@ func NewRouteDSL(src string) (*RouteDSL, error) {
 	rdsl.Dirs = []string{}
 	// We only evalaute the extension if here are two variables defined for the last element of path.
 	if strings.Count(base, StartVar) == 2 {
-		//fmt.Fprintf(os.Stderr, "DEBUG have a base/ext definitions -> %q\n", base)
 		parts := strings.SplitN(base, EndVar, 2)
 		rdsl.Base = parts[0] + EndVar
 		rdsl.Ext = parts[1]
@@ -159,7 +157,6 @@ func (rdsl *RouteDSL) evalElement(elem string, src string) (string, string, bool
 		return vName, val, true
 	}
 	// handle literal path element
-	fmt.Fprintf(os.Stderr, "DEBUG Comparing a static element %q -> %q? %d\n", elem, src, strings.Compare(elem, src))
 	return "", "", (strings.Compare(elem, src) == 0)
 }
 
@@ -170,25 +167,38 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 	pDirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	pExt := path.Ext(base)
 	pBase := strings.TrimSuffix(base, pExt)
-	/*
-	*/
-		if pExt != "" { // DEBUG
-			fmt.Fprintf(os.Stderr, "DEBUG pathValue -> %q\n", pathValue)
-			fmt.Fprintf(os.Stderr, "DEBUG pDirs -> %+v\n", pDirs)
-			fmt.Fprintf(os.Stderr, "DEBUG pBase -> %q\n", pBase)
-			fmt.Fprintf(os.Stderr, "DEBUG pExt -> %q\n", pExt)
-		} //DEBUG
 	if rdsl.Ext == "" {
 		pExt = ""
 		pBase = base
 	}
+	m := map[string]string{}
+
+	// Match the extension, if it contains a
+	if rdsl.Ext != "" {
+		if vName, val, ok := rdsl.evalElement(rdsl.Ext, pExt); ok {
+			// Check if we need to store the variable
+			if vName != "" {
+				m[vName] = val
+			}
+		} else {
+			return nil, false
+		}
+	}
+	// Match Basename
+	vName, val, ok := rdsl.evalElement(rdsl.Base, pBase)
+	if ok {
+		// Check if we need to store the variable
+		if vName != "" {
+			m[vName] = val
+		}
+	} else {
+		return nil, false
+	}
 	if len(pDirs) != len(rdsl.Dirs) {
 		return nil, false
 	}
-	m := map[string]string{}
 	for i, elem := range rdsl.Dirs {
 		vName, val, ok := rdsl.evalElement(elem, pDirs[i])
-		fmt.Fprintf(os.Stderr, "DEBUG (dir) vName -> %q, val -> %q, ok -> %t\n", vName, val, ok)
 		if !ok {
 			return nil, false
 		}
@@ -197,43 +207,18 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 			m[vName] = val
 		}
 	}
-	// Match the extension, if it contains a
-	if rdsl.Ext != "" {
-		fmt.Fprintf(os.Stderr, "DEBUG checking rdsl.Ext %q, pExt %q\n", rdsl.Ext, pExt)
-		if vName, val, ok := rdsl.evalElement(rdsl.Ext, pExt); ok {
-			fmt.Fprintf(os.Stderr, "DEBUG (ext) vName -> %q, val -> %q, ok -> %t\n", vName, val, ok)
-			// Check if we need to store the variable
-			if vName != "" {
-				m[vName] = val
-			}
-		}
-	}
-	// Match Basename
-	fmt.Fprintf(os.Stderr, "DEBUG checking rdsl.Base %q, pBase %q\n", rdsl.Base, pBase)
-	vName, val, ok := rdsl.evalElement(rdsl.Base, pBase)
-	if ok {
-		fmt.Fprintf(os.Stderr, "DEBUG (basename) vName -> %q, val -> %q, ok -> %t\n", vName, val, ok)
-		// Check if we need to store the variable
-		if vName != "" {
-			m[vName] = val
-		}
-	}
-	fmt.Fprintf(os.Stderr, "DEBUG final pathValue %q -> m %+v, ok %t\n", pathValue, m, ok)
 	return m, ok
 }
 
 // Resolve takes a map of varnames and values and replaces any
 // occurrences found in src string resulting to a new string..
 func (rdsl *RouteDSL) Resolve(m map[string]string, src string) string {
-	//fmt.Fprintf(os.Stderr, "DEBUG src -> %q, m -> %+v\n", src, m)
 	res := src[0:]
 	for k, v := range m {
 		k = StartVar + k + EndVar
-		//fmt.Fprintf(os.Stderr, "DEBUG k -> %q, v -> %q\n", k, v)
 		if strings.Contains(res, k) {
 			res = strings.ReplaceAll(res, k, v)
 		}
 	}
-	fmt.Fprintf(os.Stderr, "DEBUG RouteDSL.Resolve -> %q\n", res)
 	return res
 }

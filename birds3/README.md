@@ -22,7 +22,7 @@ SELECT * FROM birds.sighting;
 ## Startup PostgREST
 
 1. start PostgREST 'postgrest postgrest.conf'
-2. Using curl make sure it is available 'https://localhost:3000/bird_view'
+2. Using curl make sure it is available 'http://localhost:3000/bird_view'
 
 ## Setup Newt
 

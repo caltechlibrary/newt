@@ -132,7 +132,10 @@ check: .FORCE
 	go vet *.go
 
 test: clean build
-	go test
+	#dropdb birds
+	#createdb birds
+	#cd testdata && psql -d birds -c '\i birds-setup.sql'
+	go test -test.v
 
 clean: 
 	-if [ -d bin ]; then rm -fR bin; fi

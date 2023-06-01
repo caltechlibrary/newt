@@ -70,20 +70,20 @@ SET search_path TO birds, public;
 -- DROP TABLE IF EXISTS birds.sighting;
 CREATE TABLE birds.sighting
 (
-  bird_name VARCHAR(255),
+  bird VARCHAR(255),
   place TEXT,
   sighted DATE
 );
 
 -- bird_view will become an end point in PostgREST
 CREATE OR REPLACE VIEW birds.bird_view AS
-  SELECT bird_name AS bird, trim(place) AS place, sighted
-  FROM birds.sighting ORDER BY sighted ASC, bird_name ASC;
+  SELECT bird, place, sighted
+  FROM birds.sighting ORDER BY sighted ASC, bird ASC;
 
 -- record_bird is a stored procedure and will save a new bird sighting
 CREATE OR REPLACE FUNCTION birds.record_bird(bird VARCHAR, place TEXT, sighted DATE)
 RETURNS bool LANGUAGE SQL AS \$\$
-  INSERT INTO birds.sighting (bird_name, place, sighted) VALUES (bird, place, sighted);
+  INSERT INTO birds.sighting (bird, place, sighted) VALUES (bird, place, sighted);
   SELECT true;
 \$\$;
 
@@ -111,10 +111,10 @@ EOT
 
 # Generate some test data to load into our models
 cat <<EOT>birds2/birds.csv
-bird_name,place,sighted
-robin, seen in my backyard,2023-04-16
-humming bird, seen in my backyard, 2023-02-28
-blue jay, seen on my back porch, 2023-01-12
+"bird","place","sighted"
+"robin","seen in my backyard","2023-04-16"
+"humming bird","seen in my backyard","2023-02-28"
+"blue jay","seen on my back porch","2023-01-12"
 EOT
 
 # Generate a template of postgrest.conf file.

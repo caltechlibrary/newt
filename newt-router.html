@@ -37,7 +37,6 @@ this is what I am exploring in this document.</p>
 <ul>
 <li>request route</li>
 <li>request HTTP method</li>
-<li>request content type</li>
 </ul></li>
 <li>data api
 <ul>
@@ -47,14 +46,12 @@ this is what I am exploring in this document.</p>
 </ul></li>
 <li>pandoc request
 <ul>
-<li>pandoc port number</li>
-<li>pandoc server query string (to set pandoc options)</li>
-<li>pandoc template name</li>
+<li>pandoc template name (if this is empty then Pandoc is not used)</li>
 </ul></li>
 </ul>
 <p>This can be easily represented in a table (e.g. a CSV file) and
 managed from a spreadsheet. Here’s the columns need in a csv file.</p>
-<pre class="csv"><code>req_route, req_method, req_content_type, api_url, api_method, api_content_type, pandoc_port, pandoc_query_string, pandoc_template</code></pre>
+<pre class="csv"><code>req_route, req_method, req_content_type, api_url, api_method, api_content_type, pandoc_template</code></pre>
 <p>Newt itself needs to know four things to run.</p>
 <ol type="1">
 <li>url to listen on (e.g. http://localhost:4242)</li>
@@ -95,8 +92,6 @@ request route while “{DB_USER}” and “{DB_PASSWD}” came from the
 environment.</p>
 <h2 id="the-routes-csv-columns-defined">The routes CSV columns
 defined</h2>
-<p>api_url, api_method, api_content_type, pandoc_port,
-pandoc_query_string, pandoc_template</p>
 <dl>
 <dt>req_route</dt>
 <dd>
@@ -104,7 +99,7 @@ route description (see <a href="pathdsl.html">Path DSL concept</a>)
 </dd>
 <dt>req_method</dt>
 <dd>
-required HTTP method (e.g. GET, POST, HEAD, PATCH, PUT)
+required HTTP method (e.g. GET, POST)
 </dd>
 <dt>req_content_type</dt>
 <dd>
@@ -122,15 +117,6 @@ the HTTP method used when contacting the data source
 <dt>api_content_type</dt>
 <dd>
 the mime type requested from the data source (e.g. “applicaiton/json”)
-</dd>
-<dt>pandoc_port</dt>
-<dd>
-the port number the Pandoc server is running on
-</dd>
-<dt>pandoc_query_string</dt>
-<dd>
-this is the query string (e.g. <code>from=json&amp;to=markdown</code>)
-used by the Pandoc server to process the request
 </dd>
 <dt>pandoc_template</dt>
 <dd>

@@ -113,7 +113,7 @@ func LoadConfig(configFName string) (*Config, error) {
 }
 
 // Run is a runner for Newt URL router and static file server
-func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool, debug bool) int {
+func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool) int {
 	configFName := ""
 	if len(args) > 0 {
 		configFName = args[0]
@@ -125,7 +125,6 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 	}
 
 	router := new(Router)
-	router.Debug = debug
 	if cfg.Routes != "" {
 		if err := router.ReadCSV(cfg.Routes); err != nil {
 			fmt.Fprintf(eout, "error reading routes from %q, %s\n", cfg.Routes, err)
