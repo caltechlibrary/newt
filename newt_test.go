@@ -12,12 +12,12 @@ func TestDryRun(t *testing.T){
 	eout := os.Stderr
 	args := []string{}
 	args = append(args, path.Join("testdata", "blog.conf"))
-	exitCode := Run(in, out, eout, args, true, true)
+	exitCode := Run(in, out, eout, args, true)
 	if exitCode != 0 {
 		t.Errorf("expected exit code zero, got %d\n", exitCode)
 	}
 }
 
 func TestLiveRun(t *testing.T)  {
-	t.Errorf("TestLiveRun() not implemented")
+	t.Skipf("TestLiveRun() not implemented")
 }

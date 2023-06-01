@@ -1,0 +1,3 @@
+req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
+/sightings,GET,http://localhost:3000/sighting,GET,application/json,testdata/birds-page.tmpl,"{""content-type"": ""text/html""}"
+/bird_views,GET,http://localhost:3000/bird_view,GET,application/json,testdata/birds-page.tmpl,"{""content-type"": ""text/html""}"

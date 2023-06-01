@@ -45,7 +45,7 @@ SELECT * FROM birds.sighting;
 ## Startup PostgREST
 
 1. start PostgREST 'postgrest postgrest.conf'
-2. Using curl make sure it is available 'https://localhost:3000/bird_view'
+2. Using curl make sure it is available 'http://localhost:3000/bird_view'
 
 ## Setup Newt
 
@@ -72,20 +72,20 @@ SET search_path TO birds, public;
 -- DROP TABLE IF EXISTS birds.sighting;
 CREATE TABLE birds.sighting
 (
-  bird_name VARCHAR(255),
+  bird VARCHAR(255),
   place TEXT,
   sighted DATE
 );
 
 -- bird_view will become an end point in PostgREST
 CREATE OR REPLACE VIEW birds.bird_view AS
-  SELECT bird_name AS bird, trim(place) AS place, sighted
-  FROM birds.sighting ORDER BY sighted ASC, bird_name ASC;
+  SELECT bird, place, sighted
+  FROM birds.sighting ORDER BY sighted ASC, bird ASC;
 
 -- record_bird is a stored procedure and will save a new bird sighting
 CREATE OR REPLACE FUNCTION birds.record_bird(bird VARCHAR, place TEXT, sighted DATE)
 RETURNS bool LANGUAGE SQL AS \$\$
-  INSERT INTO birds.sighting (bird_name, place, sighted) VALUES (bird, place, sighted);
+  INSERT INTO birds.sighting (bird, place, sighted) VALUES (bird, place, sighted);
   SELECT true;
 \$\$;
 
@@ -113,10 +113,10 @@ EOT
 
 # Generate some test data to load into our models
 cat <<EOT >birds3/birds.csv
-bird_name,place,sighted
-robin, seen in my backyard,2023-04-16
-humming bird, seen in my backyard, 2023-02-28
-blue jay, seen on my back porch, 2023-01-12
+"bird","place","sighted"
+"robin","seen in my backyard","2023-04-16"
+"humming bird","seen in my backyard","2023-02-28"
+"blue jay","seen on my back porch","2023-01-12"
 EOT
 
 # Generate a template of postgrest.conf file.
@@ -128,9 +128,9 @@ EOT
 
 # Generate birds-routes.csv
 cat <<EOT >birds3/birds-routes.csv
-req_path,req_method,req_content_type,api_url,api_method,api_content_type,pandoc_template,res_headers
-/,GET,text/html,https://localhost:3000/sighting,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
-/bird_views,GET,text/html,https://localhost:3000/bird_view,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
+req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
+/sightings,GET,http://localhost:3000/sighting,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
+/bird_views,GET,http://localhost:3000/bird_view,GET,application/json,,"{""content-type"": ""application/json""}"
 EOT
 
 # Generate birds.yaml configuration file
@@ -153,15 +153,15 @@ cat <<EOT >birds3/page.tmpl
 <table>
 <thead>
 <tr class="header">
-<th>bird_name</th>
+<th>bird</th>
 <th>place</th>
 <th>sighted</th>
 </tr>
 </thead>
 <tbody>
-\$for(birds)\$
+\$for(data)\$
 <tr>
-<td>\$it.name\$</td>
+<td>\$it.bird\$</td>
 <td>\$it.place\$</td>
 <td>\$it.sighted\$</td>
 </tr>
@@ -174,21 +174,51 @@ cat <<EOT >birds3/page.tmpl
 </html>
 EOT
 
+# Create index.md
+cat <<EOT >birds3/htdocs/index.md
 
-# Create about.html
-cat <<EOT >birds3/htdocs/about.html
-<!DOCTYPE html lang="en">
-<html>
-<head>
-	<title>Birds 3 Demo</title>
-</head>
-<body>
-<h1>About Birds 3 Demo</h1>
-<p>This demo shows how Newt used with Postres+PostgREST and Pandoc
-can provide a complete stack for basic web development that does not
-involve file uploads.</p>
+# Birds 3 Demo
 
-</body>
-</html>
+- [about.html](/about.html) (static HTML page)
+- [sightings](/sightings)   (HTML page)
+- [bird views](/bird_views) (JSON output)
+
 EOT
 
+# Create index.html
+pandoc --from markdown --to html5 \
+	--metadata title="Birds Demo 3" \
+	-s \
+	birds3/htdocs/index.md >birds3/htdocs/index.html
+
+
+# Create about.html
+cat <<EOT >birds3/htdocs/about.md
+#
+# About Birds 3 Demo
+
+This demo shows how Newt used with Postres+PostgREST and Pandoc
+can provide a complete stack for basic web development that does not
+involve file uploads.
+
+EOT
+
+# Create index.html
+pandoc --from markdown --to html5 \
+	--metadata title="Birds Demo 3" \
+	-s \
+	birds3/htdocs/about.md >birds3/htdocs/about.html
+
+
+# Create the setup and run bash script.
+cat <<EOT >birds3/setup-for-birds.bash
+#!/bin/bash
+
+dropdb birds
+createdb birds
+psql -d birds -c '\i setup.sql'
+pandoc server &
+postgrest postgrest.conf
+EOT
+
+chmod 775 birds3/*.bash
