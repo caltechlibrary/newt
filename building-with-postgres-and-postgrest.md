@@ -81,4 +81,3 @@ As you evolve the application you'll likely repeat steps two through four.
 Birds 2 demo is a proof of concept showing much simplified back-end development process. Namely define your schema and let Postgres/PostgREST do the rest. It does come at the expense of making the front-end work running the web browser more complicated. It remains to be seen if this is worth the trade off.
 
 
-

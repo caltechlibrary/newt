@@ -80,7 +80,7 @@ func LoadConfig(configFName string) (*Config, error) {
 		cfg.Htdocs = os.Getenv("NEWT_HTDOCS")
 	}
 	if cfg.Port == "" {
-		cfg.Port = "8040"
+		cfg.Port = "8000"
 	} 
 	if strings.HasPrefix(cfg.Port, ":") {
 		cfg.Port = cfg.Port[1:]

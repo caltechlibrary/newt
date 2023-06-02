@@ -42,39 +42,44 @@
 <tr class="odd">
 <td style="text-align: left;">ArchivesSpace</td>
 <td>Java, Ruby, SQL</td>
-<td>MySQL, Solr, Apache or NginX,</td>
+<td>MySQL, Solr, Apache or NginX</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td></td>
-<td>Solr</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">EPrints</td>
 <td>Perl, SQL, XML,</td>
 <td>MySQL, Apache2 (tight integration),</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"></td>
 <td>EPrints XML</td>
-<td>Sphynx</td>
+<td>and Xapian</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Invenio RDM</td>
 <td>Python, SQL</td>
 <td>Postgres, Redis, Elasticsearch,</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>JavaScript</td>
+<td>Docker, Invenio Framework,</td>
+</tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td>JavaScript/React</td>
-<td>Docker, Invenio Framework,</td>
+<td></td>
+<td>Python packaging system,</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td>NodeJS/NPM</td>
-<td>Python packaging system</td>
+<td></td>
+<td>React JavaScript framework,</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td>NodeJS and NPM</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Islandora</td>
 <td>PHP/SQL</td>
 <td>MySQL, Fedora, Apache 2</td>
@@ -96,74 +101,93 @@ complex?</h1>
 <p>WARNING: gross generalizations ahead</p>
 </blockquote>
 <ul>
-<li>We want more from our application so more code gets written,
-complexity accrues over time</li>
-<li>We must build systems to scale!
+<li>We want more from our application so more code gets written</li>
+<li>Complexity accrues over time</li>
+<li>A Silicon Valley influenced “best practices”
 <ul>
-<li>a not so subtle influence on developer “best practices” from Silicon
-Valley</li>
+<li><strong>Systems should be designed to scale</strong></li>
 </ul></li>
 </ul>
 <h1 id="lets-talk-about-scale">Let’s talk about scale</h1>
 <ul>
-<li>Best practice often translates to building for scale, specifically
-scaling up</li>
-<li>Scaling up =&gt; programmable infrastructure, the siren song of
-Google, AWS and Azure
+<li>“scale”, a euphemism for <strong>scaling big</strong></li>
+<li>scaling big =&gt;
+<ul>
+<li>distributed application design</li>
+<li>programmable infrastructure</li>
+<li>cache systems and dynamic clustering</li>
+<li>complex systems management</li>
+</ul></li>
+</ul>
+<h1 id="scaling-big-a-reflection">Scaling big, a reflection</h1>
 <ul>
 <li>Scaling big is hard</li>
 <li>Scaling big makes things really complex</li>
-<li>Do we ever really need to build at Google/Amazon/Azure scale?</li>
-</ul></li>
+<li>Scaling big favors large teams</li>
+<li>This is the cloud’s siren song</li>
 </ul>
-<h1 id="the-alternative-scale-small">The alternative, Scale small</h1>
+<h1 id="the-alternative-scale-small">The alternative, <strong>scale
+small</strong></h1>
 <ul>
-<li>Scaling down &lt;= pack only what you need</li>
+<li>Pack only what you need</li>
 <li>Simplify!</li>
 </ul>
-<h1 id="scaling-down">Scaling down</h1>
+<h1 id="scaling-small">Scaling small</h1>
 <ul>
 <li>Limit the moving parts</li>
 <li>Limit the cognitive shifts</li>
 <li>Minimize the toolbox while maximizing how you use it</li>
-<li>Write less code! But remain readable!</li>
+<li>Write less code!</li>
+<li>Remain readable!</li>
+</ul>
+<h1 id="wait-readable">Wait, readable?</h1>
+<ul>
+<li>Avoid obfuscation</li>
+<li>Avoid magical knowledge or capabilities</li>
+<li>Less code can mean less to read</li>
+<li>Pay attention to
+<ul>
+<li>abstractions</li>
+<li>responsibilities</li>
+<li>scope</li>
+</ul></li>
 </ul>
 <h1 id="how-minimal-can-we-go">How minimal can we go?</h1>
 <ul>
 <li>Off the self microservices</li>
-<li>Build with SQL and Pandoc</li>
+<li>SQL</li>
+<li>Pandoc</li>
 </ul>
-<h1 id="can-you-make-web-applications-using-only-sql-and-pandoc">Can you
-make web applications using only SQL and Pandoc?</h1>
+<h1 id="can-we-create-applications-using-only-sql-and-pandoc">Can we
+create applications using only SQL and Pandoc?</h1>
 <p>Just about. Here’s the off the shelf microservices I am experimenting
 with</p>
 <ul>
-<li><a href="https://postgresql.org">Postgres</a></li>
-<li><a href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a></li>
 <li><a href="https://pandoc.org">Pandoc</a></li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
-<h1 id="a-clear-division-of-labor">A clear division of labor</h1>
-<p>Simplify through a clear division of labor.</p>
+<h1 id="simplify-through-a-clear-division-of-labor">Simplify through a
+clear division of labor</h1>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a> =&gt; JSON data API</li>
-<li><a href="https://pandoc.org">Pandoc</a> =&gt; Powerful template
+href="https://postgrest.org">PostgREST</a> =&gt; JSON data API,
+i.e. manages the data</li>
+<li><a href="https://pandoc.org">Pandoc</a> =&gt; a powerful template
 engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
-data router</li>
+provides request router, response assembly and static file services</li>
 </ul>
-<h1 id="how-would-this-work-in-practice">How would this work in
+<h1 id="how-does-this-work-in-practice">How does this work in
 practice?</h1>
 <dl>
 <dt>Think of a game of telephone</dt>
 <dd>
-web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; Newt =&gt; web
-browser
+web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; web browser
 </dd>
 </dl>
-<p>Except without the data loss.</p>
-<h1 id="how-would-this-work-in-practice-1">How would this work in
+<h1 id="how-would-this-work-in-practice">How would this work in
 practice?</h1>
 <ol type="1">
 <li>Model our data using SQL (Postgres)</li>
@@ -185,7 +209,8 @@ requirements</h1>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
-<li>CSV describing data flow through our microservices</li>
+<li>Manage a CSV file describing data flowing through our
+microservices</li>
 </ul>
 <h1 id="web-browser-knowledge-requirements">Web browser knowledge
 requirements</h1>
@@ -195,57 +220,66 @@ requirements</h1>
 <li>JavaScript (optional)</li>
 </ul>
 <h1 id="what-does-this-enable">What does this enable?</h1>
-<p>We can create interactive applications with some SQL, Pandoc
-templates and a little routing.</p>
-<h1 id="but-why-sql">But why SQL?</h1>
-<p>SQL is really good at describing structured data. It also is good at
-expressing queries. With a little deeper knowledge of SQL you can also
-define data views, functions and your own procedures. With Postgres +
-PostgREST these provide everything you need in a JSON data API short of
-file upload. SQL does allot of lifting with a little code and usually
-remains readable.</p>
+<p>We can create interactive applications with</p>
+<ul>
+<li>SQL</li>
+<li>Pandoc templates</li>
+<li>A little routing information</li>
+</ul>
+<h1 id="why-sql">Why SQL?</h1>
+<ul>
+<li>SQL is really good at describing structured data</li>
+<li>SQL also is good at expressing queries</li>
+<li>A deeper knowledge of SQL provides you with
+<ul>
+<li>data views, functions, procedures</li>
+</ul></li>
+<li>SQL has rich data types, e.g. JSON columns</li>
+<li>Postgres + PostgREST provides a full featured JSON data API</li>
+</ul>
+<h1 id="postgresqlpostgrest-a-code-savings-plan">PostgreSQL+PostgREST, a
+code savings plan</h1>
 <blockquote>
 <p>Minimize the source Luke!</p>
 </blockquote>
-<p>You don’t need to design classes in your favorite programming
-languages then write Schema in SQL. You don’t need to learn an ORM. You
-don’t duplicate the code in the database, again in the middle-ware and
-increasingly often in the browser. Data models are defined in one place,
-Postgres. PostgREST takes care of turning them into a JSON data API.
-Data transformation is handle by Pandoc. Newt provides <strong>just
-enough orchestration</strong> based on route definitions contained in a
-CSV file.</p>
+<ul>
+<li>You don’t need to learn an ORM and aren’t limited by one</li>
+<li>You don’t duplicate the SQL models in another language
+<ul>
+<li>e.g. classes in Python, PHP, Ruby or Java</li>
+</ul></li>
+<li>You don’t write middleware to get an API anymore</li>
+</ul>
 <h1 id="three-cognitive-shifts">Three cognitive shifts</h1>
 <ul>
-<li>Use SQL to generate JSON</li>
+<li>Write SQL to generate JSON</li>
 <li>Use Pandoc to transform JSON to HTML (or other formats)</li>
-<li>Use CSV file define the routes your application supports</li>
+<li>Use a CSV file to describe our data flows
+<ul>
+<li>maps a request to PostgREST and Pandoc (aka routes)</li>
+</ul></li>
 </ul>
-<dl>
-<dt>The resulting data flow</dt>
-<dd>
-web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; Newt =&gt; web
-browser
-</dd>
-</dl>
+<h1 id="three-common-data-flows">Three common data flows</h1>
+<p>web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; web
+browser</p>
+<p>web browser =&gt; Newt =&gt; PostgREST =&gt; web browser</p>
+<p>web browser =&gt; Newt =&gt; static file system =&gt; web browser</p>
 <h1 id="still-helpful-to-know">Still Helpful to know</h1>
 <ul>
 <li>HTML 5 related W3C technologies
 <ul>
 <li>HTML 5 markup</li>
 <li>CSS</li>
-<li>JavaScript</li>
+<li>modern JavaScript</li>
 </ul></li>
+<li>How to integrate static file assets, e.g. html files, images</li>
 <li>Understand how HTTP works, including HTTP methods and Headers</li>
-<li>How to handle static file assets, e.g. image and video files</li>
 </ul>
 <blockquote>
-<p>the front-end remains complex as it ever was</p>
+<p>the front-end can be as simple or as complex as you like</p>
 </blockquote>
-<h1 id="but-is-this-really-simpler">But is this really simpler?</h1>
-<h1 id="what-was-needed-for-each-version-of-birds">What was needed for
-each version of birds?</h1>
-<p>Let’s take a look at three versions of a bird sighting website.</p>
+<h1 id="is-this-really-simpler">Is this really simpler?</h1>
+<p>Let’s take a look at three versions of a bird sighting web site.</p>
 <ul>
 <li><a href="birds1/">birds 1</a>, a static site implementation</li>
 <li><a href="birds2/">birds 2</a>, a dynamic site implementation,
@@ -253,7 +287,7 @@ content viewing requires browser JavaScript</li>
 <li><a href="birds3/">birds 3</a>, a dynamic site implementation, does
 not require browser JavaScript</li>
 </ul>
-<h1 id="different-birds">Different birds</h1>
+<h1 id="different-birds-1">Different birds 1</h1>
 <h2 id="birds-1-static-site-read-only"><a href="birds1/">birds 1</a>
 static site (read only)</h2>
 <ul>
@@ -261,80 +295,104 @@ static site (read only)</h2>
 <li>Adds bird sightings via updating a CSV file and rebuilding site with
 Pandoc</li>
 </ul>
-<h1 id="different-birds-1">Different birds</h1>
+<h1 id="different-birds-2">Different birds 2</h1>
 <h2 id="birds-2-dynamic-site-readwrite"><a href="birds2/">birds 2</a>,
 dynamic site (read/write)</h2>
 <ul>
 <li>Built with SQL using Postgres + PostgREST</li>
-<li>Add birds you using a web form</li>
 <li>Requires the web browser to assemble pages via API calls</li>
-<li>JavaScript becomes complex between fetching data and inserting it
-into the page</li>
-<li>Doesn’t work in text only web browsers like Lynx</li>
+<li>Add birds using a web form requiring JavaScript</li>
+<li>JavaScript has become complex
+<ul>
+<li>handles fetching data and inserting it into the page</li>
+<li>handles form prep and submission of our web form</li>
+</ul></li>
+<li>Solution doesn’t work for text only web browsers like Lynx</li>
 </ul>
-<h1 id="different-birds-2">Different birds</h1>
+<h1 id="different-birds-3">Different birds 3</h1>
 <h2 id="birds-3-dynamic-site-readwrite"><a href="birds3/">birds 3</a>,
 dynamic site (read/write)</h2>
 <ul>
 <li>Build from SQL (Postgres + PostgREST) and Pandoc</li>
-<li>Add birds you using a web form</li>
-<li>Rendered on server and no longer requires JavaScript</li>
-<li>Works even in text web browsers like Lynx</li>
+<li>Add birds using a simple web form, no JavaScript</li>
+<li>Rendered on server, no JavaScript</li>
+<li>Works even for text web browsers like Lynx</li>
 </ul>
-<h1 id="different-birds-3">Different birds</h1>
-<h2 id="pros-and-cons">Pros and cons</h2>
+<h1 id="our-different-birds">Our different birds</h1>
 <table>
 <thead>
 <tr class="header">
 <th>version</th>
 <th>site type</th>
-<th>pros/cons</th>
+<th style="text-align: left;">pros</th>
+<th style="text-align: left;">cons</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>birds 1</td>
 <td>static</td>
-<td>easy to conceptualize / read only</td>
+<td style="text-align: left;">easy to conceptualize,</td>
+<td style="text-align: left;">read only</td>
 </tr>
 <tr class="even">
+<td></td>
+<td></td>
+<td style="text-align: left;">no JavaScript required</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
 <td>birds 2</td>
 <td>dynamic</td>
-<td>read write site / requires browser</td>
+<td style="text-align: left;">read/write data</td>
+<td style="text-align: left;">requires SQL knowledge</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">requires browser JavaScript</td>
 </tr>
 <tr class="odd">
 <td></td>
 <td></td>
-<td>JavaScript, JavaScript is complex</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">JavaScript is complex</td>
 </tr>
 <tr class="even">
 <td>birds 3</td>
 <td>dynamic</td>
-<td>read write site, easy to conceptualize</td>
+<td style="text-align: left;">read/write data</td>
+<td style="text-align: left;">requires SQL knowledge</td>
 </tr>
 <tr class="odd">
 <td></td>
 <td></td>
-<td>/ requires SQL and knowledge of Pandoc</td>
+<td style="text-align: left;">easy to conceptualize,</td>
+<td style="text-align: left;">requires knowledge of Pandoc</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td style="text-align: left;">no JavaScript required</td>
+<td style="text-align: left;"></td>
 </tr>
 </tbody>
 </table>
 <h1 id="birds-3-postgrespostgrest-pandoc-and-newt">Birds 3 =&gt;
 Postgres+PostgREST, Pandoc and Newt</h1>
-<blockquote>
-<p>The complicated activities are handled by the off the self
-microservices. The remaining complexity is limited to SQL to model data
-and our Pandoc templates.</p>
-</blockquote>
 <ul>
-<li>Avoids browser side page assembly</li>
+<li>The complicated activities are handled by off the self
+microservices</li>
+<li>Main complexity is limited to SQL and our model data</li>
 <li>Leverages our Pandoc knowledge</li>
-<li>Data is modeled using SQL</li>
+<li>Avoids browser side page assembly</li>
 </ul>
 <h1 id="newt-manages-data-flow">Newt manages data flow</h1>
 <ul>
-<li>request =&gt; data API =&gt; Pandoc =&gt; response</li>
-<li>Newt’s routes can be managed in spreadsheet!</li>
+<li>request =&gt; JSON data API =&gt; Pandoc =&gt; response</li>
+<li>provides a simple DSL for mapping requests to API and Pandoc</li>
+<li>the data flow, or route, can be managed in spreadsheet!</li>
 </ul>
 <h1 id="developer-workflow">Developer workflow</h1>
 <ol type="1">
@@ -344,48 +402,51 @@ and our Pandoc templates.</p>
 <li>(Re)start PostgREST and Newt to (re)load models and routes</li>
 </ol>
 <p><strong>Repeat as needed</strong></p>
-<h1 id="minimizing-newness">Minimizing newness</h1>
+<h1 id="our-approach-trys-to-minimize-newness">Our approach trys to
+minimize newness</h1>
 <ul>
-<li>If you’ve attended a data science workshop you are likely know
-enough SQL</li>
-<li>If you’ve built a static website with Pandoc you know how Pandoc
-works</li>
-<li>I think there is community that knows some SQL, CSV files and knows
-Pandoc</li>
+<li>If you’ve attended a data science workshop you likely know enough
+SQL</li>
+<li>If you’ve built a static website you likely know about Pandoc</li>
+<li>I think there is community knowledge of CSV files</li>
+<li>A simple DSL for mapping requests to data sources and Pandoc</li>
+<li>SQL + CSV files + Pandoc =&gt; web application</li>
 </ul>
 <p>=&gt; Is this useful for Libraries, Archives and Museums?</p>
-<h1 id="evaluating-postgrespostgrest-pandoc-and-newt">Evaluating
-Postgres+PostgREST, Pandoc and Newt</h1>
+<h1 id="approach-weeknesses">Approach weeknesses</h1>
 <ul>
-<li>Weaknesses
+<li>Newt is <strong>an experimental prototype</strong> (May 2023)</li>
+<li>SQL has a learning curve</li>
+<li>Pandoc has a learning curve</li>
+<li>Using the HTTP protocol has a learning curve</li>
+<li>Newt doesn’t (yet) support file upload handling</li>
+</ul>
+<h1 id="approach-strengths">Approach strengths</h1>
 <ul>
-<li>Newt is <strong>limited and experimental</strong></li>
-<li>SQL and HTML have a learning curve</li>
-</ul></li>
-<li>Strengths
+<li>We have a mature platform built from
 <ul>
-<li>SQL is proven and likely to be around a very long time</li>
-<li>HTML is proven and likely to be around a very long time</li>
-<li>Postgres and Pandoc are <strong>very mature software</strong></li>
-<li>PostgREST is <strong>mature</strong> (commit dates going back to
-June 2014)</li>
+<li>SQL (1974)</li>
+<li>HTTP (1991)</li>
+<li>HTML (1993)</li>
+<li>Postgres (July 1996)</li>
+<li>JSON (April 2001)</li>
+<li>Pandoc (August 2006)</li>
+<li>PostgREST (June 2014)</li>
 </ul></li>
 </ul>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
 <ul>
-<li>Newt is an experiment
-<ul>
-<li>I am building some staff applications Summer/Fall 2023</li>
-</ul></li>
-<li>Experimenting with Solr/Opensearch as a JSON data API source</li>
+<li>I am building staff facing applications, Summer 2023</li>
+<li>Planning to test with Solr/Opensearch as a JSON data source</li>
+<li>Fix bugs, simplify code, improve performance</li>
 </ul>
-<h2 id="someday-maybe">someday, maybe</h2>
+<h2 id="someday-maybe">Someday, maybe</h2>
 <ul>
 <li>It would be nice if ….
 <ul>
-<li>A better DSL to describe URL transforms</li>
-<li>Newt could send file uploads to a service like S3</li>
-<li>If Newt provided a static file service</li>
+<li>Newt routed file uploads to an S3 like service</li>
+<li>had a better DSL to map requests</li>
+<li>had community support</li>
 </ul></li>
 </ul>
 <h1 id="thank-you">Thank you!</h1>

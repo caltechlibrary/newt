@@ -1,6 +1,6 @@
 ---
-title: "newt(1) user manual | Version 0.0.1 32e2f54"
-pubDate: 2023-06-01
+title: "newt(1) user manual | Version 0.0.1 b28fe5a"
+pubDate: 2023-06-02
 author: "R. S. Doiel"
 ---
 
@@ -58,7 +58,7 @@ variables to import and make available inside the router.
 {app_mame} can be configured via a POSIX environment.
 
 ~~~
-NEWT_PORT="3030"
+NEWT_PORT="8000"
 NEWT_ROUTES="routes.csv"
 NEWT_ENV="DB_NAME;DB_USER;DB_PASSWORD"
 export NEWT_PORT
@@ -70,7 +70,7 @@ It can also be configured using a configuration file.
 
 
 ~~~
-newt_port = "3030"
+newt_port = "8000"
 newt_routes = "routes.csv"
 newt_env = [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
 ~~~

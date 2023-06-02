@@ -26,26 +26,26 @@ RouteDSL, a domain specific language describing routing</h1>
 <p>How do you describe mapping of one path to another? Many web
 frameworks implement the concept of a “route” which is similar to a file
 path but may include a placeholder notation for values bound to variable
-names. The variable names are then avaialble to route handler
+names. The variable names are then available to route handler
 functions.</p>
 <p>Newt’s route handler capability is fixed. It can perform a mapping
 from a request to data API, and optional run the results through Pandoc.
 A route in Newt is defined using variables including a type. A given
 type can be validated before transforming the request to a data API call
-or Pandoc. This provides a level of assurence that the URL requested is
+or Pandoc. This provides a level of assurance that the URL requested is
 what is expected by the back-end data source like PostgREST, Solr or
 Elasticsearch.</p>
 <h2 id="why-create-yet-another-dsl">Why create yet another DSL?</h2>
 <p>I surveyed the route descriptions available in several Python and
-JavaScript fameworks. There was no concensus. None provided a mechanism
+JavaScript frameworks. There was no consensus. None provided a mechanism
 to validate the variables captured int he in-bound request. Since Newt’s
-skope is extremely limited this lead me to think about a simple, light
+scope is extremely limited this lead me to think about a simple, light
 weight markup that would be intuitive for web developers who were
 already familiar with template markup like <a
-href="https://mustache.github.io/">Mustashe</a> and <a
-href="https://handlebarsjs.com/">Handlerbars</a>. What was missing a
-type annotation for in-bound requests. Injecting a type annocation for
-the request URL pattern mean that the URL composed or the JSON data API
+href="https://mustache.github.io/">Mustache</a> and <a
+href="https://handlebarsjs.com/">Handlebars</a>. What was missing a type
+annotation for in-bound requests. Injecting a type annotation for the
+request URL pattern mean that the URL composed or the JSON data API
 request or Pandoc server request could just be simple handlebars
 template strings. This means the is only one added concept for a well
 known template notation.</p>
@@ -55,25 +55,25 @@ in blogs. Blog paths are often predictable. A home page is at
 <code>/</code>, a feed of items might be at <code>/feed/</code> and
 individual blog posts might be found in a path formed by embedding four
 digit year, two digit month, two digit day and a title slug. Let’s first
-look at how that would be discribed as a Mustache tempalte –
+look at how that would be described as a Mustache template –
 <code>/blog/{{year}}/{{month}}/{{day}}/{{title-slug}}</code>. This is
 pretty easy to read.</p>
 <p>How do we know when a path value matches a route? For a literal path
-you can simply perform a string comparision but for a path with embedded
+you can simply perform a string comparison but for a path with embedded
 variables you need to vet the variables to make sure they make sense. A
-type check needs to be done. In our simple Mustasche version though
-there is no type information. The place holder <code>{{year}}</code>
-might hold an integer or maybe something completely unrelated. What if
-we added an annotation about the variables type? A “year” certainly can
-be validate. Years are normally four digit numbers. Likewise month and
-day could have a simple validation based on being an integer with two
-digits allowing for leading zeros. These are common enough date formats
-that many languages provide via standard libraries. Creating types for
-these types becomes a matter of wrapping an implementations existing
-type system.</p>
+type check needs to be done. In our simple Mustache version though there
+is no type information. The place holder <code>{{year}}</code> might
+hold an integer or maybe something completely unrelated. What if we
+added an annotation about the variables type? A “year” certainly can be
+validate. Years are normally four digit numbers. Likewise month and day
+could have a simple validation based on being an integer with two digits
+allowing for leading zeros. These are common enough date formats that
+many languages provide via standard libraries. Creating types for these
+types becomes a matter of wrapping an implementations existing type
+system.</p>
 <pre><code>/blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug String}}</code></pre>
 <p>Now we know the type and validation method to apply to the embedded
-varaible. Let’s explore some values and see if thay can be
+variable. Let’s explore some values and see if they can be
 validated.</p>
 <table>
 <thead>
@@ -116,12 +116,12 @@ validated.</p>
 <p>Knowing the type lets the router know that path is not valid and
 reject it if it is not without contacting other services.</p>
 <p>While the RouteDSL specification is not intended to describe a
-cannonical set of types an implementation of a RouteDSL certain would.
-It should be easy to implement the type system with one or two functions
-per type. I suspect as RotueDSLs are implemented a connanical core set
-of type will emerge.</p>
+canonical set of types an implementation of a RouteDSL certain would. It
+should be easy to implement the type system with one or two functions
+per type. I suspect as RouteDSL are implemented a canonical core set of
+type will emerge.</p>
 <p>In my prototype implementation of RouteDSL I plan to implement the
-following types and validators primitive data types – “Integer”,
+following types and validating primitive data types – “Integer”,
 “String”, “Real”, “Boolean”, “Date”, “Year”, “Month”, “Day”, “Hour”,
 “Minute”, “Second”. The Python project <a href="">IdUtils</a> also
 suggests a common set of identifiers used in the Library, Archive and
@@ -136,8 +136,8 @@ simply as a handlebar template.</p>
 <p>If the request value matches both form and type of embedded variables
 then you have enough information to call a microservice like PostgREST,
 Solr or Opensearch.</p>
-<h2 id="use-case-representing-filenames-and-extenions-in-a-path">Use
-case, representing filenames and extenions in a path</h2>
+<h2 id="use-case-representing-filenames-and-extensions-in-a-path">Use
+case, representing filenames and extensions in a path</h2>
 <p>What if your request URL uses file extensions to indicate the choice
 of template to use when rendering with Pandoc? Here’s three examples
 where the content might be the same but the format changes (e.g. HTML,
@@ -153,8 +153,8 @@ file extension indicates which template to send to Pandoc server.</p>
 <p>Here’s how you might represent that in RouteDSL.</p>
 <pre><code>`/blog/{year Year}/{month Month}/{day Day}/{title-slug basename}{ext extname}`</code></pre>
 <p>Many implementation languages support parsing path into directory
-componentsas well as filename and extension. RouteDSL should be able to
-leveraget this. This suggests an algorithmic behavior in our RouteDSL
+components as well as filename and extension. RouteDSL should be able to
+leverage this. This suggests an algorithmic behavior in our RouteDSL
 evaluation.</p>
 <p>First RouteDSL should split the path into it’s component, then it
 should determine if the component is a literal string or a variable
@@ -204,10 +204,10 @@ against variable type
 <h2 id="variable-definitions">Variable definitions</h2>
 <p>In the use cases we’ve suggested how a variable in a RouteDSL
 expression can include a variable name as well as a type annotation to
-use to validate the value bould to the variable name. Let’s specify this
+use to validate the value bound to the variable name. Let’s specify this
 in more detail.</p>
 <ul>
-<li>varaible definition start with two opening curly brace and conclude
+<li>variable definition start with two opening curly brace and conclude
 with a closing curly brace (i.e. basic Mustache template style
 notation)</li>
 <li>following the opening curly braces is a variable name which is
@@ -224,7 +224,7 @@ variable names
 <li>a type expression starts with a letter and can be followed by one or
 more characters excluding a closing curly brace</li>
 </ul>
-<p>Here’s some example varaible definitions.</p>
+<p>Here’s some example variable definitions.</p>
 <pre><code>{year Year}
 {month Month}
 {day Day}
@@ -244,11 +244,11 @@ implementation.</p>
 <p>The RouteDSL does not define the supported types only that the
 information can be extracted from a RouteDSL expression as a map between
 variable names and a type description. It is up to the specific RouteDSL
-implementation to define how the type informaiton is interpreted.</p>
+implementation to define how the type information is interpreted.</p>
 <h2 id="variable-decoding">Variable decoding</h2>
 <p>If a path value matches a RouteDSL expression then when the variables
 and values can be extracted as a map of variable names and values. The
-only constraint is that the map be expressable as a valid JSON object.
+only constraint is that the map be expressible as a valid JSON object.
 E.g.</p>
 <p>Given the RouteDSL expression</p>
 <pre><code>/people/{orcid ORCID}</code></pre>
