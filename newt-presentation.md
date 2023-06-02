@@ -318,7 +318,7 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 - It would be nice if ....
     - Newt routed file uploads to an S3 like service
     - had a better DSL to map requests
-    - had community support
+    - had a community supporting it
 
 # Thank you!
 
