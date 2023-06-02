@@ -248,6 +248,9 @@ func (router *Router) RequestDataAPI(rNo int, apiURL string, body []byte) ([]byt
 // toFrontMatter converts JSON source to front matter
 // for a Pandoc Markdown document.
 func JSONSrcToFrontMatter(src []byte) (string, error) {
+	if len(src) == 0 {
+		return "", nil
+	}
 	var data  interface{}
 	if err := json.Unmarshal(src, &data); err != nil {
 		return "", err
@@ -270,7 +273,7 @@ func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
 	// the name "data".
 	txt, err := JSONSrcToFrontMatter(src)
 	if err != nil {
-		log.Printf("RequestPandoc(%d, src), failed to build text from JSON srouce, %s", rNo, err)
+		log.Printf("RequestPandoc(%d, %s), failed to build text from JSON resource, %s", rNo, src, err)
 		return nil, http.StatusText(502), 502
 	}
 	m := map[string]interface{}{}
@@ -324,12 +327,31 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 			body []byte
 			err error
 		)
-		if  req.Method != http.MethodGet {
-			body, err = io.ReadAll(req.Body)
-			if err != nil {
-				log.Printf("request body error %s", err)
+		// FIXME: Handle http.MethodOption
+		if req.Method == http.MethodPost {
+			if err := req.ParseForm(); err != nil {
+        		http.Error(w, fmt.Sprintf("%s", err), 400)
 				return
 			}
+			m := map[string]interface{}{}
+			for k, _ := range req.Form {
+				m[k] = req.FormValue(k)
+			}
+			/*
+			body, err = io.ReadAll(req.Body)
+    		if err != nil {
+        		http.Error(w, err.String(), 400)
+				return
+    		}
+			//FIXME: is body is urlencoded or JSON Encoded?
+			*/
+			body, err = json.Marshal(m)
+    		if err != nil {
+        		http.Error(w, fmt.Sprintf("%s", err), 400)
+				return
+    		}
+
+			fmt.Fprintf(os.Stderr, "DEBUG body (%q) \n-->%s<--\n", req.Method, body)
 		}
 		// Get content from the JSON Data API
 		apiURL, ok := router.ResolveApiURL(rNo, m)

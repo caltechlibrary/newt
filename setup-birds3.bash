@@ -130,6 +130,7 @@ EOT
 cat <<EOT >birds3/birds-routes.csv
 req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
 /sightings,GET,http://localhost:3000/sighting,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
+/sightings,POST,http://localhost:3000/sighting,POST,application/json,redirect.tmpl,"{""content-type"": ""text/html""}"
 /bird_views,GET,http://localhost:3000/bird_view,GET,application/json,,"{""content-type"": ""application/json""}"
 EOT
 
@@ -139,7 +140,7 @@ newt_routes: "birds-routes.csv"
 newt_htdocs: "htdocs"
 EOT
 
-# Create a Pandoc template
+# Create a Pandoc template page.tmpl
 cat <<EOT >birds3/page.tmpl
 <DOCTYPE html lang="en"\>
 <html>
@@ -149,6 +150,24 @@ cat <<EOT >birds3/page.tmpl
 	<p>
     <h1>Welcome to the bird list!</h1>
     <p>
+    <div id="bird-list"></div>
+    <h2>Add a bird</h2>
+    <div><form method="POST" action="/sightings">
+      <div>
+        <label for="bird">Bird</label>
+                <input id="bird" name="bird" type="text" value="">
+      </div>
+      <div>
+        <label for="place">Place</label>
+                <input id="place" name="place" type="text" value="">
+      </div>
+      <div>
+        <label for="sighted">Sighted on</label>
+                <input id="sighted" name="sighted" type="date">
+      </div>
+      <button id="record-bird" type="submit">Add Bird Sighting</button>
+    </form></div>
+  </body>
 <h2>Bird List</h2>
 <table>
 <thead>
@@ -171,6 +190,19 @@ cat <<EOT >birds3/page.tmpl
 	<p>
 	<footer></footer>
   </body>
+</html>
+EOT
+#
+# Create a Pandoc template page.tmpl
+cat <<EOT >birds3/redirect.tmpl
+<DOCTYPE html lang="en">
+<html>
+<head>
+	<meta http-equiv="refresh" content="0; url="/sightings" />
+</head>
+<body>
+Thank you for submitting a bird, <a href="/sighthings">View List</a>.
+</body>
 </html>
 EOT
 
