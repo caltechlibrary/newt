@@ -96,6 +96,8 @@ installer.sh: .FORCE
 	@chmod 775 installer.sh
 	@git add -f installer.sh
 
+presentation: .FORCE
+	make -f presentation.mak
 
 clean-website:
 	make -f website.mak clean

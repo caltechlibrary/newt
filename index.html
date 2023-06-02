@@ -23,45 +23,47 @@
 <section>
 <h1 id="newt-my-new-take-on-the-web-stack">Newt, my new take on the web
 stack</h1>
-<p>Newt is two things. Newt is short for “new take”. Newt is also an
-experimental web server for working with off the shelf <a
-href="https://en.wikipedia.org/wiki/Microservices">microservices</a>.
-The specific microservices Newt is intend to help explore are <a
+<p>Newt is two things. It is short a “new take” on building web
+applications. It is also an experimental microservice for working with
+other off the shelf <a
+href="https://en.wikipedia.org/wiki/Microservices">microservices</a>.</p>
+<p>Currently I am exploring using Newt to integrate <a
 href="https://postgresql.org">Postgres</a>, <a
-href="https://postgrest.org">PostgREST</a>, <a
-href="https://pandoc.org">Pandoc server</a>. The Newt program can be
-thought of as both a data router (i.e. make requests to PostgREST and
-Pandoc) and as a light weight static file server. It runs on localhost
-only. It would normally would be behind a front-end web server like
-NginX or Apache 2.</p>
+href="https://postgrest.org">PostgREST</a> and <a
+href="https://pandoc.org">Pandoc</a>.</p>
+<p>The Newt application can be thought of as both a data router and a
+light weight static file server.</p>
+<p>Newt can route a request to a JSON data API and then optional send
+that result through Pandoc for further processing. Newt runs as a
+localhost service only. To use in a production setting it would site
+behind a traditional web server like Apache 2 or NginX.</p>
 <h2 id="motivation">Motivation</h2>
 <p>My belief is that many web services used by Archives, Libraries and
-Museums can benefit from a simplifying back-end. If the back-end is
-“easy” then the limited developer resources can be focused on the
-front-end. <strong>An improved front-end offers opportunities to provide
-a more humane user experience for staff and patrons.</strong></p>
-<h2 id="a-basic-newt-approach">A basic Newt approach</h2>
+Museums can benefit from a simplified and consistent back-end. If the
+back-end is “easy” then the limited developer resources can be focused
+on the front-end. <strong>An improved front-end offers opportunities to
+provide a more humane user experience for staff and
+patrons.</strong></p>
+<h2 id="newts-approach">Newt’s approach</h2>
 <p>From front-end to back-end</p>
 <ul>
 <li>A front end web server (e.g. Apache 2, NginX) can provide access
 control where appropriate (e.g. Single Sign on with OAuth2 or
 Shibboleth)</li>
-<li>Newt is a data router. It uses simple a CSV file for defining
-routes. It can also provide static files</li>
-<li>Postgres+PostgREST provides a JSON data API (programming is in
-SQL)</li>
-<li>Pandoc server (provides a templating engine to transform data
-sources)</li>
+<li>Newt provides static file services but more importantly serves as a
+data router. I can map a request to a JSON data API, take those results
+then send them through Pandoc for transformation.</li>
+<li>Postgres+PostgREST is an example of a JSON data API</li>
+<li>Pandoc server provides a templating engine to transform data
+sources</li>
 </ul>
 <p>All these can be treated as “off the shelf”. Aside from configuration
-they run as traditional services on POSIX systems. Your application is
-primarily developed using SQL (defining the behavior and content via
-PostgREST), Pandoc templates are used to turn JSON into HTML (or other
-desired formats). Any additional static content (e.g. HTML pages, CSS,
-JavaScript files) can also be made available view Newt.</p>
+they can run as traditional services on most POSIX systems. Your
+application is implemented using SQL. It is enhanced by using Pandoc
+templates used to turn JSON into HTML (or other desired formats).</p>
 <h2 id="beyond-postgrespostgrest">Beyond Postgres+PostgREST</h2>
-<p>Newt can talk to any data API as long as it returns its content in
-JSON. This means Newt can also route content to Solr or Elasticsearch
+<p>Newt can talk to any JSON data API as long as it returns its content
+in JSON. This means Newt can also route content to Solr or Elasticsearch
 before taking the results and sending them through Pandoc. This more
 elaborate setup would look like this from front-end to back-end.</p>
 <ul>
@@ -79,28 +81,38 @@ sources)</li>
 PostgREST). Pandoc templates transform the JSON responses into HTML
 result pages.</p>
 <p>The main additional work beyond the initial scenario is creating the
-Pandoc templates you need to display the results from querying Solr.</p>
-<h2 id="explore-newt-and-friends">Explore Newt and friends</h2>
-<h3 id="step-1-pandoc">Step 1, Pandoc</h3>
+Pandoc templates you need to display the results from querying Solr or
+Elasticsearch.</p>
+<h2 id="exploring-newts-friends">Exploring Newt’s friends</h2>
+<ul>
+<li>Pandoc</li>
+<li>Postgres and PostgREST</li>
+</ul>
+<h3 id="pandoc">Pandoc</h3>
 <p>Pandoc can be thought of as a powerful template engine. It is
 familiar to many people who building “static” websites. It is known for
-being able to convert many structured text formats to another. The <a
-href="birds1/">birds 1 demo</a>, a simple bird listing site, is built
-using Pandoc with content in both Markdown and a list of birds sighted
-in a CSV file. Pandoc does the stitching rendering the content to
-HTML.</p>
-<p>Birds 1 Demo files</p>
+being able to convert many structured text formats from one to another.
+The <a href="birds1/">birds 1 demo</a>, a simple bird listing site, is
+built using Pandoc with content written Markdown and a list of birds
+sighted maintained in a CSV file. Pandoc is used to render both into the
+HTML needed to display the website.</p>
+<h3 id="birds-1-demo-files">Birds 1 Demo files</h3>
 <ul>
-<li><a href="birds1/README.html">README.md</a></li>
-<li><a href="birds1/birds.csv">birds.csv</a></li>
-<li><a href="birds1/birds.html">birds.md</a></li>
-<li><a href="birds1/build.sh">build.sh</a></li>
-<li><a href="birds1/htdocs">htdocs</a>
+<li><a href="birds1/README.html">README.md</a>, project read me</li>
+<li><a href="birds1/birds.csv">birds.csv</a>, our list of bird
+sightings</li>
+<li><a href="birds1/birds.html">birds.md</a>, additional text
+descriptions</li>
+<li><a href="birds1/build.sh">build.sh</a>, a shell script that uses
+Pandoc to render site</li>
+<li><a href="birds1/htdocs">htdocs</a>, the website document directory
 <ul>
 <li><a href="birds1/htdocs/index.html">index.html</a></li>
 </ul></li>
-<li><a href="birds1/page.tmpl">page.tmpl</a></li>
+<li><a href="birds1/page.tmpl">page.tmpl</a>, the Pandoc page
+template</li>
 </ul>
+<h3 id="birds-1-demo">Birds 1 Demo</h3>
 <table>
 <thead>
 <tr class="header">
@@ -111,7 +123,7 @@ HTML.</p>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Pandoc is widely known</td>
-<td style="text-align: left;">Updates require accessing birds.csv</td>
+<td style="text-align: left;">Updates require changing birds.csv</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Pandoc is easily scripted</td>
@@ -119,27 +131,35 @@ HTML.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="step-2-postgres-postgrest">Step 2, Postgres + PostgREST</h3>
-<p>Postgres and PostgREST can be combined to provide a dynamic solution
-for our <a href="birds2/">birds 2 demo</a> website. In <a
+<h3 id="postgres-postgrest">Postgres + PostgREST</h3>
+<p>Postgres and PostgREST can be combined to provide a dynamic data
+source for our <a href="birds2/">birds 2 demo</a> website. In <a
 href="birds2/">birds 2 demo</a> PostgREST runs on localhost and we use
 another web server to presents the static files. The difference from
 birds 1 demo is that our list of birds is held in the Postgres database
-and provided via a JSON API call using JavaScript.</p>
-<p>The back-end is primarily the SQL code setting things up. The
-font-end is more complex as JavaScript is required in the browser to
-assemble pages results from our JSON data API.</p>
+and provided via a JSON API call using JavaScript in the web
+browser.</p>
+<p>The back-end is primarily written using SQL. This includes setting up
+access by PostgREST. The font-end is more complex as JavaScript is
+required in the browser to assemble pages results from our JSON data
+API.</p>
+<h4 id="birds-2-demo">Birds 2 demo</h4>
 <p>The files for birds 2 demo are</p>
 <ul>
-<li><a href="birds2/README.html">README.md</a></li>
-<li><a href="birds2/birds.csv">birds.csv</a></li>
-<li><a href="birds2/htdocs/">htdocs</a>
+<li><a href="birds2/README.html">README.md</a>, project read me</li>
+<li><a href="birds2/birds.csv">birds.csv</a>, our sightings data, loads
+into SQL database</li>
+<li><a href="birds2/htdocs/">htdocs</a>, the website document directory
 <ul>
 <li><a href="birds2/htdocs/index.html">index.html</a></li>
-<li><a href="birds2/htdocs/sightings.js">sightings.js</a></li>
+<li><a href="birds2/htdocs/sightings.js">sightings.js</a>, JavaScript
+support is required in the web browser to render the page and handle
+updates</li>
 </ul></li>
-<li><a href="birds2/postgrest.conf">postgrest.conf</a></li>
-<li><a href="birds2/setup.sql">setup.sql</a></li>
+<li><a href="birds2/postgrest.conf">postgrest.conf</a>, configuration
+for PostgREST</li>
+<li><a href="birds2/setup.sql">setup.sql</a>, SQL to setup Postgres
+database and PostgREST</li>
 </ul>
 <table>
 <thead>
@@ -163,14 +183,14 @@ assemble pages results from our JSON data API.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="step-3-let-newt-assemble-the-pages">Step 3, let Newt assemble
-the pages</h2>
+<h3 id="assembling-responses-with-newt">Assembling responses with
+Newt</h3>
 <p>Managing page assembly browser side is a chore. We can skip the
-complex JavaScript browser side if we let Newt to route data to
-PostgREST or a search engine then run the results through Pandoc. The <a
-href="birds3/">birds 3</a> demo shows how this works. With just SQL and
-Pandoc templates we can build a web application.</p>
-<p>The files for birds 3 demo are</p>
+complex JavaScript browser side if we let Newt do the routing of
+requests to PostgREST and then sending those results through Pandoc. The
+<a href="birds3/">birds 3</a> demo shows how this works. With just SQL
+and Pandoc templates we can build a web application.</p>
+<h4 id="birds-3-demo">Birds 3 Demo</h4>
 <ul>
 <li><a href="birds3/README.html">README.md</a></li>
 <li><a href="birds3/birds-routes.csv">birds-routes.csv</a></li>
