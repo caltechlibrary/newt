@@ -5,10 +5,14 @@
 
 ## Next
 
-- [ ] Demo for DLD staff
 - [ ] Present at Code4Lib meetup, July 14, 2023
+- [ ] Demo for DLD staff
 - [ ] Finish Newt prototype
-    - [ ] Test newt router handling POST, PUT or PATCH
+    - [ ] Newt router handling for POST
+    - [ ] Newt router handling for PUT
+    - [ ] Newt router handling for PATCH
+    - [ ] Newt router handling for OPTIONS
+    - [ ] Test newt router handling POST, PUT, PATCH and OPTIONS
     - [ ] Test newt birds3 demo and debug
     - [x] Debug interaction between static file service and Router
     - [x] Test assembled Newt static file handling
@@ -29,5 +33,5 @@
 
 ## Someday, maybe
 
-- [ ] T2T3 demo
+- [ ] Add file upload support to Newt via an S3 like service call
 
