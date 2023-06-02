@@ -31,7 +31,7 @@ Knowing the type lets the router know that path is not valid and reject it if it
 
 While the RouteDSL specification is not intended to describe a canonical set of types an implementation of a RouteDSL certain would.  It should be easy to implement the type system with one or two functions per type.  I suspect as RouteDSL are implemented a canonical core set of type will emerge.
 
-In my prototype implementation of RouteDSL I plan to implement the following types and validating primitive data types -- "Integer", "String", "Real", "Boolean", "Date", "Year", "Month", "Day", "Hour", "Minute", "Second".  The Python project [IdUtils]() also suggests a common set of identifiers used in the Library, Archive and Museum communities.  A subset of these will be implemented for the prototype of RouteDSL (e.g. "ORCID", "DOI", "ROR").
+In my prototype implementation of RouteDSL I plan to implement the following types and validating primitive data types -- "Integer", "String", "Real", "Boolean", "Date", "Year", "Month", "Day", "Hour", "Minute", "Second".  The Python project [IdUtils](https://idutils.readthedocs.io/en/latest/) also suggests a common set of identifiers used in the Library, Archive and Museum communities.  A subset of these will be implemented for the prototype of RouteDSL (e.g. "ORCID", "DOI", "ROR").
 
 Here's an example of what our RouteDSL would enable. I think of these as a path expression --
 
