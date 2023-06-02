@@ -1,5 +1,5 @@
 ---
-title: "newt(1) user manual | Version 0.0.1 67250e0"
+title: "newt(1) user manual | Version 0.0.1 a4b93ce"
 pubDate: 2023-06-02
 author: "R. S. Doiel"
 ---

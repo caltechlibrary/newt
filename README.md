@@ -50,13 +50,15 @@ Pandoc can be thought of as a powerful template engine. It is familiar to many p
 
 ### Birds 1 Demo files
 
-- [README.md](birds1/README.md), project read me
-- [birds.csv](birds1/birds.csv), our list of bird sightings
-- [birds.md](birds1/birds.md), additional text descriptions
-- [build.sh](birds1/build.sh), a shell script that uses Pandoc to render site
-- [htdocs](birds1/htdocs), the website document directory
-    - [index.html](birds1/htdocs/index.html)
-- [page.tmpl](birds1/page.tmpl), the Pandoc page template
+(see <https://github.com/caltechlibrary/newt/tree/main/birds1>)
+
+- README.md, demo read me
+- birds.csv, our list of bird sightings
+- birds.md, additional text descriptions
+- build.sh, a shell script that uses Pandoc to render site
+- htdocs, the website document directory
+    - index.html
+- page.tmpl, the Pandoc page template
 
 ### Birds 1 Demo
 
@@ -73,38 +75,42 @@ The back-end is primarily written using SQL. This includes setting up access by 
 
 #### Birds 2 demo
 
-The files for birds 2 demo are
+(see <https://github.com/caltechlibrary/newt/tree/main/birds2>)
 
-- [README.md](birds2/README.md), project read me
-- [birds.csv](birds2/birds.csv), our sightings data, loads into SQL database
-- [htdocs](birds2/htdocs/), the website document directory
-    - [index.html](birds2/htdocs/index.html)
-    - [sightings.js](birds2/htdocs/sightings.js), JavaScript support is required in the web browser to render the page and handle updates
-- [postgrest.conf](birds2/postgrest.conf), configuration for PostgREST
-- [setup.sql](birds2/setup.sql), SQL to setup Postgres database and PostgREST
+- README.md, demo read me
+- birds.csv, our sightings data, loads into SQL database
+- htdocs, the website document directory
+    - index.html
+    - sightings.js, JavaScript support is required in the web browser to render the page and handle updates
+- postgrest.conf, configuration for PostgREST
+- setup.sql, SQL setting up data models and JSON data API
 
-Pros                             Cons
--------------------------------- ------------------------------------
-Simple back-end, just SQL code   JavaScript in the browser is complex
-                                 You need a static file server
-                                 You need to know some SQL
+Pros                              Cons
+--------------------------------  ------------------------------------
+Simple back-end, just SQL code    JavaScript in the browser is complex
+                                  You need a static file server
+                                  You need to know some SQL
 
 
 ### Assembling responses with Newt
 
-Managing page assembly browser side is a chore. We can skip the complex JavaScript browser side if we let Newt do the routing of requests to PostgREST and then sending those results through Pandoc. The [birds 3](birds3/) demo shows how this works. With just SQL and Pandoc templates we can build a web application.
+(see <https://github.com/caltechlibrary/newt/tree/main/birds3>)
+
+Managing page assembly browser side is a chore. We can skip the complex JavaScript browser side if we let Newt do the routing of requests to PostgREST and then sending those results through Pandoc. The birds 3 demo shows how this works. With just SQL and Pandoc templates we can build a web application.
 
 #### Birds 3 Demo
 
-- [README.md](birds3/README.md)
-- [birds-routes.csv](birds3/birds-routes.csv)
-- [birds.csv](birds3/birds.csv)
-- [birds.yaml](birds3/birds.yaml)
-- [htdocs](birds3/htdocs/)
-    - [index.html](birds3/htdocs/index.html)
-- [page.tmpl](birds3/page.tmpl)
-- [postgrest.conf](birds3/postgrest.conf)
-- [setup.sql](birds3/setup.sql)
+- README.md, demo read me
+- birds-routes.csv, CSV holding data routing instructions
+- birds.csv, CSV holding data to be loaded via SQL
+- birds.yaml, configuration for Newt
+- htdocs
+    - index.html, static homepage, links feature pages
+    - add-bird.html, a webform for adding bird sighthings
+    - about.html, static page, credits
+- page.tmpl, Pandoc template for listing birds
+- postgrest.conf, configurtion for PostgREST
+- setup.sql, SQL setting of data models and JSON data API
 
 This is very similar to both demo 1 and 2. Missing is build.sh from
 demo 1. We don't need it since we're running Pandoc as a web service.
