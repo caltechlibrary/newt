@@ -44,7 +44,7 @@ a more humane user experience for staff and patrons.</strong></p>
 <p>From front-end to back-end</p>
 <ul>
 <li>A front end web server (e.g. Apache 2, NginX) can provide access
-control where appropriate (e.g. Single Signon with OAuth2 or
+control where appropriate (e.g. Single Sign on with OAuth2 or
 Shibboleth)</li>
 <li>Newt is a data router. It uses simple a CSV file for defining
 routes. It can also provide static files</li>
@@ -61,12 +61,12 @@ desired formats). Any additional static content (e.g. HTML pages, CSS,
 JavaScript files) can also be made available view Newt.</p>
 <h2 id="beyond-postgrespostgrest">Beyond Postgres+PostgREST</h2>
 <p>Newt can talk to any data API as long as it returns its content in
-JSON. Thie means Newt can also route content to Solr or Elasticsearch
+JSON. This means Newt can also route content to Solr or Elasticsearch
 before taking the results and sending them through Pandoc. This more
 elaborate setup would look like this from front-end to back-end.</p>
 <ul>
 <li>A front end web server (e.g. Apache 2, NginX) integrated providing
-access control where appropriate (e.g. Single Signon with OAuth2 or
+access control where appropriate (e.g. Single Sign on with OAuth2 or
 Shibboleth)</li>
 <li>Newt URL router (uses a CSV file for defining routes)</li>
 <li>Search Engine (e.g. Solr, Opensearch)</li>
@@ -82,8 +82,8 @@ result pages.</p>
 Pandoc templates you need to display the results from querying Solr.</p>
 <h2 id="explore-newt-and-friends">Explore Newt and friends</h2>
 <h3 id="step-1-pandoc">Step 1, Pandoc</h3>
-<p>Pandoc can be throught of as a powerful template engine. It is
-familair to many people who building “static” websites. It is known for
+<p>Pandoc can be thought of as a powerful template engine. It is
+familiar to many people who building “static” websites. It is known for
 being able to convert many structured text formats to another. The <a
 href="birds1/">birds 1 demo</a>, a simple bird listing site, is built
 using Pandoc with content in both Markdown and a list of birds sighted
@@ -150,7 +150,7 @@ assemble pages results from our JSON data API.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Simple backend, just SQL code</td>
+<td style="text-align: left;">Simple back-end, just SQL code</td>
 <td style="text-align: left;">JavaScript in the browser is complex</td>
 </tr>
 <tr class="even">
@@ -189,7 +189,7 @@ demo 1. We don’t need it since we’re running Pandoc as a web service.
 There is an added configuration file for Newt. The Pandoc template
 script like in demo 1 and unlike demo 2 there is no sightings.js file to
 send to the web browser. Also Newt provides our static file service so
-indevelopment we don’t need Apache 2 or NginX.</p>
+when developing we don’t need Apache 2 or NginX.</p>
 <table>
 <thead>
 <tr class="header">
@@ -199,7 +199,7 @@ indevelopment we don’t need Apache 2 or NginX.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Simple backend, just SQL code</td>
+<td style="text-align: left;">Simple back-end, just SQL code</td>
 <td style="text-align: left;">Like demo 2 you need to know some SQL</td>
 </tr>
 <tr class="even">
@@ -214,8 +214,8 @@ indevelopment we don’t need Apache 2 or NginX.</p>
 </table>
 <h2 id="more-about-newt">More about Newt</h2>
 <p>Configuring Newt can be done in a YAML file or through the shell’s
-enviroment. A minimum setup requires a pointer to the CSV file container
-your route definitions. The environment variable needed is
+environment. A minimum setup requires a pointer to the CSV file
+container your route definitions. The environment variable needed is
 <code>NEWT_ROUTES</code> in the YAML file the attribute is
 <code>newt_routes</code>. If you also wish to have static file service
 support then you would set <code>NEWT_HTDOCS</code> in the environment
@@ -226,7 +226,7 @@ href="building%20with%20postgres-postgrest-pandoc-and-newt.html">Building
 web Postgres, PostgREST, Pandoc and Newt</a></li>
 </ul>
 <h2 id="conclusion">Conclusion</h2>
-<p>In all our demos we’ve devided the tasks through a series of flexible
+<p>In all our demos we’ve divided the tasks through a series of flexible
 microservices.</p>
 <dl>
 <dt>Postgres</dt>
@@ -243,7 +243,7 @@ Run in server mode is a powerful template engine
 </dd>
 <dt>Newt</dt>
 <dd>
-Is a data router and stastic file server. Newt knows how to talk to a
+Is a data router and static file server. Newt knows how to talk to a
 data source like PostgREST or Solr and then run the results through
 Pandoc.
 </dd>

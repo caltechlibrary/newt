@@ -12,7 +12,7 @@ My belief is that many web services used by Archives, Libraries and Museums can 
 
 From front-end to back-end
 
-- A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
+- A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. Single Sign on with OAuth2 or Shibboleth)
 - Newt is a data router. It uses simple a CSV file for defining routes. It can also provide static files
 - Postgres+PostgREST provides a JSON data API (programming is in SQL)
 - Pandoc server (provides a templating engine to transform data sources)
@@ -21,9 +21,9 @@ All these can be treated as "off the shelf". Aside from configuration they run a
 
 ## Beyond Postgres+PostgREST
 
-Newt can talk to any data API as long as it returns its content in JSON. Thie means Newt can also route content to Solr or Elasticsearch before taking the results and sending them through Pandoc. This more elaborate setup would look like this from front-end to back-end.
+Newt can talk to any data API as long as it returns its content in JSON. This means Newt can also route content to Solr or Elasticsearch before taking the results and sending them through Pandoc. This more elaborate setup would look like this from front-end to back-end.
 
-- A front end web server (e.g. Apache 2, NginX) integrated providing access control where appropriate (e.g. Single Signon with OAuth2 or Shibboleth)
+- A front end web server (e.g. Apache 2, NginX) integrated providing access control where appropriate (e.g. Single Sign on with OAuth2 or Shibboleth)
 - Newt URL router (uses a CSV file for defining routes)
 - Search Engine (e.g. Solr, Opensearch)
 - Postgres+PostgREST (provides a data source API, is programmed in SQL)
@@ -38,7 +38,7 @@ The main additional work beyond the initial scenario is creating the Pandoc temp
 
 ### Step 1, Pandoc
 
-Pandoc can be throught of as a powerful template engine. It is familair to many people who building "static" websites. It is known for being able to convert many structured text formats to another. The [birds 1 demo](birds1/), a simple bird listing site,  is built using Pandoc with content in both Markdown and a list of birds sighted in a CSV file. Pandoc does the stitching rendering the content to HTML.
+Pandoc can be thought of as a powerful template engine. It is familiar to many people who building "static" websites. It is known for being able to convert many structured text formats to another. The [birds 1 demo](birds1/), a simple bird listing site,  is built using Pandoc with content in both Markdown and a list of birds sighted in a CSV file. Pandoc does the stitching rendering the content to HTML.
 
 Birds 1 Demo files
 
@@ -74,7 +74,7 @@ The files for birds 2 demo are
 
 Pros                             Cons
 -------------------------------- ------------------------------------
-Simple backend, just SQL code    JavaScript in the browser is complex
+Simple back-end, just SQL code   JavaScript in the browser is complex
                                  You need a static file server
                                  You need to know some SQL
 
@@ -99,23 +99,23 @@ This is very similar to both demo 1 and 2. Missing is build.sh from
 demo 1. We don't need it since we're running Pandoc as a web service.
 There is an added configuration file for Newt. The Pandoc template
 script like in demo 1 and unlike demo 2 there is no sightings.js file to
-send to the web browser. Also Newt provides our static file service so indevelopment we don't need Apache 2 or NginX.
+send to the web browser. Also Newt provides our static file service so when developing  we don't need Apache 2 or NginX.
 
 Pros                                 Cons
 -----------------------------------  ------------------------------------
-Simple backend, just SQL code        Like demo 2 you need to know some SQL
+Simple back-end, just SQL code       Like demo 2 you need to know some SQL
 No JavaScript required browser side
 Newt provides the static web server
 
 ## More about Newt
 
-Configuring Newt can be done in a YAML file or through the shell's enviroment. A minimum setup requires a pointer to the CSV file container your route definitions. The environment variable needed is `NEWT_ROUTES` in the YAML file the attribute is `newt_routes`. If you also wish to have static file service support then you would set `NEWT_HTDOCS` in the environment or `newt_htdocs` in the YAML configuration file. 
+Configuring Newt can be done in a YAML file or through the shell's environment. A minimum setup requires a pointer to the CSV file container your route definitions. The environment variable needed is `NEWT_ROUTES` in the YAML file the attribute is `newt_routes`. If you also wish to have static file service support then you would set `NEWT_HTDOCS` in the environment or `newt_htdocs` in the YAML configuration file. 
 
 - [Building web Postgres, PostgREST, Pandoc and Newt](building with postgres-postgrest-pandoc-and-newt.md)
 
 ## Conclusion
 
-In all our demos we've devided the tasks through a series of flexible microservices.
+In all our demos we've divided the tasks through a series of flexible microservices.
 
 Postgres
 : provides data storage, back-end configuration and data services
@@ -127,7 +127,7 @@ Pandoc
 : Run in server mode is a powerful template engine
 
 Newt
-: Is a data router and stastic file server. Newt knows how to talk to a data source like PostgREST or Solr and then run the results through Pandoc.
+: Is a data router and static file server. Newt knows how to talk to a data source like PostgREST or Solr and then run the results through Pandoc.
 
 The "coding" of the back-end is reduced to SQL and Pandoc templates. The front-end can be as complex as you like given the full capabilities of your web browser to handle HTML, CSS and JavaScript.
 

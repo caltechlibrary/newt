@@ -67,14 +67,14 @@ Load configuration and routes CSV but don’t start web service
 find the “routes” CSV file and a list of any POSIX environment variables
 to import and make available inside the router.</p>
 <p>{app_mame} can be configured via a POSIX environment.</p>
-<pre><code>NEWT_PORT=&quot;3030&quot;
+<pre><code>NEWT_PORT=&quot;8000&quot;
 NEWT_ROUTES=&quot;routes.csv&quot;
 NEWT_ENV=&quot;DB_NAME;DB_USER;DB_PASSWORD&quot;
 export NEWT_PORT
 export NEWT_ROUTES
 export NEWT_ENV</code></pre>
 <p>It can also be configured using a configuration file.</p>
-<pre><code>newt_port = &quot;3030&quot;
+<pre><code>newt_port = &quot;8000&quot;
 newt_routes = &quot;routes.csv&quot;
 newt_env = [ &quot;DB_NAME&quot;, &quot;DB_USER&quot;, &quot;DB_PASSWORD&quot; ]</code></pre>
 <p>The environment will load first then the configuration file if
