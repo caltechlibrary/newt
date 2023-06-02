@@ -32,15 +32,15 @@ EOT
 cat <<EOT>birds1/page.tmpl
 <DOCTYPE html lang="en">
 <html>
-  <head><title>\$title\$</title></head>
+  <head><title>Birds 1 Demo</title></head>
   <body>
-    <header>\$title\$</header>
+    <header>Birds 1 Demo</header>
 	<p>
     <h1>Welcome to the bird list!</h1>
     <p>
 \$body\$
-	<p>
-	<footer>Updated: \$date\$</footer>
+	</p>
+	<footer></footer>
   </body>
 </html>
 EOT

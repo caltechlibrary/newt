@@ -142,7 +142,7 @@ EOT
 
 # Create a Pandoc template page.tmpl
 cat <<EOT >birds3/page.tmpl
-<DOCTYPE html lang="en"\>
+<DOCTYPE html lang="en">
 <html>
   <head><title>Birds 3 Demo</title></head>
   <body>
@@ -167,26 +167,17 @@ cat <<EOT >birds3/page.tmpl
       </div>
       <button id="record-bird" type="submit">Add Bird Sighting</button>
     </form></div>
-  </body>
-<h2>Bird List</h2>
-<table>
-<thead>
-<tr class="header">
-<th>bird</th>
-<th>place</th>
-<th>sighted</th>
-</tr>
-</thead>
-<tbody>
+    <h2>Bird List</h2>
+	<table>
+		<thead>
+			<tr class="header"> <th>bird</th> <th>place</th> <th>sighted</th> </tr>
+		</thead>
+		<tbody>
 \$for(data)\$
-<tr>
-<td>\$it.bird\$</td>
-<td>\$it.place\$</td>
-<td>\$it.sighted\$</td>
-</tr>
+			<tr> <td>\$it.bird\$</td> <td>\$it.place\$</td> <td>\$it.sighted\$</td> </tr>
 \$endfor\$
-</tbody>
-</table>
+		</tbody>
+	</table>
 	<p>
 	<footer></footer>
   </body>
