@@ -41,7 +41,7 @@ A route is a URL path similar to a Unix file path. It main be an explicit route 
 
 ~~~
 /about.html
-/blog/{year year}/{month month}/{day day}/
+/blog/{year Year}/{month Month}/{day Day}/
 ~~~
 
 Routes can contain variables that are re-used in forming a data API request or used by Pandoc server if that is defined for the route.
