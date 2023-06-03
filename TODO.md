@@ -23,6 +23,7 @@
     - [ ] Test newt router handling PATCH
     - [ ] Test newt router handling DELETE
     - [ ] Test newt birds3 demo and debug
+    - [ ] Does the environment need to merge with objects sent to data API via POST, PUT, PATCH?
     - [x] Debug interaction between static file service and Router
     - [x] Test assembled Newt static file handling
     - [x] Test newt router only handling

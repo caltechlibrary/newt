@@ -95,7 +95,7 @@ func (router *Router) OverlayEnv(m map[string]string) map[string]string {
 
 func isHTTPMethod(s string) bool {
 	s = strings.ToUpper(s)
-	for _, method := range []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodHead, http.MethodOption} {
+	for _, method := range []string{ http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodHead, "OPTION"} {
 		if strings.Compare(method, s) == 0 {
 			return true
 		}
@@ -333,7 +333,7 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 		// FIXME: Handle http.MethodDelete
 		if (req.Method == http.MethodPost) ||
 			(req.Method == http.MethodPut) ||
-			(req,Method == http.Method.Patch) {
+			(req.Method == http.MethodPatch) {
 			// FIXME: I only want to use ParseForm is
 			// the client is NOT posting JSON content.
 			if err := req.ParseForm(); err != nil {
