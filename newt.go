@@ -24,7 +24,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-
 type Config struct {
 	// Port is the name of the localhost port Newt will listen on.
 	Port string `json:"newt_port,omitempty" yaml:"newt_port,omitempty"`
@@ -81,7 +80,7 @@ func LoadConfig(configFName string) (*Config, error) {
 	}
 	if cfg.Port == "" {
 		cfg.Port = "8000"
-	} 
+	}
 	if strings.HasPrefix(cfg.Port, ":") {
 		cfg.Port = cfg.Port[1:]
 	}
@@ -135,7 +134,6 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 		fmt.Fprintf(out, "configuration and routes successfully processed\n")
 		return 0
 	}
-
 
 	appName := path.Base(os.Args[0])
 	mux := http.NewServeMux()

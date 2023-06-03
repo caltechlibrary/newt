@@ -1,14 +1,14 @@
 package newt
 
 import (
-	"path"
 	"os"
+	"path"
 	"testing"
 )
 
 func TestResolveApiURL(t *testing.T) {
 	router := new(Router)
-	// NOTE: Use some test DB_NAME, DB_USERNAME and PASSWORD to test 
+	// NOTE: Use some test DB_NAME, DB_USERNAME and PASSWORD to test
 	// Data API URL transform. This isn't actually going to contect
 	// to anything in the test.
 	router.Setenv("DB_USERNAME", "foo")
@@ -19,22 +19,22 @@ func TestResolveApiURL(t *testing.T) {
 		t.FailNow()
 	}
 
-	// NOTE: pData holds a test data and expected resulting for 
+	// NOTE: pData holds a test data and expected resulting for
 	// our router.
-	pData := map[string]string {
-		"/blog/2023/05/29/my-post": `http://foo:bar@localhost:3000/blog/?post_date=2023-05-29&title_slug=my-post`,
+	pData := map[string]string{
+		"/blog/2023/05/29/my-post":      `http://foo:bar@localhost:3000/blog/?post_date=2023-05-29&title_slug=my-post`,
 		"/blog/2023/06/01/my-post.html": `http://foo:bar@localhost:3000/blog/?post_date=2023-06-01&title_slug=my-post.html`,
 	}
 	for src, expected := range pData {
 		// NOTE: we need to ResolveRoute to get a parsed Route DSL merged
 		// with any environment vars.
 		no, m, ok := router.ResolveRoute(src, "GET")
-		if ! ok {
+		if !ok {
 			t.Errorf("expected to resolve the router %q, failed", src)
 			t.FailNow()
 		}
-		res, ok := router.ResolveApiURL(no, m);
-		if ! ok {
+		res, ok := router.ResolveApiURL(no, m)
+		if !ok {
 			t.Errorf("expected ResolveApiURL to find router %d, for %q", no, src)
 			t.FailNow()
 		}
@@ -43,7 +43,7 @@ func TestResolveApiURL(t *testing.T) {
 		}
 	}
 	// Now we test urls that should fail to resolve ...
-	pData = map[string]string {
+	pData = map[string]string{
 		"/about.html": ``,
 	}
 	for src, unexpected := range pData {
@@ -69,7 +69,7 @@ func TestRequestDataAPI(t *testing.T) {
 
 	router := new(Router)
 	// Use some test DB_NAME, DB_USERNAME and PASSWORD to test Data API URL transform
-	fName := path.Join("testdata", dbName + "-routes.csv")
+	fName := path.Join("testdata", dbName+"-routes.csv")
 	router.Setenv("DB_NAME", dbName)
 	router.Setenv("DB_USERNAME", dbUsername)
 	router.Setenv("DB_PASSWORD", dbPassword)
@@ -83,7 +83,7 @@ func TestRequestDataAPI(t *testing.T) {
 	}
 	// Map of request to row number
 	tMap := map[string]int{
-		"http://localhost:3000/sighting": 0,
+		"http://localhost:3000/sighting":  0,
 		"http://localhost:3000/bird_view": 1,
 	}
 	for apiURL, rNo := range tMap {
@@ -95,7 +95,7 @@ func TestRequestDataAPI(t *testing.T) {
 }
 
 // TestPandoc
-func TestPandoc (t *testing.T) {
+func TestPandoc(t *testing.T) {
 	dbUsername := os.Getenv("DB_USERNAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
@@ -106,7 +106,7 @@ func TestPandoc (t *testing.T) {
 
 	router := new(Router)
 	// Use some test DB_NAME, DB_USERNAME and PASSWORD to test Data API URL transform
-	fName := path.Join("testdata", dbName + "-routes.csv")
+	fName := path.Join("testdata", dbName+"-routes.csv")
 	router.Setenv("DB_NAME", dbName)
 	router.Setenv("DB_USERNAME", dbUsername)
 	router.Setenv("DB_PASSWORD", dbPassword)
@@ -120,16 +120,16 @@ func TestPandoc (t *testing.T) {
 	}
 	// Map of request to row number
 	tMap := map[string]int{
-		"http://localhost:3000/sighting": 0,
+		"http://localhost:3000/sighting":  0,
 		"http://localhost:3000/bird_view": 1,
 	}
 	dMap := map[string][]byte{}
 	for apiURL, rNo := range tMap {
-			src, _, statusCode := router.RequestDataAPI(rNo, apiURL, []byte{})
-			if statusCode != 200 {
-				t.Errorf("expected 200 status code (data api), got %d", statusCode)
-			}
-			dMap[apiURL] = src
+		src, _, statusCode := router.RequestDataAPI(rNo, apiURL, []byte{})
+		if statusCode != 200 {
+			t.Errorf("expected 200 status code (data api), got %d", statusCode)
+		}
+		dMap[apiURL] = src
 	}
 	for k, v := range dMap {
 		rNo, ok := tMap[k]

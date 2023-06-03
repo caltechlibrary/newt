@@ -37,7 +37,7 @@ From this Newt can build a service that talks to microservices that provide data
 
 ## What is a request route?
 
-A route is a URL path similar to a Unix file path. It main be an explicit route or one that describes an expression expressed in a [RouteDSL](routedsl.md "route domain specific language").  The RouteDSL enables a request route to be parsed and transformed into a data API request and Pandoc template.
+A route is a URL path similar to a Unix file path. It main be an explicit route or one that describes an expression expressed in a [RouteDSL](route_dsl.md "route domain specific language").  The RouteDSL enables a request route to be parsed and transformed into a data API request and Pandoc template.
 
 ~~~
 /about.html
@@ -64,7 +64,7 @@ In the template values for "{year}", "{month}", "{day}" came from our request ro
 ## The routes CSV columns defined
 
 req_route
-: route description (see [Route DSL concept](routedsl.md))
+: route description (see [Route DSL concept](route_dsl.md))
 
 req_method
 : required HTTP method (e.g. GET, POST)
