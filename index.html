@@ -96,22 +96,6 @@ The <a href="birds1/">birds 1 demo</a>, a simple bird listing site, is
 built using Pandoc with content written Markdown and a list of birds
 sighted maintained in a CSV file. Pandoc is used to render both into the
 HTML needed to display the website.</p>
-<<<<<<< HEAD
-<h3 id="birds-1-demo-files">Birds 1 Demo files</h3>
-<p>(see <a
-href="https://github.com/caltechlibrary/newt/tree/main/birds1"
-class="uri">https://github.com/caltechlibrary/newt/tree/main/birds1</a>)</p>
-<ul>
-<li>README.md, demo read me</li>
-<li>birds.csv, our list of bird sightings</li>
-<li>birds.md, additional text descriptions</li>
-<li>build.sh, a shell script that uses Pandoc to render site</li>
-<li>htdocs, the website document directory
-<ul>
-<li>index.html</li>
-</ul></li>
-<li>page.tmpl, the Pandoc page template</li>
-=======
 <h2 id="demonstrations">Demonstrations</h2>
 <p>There are three <a
 href="https://github.com/caltechlibrary/newt/tree/main/demos">demos</a>
@@ -154,7 +138,6 @@ maintain.</p>
 <li>build.sh, a shell script that uses Pandoc to render site</li>
 <li>htdocs, the website document directory</li>
 <li>page.tmpl, a Pandoc page template using by build.sh</li>
->>>>>>> ccab570451f7bebd7913313055a07100d5c6b8bd
 </ul>
 <table>
 <thead>
@@ -177,31 +160,6 @@ maintain.</p>
 <h3 id="birds-2-demo-postgres-postgrest">Birds 2 Demo, Postgres +
 PostgREST</h3>
 <p>Postgres and PostgREST can be combined to provide a dynamic data
-<<<<<<< HEAD
-source for our <a href="birds2/">birds 2 demo</a> website. In <a
-href="birds2/">birds 2 demo</a> PostgREST runs on localhost and we use
-another web server to presents the static files. The difference from
-birds 1 demo is that our list of birds is held in the Postgres database
-and provided via a JSON API call using JavaScript in the web
-browser.</p>
-<p>The back-end is primarily written using SQL. This includes setting up
-access by PostgREST. The font-end is more complex as JavaScript is
-required in the browser to assemble pages results from our JSON data
-API.</p>
-<h4 id="birds-2-demo">Birds 2 demo</h4>
-<p>(see <a
-href="https://github.com/caltechlibrary/newt/tree/main/birds2"
-class="uri">https://github.com/caltechlibrary/newt/tree/main/birds2</a>)</p>
-<ul>
-<li>README.md, demo read me</li>
-<li>birds.csv, our sightings data, loads into SQL database</li>
-<li>htdocs, the website document directory
-<ul>
-<li>index.html</li>
-<li>sightings.js, JavaScript support is required in the web browser to
-render the page and handle updates</li>
-</ul></li>
-=======
 source for our birds 2 demo website. In birds 2 demo PostgREST runs on
 localhost and we use another web server to presents the static files and
 to proxy to PostgREST. The enhancements over birds 1 demo is our list of
@@ -220,7 +178,6 @@ service to the front-end.</p>
 <li>htdocs, the website document directory</li>
 <li>htdocs/sightings.js, JavaScript support is required in the web
 browser to render the page and handle updates</li>
->>>>>>> ccab570451f7bebd7913313055a07100d5c6b8bd
 <li>postgrest.conf, configuration for PostgREST</li>
 <li>setup.sql, SQL setting up data models and JSON data API</li>
 </ul>
@@ -246,32 +203,6 @@ browser to render the page and handle updates</li>
 </tr>
 </tbody>
 </table>
-<<<<<<< HEAD
-<h3 id="assembling-responses-with-newt">Assembling responses with
-Newt</h3>
-<p>(see <a
-href="https://github.com/caltechlibrary/newt/tree/main/birds3"
-class="uri">https://github.com/caltechlibrary/newt/tree/main/birds3</a>)</p>
-<p>Managing page assembly browser side is a chore. We can skip the
-complex JavaScript browser side if we let Newt do the routing of
-requests to PostgREST and then sending those results through Pandoc. The
-birds 3 demo shows how this works. With just SQL and Pandoc templates we
-can build a web application.</p>
-<h4 id="birds-3-demo">Birds 3 Demo</h4>
-<ul>
-<li>README.md, demo read me</li>
-<li>birds-routes.csv, CSV holding data routing instructions</li>
-<li>birds.csv, CSV holding data to be loaded via SQL</li>
-<li>birds.yaml, configuration for Newt</li>
-<li>htdocs
-<ul>
-<li>index.html, static homepage, links feature pages</li>
-<li>add-bird.html, a webform for adding bird sighthings</li>
-<li>about.html, static page, credits</li>
-</ul></li>
-<li>page.tmpl, Pandoc template for listing birds</li>
-<li>postgrest.conf, configurtion for PostgREST</li>
-=======
 <h3 id="birds-3-demo-assembling-responses-with-newt">Birds 3 demo,
 assembling responses with Newt</h3>
 <p>Managing page assembly browser side is a chore. We can skip the
@@ -291,7 +222,6 @@ Pandoc running as a microservice.</p>
 <li>htdocs, holds our static content</li>
 <li>page.tmpl, Pandoc template for listing birds</li>
 <li>postgrest.conf, configuration for PostgREST</li>
->>>>>>> ccab570451f7bebd7913313055a07100d5c6b8bd
 <li>setup.sql, SQL setting of data models and JSON data API</li>
 </ul>
 <p>This is very similar to both demo 1 and 2. Missing is build.sh from
