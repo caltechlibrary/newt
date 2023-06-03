@@ -8,11 +8,20 @@
 - [ ] Present at Code4Lib meetup, July 14, 2023
 - [ ] Demo for DLD staff
 - [ ] Finish Newt prototype
-    - [ ] Newt router handling for POST
+    - [ ] Newt router handling for OPTIONS
+    - [ ] Newt router handling for HEAD
+    - [x] Newt router handling for GET
+    - [x] Newt router handling for POST
     - [ ] Newt router handling for PUT
     - [ ] Newt router handling for PATCH
-    - [ ] Newt router handling for OPTIONS
-    - [ ] Test newt router handling POST, PUT, PATCH and OPTIONS
+    - [ ] Newt router handling for DELETE
+    - [ ] Test newt router handling OPTIONS
+    - [ ] Test newt router handling HEAD
+    - [ ] Test newt router handling GET
+    - [ ] Test newt router handling POST
+    - [ ] Test newt router handling PUT
+    - [ ] Test newt router handling PATCH
+    - [ ] Test newt router handling DELETE
     - [ ] Test newt birds3 demo and debug
     - [x] Debug interaction between static file service and Router
     - [x] Test assembled Newt static file handling
@@ -33,5 +42,6 @@
 
 ## Someday, maybe
 
+- [ ] Add a declaritive way to validate form input in Newt without sending it to a JSON data API for validation, this would improve POST, PUT, PATCH handling in the same way URL vetting is implemented
 - [ ] Add file upload support to Newt via an S3 like service call
 

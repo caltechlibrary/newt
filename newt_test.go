@@ -1,12 +1,12 @@
 package newt
 
 import (
-	"path"
 	"os"
+	"path"
 	"testing"
 )
 
-func TestDryRun(t *testing.T){
+func TestDryRun(t *testing.T) {
 	in := os.Stdin
 	out := os.Stdout
 	eout := os.Stderr
@@ -18,6 +18,6 @@ func TestDryRun(t *testing.T){
 	}
 }
 
-func TestLiveRun(t *testing.T)  {
+func TestLiveRun(t *testing.T) {
 	t.Skipf("TestLiveRun() not implemented")
 }

@@ -10,20 +10,20 @@ import (
 
 var (
 	// RdslTypes is a map to the types defined in route_dsl_types.go
-	RouteTypes = map[string] EvalType {
-		"String": new(RdslString).EvalType,
-		"Year": new(RdslYear).EvalType,
-		"Month": new(RdslMonth).EvalType,
-		"Day": new(RdslDay).EvalType,
+	RouteTypes = map[string]EvalType{
+		"String":   new(RdslString).EvalType,
+		"Year":     new(RdslYear).EvalType,
+		"Month":    new(RdslMonth).EvalType,
+		"Day":      new(RdslDay).EvalType,
 		"Basename": new(RdslBasename).EvalType,
-		"Extname": new(RdslExtname).EvalType,
-		"Isbn10": new(RdslIsbn10).EvalType,
-		"Isbn13": new(RdslIsbn13).EvalType,
-		"Isbn": new(RdslIsbn).EvalType,
-		"Issn": new(RdslIssn).EvalType,
-		"DOI": new(RdslDOI).EvalType,
-		"Isni": new(RdslIsni).EvalType,
-		"ORCID": new(RdslORCID).EvalType,
+		"Extname":  new(RdslExtname).EvalType,
+		"Isbn10":   new(RdslIsbn10).EvalType,
+		"Isbn13":   new(RdslIsbn13).EvalType,
+		"Isbn":     new(RdslIsbn).EvalType,
+		"Issn":     new(RdslIssn).EvalType,
+		"DOI":      new(RdslDOI).EvalType,
+		"Isni":     new(RdslIsni).EvalType,
+		"ORCID":    new(RdslORCID).EvalType,
 	}
 )
 
@@ -270,5 +270,3 @@ func (orcid RdslORCID) EvalType(expr string, val string) (string, bool) {
 	}
 	return "", false
 }
-
-

@@ -74,7 +74,7 @@ Each listed application is built on a stack. The stacks are complex. Because of 
 - Scaling big is hard
 - Scaling big makes things really complex
 - Scaling big favors large teams
-- This is the cloud's siren song
+- Scaling big is the cloud's siren song
 
 # The alternative, **scale small**
 
@@ -86,22 +86,24 @@ Each listed application is built on a stack. The stacks are complex. Because of 
 - Limit the moving parts
 - Limit the cognitive shifts
 - Minimize the toolbox while maximizing how you use it
-- Write less code! 
-- Remain readable!
+- Write less code while remaining readable! 
 
 # Wait, readable?
 
-- Avoid obfuscation
-- Avoid magical knowledge or capabilities
-- Less code can mean less to read
-- Pay attention to
-    - abstractions
-    - responsibilities
-    - scope
+- Because we need to
+    - pick the right abstractions
+    - pick the right division of responsibilities
+    - solve the problem in the desired scope
+- To do that we
+	- Avoid obfuscation
+	- Avoid magical knowledge or capabilities
+- Less code, less to read
+
+> Programmer time in a Library, Archive or Museum is a scarce resource
 
 # How minimal can we go?
 
-- Off the self microservices
+- We can use off the self microservices
 - SQL 
 - Pandoc
 

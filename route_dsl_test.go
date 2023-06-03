@@ -54,12 +54,12 @@ func TestEvalAndResolve(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	pData := map[string]string {
-	"/blog/2023/05/29/newt-presentation": "/blog?post_date=2023-05-29&title_slug=newt-presentation",
+	pData := map[string]string{
+		"/blog/2023/05/29/newt-presentation": "/blog?post_date=2023-05-29&title_slug=newt-presentation",
 	}
 	for p, expected := range pData {
 		m, ok := rdsl.Eval(p)
-		if !ok  {
+		if !ok {
 			t.Errorf("expected to eval p %q, failed", p)
 			t.FailNow()
 		} else {

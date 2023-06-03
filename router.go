@@ -12,8 +12,8 @@ import (
 	"os"
 	"strings"
 
-	 // 3rd Party
-     "gopkg.in/yaml.v3"
+	// 3rd Party
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -95,7 +95,7 @@ func (router *Router) OverlayEnv(m map[string]string) map[string]string {
 
 func isHTTPMethod(s string) bool {
 	s = strings.ToUpper(s)
-	for _, method := range []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodHead} {
+	for _, method := range []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodHead, http.MethodOption} {
 		if strings.Compare(method, s) == 0 {
 			return true
 		}
@@ -222,13 +222,13 @@ func (router *Router) RequestDataAPI(rNo int, apiURL string, body []byte) ([]byt
 	)
 	buf := bytes.NewBuffer(body)
 	switch method {
-		case http.MethodGet:
-			res, err = http.Get(apiURL)
-		case http.MethodPost:
-			res, err = http.Post(apiURL, contentType, buf)
-		default:
-			log.Printf("http method not supported %s", method)
-			return nil, http.StatusText(502), 502
+	case http.MethodGet:
+		res, err = http.Get(apiURL)
+	case http.MethodPost:
+		res, err = http.Post(apiURL, contentType, buf)
+	default:
+		log.Printf("http method not supported %s", method)
+		return nil, http.StatusText(502), 502
 	}
 	if err != nil {
 		log.Printf("%s", err)
@@ -251,7 +251,7 @@ func JSONSrcToFrontMatter(src []byte) (string, error) {
 	if len(src) == 0 {
 		return "", nil
 	}
-	var data  interface{}
+	var data interface{}
 	if err := json.Unmarshal(src, &data); err != nil {
 		return "", err
 	}
@@ -267,7 +267,7 @@ func JSONSrcToFrontMatter(src []byte) (string, error) {
 
 // RequestPandoc
 func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
-    template := router.Routes[rNo].PandocTemplate
+	template := router.Routes[rNo].PandocTemplate
 	u := "http://localhost:3030"
 	// NOTE: Need to unpack our JSON data and repack it as front matter with
 	// the name "data".
@@ -325,34 +325,34 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 		}
 		var (
 			body []byte
-			err error
+			err  error
 		)
 		// FIXME: Handle http.MethodOption
-		if req.Method == http.MethodPost {
+		// FIXME: Handle http.MethodHead
+		// FIXME: Handle http.MethodGet
+		// FIXME: Handle http.MethodDelete
+		if (req.Method == http.MethodPost) ||
+			(req.Method == http.MethodPut) ||
+			(req,Method == http.Method.Patch) {
+			// FIXME: I only want to use ParseForm is
+			// the client is NOT posting JSON content.
 			if err := req.ParseForm(); err != nil {
-        		http.Error(w, fmt.Sprintf("%s", err), 400)
+				http.Error(w, fmt.Sprintf("%s", err), 400)
 				return
 			}
 			m := map[string]interface{}{}
 			for k, _ := range req.Form {
 				m[k] = req.FormValue(k)
 			}
-			/*
-			body, err = io.ReadAll(req.Body)
-    		if err != nil {
-        		http.Error(w, err.String(), 400)
-				return
-    		}
-			//FIXME: is body is urlencoded or JSON Encoded?
-			*/
 			body, err = json.Marshal(m)
-    		if err != nil {
-        		http.Error(w, fmt.Sprintf("%s", err), 400)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("%s", err), 400)
 				return
-    		}
+			}
 
 			fmt.Fprintf(os.Stderr, "DEBUG body (%q) \n-->%s<--\n", req.Method, body)
-		}
+		} 
+
 		// Get content from the JSON Data API
 		apiURL, ok := router.ResolveApiURL(rNo, m)
 		if !ok {
