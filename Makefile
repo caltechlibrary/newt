@@ -102,7 +102,7 @@ presentation: .FORCE
 clean-website:
 	make -f website.mak clean
 
-website: clean-website .FORCE
+website: clean-website presentation .FORCE
 	make -f website.mak
 
 
