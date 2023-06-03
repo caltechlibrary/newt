@@ -1,5 +1,0 @@
-  bird           place                   sighted
-  -------------- ----------------------- ------------
-  robin          seen in my backyard     2023-04-16
-  humming bird   seen in my backyard     2023-02-28
-  blue jay       seen on my back porch   2023-01-12
