@@ -1,4 +1,4 @@
-pp---
+---
 title: "Newt, assemble web applications with Pandoc, Postgres and PostgREST"
 author: "R. S. Doiel, <rsdoiel@caltech.edu>"
 institute: |
@@ -11,6 +11,7 @@ urlcolor: blue
 linkstyle: bold
 aspectratio: 169
 createDate: 2023-05-16
+updateDate: 2023-06-04
 pubDate: 2023-07-14
 place: UCLA
 date: July 14, 2023
@@ -21,14 +22,14 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 ---
 
 
-# Today, LAMP and its legacy 
+# LAMP and its legacy 
 
 Four example systems found in Caltech Library
 
-- EPrints
 - ArchivesSpace
-- Islandora
+- EPrints
 - Invenio RDM
+- Islandora
 
 # Required Knowledge
 
@@ -41,17 +42,21 @@ Invenio RDM    Python, SQL       Postgres, Redis, Elasticsearch,
                JavaScript        Docker, Invenio Framework,
                                  Python packaging system,
                                  React JavaScript framework,
-                                 NodeJS and NPM
-Islandora      PHP/SQL           MySQL, Fedora, Apache 2
+                                 NodeJS and NPM, NginX
+Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
 
 
 These are all really complicated pieces of software.
 
 # The problem
 
-Each listed application is built on a stack. The stacks are complex. Because of the complexity it's hard to sustain them. Some we've outsourced to SAAS providers (e.g. ArchivesSpace). Some we treat as a back boxes (e.g. EPrints). Some we continue to run (e.g. Invenio RDM). 
+1. Each listed application is built on a stack
+2. The stacks are complex, divergent
+3. Coping strategies
+	a. SAAS
+	b. blackbox
+	c. avoid customization
 
-It's just not fun supporting applications at this level of complexity. It takes too much time and energy. It detracts from delivering useful things to our Library, Archives and Caltech Community.
 
 # Why are these things so complex?
 
@@ -76,9 +81,9 @@ It's just not fun supporting applications at this level of complexity. It takes 
 - Scaling big is hard
 - Scaling big makes things really complex
 - Scaling big favors large teams
-- Scaling big is the cloud's siren song
+- Scaling big is a siren song
 
-# The alternative, **scale small**
+# An alternative, **scale small**
 
 - Pack only what you need
 - Simplify! 
@@ -87,32 +92,29 @@ It's just not fun supporting applications at this level of complexity. It takes 
 
 - Limit the moving parts
 - Limit the cognitive shifts
-- Minimize the toolbox while maximizing how you use it
-- Write less code but remaining readable!
+- Minimize the toolbox, maximizing how you use it
+- Write less code
 
 # Building small
 
-- We need to
-    - pick the right abstractions
-    - pick the right division of responsibilities
-    - solve the problem in the desired scope
-    - Avoid obfuscation and duplication 
-    - Avoid magical capabilities
-    - Write less code, read less code
+- Avoid duplication
+- Avoid obfuscation
+- Avoid magical capabilities
+- Pick the right abstractions
+- Write less code
 
 # Why?
 
-> Human time in is a scarce resource
+> Human time is a scarce resource
 
 # How minimal can we go?
 
-- Use "off the self" microservices
+- Use "off the shelf" microservices
 - SQL 
 - Pandoc
 
-# Can we create applications using only SQL and Pandoc?
 
-Here's the "off the shelf" microservices I am experimenting with
+# The "off the shelf" microservices experiment
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - [Pandoc](https://pandoc.org)
@@ -122,16 +124,16 @@ Here's the "off the shelf" microservices I am experimenting with
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON data API, i.e. manages the data
 - [Pandoc](https://pandoc.org) =>  a powerful template engine
-- [Newt](https://github.com/caltechlibrary/newt/) => provides request router, response assembly and static file services
+- [Newt](https://github.com/caltechlibrary/newt/) => data router, static file services
 
 # How does this work?
 
-Think of a game of telephone
+1. web browser => Newt
+2. Newt => PostgREST
+3. Newt => Pandoc 
+4. Newt => web browser
 
-> web browser => Newt => PostgREST => Pandoc => web browser
-
-
-# How can this work?
+# What does this enable?
 
 1. Model our data using SQL (Postgres)
 2. Define our JSON data API using SQL (Postgres+PostgREST)
@@ -147,69 +149,56 @@ Think of a game of telephone
 - Postgres + PostgREST
 - Newt 
 
-# Server side knowledge requirements
-
-- SQL
-- Pandoc templates
-- A CSV file orchestrating our microservices
-
 # Client side knowledge requirements
 
 - HTML
 - CSS (optional)
 - JavaScript (optional)
 
-# What does this enable?
-
-We can create interactive applications with
+# Server side knowledge requirements
 
 - SQL
-- Pandoc templates 
-- A little routing information
+- Pandoc templates
+- A CSV file orchestrating our microservices
 
 # Why SQL?
 
-- SQL is really good at describing structured data
-- SQL also is good at expressing queries
-- A deeper knowledge of SQL provides you with
-    - data views, functions, procedures
+- SQL is good at describing structured data
+- SQL is good at expressing queries
 - SQL has rich data types, e.g. JSON columns
-- Postgres + PostgREST provides a full featured JSON data API
+- SQL has data views, functions, procedures
 
 # PostgreSQL+PostgREST, a code savings plan
 
 > Minimize the source Luke!
 
-- You don't need to learn an ORM and aren't limited by one
+- You don't need to learn an ORM, aren't limited by it
 - You don't duplicate the SQL models in another language
-    - e.g. classes in Python, PHP, Ruby or Java
-- You don't write middleware to get an API
+- You don't write middleware to get a data API
 
 # Three cognitive shifts
 
 - Write SQL to generate JSON
 - Use Pandoc to transform JSON to HTML (or other formats)
-- Use a CSV file to orchestrate
+- Use a CSV file to orchestrate microservices
 
-# Three common data flows
+# Newt, three data flows
 
 web browser => Newt => PostgREST => Pandoc => web browser
 
-web browser => Newt => PostgREST => web browser
+web browser => Newt => static files => web browser
 
-web browser => Newt => static file system => web browser
+web browser => Newt => PostgREST => web browser
 
 # Is this really simpler?
 
-Let's take a look at three versions of a bird sighting web site.
+Three versions of a bird sighting website
 
 - [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash), a static site implementation
 - [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash), a dynamic site implementation, content viewing requires browser JavaScript
 - [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash), a dynamic site implementation, does not require browser JavaScript
 
-# Different birds 1
-
-## [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash) static site (read only)
+# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash) 
 
 - Built with Pandoc from Markdown and CSV file
 - Adds bird sightings via updating a CSV file and rebuilding site with Pandoc
@@ -222,13 +211,11 @@ Let's take a look at three versions of a bird sighting web site.
       25 total
 ~~~
 
-# Different birds 2
-
-## [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash), dynamic site (read/write)
+# [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash)
 
 - Built with SQL using Postgres + PostgREST
-- Requires the web browser to assemble pages via API calls
-- Add birds using a web form requiring JavaScript
+- JavaScript used to assemble page
+- The web form requires JavaScript
 
 ~~~
       32 birds2/README.md
@@ -240,12 +227,10 @@ Let's take a look at three versions of a bird sighting web site.
      176 total
 ~~~
 
-# Different birds 3
-
-## [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash), dynamic site (read/write)
+# [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash)
 
 - Build from SQL (Postgres + PostgREST) and Pandoc
-- Add birds using a simple web form, **no JavaScript**
+- **no JavaScript**
 
 ~~~
       34 birds3/README.md
@@ -259,7 +244,7 @@ Let's take a look at three versions of a bird sighting web site.
      146 total
 ~~~
 
-# Our different birds
+# Three birds
 
 version    site type   pros                     cons
 -------    ---------   -----------------------  ------------------------------
@@ -275,10 +260,9 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Birds 3 => Postgres+PostgREST, Pandoc and Newt
 
-- Complicated activities are handled by "off the self" microservices
-- Main complexity is limited to SQL and our model data
+- Complicated activities are handled by "off the shelf" microservices
+- SQL defines data model and API end points
 - Leverages our Pandoc knowledge
-- Avoids browser side page assembly
 
 # Newt manages data flow
 
@@ -290,22 +274,21 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 1. Model data in Postgres
 2. Create/update Pandoc templates
-3. Create/update routes CSV file in a spreadsheet
+3. Create/update routes in CSV file
 4. (Re)start PostgREST and Newt to (re)load models and routes
 
 **Repeat as needed**
 
-# Our approach trys to minimize newness
+# Minimal new knowledge
 
 - If you've attended a data science workshop you likely know enough SQL
 - If you've built a static website you likely know about Pandoc
-- I think there is community knowledge of CSV files
-- A simple DSL for mapping requests to data sources and Pandoc
+- A simple DSL used to map requests to data sources and Pandoc
 - SQL + CSV files + Pandoc => web application
 
 => Is this useful for Libraries, Archives and Museums?
 
-# Approach weeknesses
+# Weaknesses
 
 - Newt is **an experimental prototype** (June 2023)
 - Newt doesn't validate the POST, PATCH or PUT data
@@ -314,29 +297,29 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 - Pandoc has a learning curve
 - Using the HTTP protocol has a learning curve
 
-# Approach strengths
+# Strength in Maturity
 
-- Maturity and communities
-  - SQL (1974)
-  - HTTP (1991)
-  - HTML (1993)
-  - Postgres (July 1996)
-  - JSON (April 2001)
-  - Pandoc (August 2006)
-  - PostgREST (June 2014)
+- SQL (1974)
+- HTTP (1991)
+- HTML (1993)
+- Postgres (1996)
+- JSON (2001)
+- Pandoc (2006)
+- PostgREST (2014)
 
 # Next steps for Newt?
 
 - I am building staff facing applications, Summer 2023
-- Planning to test with Solr/Opensearch as a JSON data source
-- Fix bugs, simplify code, add validation, improve performance
+- Testing Solr/Elasticsearch as a JSON data source
+- Fix bugs, improve validation, simplify code
 
-## Someday, maybe
+# It would be nice if ....
 
-- It would be nice if ....
-    - Newt validated POST, PUT and PATCH before sending to API
-    - Newt could delegate file uploads to an S3 like service
-    - Had it's own community supporting it
+- Newt validated POST, PUT and PATCH before sending to API
+- Newt could delegate file uploads to an S3 like service
+- Had it's own community supporting it
+	- share SQL code
+	- share pandoc templates
 
 # Thank you!
 

@@ -21,6 +21,15 @@
 </nav>
 
 <section>
+<p>pp— title: “Newt, assemble web applications with Pandoc, Postgres and
+PostgREST” author: “R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu"
+class="email">rsdoiel@caltech.edu</a>” institute: | Caltech Library,
+Digital Library Development description: Code4Lib Meet up, Los Angeles
+fronttheme: “default” fontsize: 12pt urlcolor: blue linkstyle: bold
+aspectratio: 169 createDate: 2023-05-16 pubDate: 2023-07-14 place: UCLA
+date: July 14, 2023 section-titles: false toc: true keywords: [
+“code4lib”, “meetup”, “Postgres”, “webstack”, “PostgREST”, “Pandoc” ]
+url: “https://caltechlibrary.github.io/newt/presentation” —</p>
 <h1 id="today-lamp-and-its-legacy">Today, LAMP and its legacy</h1>
 <p>Four example systems found in Caltech Library</p>
 <ul>
@@ -105,7 +114,7 @@ complex?</h1>
 <ul>
 <li>We want more from our application so more code gets written</li>
 <li>Complexity accrues over time</li>
-<li>A Silicon Valley influenced “best practices”
+<li>A Silicon Valley influenced “best practice”
 <ul>
 <li><strong>Systems should be designed to scale</strong></li>
 </ul></li>
@@ -139,14 +148,7 @@ small</strong></h1>
 <li>Limit the moving parts</li>
 <li>Limit the cognitive shifts</li>
 <li>Minimize the toolbox while maximizing how you use it</li>
-<li>Write less code</li>
-<li>Remaining readable!</li>
-</ul>
-<h1 id="wait-readable">Wait, readable?</h1>
-<ul>
-<li>Code is for humans</li>
-<li>Code is read more than it is written</li>
-<li>Code must be understood to be sustainable</li>
+<li>Write less code but remaining readable!</li>
 </ul>
 <h1 id="building-small">Building small</h1>
 <ul>
@@ -155,18 +157,14 @@ small</strong></h1>
 <li>pick the right abstractions</li>
 <li>pick the right division of responsibilities</li>
 <li>solve the problem in the desired scope</li>
-</ul></li>
-<li>To do that
-<ul>
-<li>Avoid obfuscation</li>
+<li>Avoid obfuscation and duplication</li>
 <li>Avoid magical capabilities</li>
 <li>Write less code, read less code</li>
 </ul></li>
 </ul>
 <h1 id="why">Why?</h1>
 <blockquote>
-<p>Human time in Libraries, Archives and Museums is a scarce
-resource</p>
+<p>Human time in is a scarce resource</p>
 </blockquote>
 <h1 id="how-minimal-can-we-go">How minimal can we go?</h1>
 <ul>
@@ -309,12 +307,6 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 <li>Built with SQL using Postgres + PostgREST</li>
 <li>Requires the web browser to assemble pages via API calls</li>
 <li>Add birds using a web form requiring JavaScript</li>
-<li>JavaScript has become complex
-<ul>
-<li>handles fetching data and inserting it into the page</li>
-<li>handles form prep and submission of our web form</li>
-</ul></li>
-<li>Solution doesn’t work for text only web browsers like Lynx</li>
 </ul>
 <pre><code>      32 birds2/README.md
        4 birds2/birds.csv
@@ -331,8 +323,6 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 <li>Build from SQL (Postgres + PostgREST) and Pandoc</li>
 <li>Add birds using a simple web form, <strong>no
 JavaScript</strong></li>
-<li>Everything is rendered server side</li>
-<li>Works even for text web browsers like Lynx</li>
 </ul>
 <pre><code>      34 birds3/README.md
        4 birds3/birds-routes.csv
