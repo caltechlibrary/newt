@@ -1,13 +1,11 @@
 
-# Newt, my new take on the web stack
+# Newt, a new take on the web stack
 
-Newt is two things. It is short a "new take" on building web applications. It is also an experimental microservice for working with other off the shelf [microservices](https://en.wikipedia.org/wiki/Microservices). 
+Newt is two things. Newt is a "new take" on building web applications. Newt is an experimental [microservice](https://en.wikipedia.org/wiki/Microservices) working with other "off the shelf" microservices.
 
-Currently I am exploring using Newt to integrate [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org) and [Pandoc](https://pandoc.org). 
+Newt integrates [Postgres](https://postgresql.org), [PostgREST](https://postgrest.org) and [Pandoc](https://pandoc.org) by function as a data router and a light weight static file server.
 
-The Newt application can be thought of as both a data router and a light weight static file server.
-
-Newt can route a request to a JSON data API and then optionally send that result through Pandoc for further processing. Newt runs as a localhost service only. To use in a production setting it would sit behind a traditional web server like Apache 2 or NginX.
+Newt routes a request to a JSON data API (e.g. PostgREST, Solr, Elasticsearch) and then optionally send that result through Pandoc for further processing. Newt runs as a localhost service. Inm production you'd use Newt behind a traditional web server like Apache 2 or NginX.
 
 ## Motivation
 
@@ -20,37 +18,14 @@ From front-end to back-end
 - A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. Single Sign on with OAuth2 or Shibboleth)
 - Newt provides static file services but more importantly serves as a data router. I can map a request to a JSON data API, take those results then send them through Pandoc for transformation.
 - Postgres+PostgREST is an example of a JSON data API
+- Solr, Elasticsearch or Opensearch can also function as a JSON data API
 - Pandoc server provides a templating engine to transform data sources
 
 All these can be treated as "off the shelf". Aside from configuration they can run as traditional services on most POSIX systems.  Your application is implemented using SQL. It is enhanced by using Pandoc templates used to turn JSON into HTML (or other desired formats). 
 
-## Beyond Postgres+PostgREST
-
-Newt can talk to any JSON data API as long as it returns its content in JSON. This means Newt can also route content to Solr or Elasticsearch before taking the results and sending them through Pandoc. This more elaborate setup would look like this from front-end to back-end.
-
-- A front end web server (e.g. Apache 2, NginX) integrated providing access control where appropriate (e.g. Single Sign on with OAuth2 or Shibboleth)
-- Newt URL router (uses a CSV file for defining routes)
-- Search Engine (e.g. Solr, Opensearch)
-- Postgres+PostgREST (provides a data source API, is programmed in SQL)
-- Pandoc server (provides a templating engine to transform data sources)
-
-Once again the routes define where the requests go (e.g. Solr or PostgREST). Pandoc templates transform the JSON responses into HTML result pages.
-
-The main additional work beyond the initial scenario is creating the Pandoc templates you need to display the results from querying Solr or Elasticsearch.
-
-
 ## Exploring Newt's friends
 
-- Pandoc
-- Postgres and PostgREST
-
-### Pandoc
-
-Pandoc can be thought of as a powerful template engine. It is familiar to many people who building "static" websites. It is known for being able to convert many structured text formats from one to another. The [birds 1 demo](birds1/), a simple bird listing site,  is built using Pandoc with content written Markdown and a list of birds sighted maintained in a CSV file. Pandoc is used to render both into the HTML needed to display the website.
-
-## Demonstrations
-
-There are three [demos](https://github.com/caltechlibrary/newt/tree/main/demos) provided in this repository. They can be generated with a simple Bash scripts. The bash scripts will generate all the file needed to run the demos.
+In the repository three [demos](https://github.com/caltechlibrary/newt/tree/main/demos) are provided to show how Pandoc, Postgres+PostgRESt and Newt can work together. The demos are generated using the a simple Bash scripts (see below). The bash scripts will generate all the file needed to run the demos. A read me for each demo describes how to run it.
 
 [Birds 1 Demo](https://github.com/caltechlibrary/newt/blob/main/demos/setup-birds1.bash)
 : Shows a simple use of Pandoc to render a static bird sightings website
@@ -61,23 +36,24 @@ There are three [demos](https://github.com/caltechlibrary/newt/tree/main/demos) 
 [Birds 3 Demo](https://github.com/caltechlibrary/newt/blob/main/demos/setup-birds3.bash)
 : Shows a dynamic bird sightings website using Newt with Postgres+PostgREST and Pandoc
 
-The goal of the three websites is to show an evolution towards simplicity for a given website type.
+The goal of the three demos is to show an evolution towards simplicity.
+
 
 ### Birds 1 Demo, Pandoc only
 
-This is a simple static website. It introduces Pandoc and which we leverage in bird 3 demo. It also is a good tool to rendering static content with. Static websites are generally simple to generate and maintain.
+This is a simple static website. It introduces Pandoc and which we will leverage again in bird 3 demo. It also is a good tool to rendering static content with. Static websites are generally simple to generate and maintain.
 
 - README.md, demo read me
 - birds.csv, our list of bird sightings
-- birds.md, site welcome and description
-- build.sh, a shell script that uses Pandoc to render site
+- build.sh, a shell script that uses Pandoc to render site (3 lines)
 - htdocs, the website document directory
-- page.tmpl, a Pandoc page template using by build.sh
+- page.tmpl, a Pandoc page template using by build.sh (13 lines)
 
 Pros                             Cons
 -------------------------------- -----------------------------------
 Pandoc is widely known           Updates require changing birds.csv
-Pandoc is easily scripted        
+Pandoc is easily scripted        and rebuilding the site.
+
 
 ### Birds 2 Demo, Postgres + PostgREST
 
@@ -88,9 +64,9 @@ The back-end is written using SQL. This includes setting up access by PostgREST.
 - README.md, demo read me
 - birds.csv, our sightings data, loaded into SQL database
 - htdocs, the website document directory
-- htdocs/sightings.js, JavaScript support is required in the web browser to render the page and handle updates
-- postgrest.conf, configuration for PostgREST
-- setup.sql, SQL setting up data models and JSON data API
+- htdocs/sightings.js, JavaScript support is required in the web browser to render the page and handle updates (63 lines)
+- postgrest.conf, configuration for PostgREST (3 lines)
+- setup.sql, SQL setting up data models and JSON data API (50 lines)
 
 Pros                              Cons
 --------------------------------  ------------------------------------
@@ -106,17 +82,17 @@ Managing page assembly browser side is a chore. We can skip the complex JavaScri
 Newt needs to know how to map the front-end requests to PostgREST so to do that it reads a CSV file holding data routing instructions. E.g. turn a request URL into a PostgREST URL and run the results through Pandoc running as a microservice.
 
 - README.md, demo read me
-- birds-routes.csv, CSV holding data routing instructions
+- birds-routes.csv, CSV holding data routing instructions (3 lines)
 - birds.csv, CSV holding data to be loaded into our SQL database
 - birds.yaml, configuration for Newt
 - htdocs, holds our static content
-- page.tmpl, Pandoc template for listing birds
+- page.tmpl, Pandoc template for listing birds  (13 lines)
 - postgrest.conf, configuration for PostgREST
-- setup.sql, SQL setting of data models and JSON data API
+- setup.sql, SQL setting of data models and JSON data API (50 lines)
 
 This is very similar to both demo 1 and 2. Missing is build.sh from demo 1. We don't need it since we're running Pandoc as a microservice.  There is an added configuration file for Newt. The Pandoc template performs a similar duty as the one used in birds 1 demo. Notice there is no sightings.js in our htdocs directory. From the web browsers point of view there is no need to run JavaScript to submit a standard web form to add a bird sighting.
 
-NOTE: Newt provides our static file service so when developing we don't need Apache 2 or NginX. But you do need a front-end web server is you want to add access control or use in a production setting.
+NOTE: Newt provides our static file service so when developing we can skip Apache 2 or NginX.
 
 Pros                                 Cons
 -----------------------------------  ------------------------------------
@@ -124,14 +100,10 @@ Simple back-end, just SQL code       Like demo 2 you need to know some SQL
 No JavaScript required browser side
 Newt provides the static web server
 
-## More about Newt
-
-Configuring Newt can be done in a YAML file or through the shell's environment. A minimum setup requires a pointer to the CSV file container your route definitions. The environment variable needed is `NEWT_ROUTES` in the YAML file the attribute is `newt_routes`. If you also wish to have static file service support then you would set `NEWT_HTDOCS` in the environment or `newt_htdocs` in the YAML configuration file.
-
 
 ## Conclusion
 
-In the final demo I've divided the tasks through a series of flexible microservices.
+In the birds 3 demo I've delegated tasks to a series of flexible microservices.
 
 Postgres
 : provides data storage and defines how our JSON data API works

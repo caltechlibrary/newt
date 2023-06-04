@@ -12,8 +12,8 @@ import (
 
 var (
 	helpText = `---
-title: "{app_name}(1) user manual | Version {version} {release_hash}"
-pubDate: {release_date}
+title: "{app_name}(1) user manual | Version 0.0.1 f75250d"
+pubDate: 2023-06-03
 author: "R. S. Doiel"
 ---
 
@@ -38,13 +38,13 @@ hosted in Postgres databases via PostgREST JSON API as well as static
 files contained in an "htdocs" directory (e.g. HTML, CSS, JavaScript,
 and image assets). 
 
-This goal of Newt Project is to be able to assemble an entire backend
+This goal of Newt Project is to be able to assemble an entire back-end
 from off the self services only requiring data modeling and end point
 definitions using SQL and a Postgres database. Reducing the back-end
 to SQL may simplify application management (it reduces it to a
 database administrator activity) and free up developer time to focus
 more on front end development and human interaction. It is also
-hoped that focusing the back-end on a declaritive model will allow for
+hoped that focusing the back-end on a declarative model will allow for
 a more consistent and reliable back-end.
 
 # OPTIONS
@@ -68,7 +68,7 @@ The three things {app_name} needs to know to run are port number,
 where to find the "routes" CSV file and a list of any POSIX environment
 variables to import and make available inside the router.
 
-{app_mame} can be configured via a POSIX environment.
+{app_name} can be configured via a POSIX environment.
 
 ~~~
 NEWT_PORT="8000"
@@ -83,17 +83,103 @@ It can also be configured using a configuration file.
 
 
 ~~~
-newt_port = "8000"
-newt_routes = "routes.csv"
-newt_env = [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
+{app_name}_port = "8000"
+{app_name}_routes = "routes.csv"
+{app_name}_env = [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
 ~~~
 
 The environment will load first then the configuration file if
-provided. The configuration file takes presidence to the environment.
+provided. The configuration file takes precedence to the environment.
 
 {app_name} does not have secrets but could use secrets passed
 in via the environment. This allows your routes CSV file to be safely
 saved along side your SQL source code for your Newt Project.
+
+# Routing data
+
+For {app_name} to function as a data router is needs information
+about which requests will be serviced and how to map them to a
+JSON data API source before (optionally) sending to Pandoc.
+
+The routes are held in CSV file with the following columns
+
+req_path
+: This is the URL path to watch for incoming requests, it may be a literal path or one containing variable declarations used in forming a API URL call.
+
+req_method
+: This is the HTTP method to listen for. Maybe "GET", "POST", "PUT", "PATCH" or "DELETE"
+
+api_url
+: This is the URL used to connect to the JSON data source (e.g. PostgREST, Solr, Elasticsearch). It may contain variables defined in the request path.
+
+api_method
+: This is the HTTP method used to access the JSON data source. Maybe "OPTIONS", "GET", "POST", "PUT", "PATCH" or "DELETE"
+
+api_content_type
+: This is the HTTP content type string to send with your JSON data source request, typically it is "application/json". 
+
+pandoc_template
+: If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source.
+
+res_headers
+: This is any additional HTTP headers you want to send back to the client.
+
+# Route DSL
+
+A simple domain specific language (DSL) can be used to define values taken
+from a request path and used again to form a JSON data API URL. Variables can be defined in each of the request path's directory name(s), file basename and file extension. The variable is defined by an opening double curly bracket, the variable name, a space, a type and closing double curly brackets.
+
+~~~
+/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}
+/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug Basename}}{{ext Extname}}
+~~~
+
+In the first line the variables defined are "yr" of type "Year", "mo" of type "Month", "dy" of type "Day", "title-slug" of type "String". In the second line the "title-slug" is of type "Basename" (i.e. filename without an extension) and "ext" is of type "Extname" (i.e. the file extension).
+
+In this prototype phase there are a very limited number of variables types
+supported. This is likely to grow overtime if the prototype is successful.
+
+## variable types
+
+String
+: Any sequence of characters except "/" which delimits the directory parts
+
+Year
+: A four digit year (e.g. 2023)
+
+Month
+: A two digit month (e.g. "01" for January, "10" for October)
+
+Day
+: A two digit day (e.g. "01" for the first, "11" for the eleventh)
+
+Basename
+: A file's basename (filename without an extension)
+
+Extname
+: A file's extension (e.g. ".html", ".txt", ".rss", ".js")
+
+Isbn10
+: An ten digit ISBN
+
+Isbn13
+: A thirteen digit ISBN
+
+Isbn
+: An ISBN (either 10 ro 13 digit)
+
+Issn
+: An ISSN
+
+DOI
+: A DOI (digital object identifier)
+
+Isni
+: An ISNI
+
+ORCID
+: An ORCID identifier
+ 
 
 # EXAMPLES
 
@@ -106,11 +192,20 @@ Configuration from the environment
 	{app_name}
 ~~~
 
-Configuration from a YAML file called "newt.yaml"
+Configuration from a YAML file called "{app_name}.yaml"
 
 ~~~
-{app_name} newt.yaml
+{app_name} {app_name}.yaml
 ~~~
+
+An example of a CSV file describing blog display routes.
+
+~~~
+req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
+/blog/{{yr Year}}/{{mo Month}}//{{dy Day}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}},posts.tmpl,"{""content-type"": ""text/html""}"
+/blog/{{yr Year}}/{{mo Month}}//{{dy Day}}/{{title-slug}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}}&title-slug={{title-slug}},article.tmpl,"{""content-type"": ""text/html""}"
+~~~
+
 
 `
 
