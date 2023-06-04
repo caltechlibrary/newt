@@ -1,4 +1,4 @@
----
+pp---
 title: "Newt, assemble web applications with Pandoc, Postgres and PostgREST"
 author: "R. S. Doiel, <rsdoiel@caltech.edu>"
 institute: |
@@ -229,10 +229,6 @@ Let's take a look at three versions of a bird sighting web site.
 - Built with SQL using Postgres + PostgREST
 - Requires the web browser to assemble pages via API calls
 - Add birds using a web form requiring JavaScript
-- JavaScript has become complex
-    - handles fetching data and inserting it into the page
-    - handles form prep and submission of our web form
-- Solution doesn't work for text only web browsers like Lynx
 
 ~~~
       32 birds2/README.md
