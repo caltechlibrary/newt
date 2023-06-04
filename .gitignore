@@ -9,3 +9,4 @@ demos/birds2
 demos/birds3
 htdocs/*
 *.env
+dist/*
