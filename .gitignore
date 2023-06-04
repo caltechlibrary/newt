@@ -4,5 +4,8 @@
 *.bak
 bin/*
 *csv#
+demos/birds1
+demos/birds2
+demos/birds3
 htdocs/*
 *.env

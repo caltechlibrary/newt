@@ -14,7 +14,7 @@
 . ftr VB CB
 . ftr VBI CBI
 .\}
-.TH "newt" "1" "" "user manual" "Version 0.0.1 ccab570"
+.TH "newt" "1" "" "user manual" "Version 0.0.1 f75250d"
 .hy
 .SH NAME
 .PP
@@ -93,6 +93,114 @@ newt does not have secrets but could use secrets passed in via the
 environment.
 This allows your routes CSV file to be safely saved along side your SQL
 source code for your Newt Project.
+.SH Routing data
+.PP
+For newt to function as a data router is needs information about which
+requests will be serviced and how to map them to a JSON data API source
+before (optionally) sending to Pandoc.
+.PP
+The routes are held in CSV file with the following columns
+.TP
+req_path
+This is the URL path to watch for incoming requests, it may be a literal
+path or one containing variable declarations used in forming a api URL
+call.
+.TP
+req_method
+This is the HTTP method to listen for.
+Maybe \[lq]GET\[rq], \[lq]POST\[rq], \[lq]PUT\[rq], \[lq]PATCH\[rq] or
+\[lq]DELETE\[rq]
+.TP
+api_url
+This is the URL used to connect to the JSON data source
+(e.g.\ PostgREST, Solr, Elasticsearch).
+It may contain variables defined in the request path.
+.TP
+api_method
+This is the HTTP method used to access the JSON data source.
+Maybe \[lq]OPTIONS\[rq], \[lq]GET\[rq], \[lq]POST\[rq], \[lq]PUT\[rq],
+\[lq]PATCH\[rq] or \[lq]DELETE\[rq]
+.TP
+api_content_type
+This is the HTTP content type string to send with your JSON data source
+request, typically it is \[lq]application/json\[rq].
+.TP
+pandoc_template
+If included Newt will load the Pandoc template file into memory and use
+it when results are returned from a JSON data source.
+.TP
+res_headers
+This is any additional HTTP headers you want to send back to the client.
+.SH Route DSL
+.PP
+A simple domain specific language (DSL) can be used to define values
+taken from a request path and used again to form a JSON data API URL.
+Variables can be defined in each of the request path\[cq]s directory
+name(s), file basename and file extension.
+The variable is defined by an opening double curly bracket, the variable
+name, a space, a type and closing double curly brackets.
+.IP
+.nf
+\f[C]
+/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}
+/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug Basename}}{{ext Extname}}
+\f[R]
+.fi
+.PP
+In the first line the variables defined are \[lq]yr\[rq] of type
+\[lq]Year\[rq], \[lq]mo\[rq] of type \[lq]Month\[rq], \[lq]dy\[rq] of
+type \[lq]Day\[rq], \[lq]title-slug\[rq] of type \[lq]String\[rq].
+In the second line the \[lq]title-slug\[rq] is of type
+\[lq]Basename\[rq] (i.e.\ filename without an extension) and
+\[lq]ext\[rq] is of type \[lq]Extname\[rq] (i.e.\ the file extension).
+.PP
+In this prototype phase there are a very limited number of variables
+types supported.
+This is likely to grow overtime if the prototype is successful.
+.SS variable types
+.TP
+String
+Any sequence of characters except \[lq]/\[rq] which delimits the
+directory parts
+.TP
+Year
+A four digit year (e.g.\ 2023)
+.TP
+Month
+A two digit month (e.g.\ \[lq]01\[rq] for January, \[lq]10\[rq] for
+October)
+.TP
+Day
+A two digit day (e.g.\ \[lq]01\[rq] for the first, \[lq]11\[rq] for the
+eleventh)
+.TP
+Basename
+A file\[cq]s basename (filename without an extension)
+.TP
+Extname
+A file\[cq]s extension (e.g.\ \[lq].html\[rq], \[lq].txt\[rq],
+\[lq].rss\[rq], \[lq].js\[rq])
+.TP
+Isbn10
+An ten digit ISBN
+.TP
+Isbn13
+A thirteen digit ISBN
+.TP
+Isbn
+An ISBN (either 10 ro 13 digit)
+.TP
+Issn
+An ISSN
+.TP
+DOI
+A DOI (digital object identifier)
+.TP
+Isni
+An ISNI
+.TP
+ORCID
+An ORCID identifier
 .SH EXAMPLES
 .PP
 Configuration from the environment

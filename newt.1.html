@@ -83,6 +83,121 @@ environment.</p>
 <p>newt does not have secrets but could use secrets passed in via the
 environment. This allows your routes CSV file to be safely saved along
 side your SQL source code for your Newt Project.</p>
+<h1 id="routing-data">Routing data</h1>
+<p>For newt to function as a data router is needs information about
+which requests will be serviced and how to map them to a JSON data API
+source before (optionally) sending to Pandoc.</p>
+<p>The routes are held in CSV file with the following columns</p>
+<dl>
+<dt>req_path</dt>
+<dd>
+This is the URL path to watch for incoming requests, it may be a literal
+path or one containing variable declarations used in forming a api URL
+call.
+</dd>
+<dt>req_method</dt>
+<dd>
+This is the HTTP method to listen for. Maybe “GET”, “POST”, “PUT”,
+“PATCH” or “DELETE”
+</dd>
+<dt>api_url</dt>
+<dd>
+This is the URL used to connect to the JSON data source (e.g. PostgREST,
+Solr, Elasticsearch). It may contain variables defined in the request
+path.
+</dd>
+<dt>api_method</dt>
+<dd>
+This is the HTTP method used to access the JSON data source. Maybe
+“OPTIONS”, “GET”, “POST”, “PUT”, “PATCH” or “DELETE”
+</dd>
+<dt>api_content_type</dt>
+<dd>
+This is the HTTP content type string to send with your JSON data source
+request, typically it is “application/json”.
+</dd>
+<dt>pandoc_template</dt>
+<dd>
+If included Newt will load the Pandoc template file into memory and use
+it when results are returned from a JSON data source.
+</dd>
+<dt>res_headers</dt>
+<dd>
+This is any additional HTTP headers you want to send back to the client.
+</dd>
+</dl>
+<h1 id="route-dsl">Route DSL</h1>
+<p>A simple domain specific language (DSL) can be used to define values
+taken from a request path and used again to form a JSON data API URL.
+Variables can be defined in each of the request path’s directory
+name(s), file basename and file extension. The variable is defined by an
+opening double curly bracket, the variable name, a space, a type and
+closing double curly brackets.</p>
+<pre><code>/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}
+/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug Basename}}{{ext Extname}}</code></pre>
+<p>In the first line the variables defined are “yr” of type “Year”, “mo”
+of type “Month”, “dy” of type “Day”, “title-slug” of type “String”. In
+the second line the “title-slug” is of type “Basename” (i.e. filename
+without an extension) and “ext” is of type “Extname” (i.e. the file
+extension).</p>
+<p>In this prototype phase there are a very limited number of variables
+types supported. This is likely to grow overtime if the prototype is
+successful.</p>
+<h2 id="variable-types">variable types</h2>
+<dl>
+<dt>String</dt>
+<dd>
+Any sequence of characters except “/” which delimits the directory parts
+</dd>
+<dt>Year</dt>
+<dd>
+A four digit year (e.g. 2023)
+</dd>
+<dt>Month</dt>
+<dd>
+A two digit month (e.g. “01” for January, “10” for October)
+</dd>
+<dt>Day</dt>
+<dd>
+A two digit day (e.g. “01” for the first, “11” for the eleventh)
+</dd>
+<dt>Basename</dt>
+<dd>
+A file’s basename (filename without an extension)
+</dd>
+<dt>Extname</dt>
+<dd>
+A file’s extension (e.g. “.html”, “.txt”, “.rss”, “.js”)
+</dd>
+<dt>Isbn10</dt>
+<dd>
+An ten digit ISBN
+</dd>
+<dt>Isbn13</dt>
+<dd>
+A thirteen digit ISBN
+</dd>
+<dt>Isbn</dt>
+<dd>
+An ISBN (either 10 ro 13 digit)
+</dd>
+<dt>Issn</dt>
+<dd>
+An ISSN
+</dd>
+<dt>DOI</dt>
+<dd>
+A DOI (digital object identifier)
+</dd>
+<dt>Isni</dt>
+<dd>
+An ISNI
+</dd>
+<dt>ORCID</dt>
+<dd>
+An ORCID identifier
+</dd>
+</dl>
 <h1 id="examples">EXAMPLES</h1>
 <p>Configuration from the environment</p>
 <pre><code>    export NEWT_PORT=&quot;3030&quot;

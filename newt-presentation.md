@@ -144,7 +144,7 @@ Think of a game of telephone
 1. Model our data using SQL (Postgres)
 2. Define our JSON data API using SQL (Postgres+PostgREST)
 3. Transform our structured data using Pandoc
-4. Use Newt to orchestrate
+4. Use Newt to orchestrate the microservice conversation
 
 # Required Toolbox
 
@@ -159,7 +159,7 @@ Think of a game of telephone
 
 - SQL
 - Pandoc templates
-- Understand a CSV file orchestrating our microservices
+- A CSV file orchestrating our microservices
 
 # Client side knowledge requirements
 
