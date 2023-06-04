@@ -6,13 +6,6 @@
 #
 mkdir -p birds2/htdocs
 
-# Generate the empty files we'll use in the demo.
-touch birds2/setup.sql
-touch birds2/birds.csv
-touch birds2/postgrest.conf
-touch birds2/htdocs/index.html
-touch birds2/htdocs/sightings.js
-
 # Create the database we'll use in the demo.
 if ! createdb birds 2>/dev/null; then
 	dropdb birds
