@@ -13,10 +13,18 @@
   <style type="text/css">
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" type="text/css" media="screen, projection, print"
@@ -125,13 +133,10 @@ class="email">rsdoiel@caltech.edu</a>
 </div>
 <div id="why-are-these-things-so-complex" class="slide section level1">
 <h1>Why are these things so complex?</h1>
-<blockquote>
-<p>WARNING: gross generalizations ahead</p>
-</blockquote>
 <ul>
 <li>We want more from our application so more code gets written</li>
 <li>Complexity accrues over time</li>
-<li>A Silicon Valley influenced “best practice”
+<li>A “best practice”
 <ul>
 <li><strong>Systems should be designed to scale</strong></li>
 </ul></li>
@@ -178,9 +183,6 @@ class="email">rsdoiel@caltech.edu</a>
 <div id="building-small" class="slide section level1">
 <h1>Building small</h1>
 <ul>
-<li>Avoid duplication</li>
-<li>Avoid obfuscation</li>
-<li>Avoid magical capabilities</li>
 <li>Pick the right abstractions</li>
 <li>Write less code</li>
 </ul>
@@ -199,9 +201,9 @@ class="email">rsdoiel@caltech.edu</a>
 <li>Pandoc</li>
 </ul>
 </div>
-<div id="the-off-the-shelf-microservices-experiment"
+<div id="off-the-shelf-microservices-experiment"
 class="slide section level1">
-<h1>The “off the shelf” microservices experiment</h1>
+<h1>“off the shelf” microservices experiment</h1>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
@@ -293,17 +295,10 @@ class="slide section level1">
 <div id="three-cognitive-shifts" class="slide section level1">
 <h1>Three cognitive shifts</h1>
 <ul>
-<li>Write SQL to generate JSON</li>
-<li>Use Pandoc to transform JSON to HTML (or other formats)</li>
-<li>Use a CSV file to orchestrate microservices</li>
+<li>Write SQL and use JSON</li>
+<li>Use Pandoc to transform JSON to HTML</li>
+<li>Use a CSV file to orchestrate our microservices</li>
 </ul>
-</div>
-<div id="newt-three-data-flows" class="slide section level1">
-<h1>Newt, three data flows</h1>
-<p>web browser =&gt; Newt =&gt; PostgREST =&gt; Pandoc =&gt; web
-browser</p>
-<p>web browser =&gt; Newt =&gt; static files =&gt; web browser</p>
-<p>web browser =&gt; Newt =&gt; PostgREST =&gt; web browser</p>
 </div>
 <div id="is-this-really-simpler" class="slide section level1">
 <h1>Is this really simpler?</h1>
@@ -328,8 +323,6 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 1</a></h1>
 <ul>
 <li>Built with Pandoc from Markdown and CSV file</li>
-<li>Adds bird sightings via updating a CSV file and rebuilding site with
-Pandoc</li>
 </ul>
 <pre><code>       5 birds1/README.md
        4 birds1/birds.csv
@@ -342,9 +335,7 @@ Pandoc</li>
 href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash">birds
 2</a></h1>
 <ul>
-<li>Built with SQL using Postgres + PostgREST</li>
-<li>JavaScript used to assemble page</li>
-<li>The web form requires JavaScript</li>
+<li>Built with SQL (Postgres + PostgREST), Browser side JavaScript</li>
 </ul>
 <pre><code>      32 birds2/README.md
        4 birds2/birds.csv
@@ -359,7 +350,7 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash">birds
 3</a></h1>
 <ul>
-<li>Build from SQL (Postgres + PostgREST) and Pandoc</li>
+<li>Built with SQL (Postgres + PostgREST) and Pandoc</li>
 <li><strong>no JavaScript</strong></li>
 </ul>
 <pre><code>      34 birds3/README.md
@@ -439,10 +430,9 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 class="slide section level1">
 <h1>Birds 3 =&gt; Postgres+PostgREST, Pandoc and Newt</h1>
 <ul>
-<li>Complicated activities are handled by “off the shelf”
-microservices</li>
+<li>Our “off the shelf” microservices limit complexity</li>
 <li>SQL defines data model and API end points</li>
-<li>Leverages our Pandoc knowledge</li>
+<li>Pandoc templates transform JSON to HTML</li>
 </ul>
 </div>
 <div id="newt-manages-data-flow" class="slide section level1">
@@ -450,7 +440,7 @@ microservices</li>
 <ul>
 <li>request =&gt; JSON data API =&gt; Pandoc =&gt; response</li>
 <li>provides a simple DSL for mapping requests to API and Pandoc</li>
-<li>the data flow, or route, can be managed in spreadsheet!</li>
+<li>the data flow can be managed with a spreadsheet!</li>
 </ul>
 </div>
 <div id="developer-workflow" class="slide section level1">
@@ -469,20 +459,19 @@ microservices</li>
 <li>If you’ve attended a data science workshop you likely know enough
 SQL</li>
 <li>If you’ve built a static website you likely know about Pandoc</li>
-<li>A simple DSL used to map requests to data sources and Pandoc</li>
+<li>Use a simple DSL used to map requests to data sources and
+Pandoc</li>
 <li>SQL + CSV files + Pandoc =&gt; web application</li>
 </ul>
-<p>=&gt; Is this useful for Libraries, Archives and Museums?</p>
 </div>
 <div id="weaknesses" class="slide section level1">
 <h1>Weaknesses</h1>
 <ul>
 <li>Newt is <strong>an experimental prototype</strong> (June 2023)</li>
-<li>Newt doesn’t validate the POST, PATCH or PUT data</li>
+<li>Newt doesn’t accept POST, PATCH, PUT encoded as JSON</li>
+<li>Newt doesn’t validate the GET, POST, PATCH or PUT data</li>
 <li>Newt doesn’t support file uploads</li>
-<li>Postgres and SQL have a learning curve</li>
-<li>Pandoc has a learning curve</li>
-<li>Using the HTTP protocol has a learning curve</li>
+<li>Learning curves: Postgres and SQL, Pandoc, using HTTP methods</li>
 </ul>
 </div>
 <div id="strength-in-maturity" class="slide section level1">

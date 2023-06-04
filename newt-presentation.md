@@ -5,8 +5,6 @@ institute: |
   Caltech Library,
   Digital Library Development
 description: Code4Lib Meet up, Los Angeles
-fronttheme: "default"
-fontsize: 12pt
 urlcolor: blue
 linkstyle: bold
 aspectratio: 169
@@ -60,12 +58,10 @@ These are all really complicated pieces of software.
 
 # Why are these things so complex?
 
-> WARNING: gross generalizations ahead
-
 - We want more from our application so more code gets written
 - Complexity accrues over time
-- A Silicon Valley influenced "best practice"
-    - **Systems should be designed to scale**
+- A "best practice"
+  - **Systems should be designed to scale**
 
 # Let's talk about scale
 
@@ -97,9 +93,6 @@ These are all really complicated pieces of software.
 
 # Building small
 
-- Avoid duplication
-- Avoid obfuscation
-- Avoid magical capabilities
 - Pick the right abstractions
 - Write less code
 
@@ -114,7 +107,7 @@ These are all really complicated pieces of software.
 - Pandoc
 
 
-# The "off the shelf" microservices experiment
+# "off the shelf" microservices experiment
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - [Pandoc](https://pandoc.org)
@@ -178,17 +171,9 @@ These are all really complicated pieces of software.
 
 # Three cognitive shifts
 
-- Write SQL to generate JSON
-- Use Pandoc to transform JSON to HTML (or other formats)
-- Use a CSV file to orchestrate microservices
-
-# Newt, three data flows
-
-web browser => Newt => PostgREST => Pandoc => web browser
-
-web browser => Newt => static files => web browser
-
-web browser => Newt => PostgREST => web browser
+- Write SQL and use JSON
+- Use Pandoc to transform JSON to HTML
+- Use a CSV file to orchestrate our microservices
 
 # Is this really simpler?
 
@@ -201,7 +186,6 @@ Three versions of a bird sighting website
 # [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash) 
 
 - Built with Pandoc from Markdown and CSV file
-- Adds bird sightings via updating a CSV file and rebuilding site with Pandoc
 
 ~~~
        5 birds1/README.md
@@ -213,9 +197,7 @@ Three versions of a bird sighting website
 
 # [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash)
 
-- Built with SQL using Postgres + PostgREST
-- JavaScript used to assemble page
-- The web form requires JavaScript
+- Built with SQL (Postgres + PostgREST), Browser side JavaScript
 
 ~~~
       32 birds2/README.md
@@ -229,7 +211,7 @@ Three versions of a bird sighting website
 
 # [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash)
 
-- Build from SQL (Postgres + PostgREST) and Pandoc
+- Built with SQL (Postgres + PostgREST) and Pandoc
 - **no JavaScript**
 
 ~~~
@@ -260,15 +242,15 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Birds 3 => Postgres+PostgREST, Pandoc and Newt
 
-- Complicated activities are handled by "off the shelf" microservices
+- Our "off the shelf" microservices limit complexity
 - SQL defines data model and API end points
-- Leverages our Pandoc knowledge
+- Pandoc templates transform JSON to HTML
 
 # Newt manages data flow
 
 - request => JSON data API => Pandoc => response
 - provides a simple DSL for mapping requests to API and Pandoc
-- the data flow, or route, can be managed in spreadsheet!
+- the data flow can be managed with a spreadsheet!
 
 # Developer workflow
 
@@ -283,19 +265,16 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 - If you've attended a data science workshop you likely know enough SQL
 - If you've built a static website you likely know about Pandoc
-- A simple DSL used to map requests to data sources and Pandoc
+- Use a simple DSL used to map requests to data sources and Pandoc
 - SQL + CSV files + Pandoc => web application
-
-=> Is this useful for Libraries, Archives and Museums?
 
 # Weaknesses
 
 - Newt is **an experimental prototype** (June 2023)
-- Newt doesn't validate the POST, PATCH or PUT data
+- Newt doesn't accept POST, PATCH, PUT encoded as JSON
+- Newt doesn't validate the GET, POST, PATCH or PUT data
 - Newt doesn't support file uploads
-- Postgres and SQL have a learning curve
-- Pandoc has a learning curve
-- Using the HTTP protocol has a learning curve
+- Learning curves: Postgres and SQL, Pandoc, using HTTP methods
 
 # Strength in Maturity
 
