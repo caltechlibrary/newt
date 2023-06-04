@@ -12,8 +12,8 @@ import (
 
 var (
 	helpText = `---
-title: "{app_name}(1) user manual | Version {version} {release_hash}"
-pubDate: {release_date}
+title: "{app_name}(1) user manual | Version 0.0.1 f75250d"
+pubDate: 2023-06-03
 author: "R. S. Doiel"
 ---
 
@@ -38,13 +38,13 @@ hosted in Postgres databases via PostgREST JSON API as well as static
 files contained in an "htdocs" directory (e.g. HTML, CSS, JavaScript,
 and image assets). 
 
-This goal of Newt Project is to be able to assemble an entire backend
+This goal of Newt Project is to be able to assemble an entire back-end
 from off the self services only requiring data modeling and end point
 definitions using SQL and a Postgres database. Reducing the back-end
 to SQL may simplify application management (it reduces it to a
 database administrator activity) and free up developer time to focus
 more on front end development and human interaction. It is also
-hoped that focusing the back-end on a declaritive model will allow for
+hoped that focusing the back-end on a declarative model will allow for
 a more consistent and reliable back-end.
 
 # OPTIONS
@@ -68,7 +68,7 @@ The three things {app_name} needs to know to run are port number,
 where to find the "routes" CSV file and a list of any POSIX environment
 variables to import and make available inside the router.
 
-{app_mame} can be configured via a POSIX environment.
+{app_name} can be configured via a POSIX environment.
 
 ~~~
 NEWT_PORT="8000"
@@ -83,13 +83,13 @@ It can also be configured using a configuration file.
 
 
 ~~~
-newt_port = "8000"
-newt_routes = "routes.csv"
-newt_env = [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
+{app_name}_port = "8000"
+{app_name}_routes = "routes.csv"
+{app_name}_env = [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
 ~~~
 
 The environment will load first then the configuration file if
-provided. The configuration file takes presidence to the environment.
+provided. The configuration file takes precedence to the environment.
 
 {app_name} does not have secrets but could use secrets passed
 in via the environment. This allows your routes CSV file to be safely
@@ -104,7 +104,7 @@ JSON data API source before (optionally) sending to Pandoc.
 The routes are held in CSV file with the following columns
 
 req_path
-: This is the URL path to watch for incoming requests, it may be a literal path or one containing variable declarations used in forming a api URL call.
+: This is the URL path to watch for incoming requests, it may be a literal path or one containing variable declarations used in forming a API URL call.
 
 req_method
 : This is the HTTP method to listen for. Maybe "GET", "POST", "PUT", "PATCH" or "DELETE"
@@ -192,12 +192,19 @@ Configuration from the environment
 	{app_name}
 ~~~
 
-Configuration from a YAML file called "newt.yaml"
+Configuration from a YAML file called "{app_name}.yaml"
 
 ~~~
-{app_name} newt.yaml
+{app_name} {app_name}.yaml
 ~~~
 
+An example of a CSV file describing blog display routes.
+
+~~~
+req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
+/blog/{{yr Year}}/{{mo Month}}//{{dy Day}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}},posts.tmpl,"{""content-type"": ""text/html""}"
+/blog/{{yr Year}}/{{mo Month}}//{{dy Day}}/{{title-slug}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}}&title-slug={{title-slug}},article.tmpl,"{""content-type"": ""text/html""}"
+~~~
 
 
 `

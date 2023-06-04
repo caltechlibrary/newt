@@ -25,7 +25,7 @@ All these can be treated as "off the shelf". Aside from configuration they can r
 
 ## Exploring Newt's friends
 
-In the repository three [demos](https://github.com/caltechlibrary/newt/tree/main/demos) are provided to show how Pandoc, Postgres+PostgRESt and Newt can work together. They can be generated using the a simple Bash scripts. The bash scripts will generate all the file needed to run the demos.
+In the repository three [demos](https://github.com/caltechlibrary/newt/tree/main/demos) are provided to show how Pandoc, Postgres+PostgRESt and Newt can work together. The demos are generated using the a simple Bash scripts (see below). The bash scripts will generate all the file needed to run the demos. A read me for each demo describes how to run it.
 
 [Birds 1 Demo](https://github.com/caltechlibrary/newt/blob/main/demos/setup-birds1.bash)
 : Shows a simple use of Pandoc to render a static bird sightings website
@@ -88,7 +88,7 @@ Newt needs to know how to map the front-end requests to PostgREST so to do that 
 - htdocs, holds our static content
 - page.tmpl, Pandoc template for listing birds  (13 lines)
 - postgrest.conf, configuration for PostgREST
-- setup.sql, SQL setting of data models and JSON data API (50 linues)
+- setup.sql, SQL setting of data models and JSON data API (50 lines)
 
 This is very similar to both demo 1 and 2. Missing is build.sh from demo 1. We don't need it since we're running Pandoc as a microservice.  There is an added configuration file for Newt. The Pandoc template performs a similar duty as the one used in birds 1 demo. Notice there is no sightings.js in our htdocs directory. From the web browsers point of view there is no need to run JavaScript to submit a standard web form to add a bird sighting.
 

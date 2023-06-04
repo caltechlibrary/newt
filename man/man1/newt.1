@@ -36,13 +36,13 @@ newt supports data hosted in Postgres databases via PostgREST JSON API
 as well as static files contained in an \[lq]htdocs\[rq] directory
 (e.g.\ HTML, CSS, JavaScript, and image assets).
 .PP
-This goal of Newt Project is to be able to assemble an entire backend
+This goal of Newt Project is to be able to assemble an entire back-end
 from off the self services only requiring data modeling and end point
 definitions using SQL and a Postgres database.
 Reducing the back-end to SQL may simplify application management (it
 reduces it to a database administrator activity) and free up developer
 time to focus more on front end development and human interaction.
-It is also hoped that focusing the back-end on a declaritive model will
+It is also hoped that focusing the back-end on a declarative model will
 allow for a more consistent and reliable back-end.
 .SH OPTIONS
 .TP
@@ -63,7 +63,7 @@ The three things newt needs to know to run are port number, where to
 find the \[lq]routes\[rq] CSV file and a list of any POSIX environment
 variables to import and make available inside the router.
 .PP
-{app_mame} can be configured via a POSIX environment.
+newt can be configured via a POSIX environment.
 .IP
 .nf
 \f[C]
@@ -87,7 +87,7 @@ newt_env = [ \[dq]DB_NAME\[dq], \[dq]DB_USER\[dq], \[dq]DB_PASSWORD\[dq] ]
 .fi
 .PP
 The environment will load first then the configuration file if provided.
-The configuration file takes presidence to the environment.
+The configuration file takes precedence to the environment.
 .PP
 newt does not have secrets but could use secrets passed in via the
 environment.
@@ -103,7 +103,7 @@ The routes are held in CSV file with the following columns
 .TP
 req_path
 This is the URL path to watch for incoming requests, it may be a literal
-path or one containing variable declarations used in forming a api URL
+path or one containing variable declarations used in forming a API URL
 call.
 .TP
 req_method
@@ -219,6 +219,16 @@ Configuration from a YAML file called \[lq]newt.yaml\[rq]
 .nf
 \f[C]
 newt newt.yaml
+\f[R]
+.fi
+.PP
+An example of a CSV file describing blog display routes.
+.IP
+.nf
+\f[C]
+req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
+/blog/{{yr Year}}/{{mo Month}}//{{dy Day}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}},posts.tmpl,\[dq]{\[dq]\[dq]content-type\[dq]\[dq]: \[dq]\[dq]text/html\[dq]\[dq]}\[dq]
+/blog/{{yr Year}}/{{mo Month}}//{{dy Day}}/{{title-slug}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}}&title-slug={{title-slug}},article.tmpl,\[dq]{\[dq]\[dq]content-type\[dq]\[dq]: \[dq]\[dq]text/html\[dq]\[dq]}\[dq]
 \f[R]
 .fi
 .SH AUTHORS
