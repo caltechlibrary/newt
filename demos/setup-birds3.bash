@@ -6,13 +6,6 @@
 #
 mkdir -p birds3/htdocs
 
-# Generate the empty files we'll use in the demo.
-touch birds3/setup.sql
-touch birds3/birds-routes.csv
-touch birds3/birds.yaml
-touch birds3/postgrest.conf
-touch birds3/htdocs/about.html
-
 # Create the database we'll use in the demo.
 if ! createdb birds 2>/dev/null; then
 	dropdb birds
@@ -129,8 +122,8 @@ EOT
 # Generate birds-routes.csv
 cat <<EOT >birds3/birds-routes.csv
 req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
-/sightings,GET,http://localhost:3000/sighting,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
-/sightings,POST,http://localhost:3000/sighting,POST,application/json,redirect.tmpl,"{""content-type"": ""text/html""}"
+/,GET,http://localhost:3000/sighting,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
+/,POST,http://localhost:3000/sighting,POST,application/json,redirect.tmpl,"{""content-type"": ""text/html""}"
 /bird_views,GET,http://localhost:3000/bird_view,GET,application/json,,"{""content-type"": ""application/json""}"
 EOT
 
@@ -152,7 +145,7 @@ cat <<EOT >birds3/page.tmpl
     <p>
     <div id="bird-list"></div>
     <h2>Add a bird</h2>
-    <div><form method="POST" action="/sightings">
+    <div><form method="POST" action="/">
       <div>
         <label for="bird">Bird</label>
                 <input id="bird" name="bird" type="text" value="">
@@ -183,13 +176,15 @@ cat <<EOT >birds3/page.tmpl
   </body>
 </html>
 EOT
+
 #
-# Create a Pandoc template page.tmpl
+# Create a Pandoc template redirect.tmpl
+#
 cat <<EOT >birds3/redirect.tmpl
 <DOCTYPE html lang="en">
 <html>
 <head>
-	<meta http-equiv="refresh" content="0; url="/sightings" />
+	<meta http-equiv="refresh" content="0; url="/" />
 </head>
 <body>
 Thank you for submitting a bird, <a href="/sighthings">View List</a>.
@@ -197,51 +192,4 @@ Thank you for submitting a bird, <a href="/sighthings">View List</a>.
 </html>
 EOT
 
-# Create index.md
-cat <<EOT >birds3/htdocs/index.md
 
-# Birds 3 Demo
-
-- [about.html](/about.html) (static HTML page)
-- [sightings](/sightings)   (HTML page)
-- [bird views](/bird_views) (JSON output)
-
-EOT
-
-# Create index.html
-pandoc --from markdown --to html5 \
-	--metadata title="Birds Demo 3" \
-	-s \
-	birds3/htdocs/index.md >birds3/htdocs/index.html
-
-
-# Create about.html
-cat <<EOT >birds3/htdocs/about.md
-#
-# About Birds 3 Demo
-
-This demo shows how Newt used with Postres+PostgREST and Pandoc
-can provide a complete stack for basic web development that does not
-involve file uploads.
-
-EOT
-
-# Create index.html
-pandoc --from markdown --to html5 \
-	--metadata title="Birds Demo 3" \
-	-s \
-	birds3/htdocs/about.md >birds3/htdocs/about.html
-
-
-# Create the setup and run bash script.
-cat <<EOT >birds3/setup-for-birds.bash
-#!/bin/bash
-
-dropdb birds
-createdb birds
-psql -d birds -c '\i setup.sql'
-pandoc server &
-postgrest postgrest.conf
-EOT
-
-chmod 775 birds3/*.bash

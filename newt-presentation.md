@@ -49,7 +49,9 @@ These are all really complicated pieces of software.
 
 # The problem
 
-Each listed application is built on a stack. The stacks are complex. Because of the complexity it's hard to sustain them. Some we've outsourced to SAAS providers (e.g. ArchivesSpace). Some we treat as a back boxes (e.g. EPrints). It's just not fun supporting applications at this level of complexity. It takes too much time and energy. It detracts from delivering useful things to our Library, Archives and Caltech Community.
+Each listed application is built on a stack. The stacks are complex. Because of the complexity it's hard to sustain them. Some we've outsourced to SAAS providers (e.g. ArchivesSpace). Some we treat as a back boxes (e.g. EPrints). Some we continue to run (e.g. Invenio RDM). 
+
+It's just not fun supporting applications at this level of complexity. It takes too much time and energy. It detracts from delivering useful things to our Library, Archives and Caltech Community.
 
 # Why are these things so complex?
 
@@ -86,30 +88,39 @@ Each listed application is built on a stack. The stacks are complex. Because of 
 - Limit the moving parts
 - Limit the cognitive shifts
 - Minimize the toolbox while maximizing how you use it
-- Write less code while remaining readable! 
+- Write less code 
+- Remaining readable! 
 
 # Wait, readable?
 
-- Because we need to
+- Code is for humans
+- Code is read more than it is written
+- Code must be understood to be sustainable
+
+# Building small
+
+- We need to
     - pick the right abstractions
     - pick the right division of responsibilities
     - solve the problem in the desired scope
-- To do that we
+- To do that
 	- Avoid obfuscation
-	- Avoid magical knowledge or capabilities
-- Less code, less to read
+	- Avoid magical capabilities
+    - Write less code, read less code
 
-> Programmer time in a Library, Archive or Museum is a scarce resource
+# Why?
+
+> Human time in Libraries, Archives and Museums is a scarce resource
 
 # How minimal can we go?
 
-- We can use off the self microservices
+- Use "off the self" microservices
 - SQL 
 - Pandoc
 
 # Can we create applications using only SQL and Pandoc?
 
-Just about. Here's the off the shelf microservices I am experimenting with
+Here's the "off the shelf" microservices I am experimenting with
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - [Pandoc](https://pandoc.org)
@@ -121,13 +132,14 @@ Just about. Here's the off the shelf microservices I am experimenting with
 - [Pandoc](https://pandoc.org) =>  a powerful template engine
 - [Newt](https://github.com/caltechlibrary/newt/) => provides request router, response assembly and static file services
 
-# How does this work in practice?
+# How does this work?
 
 Think of a game of telephone
-: web browser => Newt => PostgREST => Pandoc => web browser
+
+> web browser => Newt => PostgREST => Pandoc => web browser
 
 
-# How would this work in practice?
+# How can this work?
 
 1. Model our data using SQL (Postgres)
 2. Define our JSON data API using SQL (Postgres+PostgREST)
@@ -147,9 +159,9 @@ Think of a game of telephone
 
 - SQL
 - Pandoc templates
-- Manage a CSV file describing data flowing through our microservices
+- Understand a CSV file orchestrating our microservices
 
-# Web browser knowledge requirements
+# Client side knowledge requirements
 
 - HTML
 - CSS (optional)
@@ -179,14 +191,13 @@ We can create interactive applications with
 - You don't need to learn an ORM and aren't limited by one
 - You don't duplicate the SQL models in another language
     - e.g. classes in Python, PHP, Ruby or Java
-- You don't write middleware to get an API anymore
+- You don't write middleware to get an API
 
 # Three cognitive shifts
 
 - Write SQL to generate JSON
 - Use Pandoc to transform JSON to HTML (or other formats)
-- Use a CSV file to describe our data flows
-    - maps a request to PostgREST and Pandoc (aka routes)
+- Use a CSV file to orchestrate
 
 # Three common data flows
 
@@ -196,35 +207,32 @@ web browser => Newt => PostgREST => web browser
 
 web browser => Newt => static file system => web browser
 
-# Still Helpful to know
-
-- HTML 5 related W3C technologies
-  - HTML 5 markup
-  - CSS
-  - modern JavaScript
-- How to integrate static file assets, e.g. html files, images
-- Understand how HTTP works, including HTTP methods and Headers
-
-> the front-end can be as simple or as complex as you like
-
 # Is this really simpler?
 
 Let's take a look at three versions of a bird sighting web site.
 
-- [birds 1](birds1/), a static site implementation
-- [birds 2](birds2/), a dynamic site implementation, content viewing requires browser JavaScript
-- [birds 3](birds3/), a dynamic site implementation, does not require browser JavaScript
+- [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash), a static site implementation
+- [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash), a dynamic site implementation, content viewing requires browser JavaScript
+- [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash), a dynamic site implementation, does not require browser JavaScript
 
 # Different birds 1
 
-## [birds 1](birds1/) static site (read only)
+## [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash) static site (read only)
 
 - Built with Pandoc from Markdown and CSV file
 - Adds bird sightings via updating a CSV file and rebuilding site with Pandoc
 
+~~~
+       5 birds1/README.md
+       4 birds1/birds.csv
+       3 birds1/build.sh
+      13 birds1/page.tmpl
+      25 total
+~~~
+
 # Different birds 2
 
-## [birds 2](birds2/), dynamic site (read/write)
+## [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash), dynamic site (read/write)
 
 - Built with SQL using Postgres + PostgREST
 - Requires the web browser to assemble pages via API calls
@@ -234,14 +242,36 @@ Let's take a look at three versions of a bird sighting web site.
     - handles form prep and submission of our web form
 - Solution doesn't work for text only web browsers like Lynx
 
+~~~
+      32 birds2/README.md
+       4 birds2/birds.csv
+       3 birds2/postgrest.conf
+      50 birds2/setup.sql
+      24 birds2/htdocs/index.html
+      63 birds2/htdocs/sightings.js
+     176 total
+~~~
+
 # Different birds 3
 
-## [birds 3](birds3/), dynamic site (read/write)
+## [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash), dynamic site (read/write)
 
 - Build from SQL (Postgres + PostgREST) and Pandoc
-- Add birds using a simple web form, no JavaScript
-- Rendered on server, no JavaScript
+- Add birds using a simple web form, **no JavaScript**
+- Everything is rendered server side
 - Works even for text web browsers like Lynx
+
+~~~
+      34 birds3/README.md
+       4 birds3/birds-routes.csv
+       4 birds3/birds.csv
+       2 birds3/birds.yaml
+      40 birds3/page.tmpl
+       3 birds3/postgrest.conf
+       9 birds3/redirect.tmpl
+      50 birds3/setup.sql
+     146 total
+~~~
 
 # Our different birds
 
@@ -257,10 +287,9 @@ birds 3    dynamic     read/write data          requires SQL knowledge
                        no JavaScript required
 
 
-
 # Birds 3 => Postgres+PostgREST, Pandoc and Newt
 
-- The complicated activities are handled by off the self microservices
+- Complicated activities are handled by "off the self" microservices
 - Main complexity is limited to SQL and our model data
 - Leverages our Pandoc knowledge
 - Avoids browser side page assembly
@@ -292,15 +321,16 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Approach weeknesses
 
-- Newt is **an experimental prototype** (May 2023)
-- SQL has a learning curve
+- Newt is **an experimental prototype** (June 2023)
+- Newt doesn't validate the POST, PATCH or PUT data
+- Newt doesn't support file uploads
+- Postgres and SQL have a learning curve
 - Pandoc has a learning curve
 - Using the HTTP protocol has a learning curve
-- Newt doesn't (yet) support file upload handling
 
 # Approach strengths
 
-- We have a mature platform built from
+- Maturity and communities
   - SQL (1974)
   - HTTP (1991)
   - HTML (1993)
@@ -313,14 +343,14 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 - I am building staff facing applications, Summer 2023
 - Planning to test with Solr/Opensearch as a JSON data source
-- Fix bugs, simplify code, improve performance
+- Fix bugs, simplify code, add validation, improve performance
 
 ## Someday, maybe
 
 - It would be nice if ....
-    - Newt routed file uploads to an S3 like service
-    - had a better DSL to map requests
-    - had a community supporting it
+    - Newt validated POST, PUT and PATCH before sending to API
+    - Newt could delegate file uploads to an S3 like service
+    - Had it's own community supporting it
 
 # Thank you!
 

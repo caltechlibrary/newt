@@ -6,11 +6,6 @@
 #
 mkdir -p birds1/htdocs
 
-# Generate the empty files we'll use in the demo.
-touch birds1/birds.csv
-touch birds1/build.bash
-touch birds1/htdocs/index.html
-
 # Generate a README
 cat <<EOT>birds1/README.md
 
