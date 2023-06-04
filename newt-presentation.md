@@ -59,7 +59,7 @@ It's just not fun supporting applications at this level of complexity. It takes 
 
 - We want more from our application so more code gets written
 - Complexity accrues over time
-- A Silicon Valley influenced "best practices"
+- A Silicon Valley influenced "best practice"
     - **Systems should be designed to scale**
 
 # Let's talk about scale
@@ -88,14 +88,7 @@ It's just not fun supporting applications at this level of complexity. It takes 
 - Limit the moving parts
 - Limit the cognitive shifts
 - Minimize the toolbox while maximizing how you use it
-- Write less code 
-- Remaining readable! 
-
-# Wait, readable?
-
-- Code is for humans
-- Code is read more than it is written
-- Code must be understood to be sustainable
+- Write less code but remaining readable!
 
 # Building small
 
@@ -103,14 +96,13 @@ It's just not fun supporting applications at this level of complexity. It takes 
     - pick the right abstractions
     - pick the right division of responsibilities
     - solve the problem in the desired scope
-- To do that
-	- Avoid obfuscation
-	- Avoid magical capabilities
+    - Avoid obfuscation and duplication 
+    - Avoid magical capabilities
     - Write less code, read less code
 
 # Why?
 
-> Human time in Libraries, Archives and Museums is a scarce resource
+> Human time in is a scarce resource
 
 # How minimal can we go?
 
