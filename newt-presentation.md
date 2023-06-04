@@ -246,8 +246,6 @@ Let's take a look at three versions of a bird sighting web site.
 
 - Build from SQL (Postgres + PostgREST) and Pandoc
 - Add birds using a simple web form, **no JavaScript**
-- Everything is rendered server side
-- Works even for text web browsers like Lynx
 
 ~~~
       34 birds3/README.md
