@@ -4,7 +4,7 @@ WEB_FORMAT = slidy
 
 build: .FORCE clean presentation_dir html
 
-presentation_dir: presentation/
+presentation_dir: .FORCE
 	mkdir -p presentation
 
 html: .FORCE
