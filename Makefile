@@ -117,6 +117,7 @@ test: clean build
 	#dropdb birds
 	#createdb birds
 	#cd testdata && psql -d birds -c '\i birds-setup.sql'
+	@echo 'NOTE: You need to run testdata/setup-for_tests.bash for test to succeed'
 	go test -test.v
 
 clean: 
