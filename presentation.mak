@@ -2,7 +2,7 @@
 # where FORMAT is either s5, slidy, slideous, dzslides, or revealjs.
 WEB_FORMAT = slidy
 
-build: .FORCE clean presentation_dir html pptx
+build: .FORCE clean presentation_dir html
 
 presentation_dir: presentation/
 	mkdir -p presentation
