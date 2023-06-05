@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="lamp-and-its-legacy">LAMP and its legacy</h1>
+<p>Four example systems found in Caltech Library</p>
+<ul>
+<li>ArchivesSpace</li>
+<li>EPrints</li>
+<li>Invenio RDM</li>
+<li>Islandora</li>
+</ul>
+<h1 id="required-knowledge">Required Knowledge</h1>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">App</th>
+<th>Languages</th>
+<th>Supporting services</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ArchivesSpace</td>
+<td>Java, Ruby, SQL</td>
+<td>MySQL, Solr, Apache or NginX</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EPrints</td>
+<td>Perl, SQL, XML,</td>
+<td>MySQL, Apache2 (tight integration),</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>EPrints XML</td>
+<td>and Xapian</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Invenio RDM</td>
+<td>Python, SQL</td>
+<td>Postgres, Redis, Elasticsearch,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td>JavaScript</td>
+<td>Docker, Invenio Framework,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td>Python packaging system,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td></td>
+<td>React JavaScript framework,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td></td>
+<td>NodeJS and NPM, NginX</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Islandora</td>
+<td>PHP/SQL</td>
+<td>MySQL, Drupal, Fedora, Apache 2</td>
+</tr>
+</tbody>
+</table>
+<p>These are all really complicated pieces of software.</p>
+<h1 id="the-problem">The problem</h1>
+<ol type="1">
+<li>Each listed application is built on a stack</li>
+<li>The stacks are complex, divergent</li>
+<li>Coping strategies
+<ol type="a">
+<li>SAAS</li>
+<li>blackbox</li>
+<li>avoid customization</li>
+</ol></li>
+</ol>
+<h1 id="why-are-these-things-so-complex">Why are these things so
+complex?</h1>
+<ul>
+<li>We want more from our application so more code gets written</li>
+<li>Complexity accrues over time</li>
+<li>A “best practice”
+<ul>
+<li><strong>Systems should be designed to scale</strong></li>
+</ul></li>
+</ul>
+<h1 id="lets-talk-about-scale">Let’s talk about scale</h1>
+<ul>
+<li>“scale”, a euphemism for <strong>scaling big</strong></li>
+<li>scaling big =&gt;
+<ul>
+<li>distributed application design</li>
+<li>programmable infrastructure</li>
+<li>cache systems and dynamic clustering</li>
+<li>complex systems management</li>
+</ul></li>
+</ul>
+<h1 id="scaling-big-a-reflection">Scaling big, a reflection</h1>
+<ul>
+<li>Scaling big is hard</li>
+<li>Scaling big makes things really complex</li>
+<li>Scaling big favors large teams</li>
+<li>Scaling big is a siren song</li>
+</ul>
+<h1 id="an-alternative-scale-small">An alternative, <strong>scale
+small</strong></h1>
+<ul>
+<li>Pack only what you need</li>
+<li>Simplify!</li>
+</ul>
+<h1 id="scaling-small">Scaling small</h1>
+<ul>
+<li>Limit the moving parts</li>
+<li>Limit the cognitive shifts</li>
+<li>Minimize the toolbox, maximizing how you use it</li>
+<li>Write less code</li>
+</ul>
+<h1 id="building-small">Building small</h1>
+<ul>
+<li>Pick the right abstractions</li>
+<li>Write less code</li>
+</ul>
+<h1 id="why">Why?</h1>
+<blockquote>
+<p>Human time is a scarce resource</p>
+</blockquote>
+<h1 id="how-minimal-can-we-go">How minimal can we go?</h1>
+<ul>
+<li>Use “off the shelf” microservices</li>
+<li>SQL</li>
+<li>Pandoc</li>
+</ul>
+<h1 id="off-the-shelf-microservices-experiment">“off the shelf”
+microservices experiment</h1>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://pandoc.org">Pandoc</a></li>
+<li><a href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+</ul>
+<h1 id="simplify-through-a-clear-division-of-labor">Simplify through a
+clear division of labor</h1>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a> =&gt; JSON data API,
+i.e. manages the data</li>
+<li><a href="https://pandoc.org">Pandoc</a> =&gt; a powerful template
+engine</li>
+<li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
+data router, static file services</li>
+</ul>
+<h1 id="how-does-this-work">How does this work?</h1>
+<ol type="1">
+<li>web browser =&gt; Newt</li>
+<li>Newt =&gt; PostgREST</li>
+<li>Newt =&gt; Pandoc</li>
+<li>Newt =&gt; web browser</li>
+</ol>
+<h1 id="what-does-this-enable">What does this enable?</h1>
+<ol type="1">
+<li>Model our data using SQL (Postgres)</li>
+<li>Define our JSON data API using SQL (Postgres+PostgREST)</li>
+<li>Transform our structured data using Pandoc</li>
+<li>Use Newt to orchestrate the microservice conversation</li>
+</ol>
+<h1 id="required-toolbox">Required Toolbox</h1>
+<ul>
+<li>Text editor</li>
+<li>Spreadsheet (optional)</li>
+<li>Web browser</li>
+<li>Pandoc</li>
+<li>Postgres + PostgREST</li>
+<li>Newt</li>
+</ul>
+<h1 id="client-side-knowledge-requirements">Client side knowledge
+requirements</h1>
+<ul>
+<li>HTML</li>
+<li>CSS (optional)</li>
+<li>JavaScript (optional)</li>
+</ul>
+<h1 id="server-side-knowledge-requirements">Server side knowledge
+requirements</h1>
+<ul>
+<li>SQL</li>
+<li>Pandoc templates</li>
+<li>A CSV file orchestrating our microservices</li>
+</ul>
+<h1 id="why-sql">Why SQL?</h1>
+<ul>
+<li>SQL is good at describing structured data</li>
+<li>SQL is good at expressing queries</li>
+<li>SQL has rich data types, e.g. JSON columns</li>
+<li>SQL has data views, functions, procedures</li>
+</ul>
+<h1 id="postgresqlpostgrest-a-code-savings-plan">PostgreSQL+PostgREST, a
+code savings plan</h1>
+<blockquote>
+<p>Minimize the source Luke!</p>
+</blockquote>
+<ul>
+<li>You don’t need to learn an ORM, aren’t limited by it</li>
+<li>You don’t duplicate the SQL models in another language</li>
+<li>You don’t write middleware to get a data API</li>
+</ul>
+<h1 id="three-cognitive-shifts">Three cognitive shifts</h1>
+<ul>
+<li>Write SQL and use JSON</li>
+<li>Use Pandoc to transform JSON to HTML</li>
+<li>Use a CSV file to orchestrate our microservices</li>
+</ul>
+<h1 id="is-this-really-simpler">Is this really simpler?</h1>
+<p>Three versions of a bird sighting website</p>
+<ul>
+<li><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash">birds
+1</a>, a static site implementation</li>
+<li><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash">birds
+2</a>, a dynamic site implementation, content viewing requires browser
+JavaScript</li>
+<li><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash">birds
+3</a>, a dynamic site implementation, does not require browser
+JavaScript</li>
+</ul>
+<h1 id="birds-1"><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash">birds
+1</a></h1>
+<ul>
+<li>Built with Pandoc from Markdown and CSV file</li>
+</ul>
+<pre><code>       5 birds1/README.md
+       4 birds1/birds.csv
+       3 birds1/build.sh
+      13 birds1/page.tmpl
+      25 total</code></pre>
+<h1 id="birds-2"><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash">birds
+2</a></h1>
+<ul>
+<li>Built with SQL (Postgres + PostgREST), Browser side JavaScript</li>
+</ul>
+<pre><code>      32 birds2/README.md
+       4 birds2/birds.csv
+       3 birds2/postgrest.conf
+      50 birds2/setup.sql
+      24 birds2/htdocs/index.html
+      63 birds2/htdocs/sightings.js
+     176 total</code></pre>
+<h1 id="birds-3"><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash">birds
+3</a></h1>
+<ul>
+<li>Built with SQL (Postgres + PostgREST) and Pandoc</li>
+<li><strong>no JavaScript</strong></li>
+</ul>
+<pre><code>      34 birds3/README.md
+       4 birds3/birds-routes.csv
+       4 birds3/birds.csv
+       2 birds3/birds.yaml
+      40 birds3/page.tmpl
+       3 birds3/postgrest.conf
+       9 birds3/redirect.tmpl
+      50 birds3/setup.sql
+     146 total</code></pre>
+<h1 id="three-birds">Three birds</h1>
+<table>
+<thead>
+<tr class="header">
+<th>version</th>
+<th>site type</th>
+<th style="text-align: left;">pros</th>
+<th style="text-align: left;">cons</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>birds 1</td>
+<td>static</td>
+<td style="text-align: left;">easy to conceptualize,</td>
+<td style="text-align: left;">read only</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td style="text-align: left;">no JavaScript required</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td>birds 2</td>
+<td>dynamic</td>
+<td style="text-align: left;">read/write data</td>
+<td style="text-align: left;">requires SQL knowledge</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">requires browser JavaScript</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">JavaScript is complex</td>
+</tr>
+<tr class="even">
+<td>birds 3</td>
+<td>dynamic</td>
+<td style="text-align: left;">read/write data</td>
+<td style="text-align: left;">requires SQL knowledge</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td style="text-align: left;">easy to conceptualize,</td>
+<td style="text-align: left;">requires knowledge of Pandoc</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td style="text-align: left;">no JavaScript required</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<h1 id="birds-3-postgrespostgrest-pandoc-and-newt">Birds 3 =&gt;
+Postgres+PostgREST, Pandoc and Newt</h1>
+<ul>
+<li>Our “off the shelf” microservices limit complexity</li>
+<li>SQL defines data model and API end points</li>
+<li>Pandoc templates transform JSON to HTML</li>
+</ul>
+<h1 id="newt-manages-data-flow">Newt manages data flow</h1>
+<ul>
+<li>request =&gt; JSON data API =&gt; Pandoc =&gt; response</li>
+<li>provides a simple DSL for mapping requests to API and Pandoc</li>
+<li>the data flow can be managed with a spreadsheet!</li>
+</ul>
+<h1 id="developer-workflow">Developer workflow</h1>
+<ol type="1">
+<li>Model data in Postgres</li>
+<li>Create/update Pandoc templates</li>
+<li>Create/update routes in CSV file</li>
+<li>(Re)start PostgREST and Newt to (re)load models and routes</li>
+</ol>
+<p><strong>Repeat as needed</strong></p>
+<h1 id="minimal-new-knowledge">Minimal new knowledge</h1>
+<ul>
+<li>If you’ve attended a data science workshop you likely know enough
+SQL</li>
+<li>If you’ve built a static website you likely know about Pandoc</li>
+<li>Use a simple DSL used to map requests to data sources and
+Pandoc</li>
+<li>SQL + CSV files + Pandoc =&gt; web application</li>
+</ul>
+<h1 id="weaknesses">Weaknesses</h1>
+<ul>
+<li>Newt is <strong>an experimental prototype</strong> (June 2023)</li>
+<li>Newt doesn’t accept POST, PATCH, PUT encoded as JSON</li>
+<li>Newt doesn’t validate the GET, POST, PATCH or PUT data</li>
+<li>Newt doesn’t support file uploads</li>
+<li>Learning curves: Postgres and SQL, Pandoc, using HTTP methods</li>
+</ul>
+<h1 id="strength-in-maturity">Strength in Maturity</h1>
+<ul>
+<li>SQL (1974)</li>
+<li>HTTP (1991)</li>
+<li>HTML (1993)</li>
+<li>Postgres (1996)</li>
+<li>JSON (2001)</li>
+<li>Pandoc (2006)</li>
+<li>PostgREST (2014)</li>
+</ul>
+<h1 id="next-steps-for-newt">Next steps for Newt?</h1>
+<ul>
+<li>I am building staff facing applications, Summer 2023</li>
+<li>Testing Solr/Elasticsearch as a JSON data source</li>
+<li>Fix bugs, improve validation, simplify code</li>
+</ul>
+<h1 id="it-would-be-nice-if-.">It would be nice if ….</h1>
+<ul>
+<li>Newt validated POST, PUT and PATCH before sending to API</li>
+<li>Newt could delegate file uploads to an S3 like service</li>
+<li>Had it’s own community supporting it
+<ul>
+<li>share SQL code</li>
+<li>share pandoc templates</li>
+</ul></li>
+</ul>
+<h1 id="thank-you">Thank you!</h1>
+<ul>
+<li>Presentation <a
+href="https://caltechlibrary.github.io/newt/presentation/"
+class="uri">https://caltechlibrary.github.io/newt/presentation/</a></li>
+<li>Project: <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Email: rsdoiel@caltech.edu</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>
