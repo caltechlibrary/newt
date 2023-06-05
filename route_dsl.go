@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	StartVar = "{{"
-	EndVar   = "}}"
+	StartVar = "${"
+	EndVar   = "}"
 )
 
 type EvalType func(string, string) (string, bool)

@@ -7,16 +7,16 @@ Newt's route handler capability is fixed. It can perform a mapping from a reques
 
 ## Why create yet another DSL?
 
-I surveyed the route descriptions available in several Python and JavaScript frameworks. There was no consensus. None provided a mechanism to validate the variables captured int he in-bound request. Since Newt's scope is extremely limited this lead me to think about a simple, light weight markup that would be intuitive for web developers who were already familiar with template markup like [Mustache](https://mustache.github.io/) and [Handlebars](https://handlebarsjs.com/).  What was missing a type annotation for in-bound requests.  Injecting a type annotation for the request URL pattern mean that the URL composed or the JSON data API request or Pandoc server request could just be simple handlebars template strings. This means the is only one added concept for a well known template notation.
+I surveyed the route descriptions available in several Python and JavaScript frameworks. There was no consensus. None provided a mechanism to validate the variables captured int he in-bound request. Since Newt's scope is extremely limited this lead me to think about a simple, light weight markup that would be intuitive for web developers. Since Newt is intended to work with Pandoc templates I chose a similar delimiter for template variables.  What was missing a type annotation for in-bound requests.  Injecting a type annotation for the request URL pattern mean that the URL composed or the JSON data API request or Pandoc server request could just be simple handlebars template strings. This means the is only one added concept for a well known template notation.
 
 ## Blogging URLs, a use case
 
-RouteDSL should be able to handle simple mappings such as those seen in blogs. Blog paths are often predictable.  A home page is at `/`, a feed of items might be at `/feed/` and individual blog posts might be found in a path formed by embedding four digit year, two digit month, two digit day and a title slug. Let's first look at how that would be described as a Mustache template -- `/blog/{{year}}/{{month}}/{{day}}/{{title-slug}}`.  This is pretty easy to read. 
+RouteDSL should be able to handle simple mappings such as those seen in blogs. Blog paths are often predictable.  A home page is at `/`, a feed of items might be at `/feed/` and individual blog posts might be found in a path formed by embedding four digit year, two digit month, two digit day and a title slug. Let's first look at how that would be described as a Mustache template -- `/blog/${year}/${month}/${day}/${title-slug}`.  This is pretty easy to read. 
 
-How do we know when a path value matches a route?  For a literal path you can simply perform a string comparison but for a path with embedded variables you need to vet the variables to make sure they make sense. A type check needs to be done. In our simple Mustache version though there is no type information. The place holder `{{year}}` might hold an integer or maybe something completely unrelated.  What if we added an annotation about the variables type? A "year" certainly can be validate. Years are normally four digit numbers.  Likewise month and day could have a simple validation based on being an integer with two digits allowing for leading zeros. These are common enough date formats that many languages provide via standard libraries. Creating types for these types becomes a matter of wrapping an implementations existing type system.
+How do we know when a path value matches a route?  For a literal path you can simply perform a string comparison but for a path with embedded variables you need to vet the variables to make sure they make sense. A type check needs to be done. In our simple Mustache version though there is no type information. The place holder `${year}` might hold an integer or maybe something completely unrelated.  What if we added an annotation about the variables type? A "year" certainly can be validate. Years are normally four digit numbers.  Likewise month and day could have a simple validation based on being an integer with two digits allowing for leading zeros. These are common enough date formats that many languages provide via standard libraries. Creating types for these types becomes a matter of wrapping an implementations existing type system.
 
 ~~~
-/blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug String}}
+/blog/${year Year}/${month Month}/${day Day}/${title-slug String}
 ~~~
 
 Now we know the type and validation method to apply to the embedded variable. Let's explore some values and see if they can be validated.
@@ -36,13 +36,13 @@ In my prototype implementation of RouteDSL I plan to implement the following typ
 Here's an example of what our RouteDSL would enable. I think of these as a path expression --
 
 ~~~
-`/blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug}}`
+`/blog/${year Year}/${month Month}/${day Day}/${title-slug}`
 ~~~
 
 A transformed version of the input route could then be described simply as a handlebar template.
 
 ~~~
-http://localhost:3000/blog?year={{year}}&month={{month}}&day={{day}}&title_slug={{title-slug}}
+http://localhost:3000/blog?year=${year}&month=${month}&day=${day}&title_slug=${title-slug}
 ~~~
 
 If the request value matches both form and type of embedded variables then you have enough information to call a microservice like PostgREST, Solr or Opensearch.

@@ -7,7 +7,7 @@ import (
 )
 
 func TestBlogPathEndingWithString(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}`)
+	rdsl, err := NewRouteDSL(`/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug String}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -29,7 +29,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 }
 
 func TestBlogPathEndingWithExt(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug Basename}}{{ext Extname}}`)
+	rdsl, err := NewRouteDSL(`/blog/${year Year}/${month Month}/${day Day}/${title-slug Basename}${ext Extname}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -49,7 +49,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 }
 
 func TestEvalAndResolve(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}`)
+	rdsl, err := NewRouteDSL(`/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug String}`)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -63,7 +63,7 @@ func TestEvalAndResolve(t *testing.T) {
 			t.Errorf("expected to eval p %q, failed", p)
 			t.FailNow()
 		} else {
-			src := rdsl.Resolve(m, "/blog?post_date={{yr}}-{{mo}}-{{dy}}&title_slug={{title-slug}}")
+			src := rdsl.Resolve(m, "/blog?post_date=${yr}-${mo}-${dy}&title_slug=${title-slug}")
 			if src != expected {
 				t.Errorf("expected %q, got %q", expected, src)
 			}

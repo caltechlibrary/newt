@@ -130,8 +130,8 @@ A simple domain specific language (DSL) can be used to define values taken
 from a request path and used again to form a JSON data API URL. Variables can be defined in each of the request path's directory name(s), file basename and file extension. The variable is defined by an opening double curly bracket, the variable name, a space, a type and closing double curly brackets.
 
 ~~~
-/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}
-/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug Basename}}{{ext Extname}}
+/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug String}
+/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug Basename}${ext Extname}
 ~~~
 
 In the first line the variables defined are "yr" of type "Year", "mo" of type "Month", "dy" of type "Day", "title-slug" of type "String". In the second line the "title-slug" is of type "Basename" (i.e. filename without an extension) and "ext" is of type "Extname" (i.e. the file extension).
@@ -202,8 +202,8 @@ An example of a CSV file describing blog display routes.
 
 ~~~
 req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
-/blog/{{yr Year}}/{{mo Month}}//{{dy Day}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}},posts.tmpl,"{""content-type"": ""text/html""}"
-/blog/{{yr Year}}/{{mo Month}}//{{dy Day}}/{{title-slug}},GET,http://localhost:3000/posts?year={{yr}}&month={{mo}}&day={{dy}}&title-slug={{title-slug}},article.tmpl,"{""content-type"": ""text/html""}"
+/blog/${yr Year}/${mo Month}//${dy Day},GET,http://localhost:3000/posts?year=${yr}&month=${mo}&day=${dy},posts.tmpl,"{""content-type"": ""text/html""}"
+/blog/${yr Year}/${mo Month}//${dy Day}/${title-slug},GET,http://localhost:3000/posts?year=${yr}&month=${mo}&day=${dy}&title-slug=${title-slug},article.tmpl,"{""content-type"": ""text/html""}"
 ~~~
 
 
