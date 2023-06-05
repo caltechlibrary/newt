@@ -13,7 +13,8 @@ authors:
 repository-code: "git+https://github.com/caltechlibrary/newt"
 version: 0.0.1
 license-url: "https://caltechlibrary.github.io/newt/LICENSE"
-keywords: [ "web development", "microservices" ]
+keywords: [ "web
+development", "microservice", "postgres", "postgrest", "pandoc" ]
 
 ---
 
