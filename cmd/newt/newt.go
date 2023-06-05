@@ -203,7 +203,7 @@ An example of a CSV file describing blog display routes.
 ~~~
 req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
 /blog/{{yr Year}}/{{mo Month}}//{{dy Day}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}},posts.tmpl,"{""content-type"": ""text/html""}"
-/blog/{{yr Year}}/{{mo Month}}//{{dy Day}}/{{title-slug}},GET,http://localhost:3000/posts?year={{yr}&month={{mo}}&day={{dy}}&title-slug={{title-slug}},article.tmpl,"{""content-type"": ""text/html""}"
+/blog/{{yr Year}}/{{mo Month}}//{{dy Day}}/{{title-slug}},GET,http://localhost:3000/posts?year={{yr}}&month={{mo}}&day={{dy}}&title-slug={{title-slug}},article.tmpl,"{""content-type"": ""text/html""}"
 ~~~
 
 
