@@ -9,6 +9,7 @@ presentation_dir: .FORCE
 
 html: .FORCE
 	pandoc -s -t $(WEB_FORMAT) newt-presentation.md -o presentation/index.html
+	git add presentation/index.html
 
 pdf: .FORCE
 	pandoc -s -t beamer newt-presentation.md -o presentation/newt-presentation.pdf
