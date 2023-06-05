@@ -1,4 +1,5 @@
 newt_port: 4040
 newt_routes: testdata/blog_routes.csv
+newt_htdocs: testdata/htdocs
 newt_env: [ "DB_USER", "DB_PASSWORD" ]
 pandoc_port: 3030

@@ -11,7 +11,7 @@ func TestDryRun(t *testing.T) {
 	out := os.Stdout
 	eout := os.Stderr
 	args := []string{}
-	args = append(args, path.Join("testdata", "blog.conf"))
+	args = append(args, path.Join("testdata", "blog.yaml"))
 	exitCode := Run(in, out, eout, args, true)
 	if exitCode != 0 {
 		t.Errorf("expected exit code zero, got %d\n", exitCode)
