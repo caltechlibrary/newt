@@ -124,6 +124,9 @@ clean:
 	-if [ -d dist ]; then rm -fR dist; fi
 	-if [ -d testout ]; then rm -fR testout; fi
 	-for MAN_PAGE in $(MAN_PAGES); do if [ -f man/man1/$$MAN_PAGE.1 ]; then rm man/man1/$$MAN_PAGE.1; fi;done
+	-make -f website.mak clean
+	-make -f presentation.mak clean
+
 
 status:
 	git status

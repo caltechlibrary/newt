@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/rsdoiel/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="building-with-postgresql-and-postgrest">Building with PostgreSQL
+and PostgREST</h1>
+<p>I would like to suggest a simplification in building web
+applications. Can you build a complete web application using only SQL,
+HTML and browser side JavaScript? Can you do it with off the shelf
+services like Postgres and PostgREST? Our application uses a
+microservice model. Data is modeled and managed via a Postgres 15
+database. The database content is managed through a JSON data API
+provided by PostgREST 11. Assuming you have a static file server handy
+you can do the page assembly browser side. In the scenario the
+index.html and sightings.js files access the JSON data API microservice
+providing a human friendly view of our modeled data.</p>
+<p>How does this approach simplify creating and managing web
+applications?</p>
+<p>The back-end becomes largely declarative broken down into three
+simple tasks.</p>
+<ol type="1">
+<li>define your data schema in SQL</li>
+<li>Populate your database tables with some working content</li>
+<li>Setup PostgREST access to manage the data base contents</li>
+</ol>
+<p>While two different programs (i.e. Postgres and PostgREST) they
+present a unified view of your data via a predictable JSON API. Running
+a web server in front of Postgres+PostgREST as a proxy will let you
+build the rest of your application in the front-end using HTML and
+JavaScript running in the web browser. The back-end can be debugged by
+either interacting directly with Postgres or by using curl to test
+PostgREST responses.</p>
+<h1 id="a-bit-more-about-postgrest">A bit more about PostgREST</h1>
+<p>PostgREST provides a generic middle ware that transforms a Postgres
+database into a RESTful JSON data API that can be OpenAPI compliant if
+desired. PostgREST knows the schema for the database because it knows
+how Postgres works. It provides simplified routes (URL paths) for
+interacting with a database, queries, views and stored procedures via
+standard HTTP methods (e.g. GET, POST). If these are proxied via your
+web server then you can use them to allow the front-end running in the
+web browser to manage display issue. The back-end code you right is only
+what you need to model the data in Postgres and facilitated access via
+PostgREST. You make more elaborate end points available in PostgREST via
+stored functions and views but for many simple applications what is
+provided out of the box by PostgREST may be enough.</p>
+<h1
+id="how-much-sql-do-i-need-to-know-to-use-postgres-with-postgrest">How
+much SQL do I need to know to use Postgres with PostgREST?</h1>
+<p>The bare minimum would be to now how to create a database, create a
+table and the basic SELECT statement. In most read only style
+applications that’s all you really need to use. Have an understanding of
+Postgres SCHEMA[2] will make understanding how PostgREST works
+easier.</p>
+<p>A more rounded minimum SQL knowledge would include being familiar
+with DROP, INSERT, UPDATE, and DELETE statements. It is really helpful
+to have a basic understanding of VIEWS[3]. An understanding of stored
+procedures and functions[4] allows you to take full advantage of
+PostgREST’s capabilities.</p>
+<p>[2]: Postgres <a
+href="https://www.postgresql.org/docs/current/ddl-schemas.html">SCHEMA</a></p>
+<p>[3]: <a href="https://en.wikipedia.org/wiki/View_(SQL)">SQL
+views</a>, Postgres <a
+href="https://www.postgresql.org/docs/current/sql-createview.html">specifics</a></p>
+<p>[4]: <a
+href="https:https://en.wikipedia.org/wiki/Stored_procedure">Stored
+procedures concept</a>, Postgres <a
+href="https://www.postgresql.org/docs/current/sql-createprocedure.html">CREATE
+PROCEDURE</a> and <a
+href="https://www.postgresql.org/docs/current/plpgsql.html">Procedural
+Language</a></p>
+<h2 id="dividing-up-application-responsibilities">Dividing up
+application responsibilities</h2>
+<p>The architecture is traditional. It is normally called a <a
+href="https://en.wikipedia.org/wiki/Microservices">microservice</a>
+architecture. The novel feature presented here is that the services are
+completely off the shelf. The only back-end programming to be done is
+setting up the Postgres database using SQL. The rest is delegated to the
+web browser using the traditional troika of HTML, CSS and
+JavaScript.</p>
+<ol type="1">
+<li>Two microservices provide data manage and transformation</li>
+</ol>
+<ul>
+<li>PostgreSQL, data modeling, data and role management</li>
+<li>PostgREST, turning what we have in Postgres into a JSON data
+API</li>
+</ul>
+<ol start="2" type="1">
+<li>The front end web server and web browser provides our human facing
+interface through static HTML and JavaScript</li>
+</ol>
+<h2 id="stepping-through-birds-2-demo">Stepping through Birds 2
+Demo</h2>
+<p>The birds two demo consists of the following files.</p>
+<ul>
+<li><a href="birds2/README.html">README.md</a></li>
+<li><a href="birds2/birds.csv">birds.csv</a></li>
+<li><a href="birds2/htdocs">htdocs</a>
+<ul>
+<li><a href="birds2/htdocs/index.html">index.html</a></li>
+<li><a href="birds2/htdocs/sightings.js">sightings.js</a></li>
+</ul></li>
+<li><a href="birds2/postgrest.conf">postgrest.conf</a></li>
+<li><a href="birds2/setup.sql">setup.sql</a> ~~~</li>
+</ul>
+<p>Basic development cycle can be broken down into the following
+steps.</p>
+<ol type="1">
+<li>Create a database ans setup the Postgres SCHEMA (namespace) which
+will be used to allow PostgREST to access our data (SQL)</li>
+<li>Creating our database model(s) (SQL)</li>
+<li>Loading data from a CSV file (also done via SQL)</li>
+<li>Startup PostgREST and confirm we can access the content</li>
+<li>Create and debug our index.html/sightings.js files in the web
+browser</li>
+</ol>
+<p>As you evolve the application you’ll likely repeat steps two through
+four.</p>
+<h2 id="software-requirements">Software Requirements</h2>
+<ol type="1">
+<li>PostgreSQL 15 and PostgREST 11 need to be setup and configured to
+work together</li>
+<li>You need a simple web server
+(e.g. <code>python3 -m http.server</code>) for serving static
+content</li>
+<li>You need a web browser (e.g. Safari, Firefox, Chrome, Edge)</li>
+<li>You need your favorite text editor (e.g. micro, vim, Emacs, VSCode,
+Zed)</li>
+</ol>
+<h2 id="closing-thoughts">Closing thoughts</h2>
+<p>Birds 2 demo is a proof of concept showing much simplified back-end
+development process. Namely define your schema and let
+Postgres/PostgREST do the rest. It does come at the expense of making
+the front-end work running the web browser more complicated. It remains
+to be seen if this is worth the trade off.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>
