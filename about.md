@@ -10,7 +10,7 @@ authors:
     given-names: R. S.
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
-repository-code: "git+https://github.com/rsdoiel/newt"
+repository-code: "git+https://github.com/caltechlibrary/newt"
 version: 0.0.1
 license-url: "https://caltechlibrary.github.io/newt/LICENSE"
 keywords: [ "web development", "microservices" ]
@@ -32,8 +32,8 @@ A new take on developing web applications, services and sites using
 Postgres, PostgREST, a URL router and front end web server.
 
 - License: <https://caltechlibrary.github.io/newt/LICENSE>
-- GitHub: <git+https://github.com/rsdoiel/newt>
-- Issues: <git+https://github.com/rsdoiel/newt/issues>
+- GitHub: <git+https://github.com/caltechlibrary/newt>
+- Issues: <git+https://github.com/caltechlibrary/newt/issues>
 
 
 ### Programming languages
