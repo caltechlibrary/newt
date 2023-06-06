@@ -133,8 +133,8 @@ Variables can be defined in each of the request path’s directory
 name(s), file basename and file extension. The variable is defined by an
 opening double curly bracket, the variable name, a space, a type and
 closing double curly brackets.</p>
-<pre><code>/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug String}}
-/blog/{{yr Year}}/{{mo Month}}/{{dy Day}}/{{title-slug Basename}}{{ext Extname}}</code></pre>
+<pre><code>/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug String}
+/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug Basename}${ext Extname}</code></pre>
 <p>In the first line the variables defined are “yr” of type “Year”, “mo”
 of type “Month”, “dy” of type “Day”, “title-slug” of type “String”. In
 the second line the “title-slug” is of type “Basename” (i.e. filename
@@ -208,8 +208,8 @@ An ORCID identifier
 <pre><code>newt newt.yaml</code></pre>
 <p>An example of a CSV file describing blog display routes.</p>
 <pre><code>req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
-/blog/{{yr Year}}/{{mo Month}}//{{dy Day}},GET,http://localhost:3000/posts?year={{yr}&amp;month={{mo}}&amp;day={{dy}},posts.tmpl,&quot;{&quot;&quot;content-type&quot;&quot;: &quot;&quot;text/html&quot;&quot;}&quot;
-/blog/{{yr Year}}/{{mo Month}}//{{dy Day}}/{{title-slug}},GET,http://localhost:3000/posts?year={{yr}}&amp;month={{mo}}&amp;day={{dy}}&amp;title-slug={{title-slug}},article.tmpl,&quot;{&quot;&quot;content-type&quot;&quot;: &quot;&quot;text/html&quot;&quot;}&quot;</code></pre>
+/blog/${yr Year}/${mo Month}//${dy Day},GET,http://localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy},posts.tmpl,&quot;{&quot;&quot;content-type&quot;&quot;: &quot;&quot;text/html&quot;&quot;}&quot;
+/blog/${yr Year}/${mo Month}//${dy Day}/${title-slug},GET,http://localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy}&amp;title-slug=${title-slug},article.tmpl,&quot;{&quot;&quot;content-type&quot;&quot;: &quot;&quot;text/html&quot;&quot;}&quot;</code></pre>
 </section>
 
 <footer>

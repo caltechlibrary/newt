@@ -40,15 +40,13 @@ Elasticsearch.</p>
 JavaScript frameworks. There was no consensus. None provided a mechanism
 to validate the variables captured int he in-bound request. Since Newt’s
 scope is extremely limited this lead me to think about a simple, light
-weight markup that would be intuitive for web developers who were
-already familiar with template markup like <a
-href="https://mustache.github.io/">Mustache</a> and <a
-href="https://handlebarsjs.com/">Handlebars</a>. What was missing a type
-annotation for in-bound requests. Injecting a type annotation for the
-request URL pattern mean that the URL composed or the JSON data API
-request or Pandoc server request could just be simple handlebars
-template strings. This means the is only one added concept for a well
-known template notation.</p>
+weight markup that would be intuitive for web developers. Since Newt is
+intended to work with Pandoc templates I chose a similar delimiter for
+template variables. What was missing a type annotation for in-bound
+requests. Injecting a type annotation for the request URL pattern mean
+that the URL composed or the JSON data API request or Pandoc server
+request could just be simple handlebars template strings. This means the
+is only one added concept for a well known template notation.</p>
 <h2 id="blogging-urls-a-use-case">Blogging URLs, a use case</h2>
 <p>RouteDSL should be able to handle simple mappings such as those seen
 in blogs. Blog paths are often predictable. A home page is at
@@ -56,22 +54,22 @@ in blogs. Blog paths are often predictable. A home page is at
 individual blog posts might be found in a path formed by embedding four
 digit year, two digit month, two digit day and a title slug. Let’s first
 look at how that would be described as a Mustache template –
-<code>/blog/{{year}}/{{month}}/{{day}}/{{title-slug}}</code>. This is
-pretty easy to read.</p>
+<code>/blog/${year}/${month}/${day}/${title-slug}</code>. This is pretty
+easy to read.</p>
 <p>How do we know when a path value matches a route? For a literal path
 you can simply perform a string comparison but for a path with embedded
 variables you need to vet the variables to make sure they make sense. A
 type check needs to be done. In our simple Mustache version though there
-is no type information. The place holder <code>{{year}}</code> might
-hold an integer or maybe something completely unrelated. What if we
-added an annotation about the variables type? A “year” certainly can be
-validate. Years are normally four digit numbers. Likewise month and day
-could have a simple validation based on being an integer with two digits
-allowing for leading zeros. These are common enough date formats that
-many languages provide via standard libraries. Creating types for these
-types becomes a matter of wrapping an implementations existing type
+is no type information. The place holder <code>${year}</code> might hold
+an integer or maybe something completely unrelated. What if we added an
+annotation about the variables type? A “year” certainly can be validate.
+Years are normally four digit numbers. Likewise month and day could have
+a simple validation based on being an integer with two digits allowing
+for leading zeros. These are common enough date formats that many
+languages provide via standard libraries. Creating types for these types
+becomes a matter of wrapping an implementations existing type
 system.</p>
-<pre><code>/blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug String}}</code></pre>
+<pre><code>/blog/${year Year}/${month Month}/${day Day}/${title-slug String}</code></pre>
 <p>Now we know the type and validation method to apply to the embedded
 variable. Let’s explore some values and see if they can be
 validated.</p>
@@ -130,10 +128,10 @@ Museum communities. A subset of these will be implemented for the
 prototype of RouteDSL (e.g. “ORCID”, “DOI”, “ROR”).</p>
 <p>Here’s an example of what our RouteDSL would enable. I think of these
 as a path expression –</p>
-<pre><code>`/blog/{{year Year}}/{{month Month}}/{{day Day}}/{{title-slug}}`</code></pre>
+<pre><code>`/blog/${year Year}/${month Month}/${day Day}/${title-slug}`</code></pre>
 <p>A transformed version of the input route could then be described
 simply as a handlebar template.</p>
-<pre><code>http://localhost:3000/blog?year={{year}}&amp;month={{month}}&amp;day={{day}}&amp;title_slug={{title-slug}}</code></pre>
+<pre><code>http://localhost:3000/blog?year=${year}&amp;month=${month}&amp;day=${day}&amp;title_slug=${title-slug}</code></pre>
 <p>If the request value matches both form and type of embedded variables
 then you have enough information to call a microservice like PostgREST,
 Solr or Opensearch.</p>
