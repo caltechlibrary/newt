@@ -7,6 +7,7 @@
 
 - [ ] Present at Code4Lib meetup, July 14, 2023
 - [ ] Demo for DLD staff
+- [ ] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler)
 - [ ] Finish Newt prototype
     - [ ] Newt router handling for OPTIONS
     - [ ] Newt router handling for HEAD
@@ -43,6 +44,13 @@
 
 ## Someday, maybe
 
+- [ ] Have Newt read a YAML file expression a declarative presentation of routes and form validation
+	- this could function like the backend of forms processing service
+- [ ] Form validation could be  used to generate default HTML markup for the form, might standardize that code a bit in the process (e.g. allow a vanilla JavaScript integration for complex form fields)
+- [ ] A tool that would Convert CSV, Excel, Open Office Spreadsheets into YAML defining our routes table and forms with their validation rules leveraging the router DSL types
+- [ ] Support Excel and Open Office Spreadsheets
+	- [ ] If form validation is supported in Newt then you could have sheet "routes" that defines routes and other sheets defining forms (pairs of input element name attributes and types from route dsl)
 - [ ] Add a declaritive way to validate form input in Newt without sending it to a JSON data API for validation, this would improve POST, PUT, PATCH handling in the same way URL vetting is implemented
+	- [ ] forms could be validated from a simple YAML file using the router DSL types paired with a input element's name attribute
 - [ ] Add file upload support to Newt via an S3 like service call
 

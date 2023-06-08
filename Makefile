@@ -182,7 +182,7 @@ dist/Windows-arm64: $(PROGRAMS)
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Windows-arm64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
-# Raspberry Pi OS (32 bit) as reported on Raspberry Pi 3B+
+# Raspberry Pi OS 32 bit, reported by Raspberry Pi 3B+
 dist/Linux-armv7l: $(PROGRAMS)
 	@mkdir -p dist/bin
 	@for FNAME in $(PROGRAMS); do env GOOS=linux GOARCH=arm GOARM=7 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
