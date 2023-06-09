@@ -45,9 +45,9 @@ This would allow validating a simple webform like
 
 ## Use case: simple web forms and online magazine publisher
 
-In this use case we'll add support to our birds demo for a local birder magainze. The idea is to support writups or articles from the local birding group. Something between a blog, magazine or news letter.
+In this use case we'll add support to our birds demo for a local birder magazine. The idea is to support writups or articles from the local birding group. Something between a blog, magazine or news letter.
 
-Our articles should have a title, a byline (one or more authors names/identiiers), article copy, title slug, created timestamp, updated timestamp, approval status, published datestamp, a volume number, issue number and article number. An article identifier could be assigned when the article is iniitaially submitted. 
+Our articles should have a title, a byline (one or more authors names/identifiers), article copy, title slug, created timestamp, updated timestamp, approval status, published datestamp, a volume number, issue number and article number. An article identifier could be assigned when the article is iniitaially submitted. 
 
 The SQL for that would look like
 
@@ -55,15 +55,19 @@ The SQL for that would look like
 CREATE TABLE zine (
    article_id SERIAL,
    title TEXT,
+   title_slug VARCHAR(256),
    byline VARCHAR(256),
    article_copy TEXT,
    created TIMESTAMPZ NOT NULL DEFAULT NOW(),
    updated TIMESTAMPZ NOT NULL DEFAULT NOW(),
-   approved TIMESTAMPZ,
+   approved BOOLEAN,
+   published DATE,
    volume INTEGER,
    issue INTEGER,
    article_no INTEGER
 );
 ~~~
+
+When adding an article we need a title, byline, article copy. When editing an article we access it through the article_id genrated on a SQL INSERT. To publish an article we need to set approved to true, set a publication date, volume number, issue and article number.
 
 
