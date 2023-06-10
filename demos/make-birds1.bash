@@ -55,3 +55,5 @@ chmod 775 birds1/build.sh
 START=$(pwd)
 cd birds1 && ./build.sh 
 cd "${START}"
+tree birds1
+wc -l birds1/*.* birds1/htdocs/*.*

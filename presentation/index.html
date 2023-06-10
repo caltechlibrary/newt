@@ -45,9 +45,16 @@ class="email">rsdoiel@caltech.edu</a>
 <div class="slide" id="TOC">
 
 </div>
+<div id="newt" class="slide section level1">
+<h1>Newt</h1>
+<blockquote>
+<p>an experiment in simplifying the webstack</p>
+</blockquote>
+<p>… but first some context</p>
+</div>
 <div id="lamp-and-its-legacy" class="slide section level1">
 <h1>LAMP and its legacy</h1>
-<p>Four example systems found in Caltech Library</p>
+<p>Complex systems found in Caltech Library</p>
 <ul>
 <li>ArchivesSpace</li>
 <li>EPrints</li>
@@ -118,8 +125,8 @@ class="email">rsdoiel@caltech.edu</a>
 <div id="the-problem" class="slide section level1">
 <h1>The problem</h1>
 <ol style="list-style-type: decimal">
-<li>Each listed application is built on a stack</li>
-<li>The stacks are complex, divergent</li>
+<li>Each application was built on a stack</li>
+<li>The stacks are complex and divergent</li>
 <li>Coping strategies
 <ol style="list-style-type: lower-alpha">
 <li>SAAS</li>
@@ -131,12 +138,11 @@ class="email">rsdoiel@caltech.edu</a>
 <div id="why-are-these-things-so-complex" class="slide section level1">
 <h1>Why are these things so complex?</h1>
 <ul>
-<li>We want more from our application so more code gets written</li>
-<li>Complexity accrues over time</li>
-<li>A “best practice”
-<ul>
-<li><strong>Systems should be designed to scale</strong></li>
-</ul></li>
+<li>We want more from our application</li>
+<li>So more code gets written</li>
+<li>Overtime complexity accrues</li>
+<li>A “best practice”, <strong>systems should be designed to
+scale</strong></li>
 </ul>
 </div>
 <div id="lets-talk-about-scale" class="slide section level1">
@@ -164,7 +170,7 @@ class="email">rsdoiel@caltech.edu</a>
 <div id="an-alternative-scale-small" class="slide section level1">
 <h1>An alternative, <strong>scale small</strong></h1>
 <ul>
-<li>Pack only what you need</li>
+<li>Pack only what is needed</li>
 <li>Simplify!</li>
 </ul>
 </div>
@@ -173,39 +179,28 @@ class="email">rsdoiel@caltech.edu</a>
 <ul>
 <li>Limit the moving parts</li>
 <li>Limit the cognitive shifts</li>
-<li>Minimize the toolbox, maximizing how you use it</li>
+<li>Minimize the toolbox, maximize how you use it</li>
 <li>Write less code</li>
 </ul>
 </div>
-<div id="building-small" class="slide section level1">
-<h1>Building small</h1>
-<ul>
-<li>Pick the right abstractions</li>
-<li>Write less code</li>
-</ul>
-</div>
-<div id="why" class="slide section level1">
-<h1>Why?</h1>
-<blockquote>
-<p>Human time is a scarce resource</p>
-</blockquote>
-</div>
-<div id="how-minimal-can-we-go" class="slide section level1">
-<h1>How minimal can we go?</h1>
+<div id="a-small-minimal-system" class="slide section level1">
+<h1>A small minimal system</h1>
 <ul>
 <li>Use “off the shelf” microservices</li>
 <li>SQL</li>
 <li>Pandoc</li>
+<li>YAML configuration</li>
 </ul>
 </div>
-<div id="off-the-shelf-microservices-experiment"
+<div id="newt-an-off-the-shelf-microservices-experiment"
 class="slide section level1">
-<h1>“off the shelf” microservices experiment</h1>
+<h1>Newt, an “off the shelf” microservices experiment</h1>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
 <li><a href="https://pandoc.org">Pandoc</a></li>
-<li><a href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+<li><a href="https://github.com/caltechlibrary/newt/">Newt</a>
+(experimental)</li>
 </ul>
 </div>
 <div id="simplify-through-a-clear-division-of-labor"
@@ -218,7 +213,7 @@ i.e. manages the data</li>
 <li><a href="https://pandoc.org">Pandoc</a> =&gt; a powerful template
 engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
-data router, static file services</li>
+data router, form data validator, static file services</li>
 </ul>
 </div>
 <div id="how-does-this-work" class="slide section level1">
@@ -230,51 +225,66 @@ data router, static file services</li>
 <li>Newt =&gt; web browser</li>
 </ol>
 </div>
-<div id="what-does-this-enable" class="slide section level1">
-<h1>What does this enable?</h1>
+<div id="how-does-this-work-1" class="slide section level1">
+<h1>How does this work?</h1>
 <ol style="list-style-type: decimal">
 <li>Model our data using SQL (Postgres)</li>
-<li>Define our JSON data API using SQL (Postgres+PostgREST)</li>
-<li>Transform our structured data using Pandoc</li>
-<li>Use Newt to orchestrate the microservice conversation</li>
+<li>Run our JSON data API (Postgres+PostgREST)</li>
+<li>Transform our structured data using Pandoc templates</li>
+<li>Newt’s YAML file describes how orchestrate our microservices</li>
 </ol>
 </div>
-<div id="required-toolbox" class="slide section level1">
-<h1>Required Toolbox</h1>
+<div id="how-does-newt-orchestrate-our-microservices"
+class="slide section level1">
+<h1>How does Newt orchestrate our microservices?</h1>
+<ul>
+<li>Newt reads a YAML file for general setup and routing</li>
+<li>Newt’s YAML file includes descriptions of data routing
+<ul>
+<li>(optional) route and form variable definitions</li>
+<li>request routing details</li>
+<li>how to form the request to the data source API</li>
+<li>(optional) the template for processing the JSON results with
+Pandoc</li>
+</ul></li>
+</ul>
+</div>
+<div id="our-minimized-toolbox" class="slide section level1">
+<h1>Our minimized Toolbox</h1>
 <ul>
 <li>Text editor</li>
-<li>Spreadsheet (optional)</li>
 <li>Web browser</li>
 <li>Pandoc</li>
 <li>Postgres + PostgREST</li>
 <li>Newt</li>
 </ul>
 </div>
-<div id="client-side-knowledge-requirements"
-class="slide section level1">
-<h1>Client side knowledge requirements</h1>
+<div id="client-side-knowledge" class="slide section level1">
+<h1>Client side knowledge</h1>
 <ul>
 <li>HTML</li>
-<li>CSS (optional)</li>
-<li>JavaScript (optional)</li>
+<li>CSS</li>
+<li>JavaScript</li>
 </ul>
+<blockquote>
+<p>the usual suspects</p>
+</blockquote>
 </div>
-<div id="server-side-knowledge-requirements"
-class="slide section level1">
-<h1>Server side knowledge requirements</h1>
+<div id="server-side-knowledge" class="slide section level1">
+<h1>Server side knowledge</h1>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
-<li>A CSV file orchestrating our microservices</li>
+<li>Our YAML file for orchestrating our microservices</li>
 </ul>
 </div>
-<div id="why-sql" class="slide section level1">
-<h1>Why SQL?</h1>
+<div id="why-emphasize-sql" class="slide section level1">
+<h1>Why emphasize SQL?</h1>
 <ul>
 <li>SQL is good at describing structured data</li>
 <li>SQL is good at expressing queries</li>
 <li>SQL has rich data types, e.g. JSON columns</li>
-<li>SQL has data views, functions, procedures</li>
+<li>SQL can define data views, functions, procedures</li>
 </ul>
 </div>
 <div id="postgresqlpostgrest-a-code-savings-plan"
@@ -284,17 +294,17 @@ class="slide section level1">
 <p>Minimize the source Luke!</p>
 </blockquote>
 <ul>
-<li>You don’t need to learn an ORM, aren’t limited by it</li>
-<li>You don’t duplicate the SQL models in another language</li>
-<li>You don’t write middleware to get a data API</li>
+<li>Don’t need to learn an ORM, aren’t limited by it</li>
+<li>Don’t duplicate the SQL models in another language</li>
+<li>Don’t write any middle-ware</li>
 </ul>
 </div>
 <div id="three-cognitive-shifts" class="slide section level1">
 <h1>Three cognitive shifts</h1>
 <ul>
-<li>Write SQL and use JSON</li>
-<li>Use Pandoc to transform JSON to HTML</li>
-<li>Use a CSV file to orchestrate our microservices</li>
+<li>Write SQL (Postgres), use JSON (PostgREST)</li>
+<li>Write Pandoc templates to transform JSON to HTML</li>
+<li>Write a YAML file to orchestrate our microservices</li>
 </ul>
 </div>
 <div id="is-this-really-simpler" class="slide section level1">
@@ -319,13 +329,15 @@ JavaScript</li>
 href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash">birds
 1</a></h1>
 <ul>
-<li>Built with Pandoc from Markdown and CSV file</li>
+<li>Built with Pandoc from Markdown and YAML file</li>
 </ul>
-<pre><code>       5 birds1/README.md
+<pre><code>2 directories, 5 files
+       5 birds1/README.md
        4 birds1/birds.csv
        3 birds1/build.sh
       13 birds1/page.tmpl
-      25 total</code></pre>
+      38 birds1/htdocs/index.html
+      63 total</code></pre>
 </div>
 <div id="birds-2" class="slide section level1">
 <h1><a
@@ -334,7 +346,8 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 <ul>
 <li>Built with SQL (Postgres + PostgREST), Browser side JavaScript</li>
 </ul>
-<pre><code>      32 birds2/README.md
+<pre><code>2 directories, 6 files
+      32 birds2/README.md
        4 birds2/birds.csv
        3 birds2/postgrest.conf
       50 birds2/setup.sql
@@ -350,15 +363,15 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 <li>Built with SQL (Postgres + PostgREST) and Pandoc</li>
 <li><strong>no JavaScript</strong></li>
 </ul>
-<pre><code>      34 birds3/README.md
-       4 birds3/birds-routes.csv
+<pre><code>2 directories, 7 files
+      33 birds3/README.md
        4 birds3/birds.csv
-       2 birds3/birds.yaml
+      24 birds3/birds.yaml
       40 birds3/page.tmpl
+       7 birds3/post_result.tmpl
        3 birds3/postgrest.conf
-       9 birds3/redirect.tmpl
       50 birds3/setup.sql
-     146 total</code></pre>
+     161 total</code></pre>
 </div>
 <div id="three-birds" class="slide section level1">
 <h1>Three birds</h1>
@@ -418,7 +431,7 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-bir
 <td></td>
 <td></td>
 <td align="left">no JavaScript required</td>
-<td align="left"></td>
+<td align="left">requires knowledge of YAML</td>
 </tr>
 </tbody>
 </table>
@@ -430,6 +443,7 @@ class="slide section level1">
 <li>Our “off the shelf” microservices limit complexity</li>
 <li>SQL defines data model and API end points</li>
 <li>Pandoc templates transform JSON to HTML</li>
+<li>A YAML file describes the routes and form data validation</li>
 </ul>
 </div>
 <div id="newt-manages-data-flow" class="slide section level1">
@@ -437,7 +451,7 @@ class="slide section level1">
 <ul>
 <li>request =&gt; JSON data API =&gt; Pandoc =&gt; response</li>
 <li>provides a simple DSL for mapping requests to API and Pandoc</li>
-<li>the data flow can be managed with a spreadsheet!</li>
+<li>leverage DSL for describing form data validation</li>
 </ul>
 </div>
 <div id="developer-workflow" class="slide section level1">
@@ -445,7 +459,7 @@ class="slide section level1">
 <ol style="list-style-type: decimal">
 <li>Model data in Postgres</li>
 <li>Create/update Pandoc templates</li>
-<li>Create/update routes in CSV file</li>
+<li>Create/update routes/form data validation in YAML file</li>
 <li>(Re)start PostgREST and Newt to (re)load models and routes</li>
 </ol>
 <p><strong>Repeat as needed</strong></p>
@@ -456,29 +470,35 @@ class="slide section level1">
 <li>If you’ve attended a data science workshop you likely know enough
 SQL</li>
 <li>If you’ve built a static website you likely know about Pandoc</li>
-<li>Use a simple DSL used to map requests to data sources and
-Pandoc</li>
-<li>SQL + CSV files + Pandoc =&gt; web application</li>
+<li>If you’ve built a static website you likely know YAML</li>
+<li>Use YAML and a simple DSL to map requests to data sources and form
+data validation</li>
+<li>SQL + YAML files + Pandoc =&gt; web application</li>
 </ul>
 </div>
 <div id="weaknesses" class="slide section level1">
 <h1>Weaknesses</h1>
 <ul>
 <li>Newt is <strong>an experimental prototype</strong> (June 2023)</li>
-<li>Newt doesn’t accept POST, PATCH, PUT encoded as JSON</li>
-<li>Newt doesn’t validate the GET, POST, PATCH or PUT data</li>
 <li>Newt doesn’t support file uploads</li>
-<li>Learning curves: Postgres and SQL, Pandoc, using HTTP methods</li>
+<li>Learning curves:
+<ol style="list-style-type: decimal">
+<li>Postgres and SQL</li>
+<li>Pandoc</li>
+<li>using HTTP methods</li>
+<li>YAML</li>
+</ol></li>
 </ul>
 </div>
-<div id="strength-in-maturity" class="slide section level1">
-<h1>Strength in Maturity</h1>
+<div id="there-is-strength-in-maturity" class="slide section level1">
+<h1>There is strength in Maturity</h1>
 <ul>
 <li>SQL (1974)</li>
 <li>HTTP (1991)</li>
 <li>HTML (1993)</li>
 <li>Postgres (1996)</li>
 <li>JSON (2001)</li>
+<li>YAML (2001)</li>
 <li>Pandoc (2006)</li>
 <li>PostgREST (2014)</li>
 </ul>
@@ -488,18 +508,18 @@ Pandoc</li>
 <ul>
 <li>I am building staff facing applications, Summer 2023</li>
 <li>Testing Solr/Elasticsearch as a JSON data source</li>
-<li>Fix bugs, improve validation, simplify code</li>
+<li>Fix bugs, improve validation, simplifying code</li>
 </ul>
 </div>
 <div id="it-would-be-nice-if-." class="slide section level1">
 <h1>It would be nice if ….</h1>
 <ul>
-<li>Newt validated POST, PUT and PATCH before sending to API</li>
 <li>Newt could delegate file uploads to an S3 like service</li>
-<li>Had it’s own community supporting it
+<li>Newt had a community
 <ul>
-<li>share SQL code</li>
-<li>share pandoc templates</li>
+<li>sharing SQL code</li>
+<li>sharing Pandoc templates</li>
+<li>sharing YAML files</li>
 </ul></li>
 </ul>
 </div>

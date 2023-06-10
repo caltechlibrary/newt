@@ -42,10 +42,9 @@ SELECT * FROM birds.sighting;
 
 ## Setup Newt
 
-1. Create a birds-routes.csv file holding the routes for our birds application
-2. Create birds.yaml file with 'newt_routes' and 'new_htdocs' defined.
-3. Start up Newt service using the YAML file.
-4. Point your web browser at the Newt and see what happens
+1. Create a birds.yaml file holding the routes for our birds application
+2. Start up Newt service using the YAML file.
+3. Point your web browser at the Newt and see what happens
 
 
 EOT
@@ -119,19 +118,34 @@ db-schemas = "birds"
 db-anon-role = "birds_anonymous"
 EOT
 
-# Generate birds-routes.csv
-cat <<EOT >birds3/birds-routes.csv
-req_path,req_method,api_url,api_method,api_content_type,pandoc_template,res_headers
-/,GET,http://localhost:3000/sighting,GET,application/json,page.tmpl,"{""content-type"": ""text/html""}"
-/,POST,http://localhost:3000/sighting,POST,application/json,redirect.tmpl,"{""content-type"": ""text/html""}"
-/bird_views,GET,http://localhost:3000/bird_view,GET,application/json,,"{""content-type"": ""application/json""}"
+# Generate birds.yaml
+cat <<EOT >birds3/birds.yaml
+env: { "DB_NAME", "DB_USER", "DB_PASSWORD" ]
+htdocs: htdocs
+routes: 
+  - req_path: /
+    req_method: GET
+    api_content_type: application/json
+    api_method: GET
+    api_url: http://localhost:3000/sighting
+    pandoc_template: page.tmpl
+    res_headers: { "content-type": "text/html" }
+  - var: { "bird": "String", "place": "String", "sighted": "Date" }
+    req_path: /
+    req_method: POST
+    api_content_type: application/json
+    api_method: POST
+    api_url: http://localhost:3000/sighting
+    pandoc_template: post_result.tmpl
+    res_headers: '{"content-type": "text/html"}'
+  - req_path: /bird_views
+    req_method: GET
+    api_content_type: application/json
+    api_method: GET
+    api_url: http://localhost:3000/bird_view
+    res_headers: { "content-type": "application/json" }
 EOT
 
-# Generate birds.yaml configuration file
-cat <<EOT >birds3/birds.yaml
-newt_routes: "birds-routes.csv"
-newt_htdocs: "htdocs"
-EOT
 
 # Create a Pandoc template page.tmpl
 cat <<EOT >birds3/page.tmpl
@@ -145,7 +159,7 @@ cat <<EOT >birds3/page.tmpl
     <p>
     <div id="bird-list"></div>
     <h2>Add a bird</h2>
-    <div><form method="POST" action="/">
+    <div><form name="add_bird" method="POST" action="/">
       <div>
         <label for="bird">Bird</label>
                 <input id="bird" name="bird" type="text" value="">
@@ -178,18 +192,18 @@ cat <<EOT >birds3/page.tmpl
 EOT
 
 #
-# Create a Pandoc template redirect.tmpl
+# Create a Pandoc template post_result.tmpl
 #
-cat <<EOT >birds3/redirect.tmpl
+cat <<EOT >birds3/post_result.tmpl
 <DOCTYPE html lang="en">
 <html>
-<head>
-	<meta http-equiv="refresh" content="0; url="/" />
-</head>
+<head> <meta http-equiv="refresh" content="0; url="/" /> </head>
 <body>
 Thank you for submitting a bird, <a href="/sighthings">View List</a>.
 </body>
 </html>
 EOT
 
+tree birds3
+wc -l birds3/*.*
 

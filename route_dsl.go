@@ -23,6 +23,7 @@ type RouteDSL struct {
 	Base string   `json:"base,omitempty"`
 	Ext  string   `json:"ext,omitempty"`
 	// VarToType maps the variable name to a var defn
+	// This is based on the vars defined in the route.
 	VarToType map[string]string `json:"var_to_types,omitempty"`
 	// Types maps type implementation description
 	Types map[string]string `json:"-"`
@@ -36,86 +37,69 @@ func (rdsl *RouteDSL) String() string {
 	return string(src)
 }
 
-// varDefn evaluates a variable expression returning a var name,
-// type expression.
-func varDefn(src string) (string, string, error) {
-	if !(strings.HasPrefix(src, StartVar) && strings.HasSuffix(src, EndVar)) {
-		return "", "", fmt.Errorf("missing opening or closing curly brace delimiters")
-	}
-	expr := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(src, StartVar), EndVar))
-	if expr == "" {
-		return "", "", fmt.Errorf("missing varname and type info")
-	}
-	// Check if we both have varname and type expression
-	if !strings.Contains(expr, " ") {
-		return "", "", fmt.Errorf("Invalid declaration %q missing type info", src)
-	}
-	// Split varname from type expression
-	parts := strings.SplitN(expr, " ", 2)
-	vName, tExpr := parts[0], parts[1]
-	if vName == "" {
-		return "", "", fmt.Errorf("missing variable name")
-	}
-	if tExpr == "" {
-		return vName, "", fmt.Errorf("missing type expression for var %q", vName)
-	}
-	return vName, tExpr, nil
+func getVarname(elem string) string {
+	return strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(elem, StartVar), EndVar))
 }
 
 // NewRouteDSL takes a RouteDSL expression and returns a
 // RouteDSLExpresion structure and error value.
-func NewRouteDSL(src string) (*RouteDSL, error) {
+func NewRouteDSL(src string, varDef map[string]string) (*RouteDSL, error) {
+	dir, base := path.Split(src)
+
 	rdsl := new(RouteDSL)
 	rdsl.Src = src
-	dir, base := path.Split(src)
+	rdsl.Base = base
+	rdsl.Ext = ""
+	// Include all the types defined dsl_types.go
+	rdsl.TypeFn = RouteTypes
+
+	// Load a variable definitions.
+	rdsl.VarToType = map[string]string{}
+	if len(varDef) > 0 {
+		for k, v := range varDef {
+			if v == "Basename"{ 
+				rdsl.Base = fmt.Sprintf("%s%s%s", StartVar, v, EndVar)
+			} 
+			if v == "Extname" {
+				rdsl.Ext = fmt.Sprintf("%s%s%s", StartVar, v, EndVar)
+			}
+			rdsl.VarToType[k] = v
+		}
+	}
+	
+	// We only evalaute the extension if here are two variables 
+	// defined for the last element of path.
 	dirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	rdsl.Dirs = []string{}
-	// We only evalaute the extension if here are two variables defined for the last element of path.
-	if strings.Count(base, StartVar) == 2 {
-		parts := strings.SplitN(base, EndVar, 2)
-		rdsl.Base = parts[0] + EndVar
-		rdsl.Ext = parts[1]
-	} else {
-		rdsl.Base = base
-		rdsl.Ext = ""
-	}
-	rdsl.VarToType = map[string]string{}
-
-	for i, elem := range dirs {
+	for _, elem := range dirs {
 		if strings.HasPrefix(elem, StartVar) && strings.HasSuffix(elem, EndVar) {
-			varName, typeExpr, err := varDefn(elem)
-			if err == nil {
-				rdsl.VarToType[varName] = typeExpr
+			// Check to see if getVarname is defined, other error out
+			vName := getVarname(elem)
+			if _, ok := rdsl.VarToType[vName]; ok {
+				rdsl.Dirs = append(rdsl.Dirs, elem)
 			} else {
-				return nil, fmt.Errorf("(%d) %q -> %s", i, elem, err)
+				return nil, fmt.Errorf("%s is undefined", vName)
 			}
-			rdsl.Dirs = append(rdsl.Dirs, fmt.Sprintf(StartVar+"%s"+EndVar, varName))
 		} else {
 			rdsl.Dirs = append(rdsl.Dirs, elem)
 		}
 	}
-	if strings.HasPrefix(rdsl.Base, StartVar) && strings.HasSuffix(rdsl.Base, EndVar) {
-		varName, typeExpr, err := varDefn(rdsl.Base)
-		if err == nil {
-			rdsl.VarToType[varName] = typeExpr
-		} else {
-			return nil, fmt.Errorf("(basename) %q -> %s", rdsl.Base, err)
-		}
-		rdsl.Base = fmt.Sprintf(StartVar+"%s"+EndVar, varName)
-	}
 	if rdsl.Ext != "" {
 		if strings.HasPrefix(rdsl.Ext, StartVar) && strings.HasSuffix(rdsl.Ext, EndVar) {
-			varName, typeExpr, err := varDefn(rdsl.Ext)
-			if err == nil {
-				rdsl.VarToType[varName] = typeExpr
-			} else {
-				return nil, fmt.Errorf("(extname) %q -> %s", rdsl.Ext, err)
+			vName := getVarname(rdsl.Ext)
+			if _, ok := rdsl.VarToType[vName]; ! ok {
+				return nil, fmt.Errorf("%s is undefined", vName)
 			}
-			rdsl.Ext = fmt.Sprintf(StartVar+"%s"+EndVar, varName)
 		}
 	}
-	// Finally include all the types defined route_dsl_types.go
-	rdsl.TypeFn = RouteTypes
+	if rdsl.Base != "" {
+		if strings.HasPrefix(rdsl.Ext, StartVar) && strings.HasSuffix(rdsl.Ext, EndVar) {
+			vName := getVarname(rdsl.Base)
+			if _, ok := rdsl.VarToType[vName]; ! ok {
+				return nil, fmt.Errorf("%s is undefined", vName)
+			}
+		}
+	}
 	return rdsl, nil
 }
 
@@ -129,9 +113,6 @@ func (rdsl *RouteDSL) RegisterType(tName string, t RouteDSLType) error {
 	return nil
 }
 
-func varName(src string) string {
-	return strings.TrimSuffix(strings.TrimPrefix(src, StartVar), EndVar)
-}
 
 // evalElement takes compares a element against a value (from the path value)
 // returns a variable name, interface value and bool indicating a successful match
@@ -139,7 +120,7 @@ func (rdsl *RouteDSL) evalElement(elem string, src string) (string, string, bool
 	// Check if we workingwith a literal element or a variable defn.
 	if strings.HasPrefix(elem, StartVar) {
 		// handle variable path element
-		vName := varName(elem)
+		vName := getVarname(elem)
 		tExpr, ok := rdsl.VarToType[vName]
 		if !ok {
 			return "", "", false

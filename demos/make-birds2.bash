@@ -212,4 +212,6 @@ cat <<EOT>birds2/htdocs/sightings.js
 })(document, window);
 EOT
 
+tree birds2
+wc -l birds2/*.* birds2/htdocs/*.*
 

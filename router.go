@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	reqPath = iota
+	varDef = iota
+	reqPath
 	reqMethod
 	apiURL
 	apiMethod
@@ -28,6 +29,7 @@ const (
 
 var (
 	routerColumns = []string{
+		"var",
 		"req_path",
 		"req_method",
 		"api_url",
@@ -38,33 +40,44 @@ var (
 	}
 )
 
-// Route describes an individual route, maps to the columns of
-// a route CSV file.
+// Route describes an individual route, maps to the attributes in our
+// YAML file for a specific your. 
 type Route struct {
+	// Var holds a map of variable names and types
+	Var map[string]string `json:"var,omitempty" yaml:"var,omitempty"`
+
 	// ReqPath, a path described by RouteDSL from a browser or front end web server
-	ReqPath *RouteDSL
+	ReqPath *RouteDSL `json:"req_path,omitempty" yaml:"req_path,omitempty"`
+
 	// ReqMethod, the request HTTP method (e.g. GET, POST, PUT, DELETE, PATCH, HEAD)
-	ReqMethod string
+	ReqMethod string `json:"req_method,omitempty" yaml:"req_method,omitempty"`
 	// ApiURL is the URL used to contact the data source (e.g. PostgREST, Solr, Elasticsearch)
-	ApiURL string
+	ApiURL string `json:"api_url,omitempty" yaml:"api_url,omitempty"`
+
 	// ApiMethod indicates the HTTP method to be used to contact the data source api
-	ApiMethod string
+	ApiMethod string `json:"api_method,omitempty" yaml:"api_method,omitempty"`
+
 	// ApiContentType is the content type to be used to contact the data source api
-	ApiContentType string
+	ApiContentType string `json:"api_content_type,omitempty" yaml:"api_content_type,omitempty"`
+
 	// PandocTemplate holds the source to a Pandoc template
-	PandocTemplate string
+	PandocTemplate string `json:"pandoc_template,omitempty" yaml:"pandoc_template,omitempty"`
+
 	// ResHeaders holds any additional response headers to send back to the
 	// browser or front end web server
-	ResHeaders map[string]string
+	ResHeaders map[string]string `json:"res_headers,omitempty" yaml:"res_headers,omitempty"`
 }
 
+// String shows a JSON Representation of an individual route
 func (route *Route) String() string {
 	src, _ := json.MarshalIndent(route, "", "    ")
 	return fmt.Sprintf("%s", src)
 }
 
+// Router holds the actual router structure. This 
 type Router struct {
 	Env    map[string]string
+	Vars   map[string]string
 	Routes []*Route
 }
 
@@ -103,7 +116,51 @@ func isHTTPMethod(s string) bool {
 	return false
 }
 
-// ReadCSV filename
+// ReadYAML filename reads router configuration from a file.
+func (router *Router) ReadYAML(fName string) error {
+	in, err := os.Open(fName)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	src, err := io.ReadAll(in)
+	if err != nil {
+		return err
+	}
+	tmpRouter := &Router{}
+	if err = yaml.Unmarshal(src, tmpRouter); err != nil {
+		return err
+	}
+	if tmpRouter.Env != nil {
+		for k, v := range tmpRouter.Env {
+			router.Env[k] = v
+		}
+	}
+	if tmpRouter.Vars != nil {
+		for k, v := range tmpRouter.Vars {
+			router.Vars[k] = v
+		}
+	}
+	if tmpRouter.Routes != nil {
+		router.Routes = tmpRouter.Routes
+	}
+ 	return nil	
+}
+
+// Configure takes a Config object and maps in the relatavent values to
+// the router.
+func (router *Router) Configure(cfg *Config) {
+	// Copy the environment into the router
+	for _, envar := range cfg.Env {
+		router.Env[envar] = os.Getenv(envar)
+	}
+	// Copy cfg.Routes into router.Routes
+	for _, route := range cfg.Routes {
+		router.Routes = append(router.Routes, route)
+	}
+}
+
+// ReadCSV filename reads router configuration from a file.
 func (router *Router) ReadCSV(fName string) error {
 	in, err := os.Open(fName)
 	if err != nil {
@@ -135,7 +192,14 @@ func (router *Router) ReadCSV(fName string) error {
 			}
 			var err error
 			route := new(Route)
-			route.ReqPath, err = NewRouteDSL(record[reqPath])
+
+			if record[varDef] != "" {
+				route.Var = map[string]string{}
+				if err = json.Unmarshal([]byte(record[varDef]), route.Var); err != nil {
+					return fmt.Errorf("var error, line %d in %q, %s", rowNo, fName, err)
+				}
+			}
+			route.ReqPath, err = NewRouteDSL(record[reqPath], route.Var)
 			if err != nil {
 				return fmt.Errorf("req_path error, line %d in %q, %s", rowNo, fName, err)
 			}
