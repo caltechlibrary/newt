@@ -164,7 +164,6 @@ scale</strong></li>
 <li>Scaling big is hard</li>
 <li>Scaling big makes things really complex</li>
 <li>Scaling big favors large teams</li>
-<li>Scaling big is a siren song</li>
 </ul>
 </div>
 <div id="an-alternative-scale-small" class="slide section level1">
@@ -183,8 +182,8 @@ scale</strong></li>
 <li>Write less code</li>
 </ul>
 </div>
-<div id="a-small-minimal-system" class="slide section level1">
-<h1>A small minimal system</h1>
+<div id="newt-a-small-system-experiment" class="slide section level1">
+<h1>Newt, a small system experiment</h1>
 <ul>
 <li>Use “off the shelf” microservices</li>
 <li>SQL</li>
@@ -192,9 +191,9 @@ scale</strong></li>
 <li>YAML configuration</li>
 </ul>
 </div>
-<div id="newt-an-off-the-shelf-microservices-experiment"
-class="slide section level1">
-<h1>Newt, an “off the shelf” microservices experiment</h1>
+<div id="newt-a-small-system-experiment-1" class="slide section level1">
+<h1>Newt, a small system experiment</h1>
+<h2 id="microservices">Microservices</h2>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
@@ -238,14 +237,12 @@ data router, form data validator, static file services</li>
 class="slide section level1">
 <h1>How does Newt orchestrate our microservices?</h1>
 <ul>
-<li>Newt reads a YAML file for general setup and routing</li>
 <li>Newt’s YAML file includes descriptions of data routing
 <ul>
 <li>(optional) route and form variable definitions</li>
 <li>request routing details</li>
 <li>how to form the request to the data source API</li>
-<li>(optional) the template for processing the JSON results with
-Pandoc</li>
+<li>(optional) Pandoc template to process JSON results</li>
 </ul></li>
 </ul>
 </div>
