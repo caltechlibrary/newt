@@ -46,8 +46,8 @@ type Route struct {
 	// Var holds a map of variable names and types
 	Var map[string]string `json:"var,omitempty" yaml:"var,omitempty"`
 
-	// ReqPath, a path described by RouteDSL from a browser or front end web server
-	ReqPath *RouteDSL `json:"req_path,omitempty" yaml:"req_path,omitempty"`
+	// ReqPath, a path described by DSL from a browser or front end web server
+	ReqPath *DSL `json:"req_path,omitempty" yaml:"req_path,omitempty"`
 
 	// ReqMethod, the request HTTP method (e.g. GET, POST, PUT, DELETE, PATCH, HEAD)
 	ReqMethod string `json:"req_method,omitempty" yaml:"req_method,omitempty"`
@@ -168,6 +168,9 @@ func (router *Router) ReadCSV(fName string) error {
 	}
 	defer in.Close()
 	r := csv.NewReader(in)
+	r.Comment = '#'
+	r.LazyQuotes = true
+	r.TrimLeadingSpace = true
 	rowNo := 1
 	for {
 		record, err := r.Read()
@@ -179,7 +182,12 @@ func (router *Router) ReadCSV(fName string) error {
 		}
 		if rowNo == 1 {
 			if len(record) < len(routerColumns) {
-				return fmt.Errorf("missing columns %q, line %d", fName, rowNo)
+				// Figure out where the columns are off, and return error
+				for i, k := range routerColumns {
+					if i >= len(record) || record[i] != k {
+						return fmt.Errorf("missing columns %q, line %d, starting with %s", fName, rowNo, k)
+					}
+				}
 			}
 			for i, k := range routerColumns {
 				if record[i] != k {
@@ -195,11 +203,11 @@ func (router *Router) ReadCSV(fName string) error {
 
 			if record[varDef] != "" {
 				route.Var = map[string]string{}
-				if err = json.Unmarshal([]byte(record[varDef]), route.Var); err != nil {
-					return fmt.Errorf("var error, line %d in %q, %s", rowNo, fName, err)
+				if err = json.Unmarshal([]byte(record[varDef]), &route.Var); err != nil {
+					return fmt.Errorf("var error, line %d in %s, %s", rowNo, fName, err)
 				}
 			}
-			route.ReqPath, err = NewRouteDSL(record[reqPath], route.Var)
+			route.ReqPath, err = NewDSL(record[reqPath], route.Var)
 			if err != nil {
 				return fmt.Errorf("req_path error, line %d in %q, %s", rowNo, fName, err)
 			}
@@ -414,7 +422,7 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 				return
 			}
 
-			fmt.Fprintf(os.Stderr, "DEBUG body (%q) \n-->%s<--\n", req.Method, body)
+			//fmt.Fprintf(os.Stderr, "DEBUG body (%q) \n-->%s<--\n", req.Method, body)
 		} 
 
 		// Get content from the JSON Data API

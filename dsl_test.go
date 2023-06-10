@@ -7,7 +7,13 @@ import (
 )
 
 func TestBlogPathEndingWithString(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug String}`)
+	m := map[string]string {
+		"yr": "Year",
+		"mo": "Month",
+		"dy": "Day",
+		"title-slug": "String",
+	}
+	rdsl, err := NewDSL(`/blog/${yr}/${mo}/${dy}/${title-slug}`, m)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -29,7 +35,14 @@ func TestBlogPathEndingWithString(t *testing.T) {
 }
 
 func TestBlogPathEndingWithExt(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/${year Year}/${month Month}/${day Day}/${title-slug Basename}${ext Extname}`)
+	m := map[string]string {
+		"year": "Year",
+		"month": "Month",
+		"day": "Day",
+		"title-slug": "Basename",
+		"ext": "Extname",
+	}
+	rdsl, err := NewDSL(`/blog/${year}/${month}/${day}/${title-slug}${ext}`, m)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -40,7 +53,6 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		"/blog/2023/05/13/my-post.html": true,
 	}
 	for p, expected := range testMap {
-		//fmt.Fprintf(os.Stderr, "DEBUG p -> %q\n", p)
 		val, ok := rdsl.Eval(p)
 		if ok != expected {
 			t.Errorf("expected (%q) %t, got (%T) %+v %t", p, expected, val, val, ok)
@@ -49,7 +61,13 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 }
 
 func TestEvalAndResolve(t *testing.T) {
-	rdsl, err := NewRouteDSL(`/blog/${yr Year}/${mo Month}/${dy Day}/${title-slug String}`)
+	m := map[string]string {
+		"yr": "Year",
+		"mo": "Month",
+		"dy": "Day",
+		"title-slug": "String",
+	}
+	rdsl, err := NewDSL(`/blog/${yr}/${mo}/${dy}/${title-slug}`, m)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

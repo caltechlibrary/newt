@@ -120,7 +120,7 @@ EOT
 
 # Generate birds.yaml
 cat <<EOT >birds3/birds.yaml
-env: { "DB_NAME", "DB_USER", "DB_PASSWORD" ]
+env: [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
 htdocs: htdocs
 routes: 
   - req_path: /

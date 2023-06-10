@@ -102,7 +102,8 @@ func LoadConfig(configFName string) (*Config, error) {
 	// Make sure Htdocs exists
 	if cfg.Htdocs != "" {
 		if _, err := os.Stat(cfg.Htdocs); err != nil {
-			return nil, fmt.Errorf("Can't read %q, %s", cfg.Htdocs, err)
+			dir, _ := os.Getwd()
+			return nil, fmt.Errorf("Can't read %q from %s, %s", cfg.Htdocs, dir, err)
 		}
 	}
 	// Finally make sure we have cfg.Htdocs or cfg.Routes set.
@@ -127,14 +128,6 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 	router := new(Router)
 	if cfg != nil {
 		router.Configure(cfg)
-	}
-	switch {
-		case strings.HasSuffix(cfg.FName, ".csv"):
-			err = router.ReadCSV(cfg.FName)
-		case strings.HasSuffix(cfg.FName, ".yaml"):
-			err = router.ReadYAML(cfg.FName)
-		default:
-			err = fmt.Errorf("%s not a supported configuration file", cfg.FName)
 	}
 	if err != nil {
 		fmt.Fprintf(eout, "error reading routes from %q, %s\n", cfg.FName, err)

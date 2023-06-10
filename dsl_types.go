@@ -32,8 +32,8 @@ func lastChar(s string) string {
 	return s[l:]
 }
 
-// RouteDSLType
-type RouteDSLType interface {
+// DSLType
+type DSLType interface {
 	// EvalType takes an variable type expression like
 	EvalType(string, string) (string, bool)
 }

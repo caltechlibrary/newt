@@ -3,7 +3,6 @@ package newt
 import (
 	"encoding/json"
 	"fmt"
-	//"os" // DEBUG
 	"path"
 	"strings"
 )
@@ -15,9 +14,9 @@ const (
 
 type EvalType func(string, string) (string, bool)
 
-// RouteDSL holds the attributes need to decode
-// a RouteDSL expression, match and decode against path values.
-type RouteDSL struct {
+// DSL holds the attributes need to decode
+// a DSL expression, match and decode against path values.
+type DSL struct {
 	Src  string   `json:"src"`
 	Dirs []string `json:"dirs,omitempty"`
 	Base string   `json:"base,omitempty"`
@@ -32,7 +31,7 @@ type RouteDSL struct {
 	TypeFn map[string]EvalType `json:"-"`
 }
 
-func (rdsl *RouteDSL) String() string {
+func (rdsl *DSL) String() string {
 	src, _ := json.MarshalIndent(rdsl, "", "    ")
 	return string(src)
 }
@@ -41,27 +40,31 @@ func getVarname(elem string) string {
 	return strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(elem, StartVar), EndVar))
 }
 
-// NewRouteDSL takes a RouteDSL expression and returns a
-// RouteDSLExpresion structure and error value.
-func NewRouteDSL(src string, varDef map[string]string) (*RouteDSL, error) {
+// NewDSL takes a DSL expression and returns a
+// DSLExpresion structure and error value.
+func NewDSL(src string, varDef map[string]string) (*DSL, error) {
 	dir, base := path.Split(src)
 
-	rdsl := new(RouteDSL)
+	rdsl := new(DSL)
 	rdsl.Src = src
 	rdsl.Base = base
 	rdsl.Ext = ""
 	// Include all the types defined dsl_types.go
-	rdsl.TypeFn = RouteTypes
+	rdsl.TypeFn = map[string]EvalType{}
+	for k, v := range RouteTypes {
+		rdsl.TypeFn[k] = v
+	}
 
 	// Load a variable definitions.
 	rdsl.VarToType = map[string]string{}
 	if len(varDef) > 0 {
 		for k, v := range varDef {
 			if v == "Basename"{ 
-				rdsl.Base = fmt.Sprintf("%s%s%s", StartVar, v, EndVar)
+				rdsl.Base = fmt.Sprintf("%s%s%s", StartVar, k, EndVar)
 			} 
 			if v == "Extname" {
-				rdsl.Ext = fmt.Sprintf("%s%s%s", StartVar, v, EndVar)
+				rdsl.Ext = fmt.Sprintf("%s%s%s", StartVar, k, EndVar)
+
 			}
 			rdsl.VarToType[k] = v
 		}
@@ -103,20 +106,9 @@ func NewRouteDSL(src string, varDef map[string]string) (*RouteDSL, error) {
 	return rdsl, nil
 }
 
-// RegisterType maps a type name to a a RouteDSLType interface.
-// RouteDSLType interface must defined EvalType.
-func (rdsl *RouteDSL) RegisterType(tName string, t RouteDSLType) error {
-	if _, ok := rdsl.TypeFn[tName]; ok {
-		return fmt.Errorf("%q previously registered", tName)
-	}
-	rdsl.TypeFn[tName] = t.EvalType
-	return nil
-}
-
-
 // evalElement takes compares a element against a value (from the path value)
 // returns a variable name, interface value and bool indicating a successful match
-func (rdsl *RouteDSL) evalElement(elem string, src string) (string, string, bool) {
+func (rdsl *DSL) evalElement(elem string, src string) (string, string, bool) {
 	// Check if we workingwith a literal element or a variable defn.
 	if strings.HasPrefix(elem, StartVar) {
 		// handle variable path element
@@ -143,7 +135,7 @@ func (rdsl *RouteDSL) evalElement(elem string, src string) (string, string, bool
 
 // Eval takes a path value and compares it with a Path expression.
 // It returns a status boolean, map of variable names to values.
-func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
+func (rdsl *DSL) Eval(pathValue string) (map[string]string, bool) {
 	dir, base := path.Split(pathValue)
 	pDirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	pExt := path.Ext(base)
@@ -193,7 +185,7 @@ func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 
 // Resolve takes a map of varnames and values and replaces any
 // occurrences found in src string resulting to a new string..
-func (rdsl *RouteDSL) Resolve(m map[string]string, src string) string {
+func (rdsl *DSL) Resolve(m map[string]string, src string) string {
 	res := src[0:]
 	for k, v := range m {
 		k = StartVar + k + EndVar
