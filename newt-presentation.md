@@ -98,17 +98,9 @@ These are all really complicated pieces of software.
 # Newt, a small system experiment
 
 - Use "off the shelf" microservices
-- SQL 
-- Pandoc
-- YAML configuration
-
-# Newt, a small system experiment
-
-## Microservices
-
-- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
-- [Pandoc](https://pandoc.org)
-- [Newt](https://github.com/caltechlibrary/newt/) (experimental)
+- SQL ([Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org))
+- [Pandoc templates](https://pandoc.org/MANUAL.html#templates) ([Pandoc Server](https://pandoc.org/pandoc-server.html))
+- YAML configuration ([Newt](https://github.com/caltechlibrary/newt/))
 
 # Simplify through a clear division of labor
 
