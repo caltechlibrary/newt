@@ -1,8 +1,6 @@
 package newt
 
 import (
-	//"fmt" // DEBUG
-	//"os" // DEBUG
 	"testing"
 )
 
@@ -25,9 +23,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		"/blog/2023/05/13/my-post": true,
 	}
 	for p, expected := range testMap {
-		//fmt.Fprintf(os.Stderr, "DEBUG p -> %q\n", p)
 		val, ok := rdsl.Eval(p)
-		//fmt.Fprintf(os.Stderr, "DEBUG val -> %q, ok -> %t\n", val, ok)
 		if ok != expected {
 			t.Errorf("expected (%q) %t, got (%T) %+v %t", p, expected, val, val, ok)
 		}

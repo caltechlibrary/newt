@@ -147,17 +147,88 @@ func (router *Router) ReadYAML(fName string) error {
  	return nil	
 }
 
+// getStringAttribute retrieves a string attribute value or returns an
+// empty string.
+func getStringAttr(m map[string]interface{}, attr string) string {
+	if val, ok := m[attr]; ok {
+		switch val.(type) {
+			case string:
+				return val.(string)
+		}
+	}
+	return ""
+}
+
+// getMapStringAttr retrieves a map[string]string attribute value or
+// returns nil.
+func getMapStringAttr(m map[string]interface{}, attr string) map[string]string {
+	if val, ok := m[attr]; ok {
+		mVal := map[string]string{}
+		fmt.Fprintf(os.Stderr, "DEBUG m -> (%T) %+v\n", val, val)
+		switch val.(type) {
+			case map[string]interface{}:
+			    for k, v := range val.(map[string]interface{}) {
+					val := fmt.Sprintf("%s", v)
+					mVal[k] = val
+				}
+				return mVal
+			case map[string]string:
+				for k, v := range val.(map[string]string) {
+					mVal[k] = v
+				}
+				return mVal
+		}
+	}
+	return nil
+}
+
+
+// mapToRoute takes a simple map and converts it into a Route struct.
+func mapToRoute(m map[string]interface{}) (*Route, error) {
+	route := new(Route)
+	route.Var = getMapStringAttr(m, "var")
+	src := getStringAttr(m, "req_path")
+	reqPath, err := NewDSL(src, route.Var)
+	if err != nil {
+		return nil, err
+	}
+	route.ReqPath = reqPath
+	route.ReqMethod = getStringAttr(m, "req_method")
+	route.ApiContentType = getStringAttr(m, "api_content_type")
+	route.ApiMethod = getStringAttr(m, "api_method")
+	route.ApiURL = getStringAttr(m, "api_url")
+	fName := getStringAttr(m, "pandoc_template")
+	if fName != "" {
+		txt, err := os.ReadFile(fName)
+		if err != nil {
+			return nil, err
+		}
+		route.PandocTemplate = fmt.Sprintf("%s", txt)
+	}
+	route.ResHeaders = getMapStringAttr(m, "res_headers")
+	fmt.Fprintf(os.Stderr, "\n\nDEBUG res_headers %+v\n\n", route.ResHeaders)
+	return route, nil
+}
+
 // Configure takes a Config object and maps in the relatavent values to
-// the router.
-func (router *Router) Configure(cfg *Config) {
+// the router and initializes the router with routes.
+func (router *Router) Configure(cfg *Config) error {
 	// Copy the environment into the router
 	for _, envar := range cfg.Env {
+		if router.Env == nil {
+			router.Env = map[string]string{}
+		}
 		router.Env[envar] = os.Getenv(envar)
 	}
 	// Copy cfg.Routes into router.Routes
-	for _, route := range cfg.Routes {
+	for _, m := range cfg.Routes {
+		route, err := mapToRoute(m)
+		if err != nil {
+			return err
+		}
 		router.Routes = append(router.Routes, route)
 	}
+	return nil
 }
 
 // ReadCSV filename reads router configuration from a file.
@@ -299,7 +370,7 @@ func (router *Router) RequestDataAPI(rNo int, apiURL string, body []byte) ([]byt
 	case http.MethodPost:
 		res, err = http.Post(apiURL, contentType, buf)
 	default:
-		log.Printf("http method not supported %s", method)
+		log.Printf("route no. %d http method not supported %q", rNo, method)
 		return nil, http.StatusText(502), 502
 	}
 	if err != nil {
@@ -377,6 +448,7 @@ func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
 // WriteResponse
 func (router *Router) WriteResponse(w http.ResponseWriter, rNo int, src []byte) {
 	for k, v := range router.Routes[rNo].ResHeaders {
+		fmt.Fprintf(os.Stderr, "DEBUG (%d) res header %q: %q\n", rNo, k, v)
 		w.Header().Set(k, v)
 	}
 	w.WriteHeader(http.StatusOK)
@@ -399,6 +471,7 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 			body []byte
 			err  error
 		)
+		fmt.Fprintf(os.Stderr, "DEBUG router.Routes[%d].ResHeaders -> %+v\n", rNo, router.Routes[rNo].ResHeaders)
 		// FIXME: Handle http.MethodOption
 		// FIXME: Handle http.MethodHead
 		// FIXME: Handle http.MethodGet
@@ -421,8 +494,6 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 				http.Error(w, fmt.Sprintf("%s", err), 400)
 				return
 			}
-
-			//fmt.Fprintf(os.Stderr, "DEBUG body (%q) \n-->%s<--\n", req.Method, body)
 		} 
 
 		// Get content from the JSON Data API

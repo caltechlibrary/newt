@@ -121,6 +121,7 @@ EOT
 # Generate birds.yaml
 cat <<EOT >birds3/birds.yaml
 env: [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
+port: 8004
 htdocs: htdocs
 routes: 
   - req_path: /
@@ -137,7 +138,7 @@ routes:
     api_method: POST
     api_url: http://localhost:3000/sighting
     pandoc_template: post_result.tmpl
-    res_headers: '{"content-type": "text/html"}'
+    res_headers: { "content-type": "text/html" }
   - req_path: /bird_views
     req_method: GET
     api_content_type: application/json

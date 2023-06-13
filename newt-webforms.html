@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-as-data-router-web-forms">Newt as data router, web
+forms</h1>
+<p>Often middleware is written to handle URL request paths as <a
+href="newt-router.html">routes</a>. The other common attribute in a
+route handle function is validating inputs. This is particularly true
+with web form submission.</p>
+<p>Newt’s <a href="route-dsl.html">Route DSL</a> does this partially by
+validating the path. It doesn’t do that for URL query paramaters. Since
+Route DSL does establish a syntax for a simple markup of variable names
+and their types it could be leverage to also describe the contents of a
+GET or POST request. This would effectively allow us to validate form
+input by it’s type much like we do with the Route DSL. Since webform
+don’t support array or object input (without resorting to JavaScript) a
+simple web form could be seen as a map between input element’s attribute
+name and a type like those found in Route DSL.</p>
+<p>Here’s an example of a our birds web form validation</p>
+<pre><code>{
+    &quot;bird&quot; : &quot;String&quot;,
+    &quot;place&quot;: &quot;String&quot;,
+    &quot;sighted&quot;: &quot;Datestamp&quot;
+}</code></pre>
+<p>If we use YAML to express the JSON then we’d get soemthing like</p>
+<pre><code>bird: String
+place: String
+sighted: String</code></pre>
+<p>This would allow validating a simple webform like</p>
+<pre><code>&lt;form method=&quot;POST&quot; action=&quot;/&quot;&gt;
+&lt;div&gt;
+  &lt;label for=&quot;bird&quot;&gt;Bird&lt;/label&gt;
+  &lt;input id=&quot;bird&quot; name=&quot;bird&quot; type=&quot;text&quot; value=&quot;&quot;&gt;
+&lt;/div&gt;
+&lt;div&gt;
+  &lt;label for=&quot;place&quot;&gt;Place&lt;/label&gt;
+  &lt;input id=&quot;place&quot; name=&quot;place&quot; type=&quot;text&quot; value=&quot;&quot;&gt;
+&lt;/div&gt;
+&lt;div&gt;
+  &lt;label for=&quot;sighted&quot;&gt;Sighted on&lt;/label&gt;
+  &lt;input id=&quot;sighted&quot; name=&quot;sighted&quot; type=&quot;date&quot;&gt;
+&lt;/div&gt;
+&lt;button id=&quot;record-bird&quot; type=&quot;submit&quot;&gt;Add Bird Sighting&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+<h2 id="use-case-simple-web-forms-and-online-magazine-publisher">Use
+case: simple web forms and online magazine publisher</h2>
+<p>In this use case we’ll add support to our birds demo for a local
+birder magazine. The idea is to support writups or articles from the
+local birding group. Something between a blog, magazine or news
+letter.</p>
+<p>Our articles should have a title, a byline (one or more authors
+names/identifiers), article copy, title slug, created timestamp, updated
+timestamp, approval status, published datestamp, a volume number, issue
+number and article number. An article identifier could be assigned when
+the article is iniitaially submitted.</p>
+<p>The SQL for that would look like</p>
+<pre><code>CREATE TABLE zine (
+   article_id SERIAL,
+   title TEXT,
+   title_slug VARCHAR(256),
+   byline VARCHAR(256),
+   article_copy TEXT,
+   created TIMESTAMPZ NOT NULL DEFAULT NOW(),
+   updated TIMESTAMPZ NOT NULL DEFAULT NOW(),
+   approved BOOLEAN,
+   published DATE,
+   volume INTEGER,
+   issue INTEGER,
+   article_no INTEGER
+);</code></pre>
+<p>When adding an article we need a title, byline, article copy. When
+editing an article we access it through the article_id genrated on a SQL
+INSERT. To publish an article we need to set approved to true, set a
+publication date, volume number, issue and article number.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

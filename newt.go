@@ -38,7 +38,7 @@ type Config struct {
 	// Newt router.
 	Htdocs string `json:"htdocs,omitempty" yaml:"htdocs,omitempty"`
 	// Routes holds an array of maps of route definitions
-	Routes []*Route `json:"routes,omitempty" yaml:"routes,omitempty"`
+	Routes []map[string]interface{} `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
 // LoadConfig loads a configuration return a Config object and error value.
@@ -108,6 +108,9 @@ func LoadConfig(configFName string) (*Config, error) {
 	}
 	// Finally make sure we have cfg.Htdocs or cfg.Routes set.
 	if cfg.Routes == nil && cfg.Htdocs == "" {
+		if cfg.FName != "" {
+			return nil, fmt.Errorf("routes and htdocs are not set.")
+		} 
 		return nil, fmt.Errorf("NEWT_ROUTES and NEWT_HTDOCS are undefined.")
 	}
 	return cfg, nil
@@ -127,7 +130,10 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 
 	router := new(Router)
 	if cfg != nil {
-		router.Configure(cfg)
+		if err := router.Configure(cfg); err != nil {
+			fmt.Fprintf(eout, "error configuring router from %q, %s\n", cfg.FName, err)
+			return 1
+		}
 	}
 	if err != nil {
 		fmt.Fprintf(eout, "error reading routes from %q, %s\n", cfg.FName, err)

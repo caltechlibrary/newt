@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="name">NAME</h1>
+<p>newt</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p>newt [CONFIG_FILE]</p>
+<h1 id="description">DESCRIPTION</h1>
+<p><em>newt</em> is a microservice designed to work along side Postgres,
+PostgREST, and Pandoc server. It provides URL routing and data flow
+between the microservices based on a list of “routes” described in a
+YAML file. newt first sends requests to Postgres+PostgREST then
+processes the results via Pandoc running as a web service. While newt
+was created to work specifically with PostgREST it can actually talk to
+any JSON data source that can be specified in URL (e.g. Solr,
+Elasticsearch, Opensearch).</p>
+<p>Before contacting the JSON data source the request URL are validated
+including and extracting any variable contents embedded in the request.
+The variables can then be used in forming the URL to make the request to
+the JSON data source. If a web form is part of the request the defined
+variables and their types are used to vet and validate the request
+before submitting it to the JSON data source.</p>
+<p>When the data source replies the results can be fed through Pandoc
+server or returned directly to the browser depending on how the route is
+configured.</p>
+<p>Newt also can provide static content hosting so that related HTML,
+CSS, JavaScript and other page assets can be integrated into the
+response to the request.</p>
+<p>Newt’s configuration uses a declaritive model expressed in YAML. It
+can also allow environment variables read at start up to be part of the
+data for mapping JSON data source requests or used referenced by a
+Pandoc template.</p>
+<p>This goal of Newt Project is to be able to assemble an entire
+back-end from off the self services only specify data modeling and end
+point definitions using SQL and a Postgres database. Reducing the
+back-end to SQL may simplify application management (it reduces it to a
+database administrator activity) and free up developer time to focus
+more on front end development and human interaction. It is also hoped
+that focusing the back-end on a declarative model will allow for a more
+consistent and reliable back-end.</p>
+<h1 id="options">OPTIONS</h1>
+<dl>
+<dt>-help</dt>
+<dd>
+display help
+</dd>
+<dt>-license</dt>
+<dd>
+display license
+</dd>
+<dt>-version</dt>
+<dd>
+display version
+</dd>
+<dt>-dry-run</dt>
+<dd>
+Load YAML configuration and report any errors found
+</dd>
+</dl>
+<h1 id="configuration">CONFIGURATION</h1>
+<p>The three things newt needs to know to run are port number, where to
+find the “routes” YAML file and a list of any POSIX environment
+variables to import and make available inside the router.</p>
+<p>newt can be configured via a POSIX environment.</p>
+<pre><code>NEWT_PORT=&quot;8000&quot;
+NEWT_ROUTES=&quot;routes.yaml&quot;
+NEWT_ENV=&quot;DB_NAME;DB_USER;DB_PASSWORD&quot;
+export NEWT_PORT
+export NEWT_ROUTES
+export NEWT_ENV</code></pre>
+<p>The environment variables can also be configured in the Newt YAML
+file.</p>
+<pre><code>newt_port: &quot;8000&quot;
+newt_env: [ &quot;DB_NAME&quot;, &quot;DB_USER&quot;, &quot;DB_PASSWORD&quot; ]
+newt_htdocs: &quot;htdocs&quot;</code></pre>
+<p>The environment will load first then the configuration file if
+provided. The configuration file takes precedence over the
+environment.</p>
+<p>newt does not have secrets but could use secrets passed in via the
+environment. This allows your routes in the YAML file to be safely saved
+along side your SQL source code for your Newt Project (e.g. your YAML
+and SQL files can be checked safely into your source code repository
+without saving secrets)</p>
+<h1 id="routing-data">Routing data</h1>
+<p>For newt to function as a data router it needs information about
+which requests will be serviced and how to map them to a JSON data API
+source before (optionally) sending to Pandoc.</p>
+<p>The routes are held in YAML file under the “routes” attribute. The
+following attributes are supported for a route.</p>
+<dl>
+<dt>var</dt>
+<dd>
+One or more variable name and type pairs used in request path or form
+data. The types allow for data validation.
+</dd>
+<dt>req_path</dt>
+<dd>
+This is the URL path to watch for incoming requests, it may be a literal
+path or one containing variable declarations used in forming a API URL
+call.
+</dd>
+<dt>req_method</dt>
+<dd>
+This is the HTTP method to listen for. Maybe “GET”, “POST”, “PUT”,
+“PATCH” or “DELETE”
+</dd>
+<dt>api_url</dt>
+<dd>
+This is the URL used to connect to the JSON data source (e.g. PostgREST,
+Solr, Elasticsearch). It may contain variables defined in the request
+path.
+</dd>
+<dt>api_method</dt>
+<dd>
+This is the HTTP method used to access the JSON data source. Maybe
+“OPTIONS”, “GET”, “POST”, “PUT”, “PATCH” or “DELETE”
+</dd>
+<dt>api_content_type</dt>
+<dd>
+This is the HTTP content type string to send with your JSON data source
+request, typically it is “application/json”.
+</dd>
+<dt>pandoc_template</dt>
+<dd>
+If included Newt will load the Pandoc template file into memory and use
+it when results are returned from a JSON data source.
+</dd>
+<dt>res_headers</dt>
+<dd>
+This is any additional HTTP headers you want to send back to the client.
+</dd>
+</dl>
+<h1 id="defining-variables">Defining variables</h1>
+<p>Each route can have an associated variables available to form a JSON
+data API request. The defined variables also are used to validate
+webform input for the request. Only the defined variables will be passed
+on to the JSON data API and the Pandoc template if specified. Here’s an
+example “var” definitiondefining three form variables for a route, they
+are “bird”, “place” and “sighted” with the types “String”, “String” and
+“Date”.</p>
+<pre><code>var: { &quot;bird&quot;: &quot;String&quot;, &quot;place&quot;: &quot;String&quot;, &quot;sighted&quot;: &quot;Date&quot; }</code></pre>
+<p>If a web browser injected additional form values they would not get
+passed along via the JSON data API request, they would be ignored. This
+is part of the declaritive approach for defining Newt’s behavior.</p>
+<h1 id="variable-types">Variable types</h1>
+<h1 id="route-dsl">Route DSL</h1>
+<p>Variables that are defined for a route can be extracted from a
+request path where they represent a path element (e.g. directory,
+filename or extension). The extracted variables can then be used in
+forming the JSON data API request and also inside a Pandoc template as
+part of the “data” values passed to it. The variable is referenced by a
+dollar sign and open curly bracket, the variable name and a closing
+closing curly brackets. This is similar to how Pandoc template variables
+are represented.</p>
+<pre><code>/blog/${yr}/${mo}/${dy}/${title-slug}</code></pre>
+<p>The “var” attribute in the route would look like</p>
+<pre><code>var: { &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot;, &quot;title-slug&quot;: &quot;String&quot; }</code></pre>
+<p>In the above example the values “yr”, “mo”, “dy” and “title-slug”
+would be extracted from a request path. These might then be used to form
+an API request path along with environment variables imported by the
+YAML file.</p>
+<pre><code>https://localhost:3000/blog?date=${yr}-${mo}-{dy}&amp;title-slug=${title-slug}</code></pre>
+<p>The resulting data would be bound to the variable “data” and passed
+to Pandoc to be processed along with the appropriate template.</p>
+<p>There are times you might need to treat the “filename” part of a path
+as a file’s basename and extension. Two types data types handle that. So
+for a “var” defined like</p>
+<pre><code>var: { &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot;, &quot;title-slug&quot;: &quot;BaseName&quot;, &quot;ext&quot;: &quot;Extname&quot; }</code></pre>
+<p>The request URL pattern could like like</p>
+<pre><code>/blog/${yr}/${mo}/${dy}/${title-slug}${ext}</code></pre>
+<p>The related JSON data source URL might look something like</p>
+<pre><code>https://localhost:3000/blog?date=${yr}-${mo}-{dy}&amp;title-slug=${title-slug}&amp;format=${ext}</code></pre>
+<p>NOTE: that “Basename” and “Extname” only make sense in the context of
+a path. If those same values are used in a form they will be validated
+as a string only.</p>
+<p>In this prototype phase there are a very limited number of variables
+types supported. This is likely to grow and to change overtime if the
+prototype is successful.</p>
+<h2 id="variable-types-1">variable types</h2>
+<dl>
+<dt>String</dt>
+<dd>
+Any sequence of characters. If the variabe is embedded in a path then
+“/” will be used to delimited path parts and would not be passed into
+the variables value.
+</dd>
+<dt>Year</dt>
+<dd>
+A four digit year (e.g. 2023)
+</dd>
+<dt>Month</dt>
+<dd>
+A two digit month (e.g. “01” for January, “10” for October)
+</dd>
+<dt>Day</dt>
+<dd>
+A two digit day (e.g. “01” for the first, “11” for the eleventh)
+</dd>
+<dt>Basename</dt>
+<dd>
+A file’s basename (filename without an extension)
+</dd>
+<dt>Extname</dt>
+<dd>
+A file’s extension (e.g. “.html”, “.txt”, “.rss”, “.js”)
+</dd>
+<dt>Isbn10</dt>
+<dd>
+An ten digit ISBN
+</dd>
+<dt>Isbn13</dt>
+<dd>
+A thirteen digit ISBN
+</dd>
+<dt>Isbn</dt>
+<dd>
+An ISBN (either 10 ro 13 digit)
+</dd>
+<dt>Issn</dt>
+<dd>
+An ISSN
+</dd>
+<dt>DOI</dt>
+<dd>
+A DOI (digital object identifier)
+</dd>
+<dt>Isni</dt>
+<dd>
+An ISNI
+</dd>
+<dt>ORCID</dt>
+<dd>
+An ORCID identifier
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<p>Configuration from the environment</p>
+<pre><code>    export NEWT_PORT=&quot;3030&quot;
+    export NEWT_ROUTES=&quot;newt.yaml&quot;
+    export NEWT_ENV=&quot;DB_USER;DB_PASSWORD&quot;</code></pre>
+<p>Configuration from a YAML file called “newt.yaml”</p>
+<pre><code>newt newt.yaml</code></pre>
+<p>An example of a YAML file describing blog display routes.</p>
+<pre><code>htdocs: htdocs
+routes:
+    - var: [ &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot; }
+      req_path: &quot;/blog/${yr}/${mo}//${dy}&quot;
+      req_method: GET
+      api_url: &quot;http://localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy},posts.tmpl&quot;
+      api_method: GET
+      api_content_type: &quot;application/json&quot;
+      pandoc_template: article_list.tmpl
+      res_headers: { &quot;content-type&quot;: &quot;text/html&quot; }
+    - var: [ &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot; }
+      req_path: &quot;/blog/${yr}/${mo}//${dy}/${title-slug}&quot;
+      req_method: GET
+      api_url&quot;: &quot;http://localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy}&amp;title-slug=${title-slug}&quot;
+      pandoc_template: &quot;article.tmpl&quot;
+      res_headers: { &quot;content-type&quot;: &quot;text/html&quot; }</code></pre>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>
