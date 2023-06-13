@@ -129,26 +129,45 @@ class="email">rsdoiel@caltech.edu</a>
 <li>The stacks are complex and divergent</li>
 <li>Coping strategies
 <ol style="list-style-type: lower-alpha">
-<li>SAAS</li>
-<li>blackbox</li>
-<li>avoid customization</li>
+<li>Out source running the applications as a “SAAS”</li>
+<li>Treat app as blackbox and avoiding customization</li>
+<li>Customize and dedicate individuals to the specific app</li>
+<li>…</li>
 </ol></li>
 </ol>
+</div>
+<div id="the-problem-1" class="slide section level1">
+<h1>The problem</h1>
+<p>None of our coping strategies is good.</p>
 </div>
 <div id="why-are-these-things-so-complex" class="slide section level1">
 <h1>Why are these things so complex?</h1>
 <ul>
-<li>We want more from our application</li>
-<li>So more code gets written</li>
-<li>Overtime complexity accrues</li>
-<li>A “best practice”, <strong>systems should be designed to
-scale</strong></li>
+<li>We want more from our application, more code gets written</li>
+<li>Application needs enhancements, complexity accrues overtime</li>
+<li>Best practices like “systems should be designed to scale”</li>
 </ul>
 </div>
 <div id="lets-talk-about-scale" class="slide section level1">
 <h1>Let’s talk about scale</h1>
+<dl>
+<dt>scale</dt>
+<dd>
+a euphemism for <strong>scaling big</strong>
+</dd>
+</dl>
+</div>
+<div id="scaling-big" class="slide section level1">
+<h1>Scaling big</h1>
 <ul>
-<li>“scale”, a euphemism for <strong>scaling big</strong></li>
+<li>Scaling big is hard</li>
+<li>Scaling big makes things really complex</li>
+<li>Scaling big favors large teams</li>
+</ul>
+</div>
+<div id="scaling-big-a-reflection" class="slide section level1">
+<h1>Scaling big, a reflection</h1>
+<ul>
 <li>scaling big =&gt;
 <ul>
 <li>distributed application design</li>
@@ -156,14 +175,6 @@ scale</strong></li>
 <li>cache systems and dynamic clustering</li>
 <li>complex systems management</li>
 </ul></li>
-</ul>
-</div>
-<div id="scaling-big-a-reflection" class="slide section level1">
-<h1>Scaling big, a reflection</h1>
-<ul>
-<li>Scaling big is hard</li>
-<li>Scaling big makes things really complex</li>
-<li>Scaling big favors large teams</li>
 </ul>
 </div>
 <div id="an-alternative-scale-small" class="slide section level1">
@@ -223,7 +234,7 @@ data router, form data validator, static file services</li>
 <li>Model our data using SQL (Postgres)</li>
 <li>Run our JSON data API (Postgres+PostgREST)</li>
 <li>Transform our structured data using Pandoc templates</li>
-<li>Newt’s YAML file describes how orchestrate our microservices</li>
+<li>Newt’s YAML file orchestrates our microservice conversation</li>
 </ol>
 </div>
 <div id="how-does-newt-orchestrate-our-microservices"
@@ -265,7 +276,7 @@ class="slide section level1">
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
-<li>Our YAML file for orchestrating our microservices</li>
+<li>Our YAML orchestration file</li>
 </ul>
 </div>
 <div id="why-emphasize-sql" class="slide section level1">
@@ -498,11 +509,11 @@ data validation</li>
 <ul>
 <li>I am building staff facing applications, Summer 2023</li>
 <li>Testing Solr/Elasticsearch as a JSON data source</li>
-<li>Fix bugs, improve validation, simplifying code</li>
+<li>Fix bugs, expand types/validation, smoothing rough edges</li>
 </ul>
 </div>
-<div id="it-would-be-nice-if-." class="slide section level1">
-<h1>It would be nice if ….</h1>
+<div id="it-would-be-nice-if" class="slide section level1">
+<h1>It would be nice if …</h1>
 <ul>
 <li>Newt could delegate file uploads to an S3 like service</li>
 <li>Newt had a community
@@ -513,10 +524,30 @@ data validation</li>
 </ul></li>
 </ul>
 </div>
+<div id="someday-maybe-ideas" class="slide section level1">
+<h1>Someday, maybe ideas</h1>
+<ul>
+<li>Rewrite Newt in Haskell
+<ul>
+<li>Integrate Pandoc into Newt, skipping running Pandoc server</li>
+</ul></li>
+<li>Use YAML file to extrapolate SQL, templates and website</li>
+</ul>
+</div>
+<div id="an-unexpected-result-of-simplification"
+class="slide section level1">
+<h1>An unexpected result of simplification</h1>
+<ul>
+<li>Newt can be scaled wide (parallel)</li>
+<li>Pandoc server can be scaled wide</li>
+<li>PostgREST can be scale wide</li>
+<li>Postgres (the only part holding state) can be clustered</li>
+</ul>
+</div>
 <div id="thank-you" class="slide section level1">
 <h1>Thank you!</h1>
 <ul>
-<li>Presentation <a
+<li>This Presentation <a
 href="https://caltechlibrary.github.io/newt/presentation/"
 class="uri">https://caltechlibrary.github.io/newt/presentation/</a></li>
 <li>Project: <a href="https://github.com/caltechlibrary/newt"

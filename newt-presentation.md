@@ -56,32 +56,39 @@ These are all really complicated pieces of software.
 1. Each application was built on a stack
 2. The stacks are complex and divergent
 3. Coping strategies
-	a. SAAS
-	b. blackbox
-	c. avoid customization
+	a. Out source running the applications as a "SAAS"
+	b. Treat app as blackbox and avoiding customization
+    c. Customize and dedicate individuals to the specific app
+    d. ...
 
+# The problem
+
+None of our coping strategies is good.
 
 # Why are these things so complex?
 
-- We want more from our application
-- So more code gets written
-- Overtime complexity accrues
-- A "best practice", **systems should be designed to scale**
+- We want more from our application, more code gets written
+- Application needs enhancements, complexity accrues overtime
+- Best practices like "systems should be designed to scale"
 
 # Let's talk about scale
 
-- "scale", a euphemism for **scaling big**
+scale
+: a euphemism for **scaling big**
+
+# Scaling big
+
+- Scaling big is hard
+- Scaling big makes things really complex
+- Scaling big favors large teams
+
+# Scaling big, a reflection
+
 - scaling big => 
   - distributed application design
   - programmable infrastructure 
   - cache systems and dynamic clustering
   - complex systems management
-
-# Scaling big, a reflection
-
-- Scaling big is hard
-- Scaling big makes things really complex
-- Scaling big favors large teams
 
 # An alternative, **scale small**
 
@@ -120,7 +127,7 @@ These are all really complicated pieces of software.
 1. Model our data using SQL (Postgres)
 2. Run our JSON data API (Postgres+PostgREST)
 3. Transform our structured data using Pandoc templates
-4. Newt's YAML file describes how orchestrate our microservices
+4. Newt's YAML file orchestrates our microservice conversation
 
 # How does Newt orchestrate our microservices?
 
@@ -150,7 +157,7 @@ These are all really complicated pieces of software.
 
 - SQL
 - Pandoc templates
-- Our YAML file for orchestrating our microservices
+- Our YAML orchestration file
 
 # Why emphasize SQL?
 
@@ -296,9 +303,9 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 - I am building staff facing applications, Summer 2023
 - Testing Solr/Elasticsearch as a JSON data source
-- Fix bugs, improve validation, simplifying code
+- Fix bugs, expand types/validation, smoothing rough edges
 
-# It would be nice if ....
+# It would be nice if ...
 
 - Newt could delegate file uploads to an S3 like service
 - Newt had a community 
@@ -306,9 +313,22 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 	- sharing Pandoc templates
     - sharing YAML files
 
+# Someday, maybe ideas
+
+- Rewrite Newt in Haskell
+    - Integrate Pandoc into Newt, skipping running Pandoc server
+- Use YAML file to extrapolate SQL, templates and website 
+
+# An unexpected result of simplification
+
+- Newt can be scaled wide (parallel)
+- Pandoc server can be scaled wide
+- PostgREST can be scale wide
+- Postgres (the only part holding state) can be clustered
+
 # Thank you!
 
-- Presentation <https://caltechlibrary.github.io/newt/presentation/>
+- This Presentation <https://caltechlibrary.github.io/newt/presentation/>
 - Project: <https://github.com/caltechlibrary/newt>
 - Email: rsdoiel@caltech.edu
 

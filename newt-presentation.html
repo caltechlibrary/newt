@@ -98,23 +98,36 @@
 <li>The stacks are complex and divergent</li>
 <li>Coping strategies
 <ol type="a">
-<li>SAAS</li>
-<li>blackbox</li>
-<li>avoid customization</li>
+<li>Out source running the applications as a “SAAS”</li>
+<li>Treat app as blackbox and avoiding customization</li>
+<li>Customize and dedicate individuals to the specific app</li>
+<li>…</li>
 </ol></li>
 </ol>
+<h1 id="the-problem-1">The problem</h1>
+<p>None of our coping strategies is good.</p>
 <h1 id="why-are-these-things-so-complex">Why are these things so
 complex?</h1>
 <ul>
-<li>We want more from our application</li>
-<li>So more code gets written</li>
-<li>Overtime complexity accrues</li>
-<li>A “best practice”, <strong>systems should be designed to
-scale</strong></li>
+<li>We want more from our application, more code gets written</li>
+<li>Application needs enhancements, complexity accrues overtime</li>
+<li>Best practices like “systems should be designed to scale”</li>
 </ul>
 <h1 id="lets-talk-about-scale">Let’s talk about scale</h1>
+<dl>
+<dt>scale</dt>
+<dd>
+a euphemism for <strong>scaling big</strong>
+</dd>
+</dl>
+<h1 id="scaling-big">Scaling big</h1>
 <ul>
-<li>“scale”, a euphemism for <strong>scaling big</strong></li>
+<li>Scaling big is hard</li>
+<li>Scaling big makes things really complex</li>
+<li>Scaling big favors large teams</li>
+</ul>
+<h1 id="scaling-big-a-reflection">Scaling big, a reflection</h1>
+<ul>
 <li>scaling big =&gt;
 <ul>
 <li>distributed application design</li>
@@ -122,12 +135,6 @@ scale</strong></li>
 <li>cache systems and dynamic clustering</li>
 <li>complex systems management</li>
 </ul></li>
-</ul>
-<h1 id="scaling-big-a-reflection">Scaling big, a reflection</h1>
-<ul>
-<li>Scaling big is hard</li>
-<li>Scaling big makes things really complex</li>
-<li>Scaling big favors large teams</li>
 </ul>
 <h1 id="an-alternative-scale-small">An alternative, <strong>scale
 small</strong></h1>
@@ -177,7 +184,7 @@ data router, form data validator, static file services</li>
 <li>Model our data using SQL (Postgres)</li>
 <li>Run our JSON data API (Postgres+PostgREST)</li>
 <li>Transform our structured data using Pandoc templates</li>
-<li>Newt’s YAML file describes how orchestrate our microservices</li>
+<li>Newt’s YAML file orchestrates our microservice conversation</li>
 </ol>
 <h1 id="how-does-newt-orchestrate-our-microservices">How does Newt
 orchestrate our microservices?</h1>
@@ -211,7 +218,7 @@ orchestrate our microservices?</h1>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
-<li>Our YAML file for orchestrating our microservices</li>
+<li>Our YAML orchestration file</li>
 </ul>
 <h1 id="why-emphasize-sql">Why emphasize SQL?</h1>
 <ul>
@@ -415,9 +422,9 @@ Maturity</h1>
 <ul>
 <li>I am building staff facing applications, Summer 2023</li>
 <li>Testing Solr/Elasticsearch as a JSON data source</li>
-<li>Fix bugs, improve validation, simplifying code</li>
+<li>Fix bugs, expand types/validation, smoothing rough edges</li>
 </ul>
-<h1 id="it-would-be-nice-if-.">It would be nice if ….</h1>
+<h1 id="it-would-be-nice-if">It would be nice if …</h1>
 <ul>
 <li>Newt could delegate file uploads to an S3 like service</li>
 <li>Newt had a community
@@ -427,9 +434,25 @@ Maturity</h1>
 <li>sharing YAML files</li>
 </ul></li>
 </ul>
+<h1 id="someday-maybe-ideas">Someday, maybe ideas</h1>
+<ul>
+<li>Rewrite Newt in Haskell
+<ul>
+<li>Integrate Pandoc into Newt, skipping running Pandoc server</li>
+</ul></li>
+<li>Use YAML file to extrapolate SQL, templates and website</li>
+</ul>
+<h1 id="an-unexpected-result-of-simplification">An unexpected result of
+simplification</h1>
+<ul>
+<li>Newt can be scaled wide (parallel)</li>
+<li>Pandoc server can be scaled wide</li>
+<li>PostgREST can be scale wide</li>
+<li>Postgres (the only part holding state) can be clustered</li>
+</ul>
 <h1 id="thank-you">Thank you!</h1>
 <ul>
-<li>Presentation <a
+<li>This Presentation <a
 href="https://caltechlibrary.github.io/newt/presentation/"
 class="uri">https://caltechlibrary.github.io/newt/presentation/</a></li>
 <li>Project: <a href="https://github.com/caltechlibrary/newt"
