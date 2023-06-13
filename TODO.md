@@ -44,6 +44,7 @@
 
 ## Someday, maybe
 
+- [ ] The YAML file should allow including other YAML files to make it easy to integrate one Newt for a variety of projects
 - [ ] Have Newt read a YAML file expression a declarative presentation of routes and form validation
 	- this could function like the backend of forms processing service
 - [ ] Form validation could be  used to generate default HTML markup for the form, might standardize that code a bit in the process (e.g. allow a vanilla JavaScript integration for complex form fields)
