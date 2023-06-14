@@ -26,38 +26,40 @@
 <h1 id="synopsis">SYNOPSIS</h1>
 <p>newt [CONFIG_FILE]</p>
 <h1 id="description">DESCRIPTION</h1>
-<p><em>newt</em> is a microservice designed to work along side Postgres,
-PostgREST, and Pandoc server. It provides URL routing and data flow
-between the microservices based on a list of “routes” described in a
-YAML file. newt first sends requests to Postgres+PostgREST then
-processes the results via Pandoc running as a web service. While newt
-was created to work specifically with PostgREST it can actually talk to
-any JSON data source that can be specified in URL (e.g. Solr,
-Elasticsearch, Opensearch).</p>
-<p>Before contacting the JSON data source the request URL are validated
-including and extracting any variable contents embedded in the request.
-The variables can then be used in forming the URL to make the request to
-the JSON data source. If a web form is part of the request the defined
-variables and their types are used to vet and validate the request
-before submitting it to the JSON data source.</p>
+<p><strong>newt</strong> is a microservice designed to work along side
+Postgres, PostgREST, and Pandoc server. It provides URL routing and data
+flow between the microservices based on a list of “routes” described in
+a YAML file. <strong>newt</strong> first sends requests to a JSON data
+source then processes the results via Pandoc running as a web service.
+While <strong>newt</strong> was created to work specifically with
+PostgREST it can actually talk to any JSON data source that can be
+specified by a URL and HTTP method (e.g. Solr, Elasticsearch,
+Opensearch).</p>
+<p>Before contacting the JSON data source the request path and any form
+data is validated based on the request path and any variables defined
+for the route. If validation is successful values are extracted from the
+request path along with form data. These are then used to make a request
+to a JSON data source (e.g. PostgREST) described in our route
+definition.</p>
 <p>When the data source replies the results can be fed through Pandoc
-server or returned directly to the browser depending on how the route is
-configured.</p>
-<p>Newt also can provide static content hosting so that related HTML,
-CSS, JavaScript and other page assets can be integrated into the
-response to the request.</p>
-<p>Newt’s configuration uses a declaritive model expressed in YAML. It
-can also allow environment variables read at start up to be part of the
-data for mapping JSON data source requests or used referenced by a
-Pandoc template.</p>
-<p>This goal of Newt Project is to be able to assemble an entire
-back-end from off the self services only specify data modeling and end
-point definitions using SQL and a Postgres database. Reducing the
-back-end to SQL may simplify application management (it reduces it to a
-database administrator activity) and free up developer time to focus
-more on front end development and human interaction. It is also hoped
-that focusing the back-end on a declarative model will allow for a more
-consistent and reliable back-end.</p>
+running as a web service based on a template filename associated with
+the route. If no template file is specified then the results of the JSON
+data source is passed directly back to the web browser (or requesting
+service).</p>
+<p>Additionally <strong>newt</strong> can function as a static content
+web service. This is handy when developing a <strong>newt</strong> based
+project. A typical setup might include running Postgres, PostgREST and
+Pandoc server along with <strong>newt</strong> as you develop your
+project. Since <strong>newt</strong> always works as a “localhost”
+service you will need to proxy to it when deploying to a production
+setting (e.g. via Apache2 or NginX).</p>
+<p><strong>newt</strong>’s configuration uses a declaritive model
+expressed in YAML. It can also allow environment variables read at start
+up to be part of the data for mapping JSON data source requests. This is
+particularly helpful for supplying access credentials. You do not
+express secrets in the <strong>newt</strong> YAML configuration file.
+This follows the best practice used when working with container services
+and Lambda like systems.</p>
 <h1 id="options">OPTIONS</h1>
 <dl>
 <dt>-help</dt>
@@ -78,33 +80,53 @@ Load YAML configuration and report any errors found
 </dd>
 </dl>
 <h1 id="configuration">CONFIGURATION</h1>
-<p>The three things newt needs to know to run are port number, where to
-find the “routes” YAML file and a list of any POSIX environment
-variables to import and make available inside the router.</p>
-<p>newt can be configured via a POSIX environment.</p>
-<pre><code>NEWT_PORT=&quot;8000&quot;
-NEWT_ROUTES=&quot;routes.yaml&quot;
-NEWT_ENV=&quot;DB_NAME;DB_USER;DB_PASSWORD&quot;
-export NEWT_PORT
-export NEWT_ROUTES
-export NEWT_ENV</code></pre>
-<p>The environment variables can also be configured in the Newt YAML
-file.</p>
-<pre><code>newt_port: &quot;8000&quot;
-newt_env: [ &quot;DB_NAME&quot;, &quot;DB_USER&quot;, &quot;DB_PASSWORD&quot; ]
-newt_htdocs: &quot;htdocs&quot;</code></pre>
-<p>The environment will load first then the configuration file if
-provided. The configuration file takes precedence over the
-environment.</p>
-<p>newt does not have secrets but could use secrets passed in via the
-environment. This allows your routes in the YAML file to be safely saved
-along side your SQL source code for your Newt Project (e.g. your YAML
-and SQL files can be checked safely into your source code repository
-without saving secrets)</p>
+<p><strong>newt</strong> looks for four environment variables at
+startup.</p>
+<dl>
+<dt>NEWT_PORT</dt>
+<dd>
+(optional) The port Newt will listen for requests
+</dd>
+<dt>NEWT_CONFIG</dt>
+<dd>
+(optional) The name of a YAML file holding newt configuration
+</dd>
+<dt>NEWT_ENV</dt>
+<dd>
+(optional) The names of environment variables <strong>newt</strong> can
+make available when setting up route handling.
+</dd>
+<dt>NEWT_HTDOCS</dt>
+<dd>
+(optional) The directory holding static content that Newt will serve
+alonside any defined data routes specified in the configuration.
+</dd>
+</dl>
+<p>Example environment expressed in sh.</p>
+<pre><code>export NEWT_PORT=&quot;8001&quot;
+export NEWT_ROUTES=&quot;routes.yaml&quot;
+export NEWT_ENV=&quot;DB_NAME;DB_USER;DB_PASSWORD&quot;
+export NEWT_HTDOCS=&quot;/var/local/html/htdocs&quot;</code></pre>
+<p>These can also be expressed directly in the YAML configuration file
+using the following attribute names – “port”, “routes”, “env”, and
+“htdocs”.</p>
+<pre><code>port: 8001
+routes: routes.yaml
+env: [ &quot;DB_NAME&quot;, &quot;DB_USER&quot;, &quot;DB_PASSWORD&quot; ]
+htdocs: /var/local/html/htdocs</code></pre>
+<p>The environment will load first then the configuration file. The
+configuration file takes precedence over the environment.</p>
+<p><strong>newt</strong> does not contain secrets. These should be
+passed in via the environment. This follows the practices that have
+become commonplace when using containers and Lamdda like services.</p>
+<p>Avoiding secrets allows your routes in the YAML file to be safely
+included in your project source repository along side any Pandoc
+templates and SQL source included in your project’s source code
+repository.</p>
 <h1 id="routing-data">Routing data</h1>
-<p>For newt to function as a data router it needs information about
-which requests will be serviced and how to map them to a JSON data API
-source before (optionally) sending to Pandoc.</p>
+<p>For <strong>newt</strong> to function as a data router it needs
+information about which requests will be serviced and how to map them to
+a JSON source before (optionally) sending to Pandoc.</p>
 <p>The routes are held in YAML file under the “routes” attribute. The
 following attributes are supported for a route.</p>
 <dl>
@@ -116,19 +138,19 @@ data. The types allow for data validation.
 <dt>req_path</dt>
 <dd>
 This is the URL path to watch for incoming requests, it may be a literal
-path or one containing variable declarations used in forming a API URL
-call.
+path or one containing variable declarations used in forming a HTTP call
+to a JSON source.
 </dd>
 <dt>req_method</dt>
 <dd>
-This is the HTTP method to listen for. Maybe “GET”, “POST”, “PUT”,
-“PATCH” or “DELETE”
+This is the HTTP method to listen for – “GET”, “POST”, “PUT”, “PATCH” or
+“DELETE”.
 </dd>
 <dt>api_url</dt>
 <dd>
 This is the URL used to connect to the JSON data source (e.g. PostgREST,
-Solr, Elasticsearch). It may contain variables defined in the request
-path.
+Solr, Elasticsearch). It may contain defined variables embedded in the
+request path or form form data.
 </dd>
 <dt>api_method</dt>
 <dd>
@@ -151,52 +173,31 @@ This is any additional HTTP headers you want to send back to the client.
 </dd>
 </dl>
 <h1 id="defining-variables">Defining variables</h1>
-<p>Each route can have an associated variables available to form a JSON
-data API request. The defined variables also are used to validate
-webform input for the request. Only the defined variables will be passed
-on to the JSON data API and the Pandoc template if specified. Here’s an
-example “var” definitiondefining three form variables for a route, they
-are “bird”, “place” and “sighted” with the types “String”, “String” and
-“Date”.</p>
+<p>Each route can have its own associated set of variables. Variables
+are “typed”. The code for type definitions includes validation. When a
+variable is detected in a request path or form data it is vetted using
+it’s associated type. Only if the variables past validation are they
+allowed to be used to assemble a request to a JSON data source.</p>
+<p>Variables are defined in the YAML “var” attribute. Here’s an example
+“var” definition defining three form variables for a route. The variable
+names are “bird”, “place” and “sighted” with the types “String”,
+“String” and “Date”.</p>
 <pre><code>var: { &quot;bird&quot;: &quot;String&quot;, &quot;place&quot;: &quot;String&quot;, &quot;sighted&quot;: &quot;Date&quot; }</code></pre>
 <p>If a web browser injected additional form values they would not get
 passed along via the JSON data API request, they would be ignored. This
 is part of the declaritive approach for defining Newt’s behavior.</p>
+<p>The variables “bird”, “place” and “sighted” can be used when
+specifying a request route. Variables that are defined in a route are
+delimited by an opening ‘${’ and closing ‘}’. In the following example
+the URL could represent browsing birds by place and date sighted.</p>
+<pre><code>/birds/${place}/${sighted}
+/birds/${place}/${sighted}/${bird}</code></pre>
+<p>This might be used to make a request to a JSON data source
+(e.g. PostgREST) like this.</p>
+<pre><code>https://localhost:3000/sightings?bird=${bird}&amp;place=${place}&amp;sighted=${sighted}</code></pre>
+<p>The result of the JSON source request could then be processed with a
+Pandoc template to render an HTML page.</p>
 <h1 id="variable-types">Variable types</h1>
-<h1 id="route-dsl">Route DSL</h1>
-<p>Variables that are defined for a route can be extracted from a
-request path where they represent a path element (e.g. directory,
-filename or extension). The extracted variables can then be used in
-forming the JSON data API request and also inside a Pandoc template as
-part of the “data” values passed to it. The variable is referenced by a
-dollar sign and open curly bracket, the variable name and a closing
-closing curly brackets. This is similar to how Pandoc template variables
-are represented.</p>
-<pre><code>/blog/${yr}/${mo}/${dy}/${title-slug}</code></pre>
-<p>The “var” attribute in the route would look like</p>
-<pre><code>var: { &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot;, &quot;title-slug&quot;: &quot;String&quot; }</code></pre>
-<p>In the above example the values “yr”, “mo”, “dy” and “title-slug”
-would be extracted from a request path. These might then be used to form
-an API request path along with environment variables imported by the
-YAML file.</p>
-<pre><code>https://localhost:3000/blog?date=${yr}-${mo}-{dy}&amp;title-slug=${title-slug}</code></pre>
-<p>The resulting data would be bound to the variable “data” and passed
-to Pandoc to be processed along with the appropriate template.</p>
-<p>There are times you might need to treat the “filename” part of a path
-as a file’s basename and extension. Two types data types handle that. So
-for a “var” defined like</p>
-<pre><code>var: { &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot;, &quot;title-slug&quot;: &quot;BaseName&quot;, &quot;ext&quot;: &quot;Extname&quot; }</code></pre>
-<p>The request URL pattern could like like</p>
-<pre><code>/blog/${yr}/${mo}/${dy}/${title-slug}${ext}</code></pre>
-<p>The related JSON data source URL might look something like</p>
-<pre><code>https://localhost:3000/blog?date=${yr}-${mo}-{dy}&amp;title-slug=${title-slug}&amp;format=${ext}</code></pre>
-<p>NOTE: that “Basename” and “Extname” only make sense in the context of
-a path. If those same values are used in a form they will be validated
-as a string only.</p>
-<p>In this prototype phase there are a very limited number of variables
-types supported. This is likely to grow and to change overtime if the
-prototype is successful.</p>
-<h2 id="variable-types-1">variable types</h2>
 <dl>
 <dt>String</dt>
 <dd>
@@ -253,30 +254,43 @@ An ISNI
 An ORCID identifier
 </dd>
 </dl>
+<p>NOTE: The current names associated with types will likely change as
+the prototype <strong>newt</strong> evolves. It is planned for them to
+be stable if and when we get to a v1 release (e.g. when we’re out of the
+prototype phase).</p>
+<h1 id="pandoc-pandoc-templates">Pandoc, Pandoc templates</h1>
+<p>Values received from the JSON data source are passed to the Pandoc
+template bound to the variable name “data”. This is done by taking the
+JSON recieved and forming a front matter document that is then used
+alongside Pandoc template in the POST request made to Pandoc running in
+server mode. See <a href="https://pandoc.org/pandoc-server.html"
+class="uri">https://pandoc.org/pandoc-server.html</a> and <a
+href="https://pandoc.org/MANUAL.html#templates"
+class="uri">https://pandoc.org/MANUAL.html#templates</a> for
+details.</p>
 <h1 id="examples">EXAMPLES</h1>
-<p>Configuration from the environment</p>
-<pre><code>    export NEWT_PORT=&quot;3030&quot;
-    export NEWT_ROUTES=&quot;newt.yaml&quot;
-    export NEWT_ENV=&quot;DB_USER;DB_PASSWORD&quot;</code></pre>
-<p>Configuration from a YAML file called “newt.yaml”</p>
-<pre><code>newt newt.yaml</code></pre>
-<p>An example of a YAML file describing blog display routes.</p>
-<pre><code>htdocs: htdocs
+<p>Running <strong>newt</strong> with a YAML configuration file called
+“blog.yaml”</p>
+<pre><code>newt blog.yaml</code></pre>
+<p>An example of a YAML file describing blog like application based on
+Postgres+PostgREST.</p>
+<pre><code>env: [ &quot;DB_USER&quot;, &quot;DB_PASSWORD&quot; ]
+htdocs: htdocs
 routes:
-    - var: [ &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot; }
-      req_path: &quot;/blog/${yr}/${mo}//${dy}&quot;
-      req_method: GET
-      api_url: &quot;http://localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy},posts.tmpl&quot;
-      api_method: GET
-      api_content_type: &quot;application/json&quot;
-      pandoc_template: article_list.tmpl
-      res_headers: { &quot;content-type&quot;: &quot;text/html&quot; }
-    - var: [ &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot; }
-      req_path: &quot;/blog/${yr}/${mo}//${dy}/${title-slug}&quot;
-      req_method: GET
-      api_url&quot;: &quot;http://localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy}&amp;title-slug=${title-slug}&quot;
-      pandoc_template: &quot;article.tmpl&quot;
-      res_headers: { &quot;content-type&quot;: &quot;text/html&quot; }</code></pre>
+  - var: [ &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot; }
+    req_path: &quot;/blog/${yr}/${mo}/${dy}&quot;
+    req_method: GET
+    api_url: &quot;http://${DB_USER}:${DB_PASSWORD}@localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy}&quot;
+    api_method: GET
+    api_content_type: &quot;application/json&quot;
+    pandoc_template: article_list.tmpl
+    res_headers: { &quot;content-type&quot;: &quot;text/html&quot; }
+  - var: [ &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot; }
+    req_path: &quot;/blog/${yr}/${mo}/${dy}/${title-slug}&quot;
+    req_method: GET
+    api_url&quot;: &quot;http://${DB_USER}:${DB_PASSWORD}@localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy}&amp;title-slug=${title-slug}&quot;
+    pandoc_template: article.tmpl
+    res_headers: { &quot;content-type&quot;: &quot;text/html&quot; }</code></pre>
 </section>
 
 <footer>

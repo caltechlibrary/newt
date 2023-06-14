@@ -24,45 +24,49 @@ newt
 newt [CONFIG_FILE]
 .SH DESCRIPTION
 .PP
-\f[I]newt\f[R] is a microservice designed to work along side Postgres,
+\f[B]newt\f[R] is a microservice designed to work along side Postgres,
 PostgREST, and Pandoc server.
 It provides URL routing and data flow between the microservices based on
 a list of \[lq]routes\[rq] described in a YAML file.
-newt first sends requests to Postgres+PostgREST then processes the
-results via Pandoc running as a web service.
-While newt was created to work specifically with PostgREST it can
-actually talk to any JSON data source that can be specified in URL
-(e.g.\ Solr, Elasticsearch, Opensearch).
+\f[B]newt\f[R] first sends requests to a JSON data source then processes
+the results via Pandoc running as a web service.
+While \f[B]newt\f[R] was created to work specifically with PostgREST it
+can actually talk to any JSON data source that can be specified by a URL
+and HTTP method (e.g.\ Solr, Elasticsearch, Opensearch).
 .PP
-Before contacting the JSON data source the request URL are validated
-including and extracting any variable contents embedded in the request.
-The variables can then be used in forming the URL to make the request to
-the JSON data source.
-If a web form is part of the request the defined variables and their
-types are used to vet and validate the request before submitting it to
-the JSON data source.
+Before contacting the JSON data source the request path and any form
+data is validated based on the request path and any variables defined
+for the route.
+If validation is successful values are extracted from the request path
+along with form data.
+These are then used to make a request to a JSON data source
+(e.g.\ PostgREST) described in our route definition.
 .PP
 When the data source replies the results can be fed through Pandoc
-server or returned directly to the browser depending on how the route is
-configured.
+running as a web service based on a template filename associated with
+the route.
+If no template file is specified then the results of the JSON data
+source is passed directly back to the web browser (or requesting
+service).
 .PP
-Newt also can provide static content hosting so that related HTML, CSS,
-JavaScript and other page assets can be integrated into the response to
-the request.
+Additionally \f[B]newt\f[R] can function as a static content web
+service.
+This is handy when developing a \f[B]newt\f[R] based project.
+A typical setup might include running Postgres, PostgREST and Pandoc
+server along with \f[B]newt\f[R] as you develop your project.
+Since \f[B]newt\f[R] always works as a \[lq]localhost\[rq] service you
+will need to proxy to it when deploying to a production setting
+(e.g.\ via Apache2 or NginX).
 .PP
-Newt\[cq]s configuration uses a declaritive model expressed in YAML.
+\f[B]newt\f[R]\[cq]s configuration uses a declaritive model expressed in
+YAML.
 It can also allow environment variables read at start up to be part of
-the data for mapping JSON data source requests or used referenced by a
-Pandoc template.
-.PP
-This goal of Newt Project is to be able to assemble an entire back-end
-from off the self services only specify data modeling and end point
-definitions using SQL and a Postgres database.
-Reducing the back-end to SQL may simplify application management (it
-reduces it to a database administrator activity) and free up developer
-time to focus more on front end development and human interaction.
-It is also hoped that focusing the back-end on a declarative model will
-allow for a more consistent and reliable back-end.
+the data for mapping JSON data source requests.
+This is particularly helpful for supplying access credentials.
+You do not express secrets in the \f[B]newt\f[R] YAML configuration
+file.
+This follows the best practice used when working with container services
+and Lambda like systems.
 .SH OPTIONS
 .TP
 -help
@@ -78,47 +82,63 @@ display version
 Load YAML configuration and report any errors found
 .SH CONFIGURATION
 .PP
-The three things newt needs to know to run are port number, where to
-find the \[lq]routes\[rq] YAML file and a list of any POSIX environment
-variables to import and make available inside the router.
+\f[B]newt\f[R] looks for four environment variables at startup.
+.TP
+NEWT_PORT
+(optional) The port Newt will listen for requests
+.TP
+NEWT_CONFIG
+(optional) The name of a YAML file holding newt configuration
+.TP
+NEWT_ENV
+(optional) The names of environment variables \f[B]newt\f[R] can make
+available when setting up route handling.
+.TP
+NEWT_HTDOCS
+(optional) The directory holding static content that Newt will serve
+alonside any defined data routes specified in the configuration.
 .PP
-newt can be configured via a POSIX environment.
+Example environment expressed in sh.
 .IP
 .nf
 \f[C]
-NEWT_PORT=\[dq]8000\[dq]
-NEWT_ROUTES=\[dq]routes.yaml\[dq]
-NEWT_ENV=\[dq]DB_NAME;DB_USER;DB_PASSWORD\[dq]
-export NEWT_PORT
-export NEWT_ROUTES
-export NEWT_ENV
+export NEWT_PORT=\[dq]8001\[dq]
+export NEWT_ROUTES=\[dq]routes.yaml\[dq]
+export NEWT_ENV=\[dq]DB_NAME;DB_USER;DB_PASSWORD\[dq]
+export NEWT_HTDOCS=\[dq]/var/local/html/htdocs\[dq]
 \f[R]
 .fi
 .PP
-The environment variables can also be configured in the Newt YAML file.
+These can also be expressed directly in the YAML configuration file
+using the following attribute names \[en] \[lq]port\[rq],
+\[lq]routes\[rq], \[lq]env\[rq], and \[lq]htdocs\[rq].
 .IP
 .nf
 \f[C]
-newt_port: \[dq]8000\[dq]
-newt_env: [ \[dq]DB_NAME\[dq], \[dq]DB_USER\[dq], \[dq]DB_PASSWORD\[dq] ]
-newt_htdocs: \[dq]htdocs\[dq]
+port: 8001
+routes: routes.yaml
+env: [ \[dq]DB_NAME\[dq], \[dq]DB_USER\[dq], \[dq]DB_PASSWORD\[dq] ]
+htdocs: /var/local/html/htdocs
 \f[R]
 .fi
 .PP
-The environment will load first then the configuration file if provided.
+The environment will load first then the configuration file.
 The configuration file takes precedence over the environment.
 .PP
-newt does not have secrets but could use secrets passed in via the
-environment.
-This allows your routes in the YAML file to be safely saved along side
-your SQL source code for your Newt Project (e.g.\ your YAML and SQL
-files can be checked safely into your source code repository without
-saving secrets)
+\f[B]newt\f[R] does not contain secrets.
+These should be passed in via the environment.
+This follows the practices that have become commonplace when using
+containers and Lamdda like services.
+.PP
+Avoiding secrets allows your routes in the YAML file to be safely
+included in your project source repository along side any Pandoc
+templates and SQL source included in your project\[cq]s source code
+repository.
 .SH Routing data
 .PP
-For newt to function as a data router it needs information about which
-requests will be serviced and how to map them to a JSON data API source
-before (optionally) sending to Pandoc.
+For \f[B]newt\f[R] to function as a data router it needs information
+about which requests will be serviced and how to map them to a JSON
+source before (optionally) sending to Pandoc.
 .PP
 The routes are held in YAML file under the \[lq]routes\[rq] attribute.
 The following attributes are supported for a route.
@@ -130,18 +150,18 @@ The types allow for data validation.
 .TP
 req_path
 This is the URL path to watch for incoming requests, it may be a literal
-path or one containing variable declarations used in forming a API URL
-call.
+path or one containing variable declarations used in forming a HTTP call
+to a JSON source.
 .TP
 req_method
-This is the HTTP method to listen for.
-Maybe \[lq]GET\[rq], \[lq]POST\[rq], \[lq]PUT\[rq], \[lq]PATCH\[rq] or
-\[lq]DELETE\[rq]
+This is the HTTP method to listen for \[en] \[lq]GET\[rq],
+\[lq]POST\[rq], \[lq]PUT\[rq], \[lq]PATCH\[rq] or \[lq]DELETE\[rq].
 .TP
 api_url
 This is the URL used to connect to the JSON data source
 (e.g.\ PostgREST, Solr, Elasticsearch).
-It may contain variables defined in the request path.
+It may contain defined variables embedded in the request path or form
+form data.
 .TP
 api_method
 This is the HTTP method used to access the JSON data source.
@@ -160,14 +180,18 @@ res_headers
 This is any additional HTTP headers you want to send back to the client.
 .SH Defining variables
 .PP
-Each route can have an associated variables available to form a JSON
-data API request.
-The defined variables also are used to validate webform input for the
-request.
-Only the defined variables will be passed on to the JSON data API and
-the Pandoc template if specified.
-Here\[cq]s an example \[lq]var\[rq] definitiondefining three form
-variables for a route, they are \[lq]bird\[rq], \[lq]place\[rq] and
+Each route can have its own associated set of variables.
+Variables are \[lq]typed\[rq].
+The code for type definitions includes validation.
+When a variable is detected in a request path or form data it is vetted
+using it\[cq]s associated type.
+Only if the variables past validation are they allowed to be used to
+assemble a request to a JSON data source.
+.PP
+Variables are defined in the YAML \[lq]var\[rq] attribute.
+Here\[cq]s an example \[lq]var\[rq] definition defining three form
+variables for a route.
+The variable names are \[lq]bird\[rq], \[lq]place\[rq] and
 \[lq]sighted\[rq] with the types \[lq]String\[rq], \[lq]String\[rq] and
 \[lq]Date\[rq].
 .IP
@@ -181,84 +205,33 @@ If a web browser injected additional form values they would not get
 passed along via the JSON data API request, they would be ignored.
 This is part of the declaritive approach for defining Newt\[cq]s
 behavior.
+.PP
+The variables \[lq]bird\[rq], \[lq]place\[rq] and \[lq]sighted\[rq] can
+be used when specifying a request route.
+Variables that are defined in a route are delimited by an opening `${'
+and closing `}'.
+In the following example the URL could represent browsing birds by place
+and date sighted.
+.IP
+.nf
+\f[C]
+/birds/${place}/${sighted}
+/birds/${place}/${sighted}/${bird}
+\f[R]
+.fi
+.PP
+This might be used to make a request to a JSON data source
+(e.g.\ PostgREST) like this.
+.IP
+.nf
+\f[C]
+https://localhost:3000/sightings?bird=${bird}&place=${place}&sighted=${sighted}
+\f[R]
+.fi
+.PP
+The result of the JSON source request could then be processed with a
+Pandoc template to render an HTML page.
 .SH Variable types
-.SH Route DSL
-.PP
-Variables that are defined for a route can be extracted from a request
-path where they represent a path element (e.g.\ directory, filename or
-extension).
-The extracted variables can then be used in forming the JSON data API
-request and also inside a Pandoc template as part of the \[lq]data\[rq]
-values passed to it.
-The variable is referenced by a dollar sign and open curly bracket, the
-variable name and a closing closing curly brackets.
-This is similar to how Pandoc template variables are represented.
-.IP
-.nf
-\f[C]
-/blog/${yr}/${mo}/${dy}/${title-slug}
-\f[R]
-.fi
-.PP
-The \[lq]var\[rq] attribute in the route would look like
-.IP
-.nf
-\f[C]
-var: { \[dq]yr\[dq]: \[dq]Year\[dq], \[dq]mo\[dq]: \[dq]Month\[dq], \[dq]dy\[dq]: \[dq]Day\[dq], \[dq]title-slug\[dq]: \[dq]String\[dq] }
-\f[R]
-.fi
-.PP
-In the above example the values \[lq]yr\[rq], \[lq]mo\[rq], \[lq]dy\[rq]
-and \[lq]title-slug\[rq] would be extracted from a request path.
-These might then be used to form an API request path along with
-environment variables imported by the YAML file.
-.IP
-.nf
-\f[C]
-https://localhost:3000/blog?date=${yr}-${mo}-{dy}&title-slug=${title-slug}
-\f[R]
-.fi
-.PP
-The resulting data would be bound to the variable \[lq]data\[rq] and
-passed to Pandoc to be processed along with the appropriate template.
-.PP
-There are times you might need to treat the \[lq]filename\[rq] part of a
-path as a file\[cq]s basename and extension.
-Two types data types handle that.
-So for a \[lq]var\[rq] defined like
-.IP
-.nf
-\f[C]
-var: { \[dq]yr\[dq]: \[dq]Year\[dq], \[dq]mo\[dq]: \[dq]Month\[dq], \[dq]dy\[dq]: \[dq]Day\[dq], \[dq]title-slug\[dq]: \[dq]BaseName\[dq], \[dq]ext\[dq]: \[dq]Extname\[dq] }
-\f[R]
-.fi
-.PP
-The request URL pattern could like like
-.IP
-.nf
-\f[C]
-/blog/${yr}/${mo}/${dy}/${title-slug}${ext}
-\f[R]
-.fi
-.PP
-The related JSON data source URL might look something like
-.IP
-.nf
-\f[C]
-https://localhost:3000/blog?date=${yr}-${mo}-{dy}&title-slug=${title-slug}&format=${ext}
-\f[R]
-.fi
-.PP
-NOTE: that \[lq]Basename\[rq] and \[lq]Extname\[rq] only make sense in
-the context of a path.
-If those same values are used in a form they will be validated as a
-string only.
-.PP
-In this prototype phase there are a very limited number of variables
-types supported.
-This is likely to grow and to change overtime if the prototype is
-successful.
-.SS variable types
 .TP
 String
 Any sequence of characters.
@@ -303,46 +276,53 @@ An ISNI
 .TP
 ORCID
 An ORCID identifier
+.PP
+NOTE: The current names associated with types will likely change as the
+prototype \f[B]newt\f[R] evolves.
+It is planned for them to be stable if and when we get to a v1 release
+(e.g.\ when we\[cq]re out of the prototype phase).
+.SH Pandoc, Pandoc templates
+.PP
+Values received from the JSON data source are passed to the Pandoc
+template bound to the variable name \[lq]data\[rq].
+This is done by taking the JSON recieved and forming a front matter
+document that is then used alongside Pandoc template in the POST request
+made to Pandoc running in server mode.
+See <https://pandoc.org/pandoc-server.html> and
+<https://pandoc.org/MANUAL.html#templates> for details.
 .SH EXAMPLES
 .PP
-Configuration from the environment
+Running \f[B]newt\f[R] with a YAML configuration file called
+\[lq]blog.yaml\[rq]
 .IP
 .nf
 \f[C]
-    export NEWT_PORT=\[dq]3030\[dq]
-    export NEWT_ROUTES=\[dq]newt.yaml\[dq]
-    export NEWT_ENV=\[dq]DB_USER;DB_PASSWORD\[dq]
+newt blog.yaml
 \f[R]
 .fi
 .PP
-Configuration from a YAML file called \[lq]newt.yaml\[rq]
+An example of a YAML file describing blog like application based on
+Postgres+PostgREST.
 .IP
 .nf
 \f[C]
-newt newt.yaml
-\f[R]
-.fi
-.PP
-An example of a YAML file describing blog display routes.
-.IP
-.nf
-\f[C]
+env: [ \[dq]DB_USER\[dq], \[dq]DB_PASSWORD\[dq] ]
 htdocs: htdocs
 routes:
-    - var: [ \[dq]yr\[dq]: \[dq]Year\[dq], \[dq]mo\[dq]: \[dq]Month\[dq], \[dq]dy\[dq]: \[dq]Day\[dq] }
-      req_path: \[dq]/blog/${yr}/${mo}//${dy}\[dq]
-      req_method: GET
-      api_url: \[dq]http://localhost:3000/posts?year=${yr}&month=${mo}&day=${dy},posts.tmpl\[dq]
-      api_method: GET
-      api_content_type: \[dq]application/json\[dq]
-      pandoc_template: article_list.tmpl
-      res_headers: { \[dq]content-type\[dq]: \[dq]text/html\[dq] }
-    - var: [ \[dq]yr\[dq]: \[dq]Year\[dq], \[dq]mo\[dq]: \[dq]Month\[dq], \[dq]dy\[dq]: \[dq]Day\[dq] }
-      req_path: \[dq]/blog/${yr}/${mo}//${dy}/${title-slug}\[dq]
-      req_method: GET
-      api_url\[dq]: \[dq]http://localhost:3000/posts?year=${yr}&month=${mo}&day=${dy}&title-slug=${title-slug}\[dq]
-      pandoc_template: \[dq]article.tmpl\[dq]
-      res_headers: { \[dq]content-type\[dq]: \[dq]text/html\[dq] }
+  - var: [ \[dq]yr\[dq]: \[dq]Year\[dq], \[dq]mo\[dq]: \[dq]Month\[dq], \[dq]dy\[dq]: \[dq]Day\[dq] }
+    req_path: \[dq]/blog/${yr}/${mo}/${dy}\[dq]
+    req_method: GET
+    api_url: \[dq]http://${DB_USER}:${DB_PASSWORD}\[at]localhost:3000/posts?year=${yr}&month=${mo}&day=${dy}\[dq]
+    api_method: GET
+    api_content_type: \[dq]application/json\[dq]
+    pandoc_template: article_list.tmpl
+    res_headers: { \[dq]content-type\[dq]: \[dq]text/html\[dq] }
+  - var: [ \[dq]yr\[dq]: \[dq]Year\[dq], \[dq]mo\[dq]: \[dq]Month\[dq], \[dq]dy\[dq]: \[dq]Day\[dq] }
+    req_path: \[dq]/blog/${yr}/${mo}/${dy}/${title-slug}\[dq]
+    req_method: GET
+    api_url\[dq]: \[dq]http://${DB_USER}:${DB_PASSWORD}\[at]localhost:3000/posts?year=${yr}&month=${mo}&day=${dy}&title-slug=${title-slug}\[dq]
+    pandoc_template: article.tmpl
+    res_headers: { \[dq]content-type\[dq]: \[dq]text/html\[dq] }
 \f[R]
 .fi
 .SH AUTHORS
