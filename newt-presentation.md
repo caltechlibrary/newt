@@ -96,7 +96,7 @@ scale
 scaling
 : a linear transformation that enlarges or diminishes objects
 
-# May I suggests? **scale small**
+# scale small!
 
 - Pack only what is needed
 - Simplify! 
