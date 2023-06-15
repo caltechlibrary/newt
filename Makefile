@@ -42,7 +42,7 @@ DIST_FOLDERS = bin/*
 build: version.go $(PROGRAMS) man CITATION.cff about.md installer.sh
 
 version.go: .FORCE
-	echo '' | pandoc --from t2t --to plain \
+	@echo '' | pandoc --from t2t --to plain \
 		--metadata-file codemeta.json \
 		--metadata package=$(PROJECT) \
 		--metadata version=$(VERSION) \

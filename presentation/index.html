@@ -16,8 +16,11 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
     ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
@@ -131,14 +134,14 @@ class="email">rsdoiel@caltech.edu</a>
 <ol style="list-style-type: lower-alpha">
 <li>Out source running the applications as a “SAAS”</li>
 <li>Treat app as blackbox and avoiding customization</li>
-<li>Customize and dedicate individuals to the specific app</li>
+<li>Dedicate individuals to the specific app and customize</li>
 <li>…</li>
 </ol></li>
 </ol>
 </div>
 <div id="the-problem-1" class="slide section level1">
 <h1>The problem</h1>
-<p>None of our coping strategies is good.</p>
+<p>None of our coping strategies are good</p>
 </div>
 <div id="why-are-these-things-so-complex" class="slide section level1">
 <h1>Why are these things so complex?</h1>
@@ -148,12 +151,21 @@ class="email">rsdoiel@caltech.edu</a>
 <li>Best practices like “systems should be designed to scale”</li>
 </ul>
 </div>
+<div id="why-are-these-things-so-complex-1"
+class="slide section level1">
+<h1>Why are these things so complex?</h1>
+<ul>
+<li>First two sound like people problems (hard)</li>
+<li>The third might be a system design problem (solvable?)</li>
+</ul>
+</div>
 <div id="lets-talk-about-scale" class="slide section level1">
 <h1>Let’s talk about scale</h1>
 <dl>
 <dt>scale</dt>
 <dd>
-a euphemism for <strong>scaling big</strong>
+a euphemism for <strong>scaling big</strong>, usage examples “Google
+scale”, “Amazon scale”
 </dd>
 </dl>
 </div>
@@ -161,14 +173,14 @@ a euphemism for <strong>scaling big</strong>
 <h1>Scaling big</h1>
 <ul>
 <li>Scaling big is hard</li>
-<li>Scaling big makes things really complex</li>
-<li>Scaling big favors large teams</li>
+<li>Scaling big can make things really complex</li>
+<li>Scaling big can require larger teams</li>
 </ul>
 </div>
 <div id="scaling-big-a-reflection" class="slide section level1">
 <h1>Scaling big, a reflection</h1>
 <ul>
-<li>scaling big =&gt;
+<li>scaling big gave us =&gt;
 <ul>
 <li>distributed application design</li>
 <li>programmable infrastructure</li>
@@ -176,9 +188,24 @@ a euphemism for <strong>scaling big</strong>
 <li>complex systems management</li>
 </ul></li>
 </ul>
+<blockquote>
+<p>Hummm …</p>
+</blockquote>
 </div>
-<div id="an-alternative-scale-small" class="slide section level1">
-<h1>An alternative, <strong>scale small</strong></h1>
+<div id="scale-geometry" class="slide section level1">
+<h1>Scale (geometry)</h1>
+<dl>
+<dt>scale</dt>
+<dd>
+a linear transformation that enlarges or diminishes objects
+</dd>
+</dl>
+<blockquote>
+<p>… diminishes objects, <strong>inspiration!</strong></p>
+</blockquote>
+</div>
+<div id="alternative-scale-small" class="slide section level1">
+<h1>Alternative? <strong>scale small</strong></h1>
 <ul>
 <li>Pack only what is needed</li>
 <li>Simplify!</li>
@@ -189,12 +216,28 @@ a euphemism for <strong>scaling big</strong>
 <ul>
 <li>Limit the moving parts</li>
 <li>Limit the cognitive shifts</li>
-<li>Minimize the toolbox, maximize how you use it</li>
-<li>Write less code</li>
+<li>Minimize the toolbox, maximize using it</li>
+<li>Try to <strong>Write less code!</strong></li>
 </ul>
 </div>
-<div id="newt-a-small-system-experiment" class="slide section level1">
-<h1>Newt, a small system experiment</h1>
+<div id="limit-the-cognitive-shifts" class="slide section level1">
+<h1>Limit the cognitive shifts</h1>
+<h2 id="simplify-through-a-clear-division-of-labor">Simplify through a
+clear division of labor</h2>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a> =&gt; JSON API to manage
+data, it gives us a JSON source</li>
+<li><a href="https://pandoc.org">Pandoc</a> =&gt; a powerful template
+engine</li>
+<li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
+data router, form data validator, static file services</li>
+</ul>
+</div>
+<div id="limit-the-moving-parts" class="slide section level1">
+<h1>Limit the moving parts</h1>
+<h2 id="newt-a-small-system-experiment">Newt, a small system
+experiment</h2>
 <ul>
 <li>Use “off the shelf” microservices</li>
 <li>SQL (<a href="https://postgresql.org">Postgres</a> + <a
@@ -204,50 +247,6 @@ templates</a> (<a href="https://pandoc.org/pandoc-server.html">Pandoc
 Server</a>)</li>
 <li>YAML configuration (<a
 href="https://github.com/caltechlibrary/newt/">Newt</a>)</li>
-</ul>
-</div>
-<div id="simplify-through-a-clear-division-of-labor"
-class="slide section level1">
-<h1>Simplify through a clear division of labor</h1>
-<ul>
-<li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a> =&gt; JSON data API,
-i.e. manages the data</li>
-<li><a href="https://pandoc.org">Pandoc</a> =&gt; a powerful template
-engine</li>
-<li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
-data router, form data validator, static file services</li>
-</ul>
-</div>
-<div id="how-does-this-work" class="slide section level1">
-<h1>How does this work?</h1>
-<ol style="list-style-type: decimal">
-<li>web browser =&gt; Newt</li>
-<li>Newt =&gt; PostgREST</li>
-<li>Newt =&gt; Pandoc</li>
-<li>Newt =&gt; web browser</li>
-</ol>
-</div>
-<div id="how-does-this-work-1" class="slide section level1">
-<h1>How does this work?</h1>
-<ol style="list-style-type: decimal">
-<li>Model our data using SQL (Postgres)</li>
-<li>Run our JSON data API (Postgres+PostgREST)</li>
-<li>Transform our structured data using Pandoc templates</li>
-<li>Newt’s YAML file orchestrates our microservice conversation</li>
-</ol>
-</div>
-<div id="how-does-newt-orchestrate-our-microservices"
-class="slide section level1">
-<h1>How does Newt orchestrate our microservices?</h1>
-<ul>
-<li>Newt’s YAML file includes descriptions of data routing
-<ul>
-<li>(optional) route and form variable definitions</li>
-<li>request routing details</li>
-<li>how to form the request to the data source API</li>
-<li>(optional) Pandoc template to process JSON results</li>
-</ul></li>
 </ul>
 </div>
 <div id="our-minimized-toolbox" class="slide section level1">
@@ -260,44 +259,68 @@ class="slide section level1">
 <li>Newt</li>
 </ul>
 </div>
-<div id="client-side-knowledge" class="slide section level1">
-<h1>Client side knowledge</h1>
+<div id="how-does-this-work" class="slide section level1">
+<h1>How does this work?</h1>
+<ol style="list-style-type: decimal">
+<li>web browser =&gt; Newt</li>
+<li>Newt =&gt; PostgREST</li>
+<li>Newt =&gt; Pandoc</li>
+<li>Newt =&gt; web browser</li>
+</ol>
+</div>
+<div id="limit-the-cognitive-shifts-1" class="slide section level1">
+<h1>Limit the cognitive shifts</h1>
+<h2 id="client-side-knowledge">Client side knowledge</h2>
 <ul>
-<li>HTML</li>
-<li>CSS</li>
-<li>JavaScript</li>
+<li>HTML, CSS, JavaScript, image assets, etc.</li>
 </ul>
 <blockquote>
 <p>the usual suspects</p>
 </blockquote>
 </div>
-<div id="server-side-knowledge" class="slide section level1">
-<h1>Server side knowledge</h1>
+<div id="limit-the-cognitive-shifts-2" class="slide section level1">
+<h1>Limit the cognitive shifts</h1>
+<h2 id="server-side-knowledge">Server side knowledge</h2>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
 <li>Our YAML orchestration file</li>
 </ul>
 </div>
-<div id="why-emphasize-sql" class="slide section level1">
-<h1>Why emphasize SQL?</h1>
+<div id="limit-the-cognitive-shifts-3" class="slide section level1">
+<h1>Limit the cognitive shifts</h1>
+<h2 id="why-emphasize-sql">Why emphasize SQL?</h2>
 <ul>
 <li>SQL is good at describing structured data</li>
 <li>SQL is good at expressing queries</li>
 <li>SQL has rich data types, e.g. JSON columns</li>
-<li>SQL can define data views, functions, procedures</li>
+<li>SQL can define data views, functions, procedures, triggers, …</li>
 </ul>
 </div>
-<div id="postgresqlpostgrest-a-code-savings-plan"
-class="slide section level1">
-<h1>PostgreSQL+PostgREST, a code savings plan</h1>
+<div id="write-less-code" class="slide section level1">
+<h1>Write less code</h1>
+<h2 id="postgresqlpostgrest-a-code-savings-plan">PostgreSQL+PostgREST, a
+code savings plan</h2>
 <blockquote>
 <p>Minimize the source Luke!</p>
 </blockquote>
 <ul>
-<li>Don’t need to learn an ORM, aren’t limited by it</li>
+<li>Don’t need to learn an ORM, we’re not limited by an ORM</li>
 <li>Don’t duplicate the SQL models in another language</li>
 <li>Don’t write any middle-ware</li>
+</ul>
+</div>
+<div id="how-does-newt-orchestrate-our-microservices"
+class="slide section level1">
+<h1>How does Newt orchestrate our microservices?</h1>
+<ul>
+<li>Newt’s YAML file includes descriptions of data routing
+<ul>
+<li>(optional) define typed variables</li>
+<li>request routing details (e.g. path, HTTP method)</li>
+<li>describes how to form a JSON source request</li>
+<li>(optional) Pandoc template to process JSON results</li>
+</ul></li>
 </ul>
 </div>
 <div id="three-cognitive-shifts" class="slide section level1">
@@ -450,7 +473,7 @@ class="slide section level1">
 <div id="newt-manages-data-flow" class="slide section level1">
 <h1>Newt manages data flow</h1>
 <ul>
-<li>request =&gt; JSON data API =&gt; Pandoc =&gt; response</li>
+<li>request =&gt; JSON API =&gt; Pandoc =&gt; response</li>
 <li>provides a simple DSL for mapping requests to API and Pandoc</li>
 <li>leverage DSL for describing form data validation</li>
 </ul>
@@ -508,7 +531,7 @@ data validation</li>
 <h1>Next steps for Newt?</h1>
 <ul>
 <li>I am building staff facing applications, Summer 2023</li>
-<li>Testing Solr/Elasticsearch as a JSON data source</li>
+<li>Testing Solr/Elasticsearch as JSON sources</li>
 <li>Fix bugs, expand types/validation, smoothing rough edges</li>
 </ul>
 </div>

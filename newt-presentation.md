@@ -56,14 +56,14 @@ These are all really complicated pieces of software.
 1. Each application was built on a stack
 2. The stacks are complex and divergent
 3. Coping strategies
-	a. Out source running the applications as a "SAAS"
-	b. Treat app as blackbox and avoiding customization
-    c. Customize and dedicate individuals to the specific app
+    a. Out source running the applications as a "SAAS"
+    b. Treat app as blackbox and avoiding customization
+    c. Dedicate individuals to the specific app and customize
     d. ...
 
 # The problem
 
-None of our coping strategies is good.
+None of our coping strategies are good
 
 # Why are these things so complex?
 
@@ -71,26 +71,41 @@ None of our coping strategies is good.
 - Application needs enhancements, complexity accrues overtime
 - Best practices like "systems should be designed to scale"
 
+# Why are these things so complex?
+
+- First two sound like people problems (hard)
+- The third might be a system design problem (solvable?)
+
 # Let's talk about scale
 
 scale
-: a euphemism for **scaling big**
+: a euphemism for **scaling big**, usage examples "Google scale", "Amazon scale"
 
 # Scaling big
 
 - Scaling big is hard
-- Scaling big makes things really complex
-- Scaling big favors large teams
+- Scaling big can make things really complex
+- Scaling big can require larger teams
 
 # Scaling big, a reflection
 
-- scaling big => 
+- scaling big gave us => 
   - distributed application design
   - programmable infrastructure 
   - cache systems and dynamic clustering
   - complex systems management
 
-# An alternative, **scale small**
+> Hummm ...
+
+# Scale (geometry)
+
+scale
+: a linear transformation that enlarges or diminishes objects
+
+> ... diminishes objects, **inspiration!**
+
+
+# Alternative? **scale small**
 
 - Pack only what is needed
 - Simplify! 
@@ -99,43 +114,26 @@ scale
 
 - Limit the moving parts
 - Limit the cognitive shifts
-- Minimize the toolbox, maximize how you use it
-- Write less code
+- Minimize the toolbox, maximize using it
+- Try to **Write less code!**
 
-# Newt, a small system experiment
+# Limit the cognitive shifts
+
+## Simplify through a clear division of labor
+
+- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON API to manage data, it gives us a JSON source
+- [Pandoc](https://pandoc.org) =>  a powerful template engine
+- [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator, static file services
+
+# Limit the moving parts
+
+## Newt, a small system experiment
 
 - Use "off the shelf" microservices
 - SQL ([Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org))
 - [Pandoc templates](https://pandoc.org/MANUAL.html#templates) ([Pandoc Server](https://pandoc.org/pandoc-server.html))
 - YAML configuration ([Newt](https://github.com/caltechlibrary/newt/))
 
-# Simplify through a clear division of labor
-
-- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON data API, i.e. manages the data
-- [Pandoc](https://pandoc.org) =>  a powerful template engine
-- [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator, static file services
-
-# How does this work?
-
-1. web browser => Newt
-2. Newt => PostgREST
-3. Newt => Pandoc 
-4. Newt => web browser
-
-# How does this work?
-
-1. Model our data using SQL (Postgres)
-2. Run our JSON data API (Postgres+PostgREST)
-3. Transform our structured data using Pandoc templates
-4. Newt's YAML file orchestrates our microservice conversation
-
-# How does Newt orchestrate our microservices?
-
-- Newt's YAML file includes descriptions of data routing
-    - (optional) route and form variable definitions
-    - request routing details
-    - how to form the request to the data source API
-    - (optional) Pandoc template to process JSON results
 
 # Our minimized Toolbox
 
@@ -145,34 +143,55 @@ scale
 - Postgres + PostgREST
 - Newt 
 
-# Client side knowledge
+# How does this work?
 
-- HTML
-- CSS
-- JavaScript
+1. web browser => Newt
+2. Newt => PostgREST
+3. Newt => Pandoc 
+4. Newt => web browser
+
+# Limit the cognitive shifts
+
+## Client side knowledge
+
+- HTML, CSS, JavaScript, image assets, etc.
 
 > the usual suspects
 
-# Server side knowledge
+# Limit the cognitive shifts
+
+## Server side knowledge
 
 - SQL
 - Pandoc templates
 - Our YAML orchestration file
 
-# Why emphasize SQL?
+# Limit the cognitive shifts
+
+## Why emphasize SQL?
 
 - SQL is good at describing structured data
 - SQL is good at expressing queries
 - SQL has rich data types, e.g. JSON columns
-- SQL can define data views, functions, procedures
+- SQL can define data views, functions, procedures, triggers, ...
 
-# PostgreSQL+PostgREST, a code savings plan
+# Write less code
+
+## PostgreSQL+PostgREST, a code savings plan
 
 > Minimize the source Luke!
 
-- Don't need to learn an ORM, aren't limited by it
+- Don't need to learn an ORM, we're not limited by an ORM
 - Don't duplicate the SQL models in another language
 - Don't write any middle-ware
+
+# How does Newt orchestrate our microservices?
+
+- Newt's YAML file includes descriptions of data routing
+    - (optional) define typed variables
+    - request routing details (e.g. path, HTTP method)
+    - describes how to form a JSON source request
+    - (optional) Pandoc template to process JSON results
 
 # Three cognitive shifts
 
@@ -257,7 +276,7 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Newt manages data flow
 
-- request => JSON data API => Pandoc => response
+- request => JSON API => Pandoc => response
 - provides a simple DSL for mapping requests to API and Pandoc
 - leverage DSL for describing form data validation
 
@@ -302,15 +321,15 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 # Next steps for Newt?
 
 - I am building staff facing applications, Summer 2023
-- Testing Solr/Elasticsearch as a JSON data source
+- Testing Solr/Elasticsearch as JSON sources
 - Fix bugs, expand types/validation, smoothing rough edges
 
 # It would be nice if ...
 
 - Newt could delegate file uploads to an S3 like service
 - Newt had a community 
-	- sharing SQL code
-	- sharing Pandoc templates
+    - sharing SQL code
+    - sharing Pandoc templates
     - sharing YAML files
 
 # Someday, maybe ideas
