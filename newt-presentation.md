@@ -9,7 +9,7 @@ urlcolor: blue
 linkstyle: bold
 aspectratio: 169
 createDate: 2023-05-16
-updateDate: 2023-06-09
+updateDate: 2023-06-14
 pubDate: 2023-07-14
 place: UCLA
 date: July 14, 2023
@@ -27,14 +27,14 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 # LAMP and its legacy 
 
-Complex systems found in Caltech Library
+Complex systems used by Caltech Library
 
 - ArchivesSpace
 - EPrints
 - Invenio RDM
 - Islandora
 
-# Required Knowledge
+# LAMP and its legacy 
 
 App            Languages         Supporting services
 ---------      ---------         -------------------
@@ -49,61 +49,54 @@ Invenio RDM    Python, SQL       Postgres, Redis, Elasticsearch,
 Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
 
 
-These are all really complicated pieces of software.
-
 # The problem
 
 1. Each application was built on a stack
 2. The stacks are complex and divergent
-3. Coping strategies
-    a. Out source running the applications as a "SAAS"
-    b. Treat app as blackbox and avoiding customization
-    c. Dedicate individuals to the specific app and customize
-    d. ...
+3. Sustaining them requires many coping strategies
 
 # The problem
 
-None of our coping strategies are good
+- Our coping strategies are not sustainable
+- Complexity is part of the problem.
 
 # Why are these things so complex?
 
 - We want more from our application, more code gets written
-- Application needs enhancements, complexity accrues overtime
-- Best practices like "systems should be designed to scale"
+- Application "enhancements", complexity accrues overtime
+- Best Practices like "systems should be designed to scale"
 
 # Why are these things so complex?
 
-- First two sound like people problems (hard)
-- The third might be a system design problem (solvable?)
-
+- first two are "people problems" (hard)
+- last one might be a system design problem (solvable?)
+ 
 # Let's talk about scale
 
 scale
-: a euphemism for **scaling big**, usage examples "Google scale", "Amazon scale"
+: a euphemism for **scaling big**, as used in phrases like "google scale", "amazon scale"
 
 # Scaling big
 
 - Scaling big is hard
 - Scaling big can make things really complex
-- Scaling big can require larger teams
+- Scaling big can require larger teams for success
 
-# Scaling big, a reflection
+# Scaling big
 
 - scaling big gave us => 
   - distributed application design
   - programmable infrastructure 
   - cache systems and dynamic clustering
   - complex systems management
-
-> Hummm ...
+  - containers ...
 
 # Scale (geometry)
 
 scale
 : a linear transformation that enlarges or diminishes objects
 
-> ... diminishes objects, **inspiration!**
-
+> ... **diminishes objects**, Inspiration!
 
 # Alternative? **scale small**
 
@@ -117,7 +110,7 @@ scale
 - Minimize the toolbox, maximize using it
 - Try to **Write less code!**
 
-# Limit the cognitive shifts
+# Limit the moving parts
 
 ## Simplify through a clear division of labor
 
@@ -129,21 +122,15 @@ scale
 
 ## Newt, a small system experiment
 
-- Use "off the shelf" microservices
-- SQL ([Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org))
-- [Pandoc templates](https://pandoc.org/MANUAL.html#templates) ([Pandoc Server](https://pandoc.org/pandoc-server.html))
-- YAML configuration ([Newt](https://github.com/caltechlibrary/newt/))
+- Is leverages "off the shelf" microservices 
+  - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
+  - [Pandoc](https://pandoc.org)
+- Uses
+  - SQL to model data (assuming Postgres+PostgREST)
+  - [Pandoc templates](https://pandoc.org/MANUAL.html#templates) ([Pandoc Server](https://pandoc.org/pandoc-server.html))
+  - YAML configuration ([Newt](https://github.com/caltechlibrary/newt/))
 
-
-# Our minimized Toolbox
-
-- Text editor
-- Web browser
-- Pandoc
-- Postgres + PostgREST
-- Newt 
-
-# How does this work?
+# Limit the moving parts
 
 1. web browser => Newt
 2. Newt => PostgREST
@@ -185,29 +172,47 @@ scale
 - Don't duplicate the SQL models in another language
 - Don't write any middle-ware
 
-# How does Newt orchestrate our microservices?
+# Minimized Toolbox, maximize using it
 
-- Newt's YAML file includes descriptions of data routing
-    - (optional) define typed variables
-    - request routing details (e.g. path, HTTP method)
-    - describes how to form a JSON source request
-    - (optional) Pandoc template to process JSON results
+- Text editor
+- Web browser
+- Pandoc
+- Postgres + PostgREST
+- Newt 
+
 
 # Three cognitive shifts
 
-- Write SQL (Postgres), use JSON (PostgREST)
+- Write SQL (Postgres) and get a JSON (PostgREST)
 - Write Pandoc templates to transform JSON to HTML
 - Write a YAML file to orchestrate our microservices
+
+
+# How does Newt orchestrate our microservices?
+
+- port number
+- htdocs path (if needed)
+- routes definitions
+  - define typed variables for request path and form data validation
+  - A requst description
+    - request path
+    - request method (HTTP method)
+  - JSON source access
+    - api URL
+    - api method
+    - api content type
+  - Pandoc template to process JSON results if needed
+  - Response HTTP headers if needed
 
 # Is this really simpler?
 
 Three versions of a bird sighting website
 
-- [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash), a static site implementation
-- [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash), a dynamic site implementation, content viewing requires browser JavaScript
-- [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash), a dynamic site implementation, does not require browser JavaScript
+- [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash), a static site implementation
+- [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash), a dynamic site implementation, content viewing requires browser JavaScript
+- [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash), a dynamic site implementation, does not require browser JavaScript
 
-# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds1.bash) 
+# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash) 
 
 - Built with Pandoc from Markdown and YAML file
 
@@ -221,7 +226,7 @@ Three versions of a bird sighting website
       63 total
 ~~~
 
-# [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds2.bash)
+# [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash)
 
 - Built with SQL (Postgres + PostgREST), Browser side JavaScript
 
@@ -236,9 +241,9 @@ Three versions of a bird sighting website
      176 total
 ~~~
 
-# [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/setup-birds3.bash)
+# [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash)
 
-- Built with SQL (Postgres + PostgREST) and Pandoc
+- Built with SQL (Postgres + PostgREST), Pandoc, Newt
 - **no JavaScript**
 
 ~~~
@@ -267,18 +272,37 @@ birds 3    dynamic     read/write data          requires SQL knowledge
                        no JavaScript required   requires knowledge of YAML 
 
 
-# Birds 3 => Postgres+PostgREST, Pandoc and Newt
+# Culmination => Postgres+PostgREST, Pandoc and Newt
 
 - Our "off the shelf" microservices limit complexity
-- SQL defines data model and API end points
+- SQL defines our data model(s)
 - Pandoc templates transform JSON to HTML
 - A YAML file describes the routes and form data validation
 
+# How does this work?
+
+1. Model our data using SQL (Postgres)
+2. Use models via RESTful JSON API (Postgres+PostgREST)
+3. Transform our structured data using Pandoc templates (Pandoc server)
+4. orchestrate our microservice conversation via YAML file (Newt)
+
+# How does Newt orchestrate our microservices?
+
+- Newt's YAML file includes descriptions of data routing
+    - htdocs directory path (if serving static files)
+    - environment variable to expose in routes
+    - route definitions
+        - (optional) variable definitions (for validating requests and form data)
+        - request routing details (e.g. path, method)
+        - JSON source description (e.g. api URL, method, content type)
+        - (optional) Pandoc template filename
+    - port number (for Newt)
+
 # Newt manages data flow
 
-- request => JSON API => Pandoc => response
-- provides a simple DSL for mapping requests to API and Pandoc
-- leverage DSL for describing form data validation
+- request => JSON source => Pandoc => response
+- A simple DSL for mapping requests to JSON source and Pandoc
+- leverages DSL for form data validation
 
 # Developer workflow
 
@@ -286,6 +310,7 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 2. Create/update Pandoc templates
 3. Create/update routes/form data validation in YAML file
 4. (Re)start PostgREST and Newt to (re)load models and routes
+5. Test with our web browser
 
 **Repeat as needed**
 
@@ -294,20 +319,20 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 - If you've attended a data science workshop you likely know enough SQL
 - If you've built a static website you likely know about Pandoc
 - If you've built a static website you likely know YAML
-- Use YAML and a simple DSL to map requests to data sources and form data validation
-- SQL + YAML files + Pandoc => web application
+- Use YAML and a small DSL to map requests to data sources and validate form data
+- SQL + YAML files + Pandoc template(s) => web application
 
-# Weaknesses
+# Weaknesses in my proposal
 
 - Newt is **an experimental prototype** (June 2023)
 - Newt doesn't support file uploads
-- Learning curves: 
+- Does not eliminate Learning curves, e.g.
     1. Postgres and SQL
     2. Pandoc
     3. using HTTP methods
     4. YAML
 
-# There is strength in Maturity
+# Addvantages, maturity
 
 - SQL (1974)
 - HTTP (1991)
@@ -318,11 +343,13 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 - Pandoc (2006)
 - PostgREST (2014)
 
+> There is strength in Maturity
+
 # Next steps for Newt?
 
 - I am building staff facing applications, Summer 2023
-- Testing Solr/Elasticsearch as JSON sources
-- Fix bugs, expand types/validation, smoothing rough edges
+- Testing Solr/Elasticsearch as a JSON sources
+- Move beyond my proof of concept
 
 # It would be nice if ...
 
@@ -334,16 +361,29 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Someday, maybe ideas
 
+- Use YAML file to extrapolate SQL models and Pandoc templates 
 - Rewrite Newt in Haskell
-    - Integrate Pandoc into Newt, skipping running Pandoc server
-- Use YAML file to extrapolate SQL, templates and website 
+    - Integrate Pandoc into Newt, skip requiring Pandoc server
 
 # An unexpected result of simplification
 
-- Newt can be scaled wide (parallel)
-- Pandoc server can be scaled wide
-- PostgREST can be scale wide
-- Postgres (the only part holding state) can be clustered
+- Newt can potentially scale really big!
+    - Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
+    - Pandoc server can be scaled wide (it retains zero state and configuration file)
+    - PostgREST can be scale wide (it has a minimal configuration file)
+    - Postgres (the only part holding state) can be clustered
+
+# Additional resources 
+
+- [Postgres](https://postgres.org)
+- Install Haskell [ghcup](https://https://www.haskell.org/ghcup/)
+- [PostgREST](https://postgrest.org)
+- [Pandoc](https://pandoc.org)
+- [Newt](https://github.com/caltechlibrary/newt) proof of concept
+- [Solr](https://solr.apache.org/), [Opensearch](https://www.opensearch.org/)
+- Alternatives to Postgres+PostgREST
+  - [MariaDB](https://mariadb.com/products/enterprise/) + [Maria Max Scale](https://mariadb.com/kb/en/maxscale/)
+  - [MySQL](https://dev.mysql.com) + [MRS](https://blogs.oracle.com/mysql/post/introducing-the-mysql-rest-service)
 
 # Thank you!
 
