@@ -30,7 +30,7 @@ type Config struct {
 	// These generally are tables but can be thought of as objects.
 	// Models can be used to generate SQL CREATE statements suitable for
 	// use with Postgres.
-	Models []*Model `json:"models,omitempty" yaml:"models,omitempty"`
+	Models []*ModelDSL `json:"models,omitempty" yaml:"models,omitempty"`
 	// Port is the name of the localhost port Newt will listen on.
 	Port string `json:"port,omitempty" yaml:"port,omitempty"`
 	// Routes is the YAML filename that data API routes are read from

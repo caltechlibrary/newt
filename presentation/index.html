@@ -191,10 +191,10 @@ a linear transformation that enlarges or diminishes objects
 </dl>
 </div>
 <div id="scale-small" class="slide section level1">
-<h1>scale small!</h1>
+<h1>Scale small</h1>
 <ul>
-<li>Pack only what is needed</li>
 <li>Simplify!</li>
+<li>Pack only what is needed</li>
 </ul>
 </div>
 <div id="scaling-small" class="slide section level1">
@@ -230,53 +230,17 @@ data router, form data validator, static file services</li>
 <li>Newt =&gt; web browser</li>
 </ol>
 </div>
-<div id="limit-the-cognitive-shifts-client-side"
-class="slide section level1">
-<h1>Limit the cognitive shifts, client side</h1>
-<blockquote>
-<p>The status quo presists on the front-end</p>
-</blockquote>
+<div id="limit-the-cognitive-shifts" class="slide section level1">
+<h1>Limit the cognitive shifts</h1>
 <ul>
-<li>HTML, CSS, JavaScript, image assets, etc.</li>
+<li>Write SQL (Postgres) and get a JSON source (PostgREST)</li>
+<li>Write Pandoc templates to transform JSON to HTML</li>
+<li>Write a YAML file to orchestrate our microservice conversation</li>
 </ul>
 </div>
-<div id="limit-the-cognitive-shifts-server-side"
+<div id="minimize-our-toolbox-maximize-using-it"
 class="slide section level1">
-<h1>Limit the cognitive shifts, server side</h1>
-<ul>
-<li>SQL</li>
-<li>Pandoc templates</li>
-<li>Our YAML orchestration file</li>
-</ul>
-</div>
-<div id="limit-the-cognitive-shifts-why-emphasize-sql"
-class="slide section level1">
-<h1>Limit the cognitive shifts, why emphasize SQL?</h1>
-<ul>
-<li>SQL is good at describing structured data</li>
-<li>SQL is good at expressing queries</li>
-<li>SQL provides rich data types</li>
-<li>SQL can define data views, functions, procedures, triggers, …</li>
-</ul>
-</div>
-<div id="write-less-code" class="slide section level1">
-<h1>Write less code</h1>
-<blockquote>
-<p>PostgreSQL+PostgREST is my code saving plan</p>
-</blockquote>
-<ul>
-<li>The SQL runtime is rich in capability</li>
-<li>Don’t need to learn an ORM, we’re not limited by an ORM</li>
-<li>Don’t duplicate the SQL models in another language</li>
-<li>Don’t write any middle-ware</li>
-</ul>
-<blockquote>
-<p>Minimize the source Luke!</p>
-</blockquote>
-</div>
-<div id="minimized-toolbox-maximize-using-it"
-class="slide section level1">
-<h1>Minimized Toolbox, maximize using it</h1>
+<h1>Minimize our Toolbox, maximize using it</h1>
 <ul>
 <li>Text editor</li>
 <li>Postgres + PostgREST</li>
@@ -285,17 +249,24 @@ class="slide section level1">
 <li>Web browser</li>
 </ul>
 </div>
-<div id="three-cognitive-shifts" class="slide section level1">
-<h1>Three cognitive shifts</h1>
+<div id="write-less-code-with-sql" class="slide section level1">
+<h1>Write less code with SQL</h1>
+<blockquote>
+<p>PostgreSQL+PostgREST, a code savings plan.</p>
+</blockquote>
 <ul>
-<li>Write SQL (Postgres) and get a JSON source (PostgREST)</li>
-<li>Write Pandoc templates to transform JSON to HTML</li>
-<li>Write a YAML file to orchestrate our microservice conversation</li>
+<li>SQL is good at describing structured data</li>
+<li>SQL provides views, functions, triggers, …</li>
+<li>SQL allows us to model our data once</li>
+<li>Don’t need to write any middle-ware</li>
 </ul>
+<blockquote>
+<p><strong>Minimize the source Luke!</strong></p>
+</blockquote>
 </div>
 <div id="is-this-really-simpler" class="slide section level1">
 <h1>Is this really simpler?</h1>
-<p>Three versions of a bird sighting website</p>
+<p>Let’s compare three implementations of a bird sighting website</p>
 </div>
 <div id="birds-1" class="slide section level1">
 <h1><a
@@ -320,13 +291,13 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <li>Built with SQL (Postgres + PostgREST), Browser side JavaScript</li>
 </ul>
 <pre><code>2 directories, 6 files
+  33 birds2/README.md
    4 birds2/birds.csv
-   3 birds2/postgrest.conf
-  32 birds2/README.md
   50 birds2/setup.sql
+   3 birds2/postgrest.conf
   24 birds2/htdocs/index.html
   63 birds2/htdocs/sightings.js
- 176 total</code></pre>
+ 177 total</code></pre>
 </div>
 <div id="birds-3" class="slide section level1">
 <h1><a
@@ -337,13 +308,13 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <li><strong>no JavaScript</strong></li>
 </ul>
 <pre><code>1 directory, 7 files
+  33 birds3/README.md
    4 birds3/birds.csv
+  50 birds3/setup.sql
   25 birds3/birds.yaml
   40 birds3/page.tmpl
    3 birds3/postgrest.conf
    7 birds3/post_result.tmpl
-  33 birds3/README.md
-  50 birds3/setup.sql
  162 total</code></pre>
 </div>
 <div id="comparing-three-birds" class="slide section level1">
@@ -397,7 +368,7 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <tr class="odd">
 <td></td>
 <td></td>
-<td align="left">easy to conceptualize,</td>
+<td align="left">easy to conceptualize</td>
 <td align="left">requires knowledge of Pandoc</td>
 </tr>
 <tr class="even">
@@ -409,63 +380,33 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 </tbody>
 </table>
 </div>
-<div id="bird-3-build-features" class="slide section level1">
-<h1>Bird 3 build features</h1>
-<ol style="list-style-type: decimal">
-<li>Model our data using SQL (Postgres)</li>
-<li>Access via JSON API (PostgREST)</li>
-<li>Transform our structured data using Pandoc templates (Pandoc
-server)</li>
-<li>Orchestrate our microservice conversation via YAML file (Newt)</li>
-</ol>
-</div>
 <div id="how-does-newt-orchestrate-our-microservices"
 class="slide section level1">
 <h1>How does Newt orchestrate our microservices?</h1>
 <ul>
 <li>Newt’s YAML file includes descriptions for request routing
 <ul>
-<li>htdocs directory (if serving static files)</li>
 <li>environment variable used to access JSON sources</li>
 <li>route definitions
 <ul>
 <li>(optional) variable definitions</li>
 <li>request routing details (e.g. path, method)</li>
-<li>JSON source description (e.g. api URL, method, content type)</li>
+<li>JSON source details (e.g. api URL, method, content type)</li>
 <li>(optional) Pandoc template filename</li>
 </ul></li>
-<li>port number (for Newt)</li>
 </ul></li>
 </ul>
-</div>
-<div id="newt-manages-data-flow" class="slide section level1">
-<h1>Newt manages data flow</h1>
-<ol style="list-style-type: decimal">
-<li>web browser =&gt; Newt</li>
-<li>Newt =&gt; PostgREST</li>
-<li>Newt =&gt; Pandoc</li>
-<li>Newt =&gt; web browser</li>
-</ol>
 </div>
 <div id="developer-workflow" class="slide section level1">
 <h1>Developer workflow</h1>
 <ol style="list-style-type: decimal">
-<li>Model data in Postgres (using psql and a text editor)</li>
-<li>Create/update Pandoc templates (using a text editor and Pandoc)</li>
-<li>Create/update routes/form data validation in YAML file (text editor,
-<code>newt -dry-run &lt;YAML_FILENAME&gt;</code>)</li>
+<li>Model data in Postgres</li>
+<li>Create/update Pandoc templates</li>
+<li>Create/update routes/form data validation in YAML file</li>
 <li>(Re)start PostgREST and Newt to (re)load models and routes</li>
 <li>Test with our web browser</li>
 </ol>
 <p><strong>Repeat as needed</strong></p>
-</div>
-<div id="minimal-prior-knowledge" class="slide section level1">
-<h1>Minimal prior knowledge</h1>
-<ul>
-<li>A data science workshop often will teach you enough SQL</li>
-<li>Static website generation often envolves Pandoc</li>
-<li>Markdown documents often use YAML to represent front matter</li>
-</ul>
 </div>
 <div id="weaknesses-in-my-proposal" class="slide section level1">
 <h1>Weaknesses in my proposal</h1>
@@ -481,9 +422,11 @@ class="slide section level1">
 </ol></li>
 </ul>
 </div>
-<div id="newts-advantages-a-mature-foundation"
-class="slide section level1">
-<h1>Newt’s Advantages, a mature foundation</h1>
+<div id="newts-greatest-advantage" class="slide section level1">
+<h1>Newt’s greatest Advantage</h1>
+<blockquote>
+<p>A mature foundation</p>
+</blockquote>
 <ul>
 <li>20th Century tech
 <ul>
@@ -498,28 +441,15 @@ class="slide section level1">
 <div id="next-steps-for-newt" class="slide section level1">
 <h1>Next steps for Newt?</h1>
 <ul>
+<li>Testing Solr/Elasticsearch as alternate JSON sources</li>
 <li>I am building staff facing applications this Summer (2023)</li>
-<li>Testing Solr/Elasticsearch as a JSON sources</li>
-<li>I hope to move beyond my proof of concept in the Fall (2023)</li>
+<li>I hope to move beyond my proof of concept in Fall/Winter (2023)</li>
 </ul>
 </div>
-<div id="it-would-be-nice-if" class="slide section level1">
-<h1>It would be nice if …</h1>
+<div id="sameday-maybe" class="slide section level1">
+<h1>Sameday, maybe …</h1>
 <ul>
-<li>Newt could delegate file uploads to an S3 like service</li>
-<li>Newt had a community
-<ul>
-<li>sharing SQL code</li>
-<li>sharing Pandoc templates</li>
-<li>sharing YAML files</li>
-<li>Improving Newt</li>
-</ul></li>
-</ul>
-</div>
-<div id="posibilities-a-roadmap-beyond-proof-of-concept"
-class="slide section level1">
-<h1>Posibilities, a roadmap beyond proof of concept</h1>
-<ul>
+<li>Have Newt delegate file uploads to an S3 like service</li>
 <li>Enhance the Newt’s YAML to generate SQL models and Pandoc
 templates</li>
 <li>Explore integrating SQLite3 support</li>
@@ -541,6 +471,14 @@ what’s in the configuration file)</li>
 <li>Pandoc server can be scaled wide (it retains zero stat )</li>
 <li>PostgREST can be scale wide (a minimal configuration file)</li>
 <li>Postgres (the only part holding state) can be clustered</li>
+</ul>
+</div>
+<div id="if-newt-has-a-community" class="slide section level1">
+<h1>If Newt has a community …</h1>
+<ul>
+<li>share SQL code</li>
+<li>share Pandoc templates</li>
+<li>share YAML files</li>
 </ul>
 </div>
 <div id="additional-resources" class="slide section level1">

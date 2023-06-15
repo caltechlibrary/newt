@@ -46,6 +46,7 @@ SELECT * FROM birds.sighting;
 3. Point your web browser at the static web server and see what happens
 
 
+
 EOT
 
 # Generate our SQL setup modeling our simple data

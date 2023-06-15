@@ -205,15 +205,19 @@ Any sequence of characters. If the variabe is embedded in a path then
 “/” will be used to delimited path parts and would not be passed into
 the variables value.
 </dd>
-<dt>Year</dt>
+<dt>Date</dt>
+<dd>
+(default) A year, month, day string like 2006-01-02
+</dd>
+<dt>Date 2006</dt>
 <dd>
 A four digit year (e.g. 2023)
 </dd>
-<dt>Month</dt>
+<dt>Date 01</dt>
 <dd>
 A two digit month (e.g. “01” for January, “10” for October)
 </dd>
-<dt>Day</dt>
+<dt>Date 02</dt>
 <dd>
 A two digit day (e.g. “01” for the first, “11” for the eleventh)
 </dd>
@@ -277,7 +281,7 @@ Postgres+PostgREST.</p>
 <pre><code>env: [ &quot;DB_USER&quot;, &quot;DB_PASSWORD&quot; ]
 htdocs: htdocs
 routes:
-  - var: [ &quot;yr&quot;: &quot;Year&quot;, &quot;mo&quot;: &quot;Month&quot;, &quot;dy&quot;: &quot;Day&quot; }
+  - var: [ &quot;yr&quot;: &quot;Date 2006&quot;, &quot;mo&quot;: &quot;Date 01&quot;, &quot;dy&quot;: &quot;Date 02&quot; }
     req_path: &quot;/blog/${yr}/${mo}/${dy}&quot;
     req_method: GET
     api_url: &quot;http://${DB_USER}:${DB_PASSWORD}@localhost:3000/posts?year=${yr}&amp;month=${mo}&amp;day=${dy}&quot;

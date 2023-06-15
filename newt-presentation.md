@@ -96,10 +96,10 @@ scale
 scaling
 : a linear transformation that enlarges or diminishes objects
 
-# scale small!
+# Scale small
 
-- Pack only what is needed
 - Simplify! 
+- Pack only what is needed
 
 # Scaling small
 
@@ -123,37 +123,13 @@ scaling
 3. Newt => Pandoc 
 4. Newt => web browser
 
-# Limit the cognitive shifts, client side
+# Limit the cognitive shifts
 
-> The status quo presists on the front-end
+- Write SQL (Postgres) and get a JSON source (PostgREST)
+- Write Pandoc templates to transform JSON to HTML
+- Write a YAML file to orchestrate our microservice conversation
 
-- HTML, CSS, JavaScript, image assets, etc.
-
-# Limit the cognitive shifts, server side 
-
-- SQL
-- Pandoc templates
-- Our YAML orchestration file
-
-# Limit the cognitive shifts, why emphasize SQL?
-
-- SQL is good at describing structured data
-- SQL is good at expressing queries
-- SQL provides rich data types
-- SQL can define data views, functions, procedures, triggers, ...
-
-# Write less code
-
-> PostgreSQL+PostgREST is my code saving plan
-
-- The SQL runtime is rich in capability
-- Don't need to learn an ORM, we're not limited by an ORM
-- Don't duplicate the SQL models in another language
-- Don't write any middle-ware
-
-> Minimize the source Luke!
-
-# Minimized Toolbox, maximize using it
+# Minimize our Toolbox, maximize using it
 
 - Text editor
 - Postgres + PostgREST
@@ -161,16 +137,20 @@ scaling
 - Newt 
 - Web browser
 
+# Write less code with SQL
 
-# Three cognitive shifts
+> PostgreSQL+PostgREST, a code savings plan.
 
-- Write SQL (Postgres) and get a JSON source (PostgREST)
-- Write Pandoc templates to transform JSON to HTML
-- Write a YAML file to orchestrate our microservice conversation
+- SQL is good at describing structured data
+- SQL provides views, functions, triggers, ...
+- SQL allows us to model our data once
+- Don't need to write any middle-ware
+
+> **Minimize the source Luke!**
 
 # Is this really simpler?
 
-Three versions of a bird sighting website
+Let's compare three implementations of a bird sighting website
 
 # [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash) 
 
@@ -192,13 +172,13 @@ Three versions of a bird sighting website
 
 ~~~
 2 directories, 6 files
+  33 birds2/README.md
    4 birds2/birds.csv
-   3 birds2/postgrest.conf
-  32 birds2/README.md
   50 birds2/setup.sql
+   3 birds2/postgrest.conf
   24 birds2/htdocs/index.html
   63 birds2/htdocs/sightings.js
- 176 total
+ 177 total
 ~~~
 
 # [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash)
@@ -208,71 +188,49 @@ Three versions of a bird sighting website
 
 ~~~
 1 directory, 7 files
+  33 birds3/README.md
    4 birds3/birds.csv
+  50 birds3/setup.sql
   25 birds3/birds.yaml
   40 birds3/page.tmpl
    3 birds3/postgrest.conf
    7 birds3/post_result.tmpl
-  33 birds3/README.md
-  50 birds3/setup.sql
  162 total
 ~~~
 
 # Comparing three birds
 
-version    site type   pros                     cons
--------    ---------   -----------------------  ------------------------------
-birds 1    static      easy to conceptualize,   read only
-                       no JavaScript required
-birds 2    dynamic     read/write data          requires SQL knowledge
-                                                requires browser JavaScript
-                                                JavaScript is complex
-birds 3    dynamic     read/write data          requires SQL knowledge 
-                       easy to conceptualize,   requires knowledge of Pandoc
-                       no JavaScript required   requires knowledge of YAML 
+version   site type   pros                     cons
+-------   ---------   -----------------------  ----------------------------
+birds 1   static      easy to conceptualize,   read only
+                      no JavaScript required
+birds 2   dynamic     read/write data          requires SQL knowledge
+                                               requires browser JavaScript
+                                               JavaScript is complex
+birds 3   dynamic     read/write data          requires SQL knowledge 
+                      easy to conceptualize    requires knowledge of Pandoc
+                      no JavaScript required   requires knowledge of YAML 
 
-
-# Bird 3 build features
-
-1. Model our data using SQL (Postgres)
-2. Access via JSON API (PostgREST)
-3. Transform our structured data using Pandoc templates (Pandoc server)
-4. Orchestrate our microservice conversation via YAML file (Newt)
 
 # How does Newt orchestrate our microservices?
 
 - Newt's YAML file includes descriptions for request routing
-    - htdocs directory (if serving static files)
-    - environment variable used to access JSON sources
-    - route definitions
-        - (optional) variable definitions
-        - request routing details (e.g. path, method)
-        - JSON source description (e.g. api URL, method, content type)
-        - (optional) Pandoc template filename
-    - port number (for Newt)
-
-# Newt manages data flow
-
-1. web browser => Newt
-2. Newt => PostgREST
-3. Newt => Pandoc 
-4. Newt => web browser
+  - environment variable used to access JSON sources
+  - route definitions
+    - (optional) variable definitions
+    - request routing details (e.g. path, method)
+    - JSON source details (e.g. api URL, method, content type)
+    - (optional) Pandoc template filename
 
 # Developer workflow
 
-1. Model data in Postgres (using psql and a text editor)
-2. Create/update Pandoc templates (using a text editor and Pandoc)
-3. Create/update routes/form data validation in YAML file (text editor, `newt -dry-run <YAML_FILENAME>`)
+1. Model data in Postgres
+2. Create/update Pandoc templates
+3. Create/update routes/form data validation in YAML file
 4. (Re)start PostgREST and Newt to (re)load models and routes
 5. Test with our web browser
 
 **Repeat as needed**
-
-# Minimal prior knowledge
-
-- A data science workshop often will teach you enough SQL
-- Static website generation often envolves Pandoc
-- Markdown documents often use YAML to represent front matter
 
 # Weaknesses in my proposal
 
@@ -284,7 +242,9 @@ birds 3    dynamic     read/write data          requires SQL knowledge
     3. using HTTP methods
     4. YAML
 
-# Newt's Advantages, a mature foundation
+# Newt's greatest Advantage
+
+> A mature foundation
 
 - 20th Century tech
   - SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)
@@ -294,21 +254,13 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Next steps for Newt?
 
+- Testing Solr/Elasticsearch as alternate JSON sources
 - I am building staff facing applications this Summer (2023)
-- Testing Solr/Elasticsearch as a JSON sources
-- I hope to move beyond my proof of concept in the Fall (2023)
+- I hope to move beyond my proof of concept in Fall/Winter (2023)
 
-# It would be nice if ...
+# Sameday, maybe ...
 
-- Newt could delegate file uploads to an S3 like service
-- Newt had a community 
-    - sharing SQL code
-    - sharing Pandoc templates
-    - sharing YAML files
-    - Improving Newt
-
-# Posibilities, a roadmap beyond proof of concept
-
+- Have Newt delegate file uploads to an S3 like service
 - Enhance the Newt's YAML to generate SQL models and Pandoc templates 
 - Explore integrating SQLite3 support
 - Rewrite Newt in Haskell
@@ -322,6 +274,12 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 - Pandoc server can be scaled wide (it retains zero stat )
 - PostgREST can be scale wide (a minimal configuration file)
 - Postgres (the only part holding state) can be clustered
+
+# If Newt has a community ...
+
+- share SQL code
+- share Pandoc templates
+- share YAML files
 
 # Additional resources 
 
