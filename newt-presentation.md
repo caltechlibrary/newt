@@ -169,23 +169,6 @@ scale
 - Write Pandoc templates to transform JSON to HTML
 - Write a YAML file to orchestrate our microservice conversation
 
-
-# How does Newt orchestrate our microservices?
-
-- port number
-- htdocs path (if needed)
-- routes definitions
-  - define typed variables for request path and form data validation
-  - A request description
-    - request path
-    - request (HTTP) method
-  - JSON source access
-    - api URL
-    - api method
-    - api content type
-  - Pandoc template to process JSON results if needed
-  - Response HTTP headers if needed
-
 # Is this really simpler?
 
 Three versions of a bird sighting website
@@ -214,13 +197,13 @@ Three versions of a bird sighting website
 
 ~~~
 2 directories, 6 files
-      32 birds2/README.md
-       4 birds2/birds.csv
-       3 birds2/postgrest.conf
-      50 birds2/setup.sql
-      24 birds2/htdocs/index.html
-      63 birds2/htdocs/sightings.js
-     176 total
+   4 birds2/birds.csv
+   3 birds2/postgrest.conf
+  32 birds2/README.md
+  50 birds2/setup.sql
+  24 birds2/htdocs/index.html
+  63 birds2/htdocs/sightings.js
+ 176 total
 ~~~
 
 # [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash)
@@ -229,15 +212,15 @@ Three versions of a bird sighting website
 - **no JavaScript**
 
 ~~~
-2 directories, 7 files
-      33 birds3/README.md
-       4 birds3/birds.csv
-      24 birds3/birds.yaml
-      40 birds3/page.tmpl
-       7 birds3/post_result.tmpl
-       3 birds3/postgrest.conf
-      50 birds3/setup.sql
-     161 total
+1 directory, 7 files
+   4 birds3/birds.csv
+  25 birds3/birds.yaml
+  40 birds3/page.tmpl
+   3 birds3/postgrest.conf
+   7 birds3/post_result.tmpl
+  33 birds3/README.md
+  50 birds3/setup.sql
+ 162 total
 ~~~
 
 # Three birds
@@ -282,9 +265,10 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Newt manages data flow
 
-- request => JSON source => Pandoc => response
-- A simple DSL for mapping requests to JSON source and Pandoc
-- leverages DSL for form data validation
+1. web browser => Newt
+2. Newt => PostgREST
+3. Newt => Pandoc 
+4. Newt => web browser
 
 # Developer workflow
 
@@ -296,25 +280,23 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 **Repeat as needed**
 
-# Minimal new knowledge
+# Minimal prior new knowledge
 
-- If you've attended a data science workshop you likely know enough SQL
-- If you've built a static website you likely know about Pandoc
-- If you've built a static website you likely know YAML
-- Use YAML and a small DSL to map requests to data sources and validate form data
-- SQL + YAML files + Pandoc template(s) => web application
+- A data science workshop often will teach you enough SQL
+- Static website generation often envolves Pandoc
+- Markdown documents often use YAML to represent front matter
 
 # Weaknesses in my proposal
 
 - Newt is **an experimental prototype** (June 2023)
 - Newt doesn't support file uploads
-- Does not eliminate Learning curves, e.g.
+- It does not eliminate Learning curves, e.g.
     1. Postgres and SQL
     2. Pandoc
     3. using HTTP methods
     4. YAML
 
-# Addvantages, maturity
+# Newt's Advantages, a mature foundation
 
 - SQL (1974)
 - HTTP (1991)
@@ -331,7 +313,7 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 - I am building staff facing applications, Summer 2023
 - Testing Solr/Elasticsearch as a JSON sources
-- Move beyond my proof of concept
+- I hope to move beyond my proof of concept demo
 
 # It would be nice if ...
 
@@ -341,19 +323,22 @@ birds 3    dynamic     read/write data          requires SQL knowledge
     - sharing Pandoc templates
     - sharing YAML files
 
-# Someday, maybe ideas
+# A possible roadmap
 
-- Use YAML file to extrapolate SQL models and Pandoc templates 
+- Enhance the YAML to extrapolate SQL models and Pandoc templates 
 - Rewrite Newt in Haskell
     - Integrate Pandoc into Newt, skip requiring Pandoc server
-
+- Explore a companion app that would query Postgres and generate a default YAML file
+- Explore a companion app that would let you have a PostgREST like service built ontop of an SQLite3 darabase
+`
 # An unexpected result of simplification
 
-- Newt can potentially scale really big!
-    - Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
-    - Pandoc server can be scaled wide (it retains zero state and configuration file)
-    - PostgREST can be scale wide (it has a minimal configuration file)
-    - Postgres (the only part holding state) can be clustered
+> Newt can potentially scale really big!
+
+- Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
+- Pandoc server can be scaled wide (it retains zero state and configuration file)
+- PostgREST can be scale wide (it has a minimal configuration file)
+- Postgres (the only part holding state) can be clustered
 
 # Additional resources 
 

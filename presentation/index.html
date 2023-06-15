@@ -16,8 +16,11 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
     ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
@@ -294,32 +297,6 @@ class="slide section level1">
 <li>Write a YAML file to orchestrate our microservice conversation</li>
 </ul>
 </div>
-<div id="how-does-newt-orchestrate-our-microservices"
-class="slide section level1">
-<h1>How does Newt orchestrate our microservices?</h1>
-<ul>
-<li>port number</li>
-<li>htdocs path (if needed)</li>
-<li>routes definitions
-<ul>
-<li>define typed variables for request path and form data
-validation</li>
-<li>A request description
-<ul>
-<li>request path</li>
-<li>request (HTTP) method</li>
-</ul></li>
-<li>JSON source access
-<ul>
-<li>api URL</li>
-<li>api method</li>
-<li>api content type</li>
-</ul></li>
-<li>Pandoc template to process JSON results if needed</li>
-<li>Response HTTP headers if needed</li>
-</ul></li>
-</ul>
-</div>
 <div id="is-this-really-simpler" class="slide section level1">
 <h1>Is this really simpler?</h1>
 <p>Three versions of a bird sighting website</p>
@@ -360,13 +337,13 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <li>Built with SQL (Postgres + PostgREST), Browser side JavaScript</li>
 </ul>
 <pre><code>2 directories, 6 files
-      32 birds2/README.md
-       4 birds2/birds.csv
-       3 birds2/postgrest.conf
-      50 birds2/setup.sql
-      24 birds2/htdocs/index.html
-      63 birds2/htdocs/sightings.js
-     176 total</code></pre>
+   4 birds2/birds.csv
+   3 birds2/postgrest.conf
+  32 birds2/README.md
+  50 birds2/setup.sql
+  24 birds2/htdocs/index.html
+  63 birds2/htdocs/sightings.js
+ 176 total</code></pre>
 </div>
 <div id="birds-3" class="slide section level1">
 <h1><a
@@ -376,15 +353,15 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <li>Built with SQL (Postgres + PostgREST), Pandoc, Newt</li>
 <li><strong>no JavaScript</strong></li>
 </ul>
-<pre><code>2 directories, 7 files
-      33 birds3/README.md
-       4 birds3/birds.csv
-      24 birds3/birds.yaml
-      40 birds3/page.tmpl
-       7 birds3/post_result.tmpl
-       3 birds3/postgrest.conf
-      50 birds3/setup.sql
-     161 total</code></pre>
+<pre><code>1 directory, 7 files
+   4 birds3/birds.csv
+  25 birds3/birds.yaml
+  40 birds3/page.tmpl
+   3 birds3/postgrest.conf
+   7 birds3/post_result.tmpl
+  33 birds3/README.md
+  50 birds3/setup.sql
+ 162 total</code></pre>
 </div>
 <div id="three-birds" class="slide section level1">
 <h1>Three birds</h1>
@@ -469,7 +446,7 @@ server)</li>
 <li>orchestrate our microservice conversation via YAML file (Newt)</li>
 </ol>
 </div>
-<div id="how-does-newt-orchestrate-our-microservices-1"
+<div id="how-does-newt-orchestrate-our-microservices"
 class="slide section level1">
 <h1>How does Newt orchestrate our microservices?</h1>
 <ul>
@@ -491,11 +468,12 @@ data)</li>
 </div>
 <div id="newt-manages-data-flow" class="slide section level1">
 <h1>Newt manages data flow</h1>
-<ul>
-<li>request =&gt; JSON source =&gt; Pandoc =&gt; response</li>
-<li>A simple DSL for mapping requests to JSON source and Pandoc</li>
-<li>leverages DSL for form data validation</li>
-</ul>
+<ol style="list-style-type: decimal">
+<li>web browser =&gt; Newt</li>
+<li>Newt =&gt; PostgREST</li>
+<li>Newt =&gt; Pandoc</li>
+<li>Newt =&gt; web browser</li>
+</ol>
 </div>
 <div id="developer-workflow" class="slide section level1">
 <h1>Developer workflow</h1>
@@ -508,16 +486,12 @@ data)</li>
 </ol>
 <p><strong>Repeat as needed</strong></p>
 </div>
-<div id="minimal-new-knowledge" class="slide section level1">
-<h1>Minimal new knowledge</h1>
+<div id="minimal-prior-new-knowledge" class="slide section level1">
+<h1>Minimal prior new knowledge</h1>
 <ul>
-<li>If you’ve attended a data science workshop you likely know enough
-SQL</li>
-<li>If you’ve built a static website you likely know about Pandoc</li>
-<li>If you’ve built a static website you likely know YAML</li>
-<li>Use YAML and a small DSL to map requests to data sources and
-validate form data</li>
-<li>SQL + YAML files + Pandoc template(s) =&gt; web application</li>
+<li>A data science workshop often will teach you enough SQL</li>
+<li>Static website generation often envolves Pandoc</li>
+<li>Markdown documents often use YAML to represent front matter</li>
 </ul>
 </div>
 <div id="weaknesses-in-my-proposal" class="slide section level1">
@@ -525,7 +499,7 @@ validate form data</li>
 <ul>
 <li>Newt is <strong>an experimental prototype</strong> (June 2023)</li>
 <li>Newt doesn’t support file uploads</li>
-<li>Does not eliminate Learning curves, e.g.
+<li>It does not eliminate Learning curves, e.g.
 <ol style="list-style-type: decimal">
 <li>Postgres and SQL</li>
 <li>Pandoc</li>
@@ -534,8 +508,9 @@ validate form data</li>
 </ol></li>
 </ul>
 </div>
-<div id="addvantages-maturity" class="slide section level1">
-<h1>Addvantages, maturity</h1>
+<div id="newts-advantages-a-mature-foundation"
+class="slide section level1">
+<h1>Newt’s Advantages, a mature foundation</h1>
 <ul>
 <li>SQL (1974)</li>
 <li>HTTP (1991)</li>
@@ -555,7 +530,7 @@ validate form data</li>
 <ul>
 <li>I am building staff facing applications, Summer 2023</li>
 <li>Testing Solr/Elasticsearch as a JSON sources</li>
-<li>Move beyond my proof of concept</li>
+<li>I hope to move beyond my proof of concept demo</li>
 </ul>
 </div>
 <div id="it-would-be-nice-if" class="slide section level1">
@@ -570,21 +545,23 @@ validate form data</li>
 </ul></li>
 </ul>
 </div>
-<div id="someday-maybe-ideas" class="slide section level1">
-<h1>Someday, maybe ideas</h1>
+<div id="a-possible-roadmap" class="slide section level1">
+<h1>A possible roadmap</h1>
 <ul>
-<li>Use YAML file to extrapolate SQL models and Pandoc templates</li>
+<li>Enhance the YAML to extrapolate SQL models and Pandoc templates</li>
 <li>Rewrite Newt in Haskell
 <ul>
 <li>Integrate Pandoc into Newt, skip requiring Pandoc server</li>
 </ul></li>
+<li>Explore a companion app that would query Postgres and generate a
+default YAML file</li>
+<li>Explore a companion app that would let you have a PostgREST like
+service built ontop of an SQLite3 darabase ` # An unexpected result of
+simplification</li>
 </ul>
-</div>
-<div id="an-unexpected-result-of-simplification"
-class="slide section level1">
-<h1>An unexpected result of simplification</h1>
-<ul>
-<li>Newt can potentially scale really big!
+<blockquote>
+<p>Newt can potentially scale really big!</p>
+</blockquote>
 <ul>
 <li>Newt can be scaled wide (parallel), it requires minimal state (only
 what’s in the configuration file)</li>
@@ -593,7 +570,6 @@ configuration file)</li>
 <li>PostgREST can be scale wide (it has a minimal configuration
 file)</li>
 <li>Postgres (the only part holding state) can be clustered</li>
-</ul></li>
 </ul>
 </div>
 <div id="additional-resources" class="slide section level1">
