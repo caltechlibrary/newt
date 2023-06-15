@@ -180,40 +180,41 @@ data router, form data validator, static file services</li>
 <li>Newt =&gt; Pandoc</li>
 <li>Newt =&gt; web browser</li>
 </ol>
-<h1 id="limit-the-cognitive-shifts">Limit the cognitive shifts</h1>
-<h2 id="client-side-knowledge">Client side knowledge</h2>
+<h1 id="limit-the-cognitive-shifts-client-side">Limit the cognitive
+shifts, client side</h1>
 <ul>
 <li>HTML, CSS, JavaScript, image assets, etc.</li>
 </ul>
 <blockquote>
-<p>the usual suspects</p>
+<p><strong>the usual suspects</strong>, not much changes here</p>
 </blockquote>
-<h1 id="limit-the-cognitive-shifts-1">Limit the cognitive shifts</h1>
-<h2 id="server-side-knowledge">Server side knowledge</h2>
+<h1 id="limit-the-cognitive-shifts-server-side">Limit the cognitive
+shifts, server side</h1>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
 <li>Our YAML orchestration file</li>
 </ul>
-<h1 id="limit-the-cognitive-shifts-2">Limit the cognitive shifts</h1>
-<h2 id="why-emphasize-sql">Why emphasize SQL?</h2>
+<h1 id="limit-the-cognitive-shifts-why-emphasize-sql">Limit the
+cognitive shifts, why emphasize SQL?</h1>
 <ul>
 <li>SQL is good at describing structured data</li>
 <li>SQL is good at expressing queries</li>
-<li>SQL has rich data types, e.g. JSON columns</li>
+<li>SQL provides rich data types</li>
 <li>SQL can define data views, functions, procedures, triggers, …</li>
 </ul>
 <h1 id="write-less-code">Write less code</h1>
-<h2 id="postgresqlpostgrest-a-code-savings-plan">PostgreSQL+PostgREST, a
-code savings plan</h2>
 <blockquote>
-<p>Minimize the source Luke!</p>
+<p>PostgreSQL+PostgREST, a code savings plan</p>
 </blockquote>
 <ul>
 <li>Don’t need to learn an ORM, we’re not limited by an ORM</li>
 <li>Don’t duplicate the SQL models in another language</li>
 <li>Don’t write any middle-ware</li>
 </ul>
+<blockquote>
+<p>Minimize the source Luke!</p>
+</blockquote>
 <h1 id="minimized-toolbox-maximize-using-it">Minimized Toolbox, maximize
 using it</h1>
 <ul>
@@ -227,7 +228,7 @@ using it</h1>
 <ul>
 <li>Write SQL (Postgres) and get a JSON (PostgREST)</li>
 <li>Write Pandoc templates to transform JSON to HTML</li>
-<li>Write a YAML file to orchestrate our microservices</li>
+<li>Write a YAML file to orchestrate our microservice conversation</li>
 </ul>
 <h1 id="how-does-newt-orchestrate-our-microservices">How does Newt
 orchestrate our microservices?</h1>
@@ -238,10 +239,10 @@ orchestrate our microservices?</h1>
 <ul>
 <li>define typed variables for request path and form data
 validation</li>
-<li>A requst description
+<li>A request description
 <ul>
 <li>request path</li>
-<li>request method (HTTP method)</li>
+<li>request (HTTP) method</li>
 </ul></li>
 <li>JSON source access
 <ul>
