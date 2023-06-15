@@ -16,11 +16,8 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
+    ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
@@ -50,10 +47,8 @@ class="email">rsdoiel@caltech.edu</a>
 </div>
 <div id="newt" class="slide section level1">
 <h1>Newt</h1>
-<blockquote>
-<p>an experiment in simplifying the webstack</p>
-</blockquote>
-<p>… but first some context</p>
+<h2 id="a-small-system-experiment">a small system experiment</h2>
+<h3 id="but-first-some-context">… but first some context</h3>
 </div>
 <div id="lamp-and-its-legacy" class="slide section level1">
 <h1>LAMP and its legacy</h1>
@@ -136,7 +131,7 @@ class="email">rsdoiel@caltech.edu</a>
 <h1>The problem</h1>
 <ul>
 <li>Our coping strategies are not sustainable</li>
-<li>Complexity is part of the problem.</li>
+<li>Complexity is part of the problem</li>
 </ul>
 </div>
 <div id="why-are-these-things-so-complex" class="slide section level1">
@@ -230,28 +225,6 @@ data router, form data validator, static file services</li>
 </div>
 <div id="limit-the-moving-parts-1" class="slide section level1">
 <h1>Limit the moving parts</h1>
-<h2 id="newt-a-small-system-experiment">Newt, a small system
-experiment</h2>
-<ul>
-<li>Is leverages “off the shelf” microservices
-<ul>
-<li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a></li>
-<li><a href="https://pandoc.org">Pandoc</a></li>
-</ul></li>
-<li>Uses
-<ul>
-<li>SQL to model data (assuming Postgres+PostgREST)</li>
-<li><a href="https://pandoc.org/MANUAL.html#templates">Pandoc
-templates</a> (<a href="https://pandoc.org/pandoc-server.html">Pandoc
-Server</a>)</li>
-<li>YAML configuration (<a
-href="https://github.com/caltechlibrary/newt/">Newt</a>)</li>
-</ul></li>
-</ul>
-</div>
-<div id="limit-the-moving-parts-2" class="slide section level1">
-<h1>Limit the moving parts</h1>
 <ol style="list-style-type: decimal">
 <li>web browser =&gt; Newt</li>
 <li>Newt =&gt; PostgREST</li>
@@ -259,47 +232,48 @@ href="https://github.com/caltechlibrary/newt/">Newt</a>)</li>
 <li>Newt =&gt; web browser</li>
 </ol>
 </div>
-<div id="limit-the-cognitive-shifts" class="slide section level1">
-<h1>Limit the cognitive shifts</h1>
-<h2 id="client-side-knowledge">Client side knowledge</h2>
+<div id="limit-the-cognitive-shifts-client-side"
+class="slide section level1">
+<h1>Limit the cognitive shifts, client side</h1>
 <ul>
 <li>HTML, CSS, JavaScript, image assets, etc.</li>
 </ul>
 <blockquote>
-<p>the usual suspects</p>
+<p><strong>the usual suspects</strong>, not much changes here</p>
 </blockquote>
 </div>
-<div id="limit-the-cognitive-shifts-1" class="slide section level1">
-<h1>Limit the cognitive shifts</h1>
-<h2 id="server-side-knowledge">Server side knowledge</h2>
+<div id="limit-the-cognitive-shifts-server-side"
+class="slide section level1">
+<h1>Limit the cognitive shifts, server side</h1>
 <ul>
 <li>SQL</li>
 <li>Pandoc templates</li>
 <li>Our YAML orchestration file</li>
 </ul>
 </div>
-<div id="limit-the-cognitive-shifts-2" class="slide section level1">
-<h1>Limit the cognitive shifts</h1>
-<h2 id="why-emphasize-sql">Why emphasize SQL?</h2>
+<div id="limit-the-cognitive-shifts-why-emphasize-sql"
+class="slide section level1">
+<h1>Limit the cognitive shifts, why emphasize SQL?</h1>
 <ul>
 <li>SQL is good at describing structured data</li>
 <li>SQL is good at expressing queries</li>
-<li>SQL has rich data types, e.g. JSON columns</li>
+<li>SQL provides rich data types</li>
 <li>SQL can define data views, functions, procedures, triggers, …</li>
 </ul>
 </div>
 <div id="write-less-code" class="slide section level1">
 <h1>Write less code</h1>
-<h2 id="postgresqlpostgrest-a-code-savings-plan">PostgreSQL+PostgREST, a
-code savings plan</h2>
 <blockquote>
-<p>Minimize the source Luke!</p>
+<p>PostgreSQL+PostgREST, a code savings plan</p>
 </blockquote>
 <ul>
 <li>Don’t need to learn an ORM, we’re not limited by an ORM</li>
 <li>Don’t duplicate the SQL models in another language</li>
 <li>Don’t write any middle-ware</li>
 </ul>
+<blockquote>
+<p>Minimize the source Luke!</p>
+</blockquote>
 </div>
 <div id="minimized-toolbox-maximize-using-it"
 class="slide section level1">

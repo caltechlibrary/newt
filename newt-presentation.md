@@ -21,9 +21,9 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 # Newt
 
-> an experiment in simplifying the webstack 
+## a small system experiment
 
-... but first some context
+### ... but first some context
 
 # LAMP and its legacy 
 
@@ -58,7 +58,7 @@ Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
 # The problem
 
 - Our coping strategies are not sustainable
-- Complexity is part of the problem.
+- Complexity is part of the problem
 
 # Why are these things so complex?
 
@@ -120,57 +120,39 @@ scale
 
 # Limit the moving parts
 
-## Newt, a small system experiment
-
-- Is leverages "off the shelf" microservices 
-  - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
-  - [Pandoc](https://pandoc.org)
-- Uses
-  - SQL to model data (assuming Postgres+PostgREST)
-  - [Pandoc templates](https://pandoc.org/MANUAL.html#templates) ([Pandoc Server](https://pandoc.org/pandoc-server.html))
-  - YAML configuration ([Newt](https://github.com/caltechlibrary/newt/))
-
-# Limit the moving parts
-
 1. web browser => Newt
 2. Newt => PostgREST
 3. Newt => Pandoc 
 4. Newt => web browser
 
-# Limit the cognitive shifts
-
-## Client side knowledge
+# Limit the cognitive shifts, client side
 
 - HTML, CSS, JavaScript, image assets, etc.
 
-> the usual suspects
+> __the usual suspects__, not much changes here
 
-# Limit the cognitive shifts
-
-## Server side knowledge
+# Limit the cognitive shifts, server side 
 
 - SQL
 - Pandoc templates
 - Our YAML orchestration file
 
-# Limit the cognitive shifts
-
-## Why emphasize SQL?
+# Limit the cognitive shifts, why emphasize SQL?
 
 - SQL is good at describing structured data
 - SQL is good at expressing queries
-- SQL has rich data types, e.g. JSON columns
+- SQL provides rich data types
 - SQL can define data views, functions, procedures, triggers, ...
 
 # Write less code
 
-## PostgreSQL+PostgREST, a code savings plan
-
-> Minimize the source Luke!
+> PostgreSQL+PostgREST, a code savings plan
 
 - Don't need to learn an ORM, we're not limited by an ORM
 - Don't duplicate the SQL models in another language
 - Don't write any middle-ware
+
+> Minimize the source Luke!
 
 # Minimized Toolbox, maximize using it
 
@@ -185,7 +167,7 @@ scale
 
 - Write SQL (Postgres) and get a JSON (PostgREST)
 - Write Pandoc templates to transform JSON to HTML
-- Write a YAML file to orchestrate our microservices
+- Write a YAML file to orchestrate our microservice conversation
 
 
 # How does Newt orchestrate our microservices?
@@ -194,9 +176,9 @@ scale
 - htdocs path (if needed)
 - routes definitions
   - define typed variables for request path and form data validation
-  - A requst description
+  - A request description
     - request path
-    - request method (HTTP method)
+    - request (HTTP) method
   - JSON source access
     - api URL
     - api method
