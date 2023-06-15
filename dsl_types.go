@@ -6,24 +6,33 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	// 3rd Party packages
+	"github.com/shurcooL/github_flavored_markdown"
 )
 
+
 var (
-	// RdslTypes is a map to the types defined in route_dsl_types.go
-	RouteTypes = map[string]EvalType{
-		"String":   new(RdslString).EvalType,
-		"Year":     new(RdslYear).EvalType,
-		"Month":    new(RdslMonth).EvalType,
-		"Day":      new(RdslDay).EvalType,
-		"Basename": new(RdslBasename).EvalType,
-		"Extname":  new(RdslExtname).EvalType,
-		"Isbn10":   new(RdslIsbn10).EvalType,
-		"Isbn13":   new(RdslIsbn13).EvalType,
-		"Isbn":     new(RdslIsbn).EvalType,
-		"Issn":     new(RdslIssn).EvalType,
-		"DOI":      new(RdslDOI).EvalType,
-		"Isni":     new(RdslIsni).EvalType,
-		"ORCID":    new(RdslORCID).EvalType,
+	// DataTypes is a map to the types defined in route_dsl_types.go
+	DataTypes = map[string]EvalType{
+		"String":   new(TypeString).EvalType,
+		"Integer":  new(TypeInteger).EvalType,
+		"Real":     new(TypeReal).EvalType,
+		"Boolean":  new(TypeBool).EvalType,
+		"Date":     new(TypeDate).EvalType,
+		"Year":     new(TypeYear).EvalType,
+		"Month":    new(TypeMonth).EvalType,
+		"Day":      new(TypeDay).EvalType,
+		"Basename": new(TypeBasename).EvalType,
+		"Extname":  new(TypeExtname).EvalType,
+		"ISBN10":   new(TypeIsbn10).EvalType,
+		"ISBN13":   new(TypeIsbn13).EvalType,
+		"ISBN":     new(TypeIsbn).EvalType,
+		"ISSN":     new(TypeIssn).EvalType,
+		"DOI":      new(TypeDOI).EvalType,
+		"ISNI":     new(TypeIsni).EvalType,
+		"ORCID":    new(TypeORCID).EvalType,
+		"Markdown": new(TypeMarkdown).EvalType,
 	}
 )
 
@@ -32,72 +41,203 @@ func lastChar(s string) string {
 	return s[l:]
 }
 
-// DSLType
-type DSLType interface {
+// DataType is an interface the "data types" need to implement.
+type DataType interface {
 	// EvalType takes an variable type expression like
 	EvalType(string, string) (string, bool)
 }
 
-// Route DSL types
-type RdslString struct {
+// TypeString implements a string data type
+type TypeString struct {
 }
 
-func (str RdslString) EvalType(expr string, val string) (string, bool) {
+func (str TypeString) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	layout = "%s"
+	if strings.Contain(expr, " ") {
+		parts := strings.SprintN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	return strings.Sprintf(layout, val), true
+}
+
+// TypeInteger implements an integer data type
+type TypeInteger struct {
+}
+
+func (str TypeInteger) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	layout = "%d"
+	if strings.Contains(expr, " ") {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	x, err := strconv.Atoi(val)
+	if err != nil {
+		return "", false
+	}
+	val := fmt.Sprintf(layout, x)
 	return val, true
 }
 
-type RdslYear struct {
+// TypeReal implements a decimal data type
+type TypeReal struct {
 }
 
-func (year RdslYear) EvalType(expr string, val string) (string, bool) {
-	dt, err := time.Parse(`2006`, val)
+func (str TypeReal) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	layout = "%f"
+	if strings.Contains(expr, " ") {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	x, err := strconv.ParseFloat(val, 64)
 	if err != nil {
 		return "", false
 	}
-	return dt.Format(`2006`), true
+	val := fmt.Sprintf(layout, x)
+	return val, true
 }
 
-type RdslMonth struct {
+// TypeBool implements a boolean data type
+type TypeBool struct {
 }
 
-func (month RdslMonth) EvalType(expr string, val string) (string, bool) {
-	dt, err := time.Parse(`01`, val)
+func (str TypeReal) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	layout = "%t"
+	if strings.Contains(expr, " ") {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	b, err := strconv.ParseBool(val)
 	if err != nil {
 		return "", false
 	}
-	return dt.Format(`01`), true
+	val := fmt.Sprintf(layout, b)
+	return val, true
 }
 
-type RdslDay struct {
+    
+    
+
+// Type Date implements a date type.
+type TypeDate struct {
 }
 
-func (day RdslDay) EvalType(expr string, val string) (string, bool) {
-	dt, err := time.Parse(`02`, val)
+func (str TypeDate) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	if ! strings.Contains(expr, " ") {
+		layout = "2006-01-02"
+	} else {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	dt, err := time.Parse(layout, val)
 	if err != nil {
 		return "", false
 	}
-	return dt.Format(`02`), true
+	return dt.Format(layout), true
 }
 
-type RdslBasename struct {
+// TypeYear implements a variation of a Date type for working with the
+// year component of a Go Date.
+type TypeYear struct {
 }
 
-func (basename RdslBasename) EvalType(expr string, val string) (string, bool) {
+func (year TypeYear) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	if ! strings.Contains(expr, " ") {
+		layout = "2006"
+	} else {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	dt, err := time.Parse(layout, val)
+	if err != nil {
+		return "", false
+	}
+	return dt.Format(layout), true
+}
+
+// TypeMonth implements a variation of a Date type for working with the
+// month component of a Go Date.
+type TypeMonth struct {
+}
+
+func (month TypeMonth) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	if ! strings.Contains(expr, " ") {
+		layout = "01"
+	} else {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	dt, err := time.Parse(layout, val)
+	if err != nil {
+		return "", false
+	}
+	return dt.Format(layout), true
+}
+
+// TypeDay implements a variation of a Date type for working with the
+// day component of a Go Date.
+type TypeDay struct {
+}
+
+func (day TypeDay) EvalType(expr string, val string) (string, bool) {
+	var layout string
+	if ! strings.Contains(expr, " ") {
+		layout = "02"
+	} else {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			layout = parts[1]
+		}
+	}
+	dt, err := time.Parse(layout, val)
+	if err != nil {
+		return "", false
+	}
+	return dt.Format(layout), true
+}
+
+// TypeBasename is a type specific to a path's filename.
+type TypeBasename struct {
+}
+
+func (basename TypeBasename) EvalType(expr string, val string) (string, bool) {
 	ext := path.Ext(val)
 	return strings.TrimSuffix(val, ext), true
 }
 
-type RdslExtname struct {
+// TypeExtname is a type specific to a path's filename's extension.
+type TypeExtname struct {
 }
 
-func (extname RdslExtname) EvalType(expr string, val string) (string, bool) {
+func (extname TypeExtname) EvalType(expr string, val string) (string, bool) {
 	return path.Ext(val), true
 }
 
-type RdslIsbn10 struct {
+// TypeISBN10 implements an 10 digit ISBN type.
+type TypeISBN10 struct {
 }
 
-func isIsbn10(val string) bool {
+func isiSBN10(val string) bool {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
 	if len(val) != 10 {
 		return false
@@ -116,18 +256,19 @@ func isIsbn10(val string) bool {
 	return true
 }
 
-func (isbn10 RdslIsbn10) EvalType(expr string, val string) (string, bool) {
+func (isbn10 TypeISBN10) EvalType(expr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
-	if !isIsbn10(val) {
+	if !isISBN10(val) {
 		return "", false
 	}
 	return val, true
 }
 
-type RdslIsbn13 struct {
+// TypeISBN13 implements an 13 digit ISBN type.
+type TypeISBN13 struct {
 }
 
-func isIsbn13(val string) bool {
+func isISBN13(val string) bool {
 	if len(val) != 13 {
 		return false
 	}
@@ -157,29 +298,31 @@ func isIsbn13(val string) bool {
 	return true
 }
 
-func (isbn13 RdslIsbn13) EvalType(extr string, val string) (string, bool) {
+func (isbn13 TypeISBN13) EvalType(extr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
-	if !isIsbn13(val) {
+	if !isISBN13(val) {
 		return "", false
 	}
 	return val, true
 }
 
-type RdslIsbn struct {
+// TypeISBN implements both a 10 digit and 13 digit ISBN
+type TypeISBN struct {
 }
 
-func (isbn RdslIsbn) EvalType(extr string, val string) (string, bool) {
+func (isbn TypeISBN) EvalType(extr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
-	if !(isIsbn10(val) || isIsbn13(val)) {
+	if !(isISBN10(val) || isISBN13(val)) {
 		return "", false
 	}
 	return val, true
 }
 
-type RdslIssn struct {
+// TypeISSN implements the ISSN data type.
+type TypeISSN struct {
 }
 
-func isIssn(val string) bool {
+func isISSN(val string) bool {
 	if len(val) != 8 {
 		return false
 	}
@@ -197,18 +340,19 @@ func isIssn(val string) bool {
 	return true
 }
 
-func (issn RdslIssn) EvalType(expr string, val string) (string, bool) {
+func (issn TypeISSN) EvalType(expr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
-	if !isIssn(val) {
+	if !isISSN(val) {
 		return "", false
 	}
 	return val, true
 }
 
-type RdslDOI struct {
+// TypeDOI implements a DOI data type
+type TypeDOI struct {
 }
 
-func (doi RdslDOI) EvalType(expr string, val string) (string, bool) {
+func (doi TypeDOI) EvalType(expr string, val string) (string, bool) {
 	doiRE := regexp.MustCompile(`doi:\s*|(?:https?://)?(?:dx\.)?doi\.org/)?(10\.\d+(.\d+)*/.+)$)`)
 	if doiRE.MatchString(val) {
 		return val, true
@@ -216,10 +360,11 @@ func (doi RdslDOI) EvalType(expr string, val string) (string, bool) {
 	return "", false
 }
 
-type RdslIsni struct {
+// TypeISNI implements an ISNI data type
+type TypeISNI struct {
 }
 
-func isIsni(val string) bool {
+func isISNI(val string) bool {
 	if len(val) != 16 {
 		return false
 	}
@@ -241,23 +386,24 @@ func isIsni(val string) bool {
 	return true
 }
 
-func (isni RdslIsni) EvalType(expr string, val string) (string, bool) {
+func (isni TypeISNI) EvalType(expr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
-	if !isIsni(val) {
+	if !isISNI(val) {
 		return "", false
 	}
 	return val, true
 }
 
-type RdslORCID struct {
+// TypeORCID impements the ORCID data type
+type TypeORCID struct {
 }
 
-func (orcid RdslORCID) EvalType(expr string, val string) (string, bool) {
+func (orcid TypeORCID) EvalType(expr string, val string) (string, bool) {
 	if strings.HasPrefix(val, "https://orcid.org/") {
 		val = strings.TrimPrefix(val, "https://orcid.org/")
 	}
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
-	if isIsni(val) {
+	if isISNI(val) {
 		// Trim the check sum digit
 		val = val[0 : len(val)-1]
 		chk, err := strconv.Atoi(val)
@@ -270,3 +416,26 @@ func (orcid RdslORCID) EvalType(expr string, val string) (string, bool) {
 	}
 	return "", false
 }
+
+// TypeMarkdown implements GitHub Flavored Markdown data type using
+// the Go package github_flavored_markdown. This is useful many when
+// processing form data (e.g. like when processing a POST). The parameter
+// passed after "Markdown" should be the name of a varaible that holds
+// the processed markup.
+type TypeMarkdown struct {
+}
+
+func (markdown TypeMarkdown) GetTargetVarname(expr string) (string, bool) {
+	if strings.Contain(expr, " ") {
+		parts := strings.SplitN(expr, " ", 2)
+		if len(parts) == 2 {
+			return parts[1], true
+		}
+	}
+	return "", false
+}
+
+func (markdown TypeMarkdown) EvalType(expr string, val string) (string, bool) {
+	return github_flavored_markdown.Markdown(val), true
+}
+

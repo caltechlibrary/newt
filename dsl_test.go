@@ -11,7 +11,7 @@ func TestBlogPathEndingWithString(t *testing.T) {
 		"dy": "Day",
 		"title-slug": "String",
 	}
-	rdsl, err := NewDSL(`/blog/${yr}/${mo}/${dy}/${title-slug}`, m)
+	rdsl, err := NewRouteDSL(`/blog/${yr}/${mo}/${dy}/${title-slug}`, m)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -38,7 +38,7 @@ func TestBlogPathEndingWithExt(t *testing.T) {
 		"title-slug": "Basename",
 		"ext": "Extname",
 	}
-	rdsl, err := NewDSL(`/blog/${year}/${month}/${day}/${title-slug}${ext}`, m)
+	rdsl, err := NewRouteDSL(`/blog/${year}/${month}/${day}/${title-slug}${ext}`, m)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -63,7 +63,7 @@ func TestEvalAndResolve(t *testing.T) {
 		"dy": "Day",
 		"title-slug": "String",
 	}
-	rdsl, err := NewDSL(`/blog/${yr}/${mo}/${dy}/${title-slug}`, m)
+	rdsl, err := NewRouteDSL(`/blog/${yr}/${mo}/${dy}/${title-slug}`, m)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

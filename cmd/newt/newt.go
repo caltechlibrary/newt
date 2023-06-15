@@ -153,13 +153,16 @@ The result of the JSON source request could then be processed with a Pandoc temp
 String
 : Any sequence of characters. If the variabe is embedded in a path then "/" will be used to delimited path parts and would not be passed into the variables value.
 
-Year
+Date
+: (default) A year, month, day string like 2006-01-02
+
+Date 2006
 : A four digit year (e.g. 2023)
 
-Month
+Date 01
 : A two digit month (e.g. "01" for January, "10" for October)
 
-Day
+Date 02
 : A two digit day (e.g. "01" for the first, "11" for the eleventh)
 
 Basename
@@ -212,7 +215,7 @@ An example of a YAML file describing blog like application based on Postgres+Pos
 env: [ "DB_USER", "DB_PASSWORD" ]
 htdocs: htdocs
 routes:
-  - var: [ "yr": "Year", "mo": "Month", "dy": "Day" }
+  - var: [ "yr": "Date 2006", "mo": "Date 01", "dy": "Date 02" }
     req_path: "/blog/${yr}/${mo}/${dy}"
     req_method: GET
     api_url: "http://${DB_USER}:${DB_PASSWORD}@localhost:3000/posts?year=${yr}&month=${mo}&day=${dy}"

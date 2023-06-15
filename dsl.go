@@ -12,11 +12,26 @@ const (
 	EndVar   = "}"
 )
 
+// EvalType is the function that is envoked with the data type
+// expression and value returning the value as a string and a
+// bool that indicates a success or failure in the evalutation.
 type EvalType func(string, string) (string, bool)
 
-// DSL holds the attributes need to decode
-// a DSL expression, match and decode against path values.
-type DSL struct {
+// ModelDSL describe an object's attributes and type. This is
+// analagous to a tables's field definitions.
+type ModelDSL struct {
+	// Name of model, this may be translated into the table name when
+	// rendering SQL
+	Name string `json:"name,required" yaml:"name,required"`
+	// Var a map of key/values where key is a variable name and value
+	// is the data type.
+	Var map[string]string `json:"var,omitempty" yaml:"var,omitempty"`
+}
+
+
+// RouteDSL holds the attributes need to decode
+// a route DSL expression, match and decode against path values.
+type RouteDSL struct {
 	Src  string   `json:"src"`
 	Dirs []string `json:"dirs,omitempty"`
 	Base string   `json:"base,omitempty"`
@@ -31,7 +46,7 @@ type DSL struct {
 	TypeFn map[string]EvalType `json:"-"`
 }
 
-func (rdsl *DSL) String() string {
+func (rdsl *RouteDSL) String() string {
 	src, _ := json.MarshalIndent(rdsl, "", "    ")
 	return string(src)
 }
@@ -40,9 +55,9 @@ func getVarname(elem string) string {
 	return strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(elem, StartVar), EndVar))
 }
 
-// NewDSL takes a DSL expression and returns a
+// NewRouteDSL takes a DSL expression and returns a
 // DSLExpresion structure and error value.
-func NewDSL(src string, varDef map[string]string) (*DSL, error) {
+func NewRouteDSL(src string, varDef map[string]string) (*RouteDSL, error) {
 	dir, base := path.Split(src)
 
 	rdsl := new(DSL)
@@ -108,7 +123,7 @@ func NewDSL(src string, varDef map[string]string) (*DSL, error) {
 
 // evalElement takes compares a element against a value (from the path value)
 // returns a variable name, interface value and bool indicating a successful match
-func (rdsl *DSL) evalElement(elem string, src string) (string, string, bool) {
+func (rdsl *RouteDSL) evalElement(elem string, src string) (string, string, bool) {
 	// Check if we workingwith a literal element or a variable defn.
 	if strings.HasPrefix(elem, StartVar) {
 		// handle variable path element
@@ -135,7 +150,7 @@ func (rdsl *DSL) evalElement(elem string, src string) (string, string, bool) {
 
 // Eval takes a path value and compares it with a Path expression.
 // It returns a status boolean, map of variable names to values.
-func (rdsl *DSL) Eval(pathValue string) (map[string]string, bool) {
+func (rdsl *RouteDSL) Eval(pathValue string) (map[string]string, bool) {
 	dir, base := path.Split(pathValue)
 	pDirs := strings.Split(strings.TrimSuffix(strings.TrimPrefix(dir, "/"), "/"), "/")
 	pExt := path.Ext(base)
@@ -185,7 +200,7 @@ func (rdsl *DSL) Eval(pathValue string) (map[string]string, bool) {
 
 // Resolve takes a map of varnames and values and replaces any
 // occurrences found in src string resulting to a new string..
-func (rdsl *DSL) Resolve(m map[string]string, src string) string {
+func (rdsl *RouteDSL) Resolve(m map[string]string, src string) string {
 	res := src[0:]
 	for k, v := range m {
 		k = StartVar + k + EndVar
