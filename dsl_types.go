@@ -1,6 +1,7 @@
 package newt
 
 import (
+	"fmt"
 	"path"
 	"regexp"
 	"strconv"
@@ -25,12 +26,12 @@ var (
 		"Day":      new(TypeDay).EvalType,
 		"Basename": new(TypeBasename).EvalType,
 		"Extname":  new(TypeExtname).EvalType,
-		"ISBN10":   new(TypeIsbn10).EvalType,
-		"ISBN13":   new(TypeIsbn13).EvalType,
-		"ISBN":     new(TypeIsbn).EvalType,
-		"ISSN":     new(TypeIssn).EvalType,
+		"ISBN10":   new(TypeISBN10).EvalType,
+		"ISBN13":   new(TypeISBN13).EvalType,
+		"ISBN":     new(TypeISBN).EvalType,
+		"ISSN":     new(TypeISSN).EvalType,
 		"DOI":      new(TypeDOI).EvalType,
-		"ISNI":     new(TypeIsni).EvalType,
+		"ISNI":     new(TypeISNI).EvalType,
 		"ORCID":    new(TypeORCID).EvalType,
 		"Markdown": new(TypeMarkdown).EvalType,
 	}
@@ -51,23 +52,23 @@ type DataType interface {
 type TypeString struct {
 }
 
-func (str TypeString) EvalType(expr string, val string) (string, bool) {
+func (t TypeString) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	layout = "%s"
-	if strings.Contain(expr, " ") {
-		parts := strings.SprintN(expr, " ", 2)
+	if strings.Contains(expr, " ") {
+		parts := strings.SplitN(expr, " ", 2)
 		if len(parts) == 2 {
 			layout = parts[1]
 		}
 	}
-	return strings.Sprintf(layout, val), true
+	return fmt.Sprintf(layout, val), true
 }
 
 // TypeInteger implements an integer data type
 type TypeInteger struct {
 }
 
-func (str TypeInteger) EvalType(expr string, val string) (string, bool) {
+func (t TypeInteger) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	layout = "%d"
 	if strings.Contains(expr, " ") {
@@ -80,15 +81,14 @@ func (str TypeInteger) EvalType(expr string, val string) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	val := fmt.Sprintf(layout, x)
-	return val, true
+	return fmt.Sprintf(layout, x), true
 }
 
 // TypeReal implements a decimal data type
 type TypeReal struct {
 }
 
-func (str TypeReal) EvalType(expr string, val string) (string, bool) {
+func (t TypeReal) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	layout = "%f"
 	if strings.Contains(expr, " ") {
@@ -101,15 +101,14 @@ func (str TypeReal) EvalType(expr string, val string) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	val := fmt.Sprintf(layout, x)
-	return val, true
+	return fmt.Sprintf(layout, x), true
 }
 
 // TypeBool implements a boolean data type
 type TypeBool struct {
 }
 
-func (str TypeReal) EvalType(expr string, val string) (string, bool) {
+func (t TypeBool) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	layout = "%t"
 	if strings.Contains(expr, " ") {
@@ -122,8 +121,7 @@ func (str TypeReal) EvalType(expr string, val string) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	val := fmt.Sprintf(layout, b)
-	return val, true
+	return fmt.Sprintf(layout, b), true
 }
 
     
@@ -133,7 +131,7 @@ func (str TypeReal) EvalType(expr string, val string) (string, bool) {
 type TypeDate struct {
 }
 
-func (str TypeDate) EvalType(expr string, val string) (string, bool) {
+func (t TypeDate) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	if ! strings.Contains(expr, " ") {
 		layout = "2006-01-02"
@@ -155,7 +153,7 @@ func (str TypeDate) EvalType(expr string, val string) (string, bool) {
 type TypeYear struct {
 }
 
-func (year TypeYear) EvalType(expr string, val string) (string, bool) {
+func (t TypeYear) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	if ! strings.Contains(expr, " ") {
 		layout = "2006"
@@ -177,7 +175,7 @@ func (year TypeYear) EvalType(expr string, val string) (string, bool) {
 type TypeMonth struct {
 }
 
-func (month TypeMonth) EvalType(expr string, val string) (string, bool) {
+func (t TypeMonth) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	if ! strings.Contains(expr, " ") {
 		layout = "01"
@@ -199,7 +197,7 @@ func (month TypeMonth) EvalType(expr string, val string) (string, bool) {
 type TypeDay struct {
 }
 
-func (day TypeDay) EvalType(expr string, val string) (string, bool) {
+func (t TypeDay) EvalType(expr string, val string) (string, bool) {
 	var layout string
 	if ! strings.Contains(expr, " ") {
 		layout = "02"
@@ -220,7 +218,7 @@ func (day TypeDay) EvalType(expr string, val string) (string, bool) {
 type TypeBasename struct {
 }
 
-func (basename TypeBasename) EvalType(expr string, val string) (string, bool) {
+func (t TypeBasename) EvalType(expr string, val string) (string, bool) {
 	ext := path.Ext(val)
 	return strings.TrimSuffix(val, ext), true
 }
@@ -229,7 +227,7 @@ func (basename TypeBasename) EvalType(expr string, val string) (string, bool) {
 type TypeExtname struct {
 }
 
-func (extname TypeExtname) EvalType(expr string, val string) (string, bool) {
+func (t TypeExtname) EvalType(expr string, val string) (string, bool) {
 	return path.Ext(val), true
 }
 
@@ -237,7 +235,7 @@ func (extname TypeExtname) EvalType(expr string, val string) (string, bool) {
 type TypeISBN10 struct {
 }
 
-func isiSBN10(val string) bool {
+func isISBN10(val string) bool {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
 	if len(val) != 10 {
 		return false
@@ -256,7 +254,7 @@ func isiSBN10(val string) bool {
 	return true
 }
 
-func (isbn10 TypeISBN10) EvalType(expr string, val string) (string, bool) {
+func (t TypeISBN10) EvalType(expr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
 	if !isISBN10(val) {
 		return "", false
@@ -298,7 +296,7 @@ func isISBN13(val string) bool {
 	return true
 }
 
-func (isbn13 TypeISBN13) EvalType(extr string, val string) (string, bool) {
+func (t TypeISBN13) EvalType(extr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
 	if !isISBN13(val) {
 		return "", false
@@ -310,7 +308,7 @@ func (isbn13 TypeISBN13) EvalType(extr string, val string) (string, bool) {
 type TypeISBN struct {
 }
 
-func (isbn TypeISBN) EvalType(extr string, val string) (string, bool) {
+func (t TypeISBN) EvalType(extr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
 	if !(isISBN10(val) || isISBN13(val)) {
 		return "", false
@@ -340,7 +338,7 @@ func isISSN(val string) bool {
 	return true
 }
 
-func (issn TypeISSN) EvalType(expr string, val string) (string, bool) {
+func (t TypeISSN) EvalType(expr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
 	if !isISSN(val) {
 		return "", false
@@ -352,7 +350,7 @@ func (issn TypeISSN) EvalType(expr string, val string) (string, bool) {
 type TypeDOI struct {
 }
 
-func (doi TypeDOI) EvalType(expr string, val string) (string, bool) {
+func (t TypeDOI) EvalType(expr string, val string) (string, bool) {
 	doiRE := regexp.MustCompile(`doi:\s*|(?:https?://)?(?:dx\.)?doi\.org/)?(10\.\d+(.\d+)*/.+)$)`)
 	if doiRE.MatchString(val) {
 		return val, true
@@ -386,7 +384,7 @@ func isISNI(val string) bool {
 	return true
 }
 
-func (isni TypeISNI) EvalType(expr string, val string) (string, bool) {
+func (t TypeISNI) EvalType(expr string, val string) (string, bool) {
 	val = strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(val, "-", ""), " ", ""))
 	if !isISNI(val) {
 		return "", false
@@ -398,7 +396,7 @@ func (isni TypeISNI) EvalType(expr string, val string) (string, bool) {
 type TypeORCID struct {
 }
 
-func (orcid TypeORCID) EvalType(expr string, val string) (string, bool) {
+func (t TypeORCID) EvalType(expr string, val string) (string, bool) {
 	if strings.HasPrefix(val, "https://orcid.org/") {
 		val = strings.TrimPrefix(val, "https://orcid.org/")
 	}
@@ -425,8 +423,8 @@ func (orcid TypeORCID) EvalType(expr string, val string) (string, bool) {
 type TypeMarkdown struct {
 }
 
-func (markdown TypeMarkdown) GetTargetVarname(expr string) (string, bool) {
-	if strings.Contain(expr, " ") {
+func (t TypeMarkdown) GetTargetVarname(expr string) (string, bool) {
+	if strings.Contains(expr, " ") {
 		parts := strings.SplitN(expr, " ", 2)
 		if len(parts) == 2 {
 			return parts[1], true
@@ -435,7 +433,7 @@ func (markdown TypeMarkdown) GetTargetVarname(expr string) (string, bool) {
 	return "", false
 }
 
-func (markdown TypeMarkdown) EvalType(expr string, val string) (string, bool) {
-	return github_flavored_markdown.Markdown(val), true
+func (t TypeMarkdown) EvalType(expr string, val string) (string, bool) {
+	return fmt.Sprintf("%s", github_flavored_markdown.Markdown([]byte(val))), true
 }
 

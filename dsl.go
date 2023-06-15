@@ -60,13 +60,13 @@ func getVarname(elem string) string {
 func NewRouteDSL(src string, varDef map[string]string) (*RouteDSL, error) {
 	dir, base := path.Split(src)
 
-	rdsl := new(DSL)
+	rdsl := new(RouteDSL)
 	rdsl.Src = src
 	rdsl.Base = base
 	rdsl.Ext = ""
 	// Include all the types defined dsl_types.go
 	rdsl.TypeFn = map[string]EvalType{}
-	for k, v := range RouteTypes {
+	for k, v := range DataTypes {
 		rdsl.TypeFn[k] = v
 	}
 
@@ -79,7 +79,6 @@ func NewRouteDSL(src string, varDef map[string]string) (*RouteDSL, error) {
 			} 
 			if v == "Extname" {
 				rdsl.Ext = fmt.Sprintf("%s%s%s", StartVar, k, EndVar)
-
 			}
 			rdsl.VarToType[k] = v
 		}
