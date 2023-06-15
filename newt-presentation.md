@@ -63,7 +63,7 @@ Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
 # Why are these things so complex?
 
 - We want more from our application, more code gets written
-- Application "enhancements", complexity accrues overtime
+- We want "enhancements", complexity accrues overtime
 - Best Practices like "systems should be designed to scale"
 
 # Why are these things so complex?
@@ -71,7 +71,7 @@ Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
 - first two are "people problems" (hard)
 - last one might be a system design problem (solvable?)
  
-# Let's talk about scale
+# Scale (from computing practice)
 
 scale
 : a euphemism for **scaling big**, as used in phrases like "google scale", "amazon scale"
@@ -84,21 +84,19 @@ scale
 
 # Scaling big
 
-- scaling big gave us => 
+- What did scaling big deliver?
   - distributed application design
+  - containers 
   - programmable infrastructure 
   - cache systems and dynamic clustering
   - complex systems management
-  - containers ...
 
-# Scale (geometry)
+# Scaling (from geometry)
 
-scale
+scaling
 : a linear transformation that enlarges or diminishes objects
 
-> ... **diminishes objects**, Inspiration!
-
-# Alternative? **scale small**
+# scale small!
 
 - Pack only what is needed
 - Simplify! 
@@ -112,7 +110,7 @@ scale
 
 # Limit the moving parts
 
-## Simplify through a clear division of labor
+> Simplify through a clear division of labor
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON API to manage data, it gives us a JSON source
 - [Pandoc](https://pandoc.org) =>  a powerful template engine
@@ -127,9 +125,9 @@ scale
 
 # Limit the cognitive shifts, client side
 
-- HTML, CSS, JavaScript, image assets, etc.
+> The status quo presists on the front-end
 
-> __the usual suspects__, not much changes here
+- HTML, CSS, JavaScript, image assets, etc.
 
 # Limit the cognitive shifts, server side 
 
@@ -146,8 +144,9 @@ scale
 
 # Write less code
 
-> PostgreSQL+PostgREST, a code savings plan
+> PostgreSQL+PostgREST is my code saving plan
 
+- The SQL runtime is rich in capability
 - Don't need to learn an ORM, we're not limited by an ORM
 - Don't duplicate the SQL models in another language
 - Don't write any middle-ware
@@ -157,46 +156,25 @@ scale
 # Minimized Toolbox, maximize using it
 
 - Text editor
-- Web browser
-- Pandoc
 - Postgres + PostgREST
+- Pandoc
 - Newt 
+- Web browser
 
 
 # Three cognitive shifts
 
-- Write SQL (Postgres) and get a JSON (PostgREST)
+- Write SQL (Postgres) and get a JSON source (PostgREST)
 - Write Pandoc templates to transform JSON to HTML
 - Write a YAML file to orchestrate our microservice conversation
-
-
-# How does Newt orchestrate our microservices?
-
-- port number
-- htdocs path (if needed)
-- routes definitions
-  - define typed variables for request path and form data validation
-  - A request description
-    - request path
-    - request (HTTP) method
-  - JSON source access
-    - api URL
-    - api method
-    - api content type
-  - Pandoc template to process JSON results if needed
-  - Response HTTP headers if needed
 
 # Is this really simpler?
 
 Three versions of a bird sighting website
 
-- [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash), a static site implementation
-- [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash), a dynamic site implementation, content viewing requires browser JavaScript
-- [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash), a dynamic site implementation, does not require browser JavaScript
-
 # [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash) 
 
-- Built with Pandoc from Markdown and YAML file
+- Built with Pandoc from a CSV file and a Pandoc template
 
 ~~~
 2 directories, 5 files
@@ -214,13 +192,13 @@ Three versions of a bird sighting website
 
 ~~~
 2 directories, 6 files
-      32 birds2/README.md
-       4 birds2/birds.csv
-       3 birds2/postgrest.conf
-      50 birds2/setup.sql
-      24 birds2/htdocs/index.html
-      63 birds2/htdocs/sightings.js
-     176 total
+   4 birds2/birds.csv
+   3 birds2/postgrest.conf
+  32 birds2/README.md
+  50 birds2/setup.sql
+  24 birds2/htdocs/index.html
+  63 birds2/htdocs/sightings.js
+ 176 total
 ~~~
 
 # [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash)
@@ -229,18 +207,18 @@ Three versions of a bird sighting website
 - **no JavaScript**
 
 ~~~
-2 directories, 7 files
-      33 birds3/README.md
-       4 birds3/birds.csv
-      24 birds3/birds.yaml
-      40 birds3/page.tmpl
-       7 birds3/post_result.tmpl
-       3 birds3/postgrest.conf
-      50 birds3/setup.sql
-     161 total
+1 directory, 7 files
+   4 birds3/birds.csv
+  25 birds3/birds.yaml
+  40 birds3/page.tmpl
+   3 birds3/postgrest.conf
+   7 birds3/post_result.tmpl
+  33 birds3/README.md
+  50 birds3/setup.sql
+ 162 total
 ~~~
 
-# Three birds
+# Comparing three birds
 
 version    site type   pros                     cons
 -------    ---------   -----------------------  ------------------------------
@@ -254,27 +232,20 @@ birds 3    dynamic     read/write data          requires SQL knowledge
                        no JavaScript required   requires knowledge of YAML 
 
 
-# Culmination => Postgres+PostgREST, Pandoc and Newt
-
-- Our "off the shelf" microservices limit complexity
-- SQL defines our data model(s)
-- Pandoc templates transform JSON to HTML
-- A YAML file describes the routes and form data validation
-
-# How does this work?
+# Bird 3 build features
 
 1. Model our data using SQL (Postgres)
-2. Use models via RESTful JSON API (Postgres+PostgREST)
+2. Access via JSON API (PostgREST)
 3. Transform our structured data using Pandoc templates (Pandoc server)
-4. orchestrate our microservice conversation via YAML file (Newt)
+4. Orchestrate our microservice conversation via YAML file (Newt)
 
 # How does Newt orchestrate our microservices?
 
-- Newt's YAML file includes descriptions of data routing
-    - htdocs directory path (if serving static files)
-    - environment variable to expose in routes
+- Newt's YAML file includes descriptions for request routing
+    - htdocs directory (if serving static files)
+    - environment variable used to access JSON sources
     - route definitions
-        - (optional) variable definitions (for validating requests and form data)
+        - (optional) variable definitions
         - request routing details (e.g. path, method)
         - JSON source description (e.g. api URL, method, content type)
         - (optional) Pandoc template filename
@@ -282,56 +253,50 @@ birds 3    dynamic     read/write data          requires SQL knowledge
 
 # Newt manages data flow
 
-- request => JSON source => Pandoc => response
-- A simple DSL for mapping requests to JSON source and Pandoc
-- leverages DSL for form data validation
+1. web browser => Newt
+2. Newt => PostgREST
+3. Newt => Pandoc 
+4. Newt => web browser
 
 # Developer workflow
 
-1. Model data in Postgres
-2. Create/update Pandoc templates
-3. Create/update routes/form data validation in YAML file
+1. Model data in Postgres (using psql and a text editor)
+2. Create/update Pandoc templates (using a text editor and Pandoc)
+3. Create/update routes/form data validation in YAML file (text editor, `newt -dry-run <YAML_FILENAME>`)
 4. (Re)start PostgREST and Newt to (re)load models and routes
 5. Test with our web browser
 
 **Repeat as needed**
 
-# Minimal new knowledge
+# Minimal prior knowledge
 
-- If you've attended a data science workshop you likely know enough SQL
-- If you've built a static website you likely know about Pandoc
-- If you've built a static website you likely know YAML
-- Use YAML and a small DSL to map requests to data sources and validate form data
-- SQL + YAML files + Pandoc template(s) => web application
+- A data science workshop often will teach you enough SQL
+- Static website generation often envolves Pandoc
+- Markdown documents often use YAML to represent front matter
 
 # Weaknesses in my proposal
 
 - Newt is **an experimental prototype** (June 2023)
 - Newt doesn't support file uploads
-- Does not eliminate Learning curves, e.g.
+- Newt doesn't eliminate Learning curves, e.g.
     1. Postgres and SQL
     2. Pandoc
     3. using HTTP methods
     4. YAML
 
-# Addvantages, maturity
+# Newt's Advantages, a mature foundation
 
-- SQL (1974)
-- HTTP (1991)
-- HTML (1993)
-- Postgres (1996)
-- JSON (2001)
-- YAML (2001)
-- Pandoc (2006)
-- PostgREST (2014)
+- 20th Century tech
+  - SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)
+- 21st Century tech
+  - JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)
 
-> There is strength in Maturity
 
 # Next steps for Newt?
 
-- I am building staff facing applications, Summer 2023
+- I am building staff facing applications this Summer (2023)
 - Testing Solr/Elasticsearch as a JSON sources
-- Move beyond my proof of concept
+- I hope to move beyond my proof of concept in the Fall (2023)
 
 # It would be nice if ...
 
@@ -340,27 +305,30 @@ birds 3    dynamic     read/write data          requires SQL knowledge
     - sharing SQL code
     - sharing Pandoc templates
     - sharing YAML files
+    - Improving Newt
 
-# Someday, maybe ideas
+# Posibilities, a roadmap beyond proof of concept
 
-- Use YAML file to extrapolate SQL models and Pandoc templates 
+- Enhance the Newt's YAML to generate SQL models and Pandoc templates 
+- Explore integrating SQLite3 support
 - Rewrite Newt in Haskell
-    - Integrate Pandoc into Newt, skip requiring Pandoc server
+    - Integrate Pandoc into Newt avoiding an HTTP call
 
 # An unexpected result of simplification
 
-- Newt can potentially scale really big!
-    - Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
-    - Pandoc server can be scaled wide (it retains zero state and configuration file)
-    - PostgREST can be scale wide (it has a minimal configuration file)
-    - Postgres (the only part holding state) can be clustered
+> Newt can potentially scale really big!
+
+- Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
+- Pandoc server can be scaled wide (it retains zero stat )
+- PostgREST can be scale wide (a minimal configuration file)
+- Postgres (the only part holding state) can be clustered
 
 # Additional resources 
 
 - [Postgres](https://postgres.org)
 - Install Haskell [ghcup](https://https://www.haskell.org/ghcup/)
-- [PostgREST](https://postgrest.org)
-- [Pandoc](https://pandoc.org)
+  - Build latest [PostgREST](https://postgrest.org)
+  - Build latest [Pandoc](https://pandoc.org)
 - [Newt](https://github.com/caltechlibrary/newt) proof of concept
 - [Solr](https://solr.apache.org/), [Opensearch](https://www.opensearch.org/)
 - Alternatives to Postgres+PostgREST
