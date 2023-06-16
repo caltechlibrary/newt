@@ -251,6 +251,30 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
    3 birds3/postgrest.conf
    7 birds3/post_result.tmpl
  162 total</code></pre>
+<h1 id="how-does-newt-orchestrate-our-microservices">How does Newt
+orchestrate our microservices?</h1>
+<ul>
+<li>Newt’s YAML file includes descriptions for request routing
+<ul>
+<li>environment variable used to access JSON sources</li>
+<li>route definitions
+<ul>
+<li>(optional) variable definitions</li>
+<li>request routing details (e.g. path, method)</li>
+<li>JSON source details (e.g. api URL, method, content type)</li>
+<li>(optional) Pandoc template filename</li>
+</ul></li>
+</ul></li>
+</ul>
+<h1 id="developer-workflow">Developer workflow</h1>
+<ol type="1">
+<li>Model data in Postgres</li>
+<li>Create/update Pandoc templates</li>
+<li>Create/update routes/form data validation in YAML file</li>
+<li>(Re)start PostgREST and Newt to (re)load models and routes</li>
+<li>Test with our web browser</li>
+</ol>
+<p><strong>Repeat as needed</strong></p>
 <h1 id="comparing-three-birds">Comparing three birds</h1>
 <table>
 <thead>
@@ -312,30 +336,6 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 </tr>
 </tbody>
 </table>
-<h1 id="how-does-newt-orchestrate-our-microservices">How does Newt
-orchestrate our microservices?</h1>
-<ul>
-<li>Newt’s YAML file includes descriptions for request routing
-<ul>
-<li>environment variable used to access JSON sources</li>
-<li>route definitions
-<ul>
-<li>(optional) variable definitions</li>
-<li>request routing details (e.g. path, method)</li>
-<li>JSON source details (e.g. api URL, method, content type)</li>
-<li>(optional) Pandoc template filename</li>
-</ul></li>
-</ul></li>
-</ul>
-<h1 id="developer-workflow">Developer workflow</h1>
-<ol type="1">
-<li>Model data in Postgres</li>
-<li>Create/update Pandoc templates</li>
-<li>Create/update routes/form data validation in YAML file</li>
-<li>(Re)start PostgREST and Newt to (re)load models and routes</li>
-<li>Test with our web browser</li>
-</ol>
-<p><strong>Repeat as needed</strong></p>
 <h1 id="weaknesses-in-my-proposal">Weaknesses in my proposal</h1>
 <ul>
 <li>Newt is <strong>an experimental prototype</strong> (June 2023)</li>

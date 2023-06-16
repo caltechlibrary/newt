@@ -198,20 +198,6 @@ Let's compare three implementations of a bird sighting website
  162 total
 ~~~
 
-# Comparing three birds
-
-version   site type   pros                     cons
--------   ---------   -----------------------  ----------------------------
-birds 1   static      easy to conceptualize,   read only
-                      no JavaScript required
-birds 2   dynamic     read/write data          requires SQL knowledge
-                                               requires browser JavaScript
-                                               JavaScript is complex
-birds 3   dynamic     read/write data          requires SQL knowledge 
-                      easy to conceptualize    requires knowledge of Pandoc
-                      no JavaScript required   requires knowledge of YAML 
-
-
 # How does Newt orchestrate our microservices?
 
 - Newt's YAML file includes descriptions for request routing
@@ -231,6 +217,20 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 5. Test with our web browser
 
 **Repeat as needed**
+
+# Comparing three birds
+
+version   site type   pros                     cons
+-------   ---------   -----------------------  ----------------------------
+birds 1   static      easy to conceptualize,   read only
+                      no JavaScript required
+birds 2   dynamic     read/write data          requires SQL knowledge
+                                               requires browser JavaScript
+                                               JavaScript is complex
+birds 3   dynamic     read/write data          requires SQL knowledge 
+                      easy to conceptualize    requires knowledge of Pandoc
+                      no JavaScript required   requires knowledge of YAML 
+
 
 # Weaknesses in my proposal
 
