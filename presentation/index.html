@@ -438,6 +438,20 @@ class="slide section level1">
 </ul></li>
 </ul>
 </div>
+<div id="an-unexpected-result-of-simplification"
+class="slide section level1">
+<h1>An unexpected result of simplification</h1>
+<blockquote>
+<p>Newt can potentially scale really big!</p>
+</blockquote>
+<ul>
+<li>Newt can be scaled wide (parallel), it requires minimal state (only
+what’s in the configuration file)</li>
+<li>Pandoc server can be scaled wide (it retains zero state )</li>
+<li>PostgREST can be scale wide (a minimal configuration file)</li>
+<li>Postgres (the only part holding state) can be clustered</li>
+</ul>
+</div>
 <div id="next-steps-for-newt" class="slide section level1">
 <h1>Next steps for Newt?</h1>
 <ul>
@@ -453,24 +467,6 @@ class="slide section level1">
 <li>Enhance the Newt’s YAML to generate SQL models and Pandoc
 templates</li>
 <li>Explore integrating SQLite3 support</li>
-<li>Rewrite Newt in Haskell
-<ul>
-<li>Integrate Pandoc into Newt avoiding an HTTP call</li>
-</ul></li>
-</ul>
-</div>
-<div id="an-unexpected-result-of-simplification"
-class="slide section level1">
-<h1>An unexpected result of simplification</h1>
-<blockquote>
-<p>Newt can potentially scale really big!</p>
-</blockquote>
-<ul>
-<li>Newt can be scaled wide (parallel), it requires minimal state (only
-what’s in the configuration file)</li>
-<li>Pandoc server can be scaled wide (it retains zero stat )</li>
-<li>PostgREST can be scale wide (a minimal configuration file)</li>
-<li>Postgres (the only part holding state) can be clustered</li>
 </ul>
 </div>
 <div id="if-newt-has-a-community" class="slide section level1">
@@ -479,6 +475,18 @@ what’s in the configuration file)</li>
 <li>share SQL code</li>
 <li>share Pandoc templates</li>
 <li>share YAML files</li>
+</ul>
+</div>
+<div id="conclusions" class="slide section level1">
+<h1>Conclusions</h1>
+<ul>
+<li>“Off the shelf” microservices can make application construction
+eaiser</li>
+<li>You need to pick the right ones for the task</li>
+<li>You need to only use what you need</li>
+<li>Having an “off the self” orchestrate like Newt eliminates for of the
+need to write middleware and frees up time to focus on humane user
+interfaces</li>
 </ul>
 </div>
 <div id="additional-resources" class="slide section level1">

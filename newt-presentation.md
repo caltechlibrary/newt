@@ -251,6 +251,14 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 - 21st Century tech
   - JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)
 
+# An unexpected result of simplification
+
+> Newt can potentially scale really big!
+
+- Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
+- Pandoc server can be scaled wide (it retains zero state )
+- PostgREST can be scale wide (a minimal configuration file)
+- Postgres (the only part holding state) can be clustered
 
 # Next steps for Newt?
 
@@ -263,23 +271,20 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 - Have Newt delegate file uploads to an S3 like service
 - Enhance the Newt's YAML to generate SQL models and Pandoc templates 
 - Explore integrating SQLite3 support
-- Rewrite Newt in Haskell
-    - Integrate Pandoc into Newt avoiding an HTTP call
-
-# An unexpected result of simplification
-
-> Newt can potentially scale really big!
-
-- Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
-- Pandoc server can be scaled wide (it retains zero stat )
-- PostgREST can be scale wide (a minimal configuration file)
-- Postgres (the only part holding state) can be clustered
 
 # If Newt has a community ...
 
 - share SQL code
 - share Pandoc templates
 - share YAML files
+
+# Conclusions
+
+- "Off the shelf" microservices can make application construction eaiser
+- You need to pick the right ones for the task
+- You need to only use what you need
+- Having an "off the self" orchestrate like Newt eliminates for of the need to write middleware and frees up time to focus on humane user interfaces
+
 
 # Additional resources 
 
