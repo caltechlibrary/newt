@@ -1,0 +1,295 @@
+Title:
+	Newt, assemble web applications with Pandoc, Postgres and PostgREST
+Credit: Writen by
+Author: R. S. Doiel
+Source: R. S. Doiel
+Draft date: 6/15/2023
+
+Contact:
+	R. S. Doiel
+	Caltech Library, Digital Library Development
+	Mail Code 1-43
+	1200 E California Blvd
+	Pasadena CA 91125-4300
+	Email: rsdoiel@caltech.edu
+	Phone: (626) 395-6428
+
+INT. Slide #1
+
+ROBERT
+
+Welcome to my presentation. Today I'm going to talk about my new take for building applications for the Library and Archives at Caltech.
+
+INT. Slide #3
+
+ROBERT
+
+I call my project Newt for "new take", at least it is a "new take" for me. But before I dive I think I should provide some context.
+
+INT. Slide #4
+
+ROBERT
+
+Library, Archives and Museum software systems tend to be complex.  Here's a short list that Digital Library Development supports in Caltech Library. (pause) ArchivesSpace, EPrints, Invenio RDM, Islandora. These are good systems but they also presnet challenges. The critical challenges is in their complexity.
+
+INT. Slide #5
+
+ROBERT
+
+Take a look at this table. The table doesn't capture all the complex but does provide a sense of it.  Each systems leverages multiple programming languages, often leverages multiple dependent software systems.
+
+INT. Slide #6
+
+ROBERT
+
+I think we can outline the core issues as follows. First each application is built using a different technology stack. Individually they don't share allot in the way of specific infrastructure beyond relational databases and a front end web server.  The individual stacks are complex and divergent.  Sustaining these software systems, let alone improving them requires allot of coping strategies.
+
+INT. Slide #7
+
+ROBERT
+
+The coping strategies aren't enough. The coping strategies can also become complex, the level of complexity is the overridding force crippling sustainablity. Event the systems get to a apoint where we just decide to abandom them and move onto something else. For Caltech Library, this is happening with EPrints being replaced by RDM.
+
+INT. Slide #8
+
+ROBERT
+
+I'm going to generalize a little but I see three core problems with our specific set of systems. We want more from our software so more code was written. Our customization of EPrints and Islandora are good examples of that. Each time we "enhance" the software we're accruing more complexity. This is a form of techinical debt.  We're at our credit limit with EPrints hence it being replaced.
+
+Along with this "best practices" also suggest a level of complexity. I'd like to point out specifically the "best practice" of "systems should be designed to scale". (pause)
+
+INT. Slide #9
+
+ROBERT
+
+I'm an engineer, my job is to find and implement solutions. The first two problems aren't specifically software problems. In many cases these are "people problems", example being managing client expectations, a misperception of of what is "easy to implement" versus "hard to implemenmt". Even discoverying the real needs of a client is difficult when communications are good.  Since these are hard problems I'm not going to talk about them today.
+
+The last one on the list feels like a system design problem to me. Is it solvable?
+
+INT. Slide #10
+
+ROBERT
+
+I'd like to highlight the word "scale". When I hear both clients and developers mention the word "scale" it is almost always in the context of "scaling big".
+
+INT. Slide #11
+
+ROBERT
+
+Scaling big is hard. Scaling big often makes things much more complex.  Scalng big also implies a larger team.  A single individual doesn't scale a system big. Groups of people, often large groups of people support a large system. That doesn't seem like a possibility in more budgets of Librarys, Archives and Museums.
+
+INT. Slide #12
+
+ROBERT
+
+But not all things are bad. Scaling big is very much a known problem and some very helpful solutions are available to use as a result. This slide mentions them.  I particularly am fond of the first three.
+
+Distribute application design can often mean you can design in smaller pieces. Containers can help manage conflicting libraries and dependencies as well as be very convenient in setting up development and testing environments. Having programmable infastructure also is really helfpul. But scaling big by itself isn't really helpful.
+
+INT. Slide #13
+
+ROBERT
+
+Let's approach scaling differently. Here's a definition from geometry. "Scaling, a linear transformation that enlarges or deminishes objects".  I'd like to diminish complexity.
+
+INT. Slide #14
+
+ROBERT
+
+I think the trick is to pick the right scale. I think the answer is often scaling small.  Today I'm focusing on that.
+
+We're going to pack only what we need in the persuit of simplification.
+
+INT. Slide #15
+
+ROBERT
+
+I like to think about scaling small in four contexts shown on this slide.  "Limit the moving parts", "limit the cognative shift", "minimize our toolbox while maxing its use" and really importantly, **Write less code!**.
+
+INT. Slide #16
+
+ROBERT
+
+I'm to limit the moving parts by focusing on three microservices.  I've picked this specific set because they provide a clear separation of concerns, of responsibilities.
+
+Postgres+PostgREST gives a way to manage application data, I like to think of these as "providing a JSON source" with an HTTP call. Data is managed by Postgres and PostgREST gives us a JSON API representation of the Postgres databases and tables.
+
+The next thing I need is a template engine that can render JSON into HTML and other data formats.  Pandoc is a really good template engine.  In recent versions of Pandoc it can run as a web service.  As a web service it is very simple. You POST JSON to it and it returns a transformation. The POST consists of the same elements you often use on the command line with Pandoc. It takes a documents (e.g. a Markdown document, or a document of front matter in YAML) and can run that document through a light weight template language.
+
+The missing piece to use with Postgres, PostgREST and Pandoc is a microservice that can route a request and map it to our JSON API supplied by PostgREST. It then needs to take that result and run it through Pandoc as a web service. It'd be nice to have static file services too. I've written a prototype microservice called Newt to fill this gap.
+
+INT. Slide #17
+
+ROBERT
+
+How does this limit the moving parts.  First we can the quartette of Postgres, PostgREST, Pandoc and Newt as a pipeline implemented as microservices. A web browser talks to Newt, Newt takes that request, vets it and forms a new request that is makes to PostgREST. PostgREST responds to Newt and Newt takes the results and hands them off to Pandoc. Pandoc responds with HTML and that is handed back to the web browser.
+
+INT. Slide #18
+
+ROBERT
+
+This setup helps us limit the congnatives shifts we make in both developing and maintaining a web application. Implenting an application can be boiled down to write SQL and getting back JSON. Writing a Pandoc template that can take that JSON and render it as HTML. We manage the conversation between the two microservices through a YAML file read when Newt starts up.
+
+SQL -> JSON, JSON -> HTML, HTML forwarded back to the web browser
+
+INT. Slide #18
+
+ROBERT
+
+This requires a small toolbox. I've listed what's needed on this slide. I'm sure everyone has a favorite text editor and web browser. You might have Postgres running. PostgREST maybe new to you. PostgREST understands how Postgres works. When it starts it queries Postgres and builds a JSON API form it. It uses Postgres namespace scheme, table definitions and any views, functions or procedures defined in the schema and transforms them into a JSON API.  You don't need to write code specifically to do this. There is a simple single level URL pattern for doing common SQL actions like SELECT. Any views, functions or procedures defined become additional end points. Again aside from the SQL you write to setup your Postgres database and interact with it PostgREST just fills in the rest.
+
+As I mentioned earlier Pandoc is a template engine par excellance. It performs that role as its own microservice. Newt simply orchestrates the requests and data flow between them.  Of course we use a web browser to see the results.
+
+INT. Slide #19
+
+ROBERT
+
+Finally we write less code with this approach.  What we right is primarily are SQL data models.  We write Pandoc templates to convert the result JSON into a web page.  What we don't write is midde-ware. The reason is that the middle-ware is already written. Newt provides a means of defininig routes that map to a JSON source and then hand off to Pandoc.  Newt can validate the routes and form data sent along with the request. If a request fails validation it stops there and Newt returns an appropriate HTTP status code and message.  Similarly if the JSON source request fails, Newt pass that back to the web browser with an appropriate HTTP status code and message. Similarly for Pandoc.
+
+SQL models and templates, that's what you're mostly writing. The YAML file describing the routes and their data types doesn't have to change much once you've decided how that mapping needs to work.
+
+Minimize the source Luke. Use the Postgres+PostgREST code savings plan.
+
+INT. Slide #20
+
+ROBERT
+
+So far I've done allot of hand waving and talking. It's time to show you why I think this approach may make sense in building web applications that primarily manage metadata.  I'm going to do that by creating three versions of a bird sighting list website. I'm keeping everything oversimple so you can see how these microservices can connect and hopefully pay down that complexity debt.
+
+INT. Birds 1
+
+ROBERT 
+
+This incarnation of a bird sighting list website is very simple.  It results in a single web page.  For demonstration purposes I've include the types of files usually found in projects.  There's readme explaining the project and appropate. It's short in this case, a static site presenting bird sightings. The static site is built using Pandoc to transform a CSV file holding our list of bird sightings into a web page. So I don't have to type out a long Pandoc command I've stuck this in a short Bash script called build.sh.
+
+The file "page.tmpl" holds a simple Pandoc template that renders the CSV file's content as an HTML table. The generated index.html is the largest document and that is saved in the htdocs's directory.  I have a Bash script that will generate this site and we can use a simple web server to run it.
+
+(switch to Terminal sesssion, run make-birds1.bash, cd to birds1 and run `ws htdocs`, open a browser tab and look at it).
+
+Before I switch back to my presentation I'd like to point out how simple this solution is for a single person managing a website. I actually use a similar approach to manage my personal blog as well as the caltechlibrary.github.io website.  If this is all you need you could stop here and be done.
+
+(switch back to the presentation)
+
+INT. Birds 2
+
+ROBERT
+
+In version two of birds we have a dynamic website. Instead of rendering a CSV file with Pandoc as HTML we're going to use a Postgres database to hold our list of sightings. PostgREST turns that database into a JSON API.  Normally PostgREST runs on localhost, if you need to access it remotely you would proxy to it using a front-end web server like Apache 2 or NginX.  You'll need to run one so that our web page and JavaScript available along with PostgREST to complete our solution.
+
+The idea is that the static index.html and JavaScript file, sightings.js, are sent to the web browser. The Javascript then contacts the host to use the JSON API provided by PostgREST. When it gets results back it then turns the JSON content into appropriate HTML elements in the web page.  JavaScript also allows us to use a simple web form to add birds by taking that information, packaging it up as JSON and sending that through Postgres+PostgREST.
+
+Let's take a look at a running verison of birds two.
+
+(switch to the Terminal, run make-birds2.bash, add a session start up Postgres+PostgREST, in another sesison start up a web services for the htdocs directory, get the web browser up pointed at the localhost web service). 
+
+For the purposes of the demo I'm running this whole thing on localhost by running the web server on port 8000 and running PostgREST on port 3000. My JavaScript reflects that. If this was a "real application" you'd using a fron-end web server like Apache 2 or NginX and proxy to PostgREST.  Aside from where it contacts the JavaScript would remain the same.
+
+(demo adding a bird to the list and seeing the list update)
+
+(using vscode show selected files from birds 2)
+
+(switch back to the presentation)
+
+Let's look at the files in this version of our birds list.  The toal lines of code are much larger but it is a dynamic website. Our README has grown because describing how to run this system is more complicated.  Our birds.csv file is the same. In this case I can use the Postgres COPY command to load the existng bird list into my sightings table.
+
+There is a bigger file, setup.sql, and this is where we model our data. 50 lines seem like a lot but I've formatted the SQL to be readable and included some comments.  We have a tiny postgrest.conf file, three lines. 
+
+In this implementation the index.html is hand coded but fortunately doesn't need to be particularly complex.  You just needs to elements with id attributes set so you can update things via JavaScript.
+
+Aside from modeling our data sightings.js does the heavy lifting. It has to manage communications with PostgREST, it manages displaying results in the web page and it handles taking a web form submission, transforming it into JSON then forwarding that to PostgREST for processing.
+
+This is kinda nice. We can add to our list directly in the webpage. But there is a problem.  The actual list of birds requires JavaScript. This means indexing this page by a search engine may prove problematic. Bot crawlers are reluctant to execute random JavaScript.  Also if you use a text only web browser like Lynx this version of our birds list is a complete failure. I think we can do better.
+
+INT. Birds 3
+
+In birds 3 I'm going to skip using JavaScript in the browser. I'm going to bring back Pandoc and use that to render my HTML pages. Pandoc is going to be run as a micro server (you can do this by typing `pandoc server` at the command line. By default it runs on port 3030).  I still need something that can take a request, package it up safely for PostgREST, get that result and send it through Pandoc.  Newt performs that task and it takes the definition for the task from a YAML file. Let's look at our resulting files.
+
+The README is about the same as birds 2. That's not a surprise it using PostgREST and Postgres too. We still have a small birds.csv to load our initial sighting list.  The setup.sql is just like in birds 2. Nothing changed there.  We now have a birds.yaml file describing the conversation between web browser, PostgREST and Pandoc.  We have a page.tmpl for rendering our Birds list as a web page and also providing a web form for adding new bird sightings.  We have our postgres.conf file like in birds 2 and we have an additional Pandoc template to handle the completed web form submission. It's short because in this case it just needs to redirect the web brower back to our original list page after update.
+
+(switch to the terminal, run make-birds3.bash, open a session start up postgres+PostgREST, open aother session start up Pandoc server, open a third session and start up Newt. Point a web browser and take a look at the application). 
+
+From the end user point of view birds 2 and 3 are the same expect birds 3 still still work if JavaScript is disabled in the web browser. That means the search engines can easily crawl our bird sighting web site.
+
+(switch back to the presentation)
+
+When we look at the total lines of code we actually are a few lines shorter then the JavaScript version. I would argue that we are simpler too.
+
+Our YAML file used to configure Newt is a shallow outline.  YAML supports comments too so if something is confusing we can explain it in the YAML file. A templates go page.tmpl is the most complex but it isn't that complex. Certianly it is less complex than writing a page in PHP.  Most if it is standard HTML with a few Pandoc template functions and values sprinkled throughout.
+
+If we want to expand our birds list website we just add more route definitions in our birds.yaml file and perhaps add a few more Pandoc templates.  We also have the option of making the browser side behavior righter using HTML, CSS and JavaScript but we're not required to. That puts us in a potition to take advantage of progressive enhancement techniques. Conceivably our bird sighting website could run on anything from the size of a watch to a bill board.
+
+INT. Slide #25
+
+ROBERT
+
+I want to talk about Newt in a little more detail. Let's look at the YAML file from birds 3. (switch to vscode and show the YAML, explain the YAML, switch back to presentation). You can have as few or as many routes are you like in this YAML file. This demo doesn't involve request maps that require varaibles. If you added a blog to the bird sighting list you'd probably need to do that.  The POST route in this birds 2 and 3 app does use variable definitions to vet the content of the POST. This is your second line of defense of our Postgres data. The first would be the front-end web service controlling access. You have some access control capabilities in Postgres+PostgREST too but that is beyond the scope of this talk.
+
+The data types supported in the Newt prototype are very limited. It is only a proof of concept at this stage. If it evolves further I think allot more data types are called for. Some will map to SQL data types easily others might need to also provide some data transformation. Say we added a blog to this bird list sight. We probably want to support easy data entry of our posts and allowing Pandoc would certainly beat requiring HTML to be input or bolting on a WYSIWYG JavaScript editor. If Newt has a "markdown" type it could run the text of Markdown type through a Markdown converter (e.g. Pandoc) and assign the converted text to a new varaible that only exists between Newt, Postgres+PostgREST and Pandoc's output template. 
+
+Let's also look closure at our Pandoc templates. How is the data from our JSON source referenced?  The pandoc interaction builds an empty Markdown document and places the JSON response in the YAML front mappter under the attribute name of "data". We can then iterate over our response based on the type record or records we're getting back from our JSON source. A nice thing about integrating with PostgREST is that we can setup to page our results, that means when we get to the point that our bird list doesn't fit on a single web apge we can allow paging through it.
+
+INT. Slide #25
+
+ROBERT
+
+How to this Postgres+PostgREST, Pandoc and Newt work for a developer. Based on my easily experiments this is the workflow I'm currently used as seen on the slide. It roughly follows our division of labor. I'd like to point out that Postgres has a really nice SQL shell called psql. You can make the sell aware of your favorite text editor. This means you can interactively develop you data models and save the session to a file. When you cleanup the file you can then replay it to generate your desired models.  I've found this very smooth, especially considering our editors provide good syntax highlighting and can even integrate some basic SQL linting. Sharing SQL data models could be benefitial to Libraries, Archives and Museums generally but also specifically to any community the adopts using Postgres+PostgREST.
+
+Creating Pandoc templates is basically like hand coding HTML pages. You can use Pandoc to start out with one if its default templates. That's a good way to learn it template language in conjunction with Pandoc's user guide.  I suspect that sharing Pandoc templates would be a really helpful if a Newt community formed.
+
+I suspect that adding or updating routes is less frequent then editing data models or templates. But I've included that in my workflow because it often helps me understand the number of templates I need and portientially helps me see where adding a view or SQL function in PostgREST might prove helpful.
+
+When you've update everything it's time to restart PostgREST and Newt. Both read data at start up and that is the easiest way to make sure they've picked up your changes. Pandoc doesn't need to be restarted nor does your Postgres service.
+
+We repeat this process as needed.
+
+INT. Slide #27
+
+ROBERT
+
+Let's review our three implementations.
+
+If I was maintaining the website by myself I'd pick 1. It's really simple. I already use Pandoc to render my personal website.
+
+If I wanted to have collaborators then I'm leaning towards birds 3. It solves a bunch of problems that comes with relying on JavaScript to render a web pages.
+
+I happen to think birds 3 approach is simplier to reason about but that maybe a result of my having written the Newt prototype.
+
+INT. Slide #28
+
+ROBERT
+
+All is not perfect in prototype-land.
+
+None of my example handles file uploads. I would expect most people who maitnain a bird list probably photograph the birds too or record their song.  Newt does not support that at this time. 
+
+The current prototype of Newt also doesn't support the use case where you might want a form field to have some sort of transform before getting PostgREST without using JavaScript in the browser.
+
+The Newt prototype only works with traditional web form submissions. It's doesn't support data sent directly as JSON.
+
+Some of these issues are certainly solvable but they probably aren't as trivial as my current implementation.
+
+INT. Slide #29
+
+ROBERT
+
+This experiment did show some strengths!  It is built on a solid foundation.
+While Newt is only a prototype the next youngest piece of the puzzle is PostgREST and it is nearly a decade old.  This tech has got legs and seems to be ready for the marathon ahead in web evolvotuion.
+
+
+INT. Slide #30
+
+ROBERT
+
+I had an expected result from my current experiment. Because I embraced a microservice approach and Newt doesn't require managing state it can potentionall be used in a large scale websites. (talk through the slide)  
+
+INT. Slide #31
+
+(Read the slide)
+
+Beyond that I have some ideas but nothing is firm. Newt today is only a prototype.
+
+INT. Slide #32
+
+(Read through slide)
+
+
