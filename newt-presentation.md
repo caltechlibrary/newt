@@ -25,34 +25,27 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 ### ... but first some context
 
-# LAMP and its legacy 
-
-Complex systems used by Caltech Library
-
-- ArchivesSpace
-- EPrints
-- Invenio RDM
-- Islandora
-
-# LAMP and its legacy 
+# LAMP, its legacy, complexity
 
 App            Languages         Supporting services
 ---------      ---------         -------------------
 ArchivesSpace  Java, Ruby, SQL   MySQL, Solr, Apache or NginX
+               JavaScript, CSS
 EPrints        Perl, SQL, XML,   MySQL, Apache2 (tight integration),
-               EPrints XML       and Xapian
+               EPrints XML,      and Xapian (full text search)
+               JavaScript, CSS
 Invenio RDM    Python, SQL       Postgres, Redis, Elasticsearch,
-               JavaScript        Docker, Invenio Framework,
-                                 Python packaging system,
-                                 React JavaScript framework,
-                                 NodeJS and NPM, NginX
+               JavaScript, CSS   Docker, Invenio Framework,
+                                 Python/PIP, React Framework,
+                                 NodeJS/NPM, NginX
 Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
+Custom Apps    Python+Flask+ORM  Python/PIP, Flask, MySQL/SQLite2
+               JavaScript, CSS   NodeJS/NPM
 
+# Our Legacy of complexity
 
-# The problem
-
-1. Each application was built on a stack
-2. The stacks are complex and divergent
+1. Application are built on a stack
+2. Stacks are complex and divergent
 3. Sustaining them requires many coping strategies
 
 # The problem
@@ -62,93 +55,85 @@ Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
 
 # Why are these things so complex?
 
-- We want more from our application, more code gets written
-- We want "enhancements", complexity accrues overtime
-- Best Practices like "systems should be designed to scale"
+1. We want more from our application, more code gets written
+2. We want "enhancements", complexity accrues overtime
+3. We build "systems designed to scale"
 
-# Why are these things so complex?
-
-- first two are "people problems" (hard)
-- last one might be a system design problem (solvable?)
- 
-# Scale (from computing practice)
+# Scaling
 
 scale
 : a euphemism for **scaling big**, as used in phrases like "google scale", "amazon scale"
 
-# Scaling big
+# Scaling
 
 - Scaling big is hard
 - Scaling big can make things really complex
-- Scaling big can require larger teams for success
+- Scaling big lead to scaling small?
+  - **Pack only what is needed**
 
-# Scaling big
+# Scaling approaches
 
-- What did scaling big deliver?
-  - distributed application design
-  - containers 
-  - programmable infrastructure 
-  - cache systems and dynamic clustering
-  - complex systems management
-
-# Scaling (from geometry)
-
-scaling
-: a linear transformation that enlarges or diminishes objects
-
-# Scale small
-
-- Simplify! 
-- Pack only what is needed
+- distributed application design
+- containers
+- programmable infrastructure
+- cache systems and dynamic clustering
+- complex systems management
 
 # Scaling small
 
 - Limit the moving parts
 - Limit the cognitive shifts
-- Minimize the toolbox, maximize using it
-- Try to **Write less code!**
+- Try to **Write less code**
 
 # Limit the moving parts
 
-> Simplify through a clear division of labor
+> Three abstractions
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON API to manage data, it gives us a JSON source
 - [Pandoc](https://pandoc.org) =>  a powerful template engine
-- [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator, static file services
+- [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator
 
-# Limit the moving parts
+# A Microservice conversation
 
 1. web browser => Newt
 2. Newt => PostgREST
-3. Newt => Pandoc 
+3. Newt => Pandoc
 4. Newt => web browser
 
 # Limit the cognitive shifts
 
-- Write SQL (Postgres) and get a JSON source (PostgREST)
-- Write Pandoc templates to transform JSON to HTML
-- Write a YAML file to orchestrate our microservice conversation
+- Write SQL (Postgres), get JSON source (PostgREST)
+- Write Pandoc templates, provide JSON, get HTML
+- Write a YAML, orchestrate our microservice conversation
 
-# Minimize our Toolbox, maximize using it
+# Our Toolbox
 
 - Text editor
 - Postgres + PostgREST
 - Pandoc
-- Newt 
+- Newt
 - Web browser
 
-# Write less code with SQL
+# Writing less code
 
-> PostgreSQL+PostgREST, a code savings plan.
+1. Use "off the shelf" microservices
+2. Take advantage of SQL
+3. Standardize templating with Pandoc
+
+> Postgres+PostgREST+Pandoc+Newt =>
+> No need to write any middle-ware
+
+# Why SQL?
+
+> **Minimize the source Luke!**
 
 - SQL is good at describing structured data
 - SQL provides views, functions, triggers, ...
 - SQL allows us to model our data once
-- Don't need to write any middle-ware
 
-> **Minimize the source Luke!**
+> PostgreSQL+PostgREST, a code savings plan.
 
-# Is this really simpler?
+# How did I arrive at Newt?
 
 Let's compare three implementations of a bird sighting website
 
@@ -198,15 +183,14 @@ Let's compare three implementations of a bird sighting website
  162 total
 ~~~
 
-# How does Newt orchestrate our microservices?
+# Newt's YAML file
 
-- Newt's YAML file includes descriptions for request routing
-  - environment variable used to access JSON sources
-  - route definitions
-    - (optional) variable definitions
-    - request routing details (e.g. path, method)
-    - JSON source details (e.g. api URL, method, content type)
-    - (optional) Pandoc template filename
+- environment variable used to access JSON sources
+- route definitions
+  - (optional) variable definitions (path and form data)
+  - request routing details (e.g. path, method)
+  - JSON source details (e.g. api URL, method, content type)
+  - (optional) Pandoc template filename
 
 # Developer workflow
 
@@ -218,7 +202,7 @@ Let's compare three implementations of a bird sighting website
 
 **Repeat as needed**
 
-# Comparing three birds
+# Recap
 
 version   site type   pros                     cons
 -------   ---------   -----------------------  ----------------------------
@@ -227,10 +211,9 @@ birds 1   static      easy to conceptualize,   read only
 birds 2   dynamic     read/write data          requires SQL knowledge
                                                requires browser JavaScript
                                                JavaScript is complex
-birds 3   dynamic     read/write data          requires SQL knowledge 
+birds 3   dynamic     read/write data          requires SQL knowledge
                       easy to conceptualize    requires knowledge of Pandoc
-                      no JavaScript required   requires knowledge of YAML 
-
+                      no JavaScript required   requires knowledge of YAML
 
 # Weaknesses in my proposal
 
@@ -242,7 +225,7 @@ birds 3   dynamic     read/write data          requires SQL knowledge
     3. using HTTP methods
     4. YAML
 
-# Newt's greatest Advantage
+# Newt's greatest advantage
 
 > A mature foundation
 
@@ -251,13 +234,13 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 - 21st Century tech
   - JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)
 
-# An unexpected result of simplification
+# An unexpected result
 
-> Newt can potentially scale really big!
+> Newt can potentially scale big!
 
-- Newt can be scaled wide (parallel), it requires minimal state (only what's in the configuration file)
-- Pandoc server can be scaled wide (it retains zero state )
-- PostgREST can be scale wide (a minimal configuration file)
+- Newt can be scaled wide, it requires minimal state
+- Pandoc server can be scaled wide, it retains zero state
+- PostgREST can be scale wide
 - Postgres (the only part holding state) can be clustered
 
 # Next steps for Newt?
@@ -269,18 +252,20 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 # Sameday, maybe ...
 
 - Have Newt delegate file uploads to an S3 like service
-- Enhance the Newt's YAML to generate SQL models and Pandoc templates 
+- Enhance the Newt's YAML to generate SQL models
 - Explore integrating SQLite3 support
 
-# If Newt has a community ...
+# If Newt had a community ...
 
 - share SQL code
 - share Pandoc templates
 - share YAML files
+- improve Newt
 
 # Conclusions
 
-- "Off the shelf" microservices can make application construction eaiser
+- "Off the shelf" microservices can make application construction easier
+- Orchestrating the data pipeline in YAML seems 
 - You need to pick the right ones for the task
 - You need to only use what you need
 - Having an "off the self" orchestrate like Newt eliminates for of the need to write middleware and frees up time to focus on humane user interfaces
