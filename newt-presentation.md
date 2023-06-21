@@ -69,7 +69,7 @@ scale
 - Scaling big, a path to scaling small
   - **Can we pack only what is needed?**
 
-# Scaling techniques and tools
+# Scaling strategies
 
 - distributed application design
 - containers
@@ -83,7 +83,7 @@ scale
 
 # Limit the moving parts, three abstractions
 
-- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON API to manage data, it gives us a JSON source
+- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON source to manage data
 - [Pandoc](https://pandoc.org) =>  a powerful template engine
 - [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator
 
@@ -116,7 +116,7 @@ scale
 - SQL allows us to model our data once
 
 > **Minimize the source Luke!**
-> PostgreSQL+PostgREST, is a code savings plan.
+> PostgreSQL+PostgREST is a code savings plan.
 
 # A scale small experiment
 
