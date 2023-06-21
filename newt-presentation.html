@@ -24,15 +24,7 @@
 <h1 id="newt">Newt</h1>
 <h2 id="a-small-system-experiment">a small system experiment</h2>
 <h3 id="but-first-some-context">… but first some context</h3>
-<h1 id="lamp-and-its-legacy">LAMP and its legacy</h1>
-<p>Complex systems used by Caltech Library</p>
-<ul>
-<li>ArchivesSpace</li>
-<li>EPrints</li>
-<li>Invenio RDM</li>
-<li>Islandora</li>
-</ul>
-<h1 id="lamp-and-its-legacy-1">LAMP and its legacy</h1>
+<h1 id="lamp-its-legacy-complexity">LAMP, its legacy, complexity</h1>
 <table>
 <thead>
 <tr class="header">
@@ -48,14 +40,24 @@
 <td>MySQL, Solr, Apache or NginX</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;"></td>
+<td>JavaScript, CSS</td>
+<td></td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">EPrints</td>
 <td>Perl, SQL, XML,</td>
 <td>MySQL, Apache2 (tight integration),</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>EPrints XML,</td>
+<td>and Xapian (full text search)</td>
+</tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td>EPrints XML</td>
-<td>and Xapian</td>
+<td>JavaScript, CSS</td>
+<td></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Invenio RDM</td>
@@ -64,57 +66,55 @@
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td>JavaScript</td>
+<td>JavaScript, CSS</td>
 <td>Docker, Invenio Framework,</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
 <td></td>
-<td>Python packaging system,</td>
+<td>Python/PIP, React Framework,</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
 <td></td>
-<td>React JavaScript framework,</td>
+<td>NodeJS/NPM, NginX</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td></td>
-<td>NodeJS and NPM, NginX</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">Islandora</td>
 <td>PHP/SQL</td>
 <td>MySQL, Drupal, Fedora, Apache 2</td>
 </tr>
+<tr class="odd">
+<td style="text-align: left;">Custom Apps</td>
+<td>Python+Flask+ORM</td>
+<td>Python/PIP, Flask, MySQL/SQLite2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td>JavaScript, CSS</td>
+<td>NodeJS/NPM</td>
+</tr>
 </tbody>
 </table>
-<h1 id="the-problem">The problem</h1>
+<h1 id="our-legacy-of-complexity">Our Legacy of complexity</h1>
 <ol type="1">
-<li>Each application was built on a stack</li>
-<li>The stacks are complex and divergent</li>
+<li>Application are built on a stack</li>
+<li>Stacks are complex and divergent</li>
 <li>Sustaining them requires many coping strategies</li>
 </ol>
-<h1 id="the-problem-1">The problem</h1>
+<h1 id="the-problem">The problem</h1>
 <ul>
 <li>Our coping strategies are not sustainable</li>
 <li>Complexity is part of the problem</li>
 </ul>
 <h1 id="why-are-these-things-so-complex">Why are these things so
 complex?</h1>
-<ul>
+<ol type="1">
 <li>We want more from our application, more code gets written</li>
 <li>We want “enhancements”, complexity accrues overtime</li>
-<li>Best Practices like “systems should be designed to scale”</li>
-</ul>
-<h1 id="why-are-these-things-so-complex-1">Why are these things so
-complex?</h1>
-<ul>
-<li>first two are “people problems” (hard)</li>
-<li>last one might be a system design problem (solvable?)</li>
-</ul>
-<h1 id="scale-from-computing-practice">Scale (from computing
-practice)</h1>
+<li>We build “systems designed to scale”</li>
+</ol>
+<h1 id="scaling">Scaling</h1>
 <dl>
 <dt>scale</dt>
 <dd>
@@ -122,46 +122,29 @@ a euphemism for <strong>scaling big</strong>, as used in phrases like
 “google scale”, “amazon scale”
 </dd>
 </dl>
-<h1 id="scaling-big">Scaling big</h1>
+<h1 id="scaling-1">Scaling</h1>
 <ul>
 <li>Scaling big is hard</li>
 <li>Scaling big can make things really complex</li>
-<li>Scaling big can require larger teams for success</li>
-</ul>
-<h1 id="scaling-big-1">Scaling big</h1>
+<li>Scaling big as a path to scaling small
 <ul>
-<li>What did scaling big deliver?
+<li><strong>Can we pack only what is needed?</strong></li>
+</ul></li>
+</ul>
+<h1 id="scaling-approaches">Scaling approaches</h1>
 <ul>
 <li>distributed application design</li>
 <li>containers</li>
 <li>programmable infrastructure</li>
-<li>cache systems and dynamic clustering</li>
-<li>complex systems management</li>
-</ul></li>
-</ul>
-<h1 id="scaling-from-geometry">Scaling (from geometry)</h1>
-<dl>
-<dt>scaling</dt>
-<dd>
-a linear transformation that enlarges or diminishes objects
-</dd>
-</dl>
-<h1 id="scale-small">Scale small</h1>
-<ul>
-<li>Simplify!</li>
-<li>Pack only what is needed</li>
 </ul>
 <h1 id="scaling-small">Scaling small</h1>
 <ul>
 <li>Limit the moving parts</li>
 <li>Limit the cognitive shifts</li>
-<li>Minimize the toolbox, maximize using it</li>
-<li>Try to <strong>Write less code!</strong></li>
+<li>Try to <strong>Write less code</strong></li>
 </ul>
-<h1 id="limit-the-moving-parts">Limit the moving parts</h1>
-<blockquote>
-<p>Simplify through a clear division of labor</p>
-</blockquote>
+<h1 id="limit-the-moving-parts-three-abstractions">Limit the moving
+parts, three abstractions</h1>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a> =&gt; JSON API to manage
@@ -169,9 +152,10 @@ data, it gives us a JSON source</li>
 <li><a href="https://pandoc.org">Pandoc</a> =&gt; a powerful template
 engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
-data router, form data validator, static file services</li>
+data router, form data validator</li>
 </ul>
-<h1 id="limit-the-moving-parts-1">Limit the moving parts</h1>
+<h1 id="the-microservice-conversation">The microservice
+conversation</h1>
 <ol type="1">
 <li>web browser =&gt; Newt</li>
 <li>Newt =&gt; PostgREST</li>
@@ -180,33 +164,39 @@ data router, form data validator, static file services</li>
 </ol>
 <h1 id="limit-the-cognitive-shifts">Limit the cognitive shifts</h1>
 <ul>
-<li>Write SQL (Postgres) and get a JSON source (PostgREST)</li>
-<li>Write Pandoc templates to transform JSON to HTML</li>
-<li>Write a YAML file to orchestrate our microservice conversation</li>
+<li>Write SQL (Postgres), get JSON source (PostgREST)</li>
+<li>Write Pandoc templates, provide JSON, get HTML</li>
+<li>Write a YAML, orchestrate our microservice conversation</li>
 </ul>
-<h1 id="minimize-our-toolbox-maximize-using-it">Minimize our Toolbox,
-maximize using it</h1>
+<h1 id="our-toolbox">Our Toolbox</h1>
 <ul>
 <li>Text editor</li>
 <li>Postgres + PostgREST</li>
-<li>Pandoc</li>
-<li>Newt</li>
+<li>Pandoc (server) + Newt</li>
 <li>Web browser</li>
 </ul>
-<h1 id="write-less-code-with-sql">Write less code with SQL</h1>
+<h1 id="writing-less-code">Writing less code</h1>
+<ol type="1">
+<li>Use “off the shelf” microservices</li>
+<li>Take advantage of SQL</li>
+<li>Standardize templating with Pandoc</li>
+</ol>
 <blockquote>
-<p>PostgreSQL+PostgREST, a code savings plan.</p>
+<p>Postgres+PostgREST+Pandoc+Newt =&gt; No need to write any
+middle-ware</p>
 </blockquote>
+<h1 id="why-sql">Why SQL?</h1>
 <ul>
 <li>SQL is good at describing structured data</li>
 <li>SQL provides views, functions, triggers, …</li>
 <li>SQL allows us to model our data once</li>
-<li>Don’t need to write any middle-ware</li>
 </ul>
 <blockquote>
-<p><strong>Minimize the source Luke!</strong></p>
+<p><strong>Minimize the source Luke!</strong> PostgreSQL+PostgREST, is a
+code savings plan.</p>
 </blockquote>
-<h1 id="is-this-really-simpler">Is this really simpler?</h1>
+<h1 id="how-did-i-arrive-at-this-experiment">How did I arrive at this
+experiment?</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 <h1 id="birds-1"><a
 href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash">birds
@@ -251,19 +241,15 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
    3 birds3/postgrest.conf
    7 birds3/post_result.tmpl
  162 total</code></pre>
-<h1 id="how-does-newt-orchestrate-our-microservices">How does Newt
-orchestrate our microservices?</h1>
-<ul>
-<li>Newt’s YAML file includes descriptions for request routing
+<h1 id="newts-yaml-file">Newt’s YAML file</h1>
 <ul>
 <li>environment variable used to access JSON sources</li>
 <li>route definitions
 <ul>
-<li>(optional) variable definitions</li>
+<li>(optional) variable definitions (path and form data)</li>
 <li>request routing details (e.g. path, method)</li>
 <li>JSON source details (e.g. api URL, method, content type)</li>
 <li>(optional) Pandoc template filename</li>
-</ul></li>
 </ul></li>
 </ul>
 <h1 id="developer-workflow">Developer workflow</h1>
@@ -275,7 +261,7 @@ orchestrate our microservices?</h1>
 <li>Test with our web browser</li>
 </ol>
 <p><strong>Repeat as needed</strong></p>
-<h1 id="comparing-three-birds">Comparing three birds</h1>
+<h1 id="recap">Recap</h1>
 <table>
 <thead>
 <tr class="header">
@@ -348,7 +334,7 @@ orchestrate our microservices?</h1>
 <li>YAML</li>
 </ol></li>
 </ul>
-<h1 id="newts-greatest-advantage">Newt’s greatest Advantage</h1>
+<h1 id="newts-greatest-advantage">Newt’s greatest advantage</h1>
 <blockquote>
 <p>A mature foundation</p>
 </blockquote>
@@ -362,16 +348,14 @@ orchestrate our microservices?</h1>
 <li>JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)</li>
 </ul></li>
 </ul>
-<h1 id="an-unexpected-result-of-simplification">An unexpected result of
-simplification</h1>
+<h1 id="an-unexpected-result">An unexpected result</h1>
 <blockquote>
-<p>Newt can potentially scale really big!</p>
+<p>Newt can potentially scale big!</p>
 </blockquote>
 <ul>
-<li>Newt can be scaled wide (parallel), it requires minimal state (only
-what’s in the configuration file)</li>
-<li>Pandoc server can be scaled wide (it retains zero state )</li>
-<li>PostgREST can be scale wide (a minimal configuration file)</li>
+<li>Newt can be scaled wide, it requires minimal state</li>
+<li>Pandoc server can be scaled wide, it retains zero state</li>
+<li>PostgREST can be scale wide</li>
 <li>Postgres (the only part holding state) can be clustered</li>
 </ul>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
@@ -383,20 +367,21 @@ what’s in the configuration file)</li>
 <h1 id="sameday-maybe">Sameday, maybe …</h1>
 <ul>
 <li>Have Newt delegate file uploads to an S3 like service</li>
-<li>Enhance the Newt’s YAML to generate SQL models and Pandoc
-templates</li>
+<li>Enhance the Newt’s YAML to generate SQL models</li>
 <li>Explore integrating SQLite3 support</li>
 </ul>
-<h1 id="if-newt-has-a-community">If Newt has a community …</h1>
+<h1 id="if-newt-had-a-community">If Newt had a community …</h1>
 <ul>
 <li>share SQL code</li>
 <li>share Pandoc templates</li>
 <li>share YAML files</li>
+<li>improve Newt</li>
 </ul>
 <h1 id="conclusions">Conclusions</h1>
 <ul>
 <li>“Off the shelf” microservices can make application construction
-eaiser</li>
+easier</li>
+<li>Orchestrating the data pipeline in YAML seems</li>
 <li>You need to pick the right ones for the task</li>
 <li>You need to only use what you need</li>
 <li>Having an “off the self” orchestrate like Newt eliminates for of the

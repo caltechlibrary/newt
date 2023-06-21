@@ -147,14 +147,6 @@ class="email">rsdoiel@caltech.edu</a>
 <li>We build “systems designed to scale”</li>
 </ol>
 </div>
-<div id="why-are-these-things-so-complex-1"
-class="slide section level1">
-<h1>Why are these things so complex?</h1>
-<ul>
-<li>first two are “people problems” (hard, requires negotation)</li>
-<li>Three, how we approach system design?</li>
-</ul>
-</div>
 <div id="scaling" class="slide section level1">
 <h1>Scaling</h1>
 <dl>
@@ -165,25 +157,23 @@ a euphemism for <strong>scaling big</strong>, as used in phrases like
 </dd>
 </dl>
 </div>
-<div id="scaling-big" class="slide section level1">
-<h1>Scaling big</h1>
+<div id="scaling-1" class="slide section level1">
+<h1>Scaling</h1>
 <ul>
 <li>Scaling big is hard</li>
 <li>Scaling big can make things really complex</li>
-<li>Scale small?
+<li>Scaling big as a path to scaling small
 <ul>
-<li>Pack only what is needed</li>
+<li><strong>Can we pack only what is needed?</strong></li>
 </ul></li>
 </ul>
 </div>
-<div id="scaling-big-lessons" class="slide section level1">
-<h1>Scaling big lessons</h1>
+<div id="scaling-approaches" class="slide section level1">
+<h1>Scaling approaches</h1>
 <ul>
 <li>distributed application design</li>
 <li>containers</li>
 <li>programmable infrastructure</li>
-<li>cache systems and dynamic clustering</li>
-<li>complex systems management</li>
 </ul>
 </div>
 <div id="scaling-small" class="slide section level1">
@@ -191,15 +181,12 @@ a euphemism for <strong>scaling big</strong>, as used in phrases like
 <ul>
 <li>Limit the moving parts</li>
 <li>Limit the cognitive shifts</li>
-<li>Minimize the toolbox, maximize use</li>
 <li>Try to <strong>Write less code</strong></li>
 </ul>
 </div>
-<div id="limit-the-moving-parts" class="slide section level1">
-<h1>Limit the moving parts</h1>
-<blockquote>
-<p>Simplify through a clear division of labor</p>
-</blockquote>
+<div id="limit-the-moving-parts-three-abstractions"
+class="slide section level1">
+<h1>Limit the moving parts, three abstractions</h1>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a> =&gt; JSON API to manage
@@ -207,11 +194,11 @@ data, it gives us a JSON source</li>
 <li><a href="https://pandoc.org">Pandoc</a> =&gt; a powerful template
 engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
-data router, form data validator, static file services</li>
+data router, form data validator</li>
 </ul>
 </div>
-<div id="a-microservice-conversation" class="slide section level1">
-<h1>A Microservice conversation</h1>
+<div id="the-microservice-conversation" class="slide section level1">
+<h1>The microservice conversation</h1>
 <ol style="list-style-type: decimal">
 <li>web browser =&gt; Newt</li>
 <li>Newt =&gt; PostgREST</li>
@@ -232,8 +219,7 @@ data router, form data validator, static file services</li>
 <ul>
 <li>Text editor</li>
 <li>Postgres + PostgREST</li>
-<li>Pandoc</li>
-<li>Newt</li>
+<li>Pandoc (server) + Newt</li>
 <li>Web browser</li>
 </ul>
 </div>
@@ -251,20 +237,19 @@ middle-ware</p>
 </div>
 <div id="why-sql" class="slide section level1">
 <h1>Why SQL?</h1>
-<blockquote>
-<p><strong>Minimize the source Luke!</strong></p>
-</blockquote>
 <ul>
 <li>SQL is good at describing structured data</li>
 <li>SQL provides views, functions, triggers, …</li>
 <li>SQL allows us to model our data once</li>
 </ul>
 <blockquote>
-<p>PostgreSQL+PostgREST, a code savings plan.</p>
+<p><strong>Minimize the source Luke!</strong> PostgreSQL+PostgREST, is a
+code savings plan.</p>
 </blockquote>
 </div>
-<div id="how-did-i-arrive-at-newt" class="slide section level1">
-<h1>How did I arrive at Newt?</h1>
+<div id="how-did-i-arrive-at-this-experiment"
+class="slide section level1">
+<h1>How did I arrive at this experiment?</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 </div>
 <div id="birds-1" class="slide section level1">
@@ -340,8 +325,8 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 </ol>
 <p><strong>Repeat as needed</strong></p>
 </div>
-<div id="comparing-three-birds" class="slide section level1">
-<h1>Comparing three birds</h1>
+<div id="recap" class="slide section level1">
+<h1>Recap</h1>
 <table>
 <thead>
 <tr class="header">
@@ -418,7 +403,7 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 </ul>
 </div>
 <div id="newts-greatest-advantage" class="slide section level1">
-<h1>Newt’s greatest Advantage</h1>
+<h1>Newt’s greatest advantage</h1>
 <blockquote>
 <p>A mature foundation</p>
 </blockquote>
@@ -474,7 +459,8 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <h1>Conclusions</h1>
 <ul>
 <li>“Off the shelf” microservices can make application construction
-eaiser</li>
+easier</li>
+<li>Orchestrating the data pipeline in YAML seems</li>
 <li>You need to pick the right ones for the task</li>
 <li>You need to only use what you need</li>
 <li>Having an “off the self” orchestrate like Newt eliminates for of the

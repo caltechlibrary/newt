@@ -68,16 +68,14 @@ scale
 
 - Scaling big is hard
 - Scaling big can make things really complex
-- Scaling big lead to scaling small?
-  - **Pack only what is needed**
+- Scaling big as a path to scaling small
+  - **Can we pack only what is needed?**
 
 # Scaling approaches
 
 - distributed application design
 - containers
 - programmable infrastructure
-- cache systems and dynamic clustering
-- complex systems management
 
 # Scaling small
 
@@ -85,15 +83,13 @@ scale
 - Limit the cognitive shifts
 - Try to **Write less code**
 
-# Limit the moving parts
-
-> Three abstractions
+# Limit the moving parts, three abstractions
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON API to manage data, it gives us a JSON source
 - [Pandoc](https://pandoc.org) =>  a powerful template engine
 - [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator
 
-# A Microservice conversation
+# The microservice conversation
 
 1. web browser => Newt
 2. Newt => PostgREST
@@ -110,8 +106,7 @@ scale
 
 - Text editor
 - Postgres + PostgREST
-- Pandoc
-- Newt
+- Pandoc (server) + Newt
 - Web browser
 
 # Writing less code
@@ -125,15 +120,14 @@ scale
 
 # Why SQL?
 
-> **Minimize the source Luke!**
-
 - SQL is good at describing structured data
 - SQL provides views, functions, triggers, ...
 - SQL allows us to model our data once
 
-> PostgreSQL+PostgREST, a code savings plan.
+> **Minimize the source Luke!**
+> PostgreSQL+PostgREST, is a code savings plan.
 
-# How did I arrive at Newt?
+# How did I arrive at this experiment?
 
 Let's compare three implementations of a bird sighting website
 
