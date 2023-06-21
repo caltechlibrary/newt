@@ -25,26 +25,24 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 ### ... but first some context
 
-# LAMP, a legacy of complexity
+# LAMP and stacks of complexity
 
-App            Languages         Supporting services
----------      ---------         -------------------
-ArchivesSpace  Java, Ruby, SQL   MySQL, Solr, Apache or NginX
-               JavaScript, CSS
-EPrints        Perl, SQL, XML,   MySQL, Apache2 (tight integration),
-               EPrints XML,      and Xapian (full text search)
-               JavaScript, CSS
-Invenio RDM    Python, SQL       Postgres, Redis, Elasticsearch,
-               JavaScript, CSS   Docker, Invenio Framework,
-                                 Python/PIP, React Framework,
-                                 NodeJS/NPM, NginX
-Islandora      PHP/SQL           MySQL, Drupal, Fedora, Apache 2
-Custom Apps    Python+Flask+ORM  Python/PIP, Flask, MySQL/SQLite2
-               JavaScript, CSS   NodeJS/NPM
+Software           Stack            
+-----------------  ---------------------
+EPrints            Clasic LAMP + Xapian
+Islandora          Apache+MySQL+PHP 
+                   Fedora and Solr
+ArchivesSpace      Apache, MySQL, 
+                   Tomcat,
+                   Java+jRuby, Solr
+Invenio RDM        NginX, Python/pip,
+                   Postgres, Redis,
+                   Elasticsearch,
+                   Docker, NodeJS/NPM
 
 # Our Legacy of complexity
 
-1. Application are built on a stack
+1. Applications are built on a stack
 2. Stacks are complex and divergent
 3. Sustaining them requires many coping strategies
 
@@ -62,16 +60,16 @@ Custom Apps    Python+Flask+ORM  Python/PIP, Flask, MySQL/SQLite2
 # Scaling
 
 scale
-: a euphemism for **scaling big**, as used in phrases like "google scale", "amazon scale"
+: a euphemism for **scaling big**, usage "google scale", "amazon scale"
 
 # Scaling
 
 - Scaling big is hard
 - Scaling big can make things really complex
-- Scaling big as a path to scaling small
+- Scaling big, a path to scaling small
   - **Can we pack only what is needed?**
 
-# Scaling approaches
+# Scaling techniques and tools
 
 - distributed application design
 - containers
@@ -99,15 +97,8 @@ scale
 # Limit the cognitive shifts
 
 - Write SQL (Postgres), get JSON source (PostgREST)
-- Write Pandoc templates, provide JSON, get HTML
-- Write a YAML, orchestrate our microservice conversation
-
-# Our Toolbox
-
-- Text editor
-- Postgres + PostgREST
-- Pandoc (server) + Newt
-- Web browser
+- Write Pandoc templates, use JSON, get HTML
+- Write YAML, orchestrate our microservice conversation
 
 # Writing less code
 
@@ -127,11 +118,11 @@ scale
 > **Minimize the source Luke!**
 > PostgreSQL+PostgREST, is a code savings plan.
 
-# How did I arrive at this experiment?
+# A scale small experiment
 
 Let's compare three implementations of a bird sighting website
 
-# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash "this website requires a machine")
+# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash "this is a static website")
 
 - Built with Pandoc from a CSV file and a Pandoc template
 - 2 directories, 5 files, 63 total line count

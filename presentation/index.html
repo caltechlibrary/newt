@@ -50,76 +50,55 @@ class="email">rsdoiel@caltech.edu</a>
 <h2 id="a-small-system-experiment">a small system experiment</h2>
 <h3 id="but-first-some-context">… but first some context</h3>
 </div>
-<div id="lamp-a-legacy-of-complexity" class="slide section level1">
-<h1>LAMP, a legacy of complexity</h1>
+<div id="lamp-and-stacks-of-complexity" class="slide section level1">
+<h1>LAMP and stacks of complexity</h1>
 <table>
 <thead>
 <tr class="header">
-<th align="left">App</th>
-<th>Languages</th>
-<th>Supporting services</th>
+<th align="left">Software</th>
+<th align="left">Stack</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">ArchivesSpace</td>
-<td>Java, Ruby, SQL</td>
-<td>MySQL, Solr, Apache or NginX</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td>JavaScript, CSS</td>
-<td></td>
-</tr>
-<tr class="odd">
 <td align="left">EPrints</td>
-<td>Perl, SQL, XML,</td>
-<td>MySQL, Apache2 (tight integration),</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td>EPrints XML,</td>
-<td>and Xapian (full text search)</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td>JavaScript, CSS</td>
-<td></td>
-</tr>
-<tr class="even">
-<td align="left">Invenio RDM</td>
-<td>Python, SQL</td>
-<td>Postgres, Redis, Elasticsearch,</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td>JavaScript, CSS</td>
-<td>Docker, Invenio Framework,</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td></td>
-<td>Python/PIP, React Framework,</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td></td>
-<td>NodeJS/NPM, NginX</td>
+<td align="left">Clasic LAMP + Xapian</td>
 </tr>
 <tr class="even">
 <td align="left">Islandora</td>
-<td>PHP/SQL</td>
-<td>MySQL, Drupal, Fedora, Apache 2</td>
+<td align="left">Apache+MySQL+PHP</td>
 </tr>
 <tr class="odd">
-<td align="left">Custom Apps</td>
-<td>Python+Flask+ORM</td>
-<td>Python/PIP, Flask, MySQL/SQLite2</td>
+<td align="left"></td>
+<td align="left">Fedora and Solr</td>
+</tr>
+<tr class="even">
+<td align="left">ArchivesSpace</td>
+<td align="left">Apache, MySQL,</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Tomcat,</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
-<td>JavaScript, CSS</td>
-<td>NodeJS/NPM</td>
+<td align="left">Java+jRuby, Solr</td>
+</tr>
+<tr class="odd">
+<td align="left">Invenio RDM</td>
+<td align="left">NginX, Python/pip,</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Postgres, Redis,</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Elasticsearch,</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Docker, NodeJS/NPM</td>
 </tr>
 </tbody>
 </table>
@@ -127,7 +106,7 @@ class="email">rsdoiel@caltech.edu</a>
 <div id="our-legacy-of-complexity" class="slide section level1">
 <h1>Our Legacy of complexity</h1>
 <ol style="list-style-type: decimal">
-<li>Application are built on a stack</li>
+<li>Applications are built on a stack</li>
 <li>Stacks are complex and divergent</li>
 <li>Sustaining them requires many coping strategies</li>
 </ol>
@@ -152,8 +131,8 @@ class="email">rsdoiel@caltech.edu</a>
 <dl>
 <dt>scale</dt>
 <dd>
-a euphemism for <strong>scaling big</strong>, as used in phrases like
-“google scale”, “amazon scale”
+a euphemism for <strong>scaling big</strong>, usage “google scale”,
+“amazon scale”
 </dd>
 </dl>
 </div>
@@ -162,14 +141,14 @@ a euphemism for <strong>scaling big</strong>, as used in phrases like
 <ul>
 <li>Scaling big is hard</li>
 <li>Scaling big can make things really complex</li>
-<li>Scaling big as a path to scaling small
+<li>Scaling big, a path to scaling small
 <ul>
 <li><strong>Can we pack only what is needed?</strong></li>
 </ul></li>
 </ul>
 </div>
-<div id="scaling-approaches" class="slide section level1">
-<h1>Scaling approaches</h1>
+<div id="scaling-techniques-and-tools" class="slide section level1">
+<h1>Scaling techniques and tools</h1>
 <ul>
 <li>distributed application design</li>
 <li>containers</li>
@@ -210,17 +189,8 @@ data router, form data validator</li>
 <h1>Limit the cognitive shifts</h1>
 <ul>
 <li>Write SQL (Postgres), get JSON source (PostgREST)</li>
-<li>Write Pandoc templates, provide JSON, get HTML</li>
-<li>Write a YAML, orchestrate our microservice conversation</li>
-</ul>
-</div>
-<div id="our-toolbox" class="slide section level1">
-<h1>Our Toolbox</h1>
-<ul>
-<li>Text editor</li>
-<li>Postgres + PostgREST</li>
-<li>Pandoc (server) + Newt</li>
-<li>Web browser</li>
+<li>Write Pandoc templates, use JSON, get HTML</li>
+<li>Write YAML, orchestrate our microservice conversation</li>
 </ul>
 </div>
 <div id="writing-less-code" class="slide section level1">
@@ -247,15 +217,14 @@ middle-ware</p>
 code savings plan.</p>
 </blockquote>
 </div>
-<div id="how-did-i-arrive-at-this-experiment"
-class="slide section level1">
-<h1>How did I arrive at this experiment?</h1>
+<div id="a-scale-small-experiment" class="slide section level1">
+<h1>A scale small experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 </div>
 <div id="birds-1" class="slide section level1">
 <h1><a
 href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash"
-title="this website requires a machine">birds 1</a></h1>
+title="this is a static website">birds 1</a></h1>
 <ul>
 <li>Built with Pandoc from a CSV file and a Pandoc template</li>
 <li>2 directories, 5 files, 63 total line count</li>

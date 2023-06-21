@@ -24,81 +24,61 @@
 <h1 id="newt">Newt</h1>
 <h2 id="a-small-system-experiment">a small system experiment</h2>
 <h3 id="but-first-some-context">… but first some context</h3>
-<h1 id="lamp-a-legacy-of-complexity">LAMP, a legacy of complexity</h1>
+<h1 id="lamp-and-stacks-of-complexity">LAMP and stacks of
+complexity</h1>
 <table>
 <thead>
 <tr class="header">
-<th style="text-align: left;">App</th>
-<th>Languages</th>
-<th>Supporting services</th>
+<th style="text-align: left;">Software</th>
+<th style="text-align: left;">Stack</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">ArchivesSpace</td>
-<td>Java, Ruby, SQL</td>
-<td>MySQL, Solr, Apache or NginX</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td>JavaScript, CSS</td>
-<td></td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">EPrints</td>
-<td>Perl, SQL, XML,</td>
-<td>MySQL, Apache2 (tight integration),</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td>EPrints XML,</td>
-<td>and Xapian (full text search)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>JavaScript, CSS</td>
-<td></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Invenio RDM</td>
-<td>Python, SQL</td>
-<td>Postgres, Redis, Elasticsearch,</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td>JavaScript, CSS</td>
-<td>Docker, Invenio Framework,</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td></td>
-<td>Python/PIP, React Framework,</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td></td>
-<td>NodeJS/NPM, NginX</td>
+<td style="text-align: left;">Clasic LAMP + Xapian</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Islandora</td>
-<td>PHP/SQL</td>
-<td>MySQL, Drupal, Fedora, Apache 2</td>
+<td style="text-align: left;">Apache+MySQL+PHP</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Custom Apps</td>
-<td>Python+Flask+ORM</td>
-<td>Python/PIP, Flask, MySQL/SQLite2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Fedora and Solr</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ArchivesSpace</td>
+<td style="text-align: left;">Apache, MySQL,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Tomcat,</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td>JavaScript, CSS</td>
-<td>NodeJS/NPM</td>
+<td style="text-align: left;">Java+jRuby, Solr</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Invenio RDM</td>
+<td style="text-align: left;">NginX, Python/pip,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Postgres, Redis,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Elasticsearch,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Docker, NodeJS/NPM</td>
 </tr>
 </tbody>
 </table>
 <h1 id="our-legacy-of-complexity">Our Legacy of complexity</h1>
 <ol type="1">
-<li>Application are built on a stack</li>
+<li>Applications are built on a stack</li>
 <li>Stacks are complex and divergent</li>
 <li>Sustaining them requires many coping strategies</li>
 </ol>
@@ -118,20 +98,20 @@ complex?</h1>
 <dl>
 <dt>scale</dt>
 <dd>
-a euphemism for <strong>scaling big</strong>, as used in phrases like
-“google scale”, “amazon scale”
+a euphemism for <strong>scaling big</strong>, usage “google scale”,
+“amazon scale”
 </dd>
 </dl>
 <h1 id="scaling-1">Scaling</h1>
 <ul>
 <li>Scaling big is hard</li>
 <li>Scaling big can make things really complex</li>
-<li>Scaling big as a path to scaling small
+<li>Scaling big, a path to scaling small
 <ul>
 <li><strong>Can we pack only what is needed?</strong></li>
 </ul></li>
 </ul>
-<h1 id="scaling-approaches">Scaling approaches</h1>
+<h1 id="scaling-techniques-and-tools">Scaling techniques and tools</h1>
 <ul>
 <li>distributed application design</li>
 <li>containers</li>
@@ -164,15 +144,8 @@ data router, form data validator</li>
 <h1 id="limit-the-cognitive-shifts">Limit the cognitive shifts</h1>
 <ul>
 <li>Write SQL (Postgres), get JSON source (PostgREST)</li>
-<li>Write Pandoc templates, provide JSON, get HTML</li>
-<li>Write a YAML, orchestrate our microservice conversation</li>
-</ul>
-<h1 id="our-toolbox">Our Toolbox</h1>
-<ul>
-<li>Text editor</li>
-<li>Postgres + PostgREST</li>
-<li>Pandoc (server) + Newt</li>
-<li>Web browser</li>
+<li>Write Pandoc templates, use JSON, get HTML</li>
+<li>Write YAML, orchestrate our microservice conversation</li>
 </ul>
 <h1 id="writing-less-code">Writing less code</h1>
 <ol type="1">
@@ -194,12 +167,11 @@ middle-ware</p>
 <p><strong>Minimize the source Luke!</strong> PostgreSQL+PostgREST, is a
 code savings plan.</p>
 </blockquote>
-<h1 id="how-did-i-arrive-at-this-experiment">How did I arrive at this
-experiment?</h1>
+<h1 id="a-scale-small-experiment">A scale small experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 <h1 id="birds-1"><a
 href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash"
-title="this website requires a machine">birds 1</a></h1>
+title="this is a static website">birds 1</a></h1>
 <ul>
 <li>Built with Pandoc from a CSV file and a Pandoc template</li>
 <li>2 directories, 5 files, 63 total line count</li>
