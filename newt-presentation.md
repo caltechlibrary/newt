@@ -25,7 +25,7 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 ### ... but first some context
 
-# LAMP, its legacy, complexity
+# LAMP, a legacy of complexity
 
 App            Languages         Supporting services
 ---------      ---------         -------------------
