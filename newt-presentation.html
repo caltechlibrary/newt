@@ -154,8 +154,7 @@ engine</li>
 <li><a href="https://github.com/caltechlibrary/newt/">Newt</a> =&gt;
 data router, form data validator</li>
 </ul>
-<h1 id="the-microservice-conversation">The microservice
-conversation</h1>
+<h1 id="a-microservice-conversation">A microservice conversation</h1>
 <ol type="1">
 <li>web browser =&gt; Newt</li>
 <li>Newt =&gt; PostgREST</li>
@@ -199,48 +198,146 @@ code savings plan.</p>
 experiment?</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 <h1 id="birds-1"><a
-href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash">birds
-1</a></h1>
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash"
+title="this website requires a machine">birds 1</a></h1>
 <ul>
 <li>Built with Pandoc from a CSV file and a Pandoc template</li>
+<li>2 directories, 5 files, 63 total line count</li>
 </ul>
-<pre><code>2 directories, 5 files
-       5 birds1/README.md
-       4 birds1/birds.csv
-       3 birds1/build.sh
-      13 birds1/page.tmpl
-      38 birds1/htdocs/index.html
-      63 total</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Lines</th>
+<th style="text-align: left;">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/README.html">README.md</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/birds.csv">birds.csv</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/build.sh">build.sh</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">13</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/page.tmpl">page.tmpl</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">38</td>
+<td style="text-align: left;">htdocs/index.html</td>
+</tr>
+</tbody>
+</table>
+<p>See <a
+href="https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html"
+class="uri">https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html</a></p>
 <h1 id="birds-2"><a
-href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash">birds
-2</a></h1>
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash"
+title="this website requires a machine">birds 2</a></h1>
 <ul>
 <li>Built with SQL (Postgres + PostgREST), Browser side JavaScript</li>
+<li>2 directories, 6 files, 177 total line count</li>
 </ul>
-<pre><code>2 directories, 6 files
-  33 birds2/README.md
-   4 birds2/birds.csv
-  50 birds2/setup.sql
-   3 birds2/postgrest.conf
-  24 birds2/htdocs/index.html
-  63 birds2/htdocs/sightings.js
- 177 total</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Lines</th>
+<th style="text-align: left;">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">33</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/README.html">README.md</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/birds.csv">birds.csv</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">50</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/setup.sql">setup.sql</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/postgrest.conf">postgrest.conf</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">63</td>
+<td style="text-align: left;">htdocs/<a
+href="https://caltechlibrary.github.io/newt/demos/birds2/htdocs/sightings.js">sightings.js</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">htdocs/index.html</td>
+</tr>
+</tbody>
+</table>
+<p>Dynamic site, requires hosting</p>
 <h1 id="birds-3"><a
-href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash">birds
-3</a></h1>
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash"
+title="this website requires a machine">birds 3</a></h1>
 <ul>
 <li>Built with SQL (Postgres + PostgREST), Pandoc, Newt</li>
-<li><strong>no JavaScript</strong></li>
+<li>1 directory, 7 files, 162 total line count</li>
 </ul>
-<pre><code>1 directory, 7 files
-  33 birds3/README.md
-   4 birds3/birds.csv
-  50 birds3/setup.sql
-  25 birds3/birds.yaml
-  40 birds3/page.tmpl
-   3 birds3/postgrest.conf
-   7 birds3/post_result.tmpl
- 162 total</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Lines</th>
+<th style="text-align: left;">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">33</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/README.html">README.md</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">birds.csv</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">50</td>
+<td style="text-align: left;">setup.sql</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">25</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/birds.yaml">birds.yaml</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">40</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/page.tmpl">page.tmpl</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/post_result.tmpl">post_result.tmpl</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">postgrest.conf</td>
+</tr>
+</tbody>
+</table>
+<p>Dynamic site, requires hosting, <strong>no JavaScript</strong></p>
 <h1 id="newts-yaml-file">Newt’s YAML file</h1>
 <ul>
 <li>environment variable used to access JSON sources</li>
@@ -252,6 +349,9 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <li>(optional) Pandoc template filename</li>
 </ul></li>
 </ul>
+<p>See <a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml"
+class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml</a></p>
 <h1 id="developer-workflow">Developer workflow</h1>
 <ol type="1">
 <li>Model data in Postgres</li>
@@ -324,15 +424,11 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 </table>
 <h1 id="weaknesses-in-my-proposal">Weaknesses in my proposal</h1>
 <ul>
-<li>Newt is <strong>an experimental prototype</strong> (June 2023)</li>
+<li>Newt is <strong>an experimental prototype</strong> (June/July
+2023)</li>
 <li>Newt doesn’t support file uploads</li>
-<li>Newt doesn’t eliminate Learning curves, e.g.
-<ol type="1">
-<li>Postgres and SQL</li>
-<li>Pandoc</li>
-<li>using HTTP methods</li>
-<li>YAML</li>
-</ol></li>
+<li>Newt doesn’t eliminate learning curves, e.g. Postgres and SQL;
+Pandoc; using HTTP methods; YAML</li>
 </ul>
 <h1 id="newts-greatest-advantage">Newt’s greatest advantage</h1>
 <blockquote>
@@ -353,10 +449,10 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <p>Newt can potentially scale big!</p>
 </blockquote>
 <ul>
-<li>Newt can be scaled wide, it requires minimal state</li>
-<li>Pandoc server can be scaled wide, it retains zero state</li>
-<li>PostgREST can be scale wide</li>
-<li>Postgres (the only part holding state) can be clustered</li>
+<li>Newt can be scaled wide (not stateful)</li>
+<li>Pandoc server can be scaled wide (not stateful)</li>
+<li>PostgREST can be scale wide (not stateful)</li>
+<li>Postgres can be clustered (stateful)</li>
 </ul>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
 <ul>
@@ -381,32 +477,24 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-bird
 <ul>
 <li>“Off the shelf” microservices can make application construction
 easier</li>
-<li>Orchestrating the data pipeline in YAML seems</li>
-<li>You need to pick the right ones for the task</li>
-<li>You need to only use what you need</li>
-<li>Having an “off the self” orchestrate like Newt eliminates for of the
-need to write middleware and frees up time to focus on humane user
-interfaces</li>
+<li>Orchestrating the data pipeline in YAML seems reasonable</li>
+<li>SQL may turn some people off</li>
+<li>Pandoc templates are simple to learn and avoid embedding business
+logic</li>
+<li>You still have all the HTML5 goodness available in the
+front-end</li>
 </ul>
 <h1 id="additional-resources">Additional resources</h1>
 <ul>
-<li><a href="https://postgres.org">Postgres</a></li>
-<li>Install Haskell <a
-href="https://https://www.haskell.org/ghcup/">ghcup</a>
-<ul>
-<li>Build latest <a href="https://postgrest.org">PostgREST</a></li>
-<li>Build latest <a href="https://pandoc.org">Pandoc</a></li>
-</ul></li>
-<li><a href="https://github.com/caltechlibrary/newt">Newt</a> proof of
-concept</li>
+<li><a href="https://postgres.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://github.com/caltechlibrary/newt">Newt</a></li>
 <li><a href="https://solr.apache.org/">Solr</a>, <a
 href="https://www.opensearch.org/">Opensearch</a></li>
-<li>Alternatives to Postgres+PostgREST
+<li>Compiling Pandoc or PostgREST requires Haskell
 <ul>
-<li><a href="https://mariadb.com/products/enterprise/">MariaDB</a> + <a
-href="https://mariadb.com/kb/en/maxscale/">Maria Max Scale</a></li>
-<li><a href="https://dev.mysql.com">MySQL</a> + <a
-href="https://blogs.oracle.com/mysql/post/introducing-the-mysql-rest-service">MRS</a></li>
+<li>Install Haskell <a
+href="https://https://www.haskell.org/ghcup/">ghcup</a></li>
 </ul></li>
 </ul>
 <h1 id="thank-you">Thank you!</h1>

@@ -89,7 +89,7 @@ scale
 - [Pandoc](https://pandoc.org) =>  a powerful template engine
 - [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator
 
-# The microservice conversation
+# A microservice conversation
 
 1. web browser => Newt
 2. Newt => PostgREST
@@ -131,51 +131,53 @@ scale
 
 Let's compare three implementations of a bird sighting website
 
-# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash) 
+# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash "this website requires a machine")
 
 - Built with Pandoc from a CSV file and a Pandoc template
+- 2 directories, 5 files, 63 total line count
 
-~~~
-2 directories, 5 files
-       5 birds1/README.md
-       4 birds1/birds.csv
-       3 birds1/build.sh
-      13 birds1/page.tmpl
-      38 birds1/htdocs/index.html
-      63 total
-~~~
+Lines   Files
+------  ---------------
+     5  [README.md](https://caltechlibrary.github.io/newt/demos/birds1/README.md)
+     4  [birds.csv](https://caltechlibrary.github.io/newt/demos/birds1/birds.csv)
+     3  [build.sh](https://caltechlibrary.github.io/newt/demos/birds1/build.sh)
+    13  [page.tmpl](https://caltechlibrary.github.io/newt/demos/birds1/page.tmpl)
+    38  htdocs/index.html
 
-# [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash)
+See <https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html>
+
+# [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash "this website requires a machine")
 
 - Built with SQL (Postgres + PostgREST), Browser side JavaScript
+- 2 directories, 6 files, 177 total line count
 
-~~~
-2 directories, 6 files
-  33 birds2/README.md
-   4 birds2/birds.csv
-  50 birds2/setup.sql
-   3 birds2/postgrest.conf
-  24 birds2/htdocs/index.html
-  63 birds2/htdocs/sightings.js
- 177 total
-~~~
+Lines    Files
+------   --------------
+    33   [README.md](https://caltechlibrary.github.io/newt/demos/birds2/README.md)
+     4   [birds.csv](https://caltechlibrary.github.io/newt/demos/birds2/birds.csv)
+    50   [setup.sql](https://caltechlibrary.github.io/newt/demos/birds2/setup.sql)
+     3   [postgrest.conf](https://caltechlibrary.github.io/newt/demos/birds2/postgrest.conf)
+    63   htdocs/[sightings.js](https://caltechlibrary.github.io/newt/demos/birds2/htdocs/sightings.js)
+    24   htdocs/index.html
 
-# [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash)
+Dynamic site, requires hosting
+
+# [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash "this website requires a machine")
 
 - Built with SQL (Postgres + PostgREST), Pandoc, Newt
-- **no JavaScript**
+- 1 directory, 7 files, 162 total line count
 
-~~~
-1 directory, 7 files
-  33 birds3/README.md
-   4 birds3/birds.csv
-  50 birds3/setup.sql
-  25 birds3/birds.yaml
-  40 birds3/page.tmpl
-   3 birds3/postgrest.conf
-   7 birds3/post_result.tmpl
- 162 total
-~~~
+Lines   Files
+------  ---------------
+    33  [README.md](https://caltechlibrary.github.io/newt/demos/birds3/README.md)
+     4  birds.csv
+    50  setup.sql
+    25  [birds.yaml](https://caltechlibrary.github.io/newt/demos/birds3/birds.yaml)
+    40  [page.tmpl](https://caltechlibrary.github.io/newt/demos/birds3/page.tmpl)
+     7  [post_result.tmpl](https://caltechlibrary.github.io/newt/demos/birds3/post_result.tmpl)
+     3  postgrest.conf
+
+Dynamic site, requires hosting, **no JavaScript**
 
 # Newt's YAML file
 
@@ -185,6 +187,8 @@ Let's compare three implementations of a bird sighting website
   - request routing details (e.g. path, method)
   - JSON source details (e.g. api URL, method, content type)
   - (optional) Pandoc template filename
+
+See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml>
 
 # Developer workflow
 
@@ -211,13 +215,9 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 # Weaknesses in my proposal
 
-- Newt is **an experimental prototype** (June 2023)
+- Newt is **an experimental prototype** (June/July 2023)
 - Newt doesn't support file uploads
-- Newt doesn't eliminate Learning curves, e.g.
-    1. Postgres and SQL
-    2. Pandoc
-    3. using HTTP methods
-    4. YAML
+- Newt doesn't eliminate learning curves, e.g. Postgres and SQL; Pandoc; using HTTP methods; YAML
 
 # Newt's greatest advantage
 
@@ -232,10 +232,10 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 > Newt can potentially scale big!
 
-- Newt can be scaled wide, it requires minimal state
-- Pandoc server can be scaled wide, it retains zero state
-- PostgREST can be scale wide
-- Postgres (the only part holding state) can be clustered
+- Newt can be scaled wide (not stateful)
+- Pandoc server can be scaled wide (not stateful)
+- PostgREST can be scale wide (not stateful)
+- Postgres can be clustered (stateful)
 
 # Next steps for Newt?
 
@@ -259,23 +259,18 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 # Conclusions
 
 - "Off the shelf" microservices can make application construction easier
-- Orchestrating the data pipeline in YAML seems 
-- You need to pick the right ones for the task
-- You need to only use what you need
-- Having an "off the self" orchestrate like Newt eliminates for of the need to write middleware and frees up time to focus on humane user interfaces
-
+- Orchestrating the data pipeline in YAML seems reasonable
+- SQL may turn some people off
+- Pandoc templates are simple to learn and avoid embedding business logic
+- You still have all the HTML5 goodness available in the front-end
 
 # Additional resources 
 
-- [Postgres](https://postgres.org)
-- Install Haskell [ghcup](https://https://www.haskell.org/ghcup/)
-  - Build latest [PostgREST](https://postgrest.org)
-  - Build latest [Pandoc](https://pandoc.org)
-- [Newt](https://github.com/caltechlibrary/newt) proof of concept
+- [Postgres](https://postgres.org) + [PostgREST](https://postgrest.org)
+- [Newt](https://github.com/caltechlibrary/newt)
 - [Solr](https://solr.apache.org/), [Opensearch](https://www.opensearch.org/)
-- Alternatives to Postgres+PostgREST
-  - [MariaDB](https://mariadb.com/products/enterprise/) + [Maria Max Scale](https://mariadb.com/kb/en/maxscale/)
-  - [MySQL](https://dev.mysql.com) + [MRS](https://blogs.oracle.com/mysql/post/introducing-the-mysql-rest-service)
+- Compiling Pandoc or PostgREST requires Haskell
+  - Install Haskell [ghcup](https://https://www.haskell.org/ghcup/)
 
 # Thank you!
 
