@@ -29,13 +29,8 @@ cat <<EOT>birds1/page.tmpl
 <html>
   <head><title>Birds 1 Demo</title></head>
   <body>
-    <header>Birds 1 Demo</header>
-	<p>
     <h1>Welcome to the bird list!</h1>
-    <p>
 \$body\$
-	</p>
-	<footer></footer>
   </body>
 </html>
 EOT

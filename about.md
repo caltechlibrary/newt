@@ -3,7 +3,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "Newt"
-abstract: "A new take on developing web applications, services and sites using Postgres, PostgREST, a URL router and front end web server."
+abstract: "A new take on developing web applications, services and sites
+using Postgres, PostgREST, a URL router and front end web server."
 authors:
   - family-names: Doiel
     given-names: R. S.
@@ -12,7 +13,8 @@ authors:
 repository-code: "git+https://github.com/caltechlibrary/newt"
 version: 0.0.1
 license-url: "https://caltechlibrary.github.io/newt/LICENSE"
-keywords: [ "web development", "microservice", "postgres", "postgrest", "pandoc" ]
+keywords: [ "web
+development", "microservice", "postgres", "postgrest", "pandoc" ]
 
 ---
 
@@ -27,7 +29,8 @@ About this software
 
 
 
-A new take on developing web applications, services and sites using Postgres, PostgREST, a URL router and front end web server.
+A new take on developing web applications, services and sites using
+Postgres, PostgREST, a URL router and front end web server.
 
 - License: <https://caltechlibrary.github.io/newt/LICENSE>
 - GitHub: <git+https://github.com/caltechlibrary/newt>

@@ -42,7 +42,7 @@ SELECT * FROM birds.sighting;
 
 ## Setup Newt
 
-1. Create a birds.yaml file holding the routes for our birds application
+1. Create a [birds.yaml](birds.yaml) file holding the routes for our birds application
 2. Start up Newt service using the YAML file.
 3. Point your web browser at the Newt and see what happens
 

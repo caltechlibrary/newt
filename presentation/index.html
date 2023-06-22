@@ -13,10 +13,16 @@
   <style type="text/css">
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" type="text/css" media="screen, projection, print"
     href="https://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
@@ -25,9 +31,14 @@
 </head>
 <body>
 <div class="slide titlepage">
-  <h1 class="title">Newt, assemble web applications with Pandoc, Postgres and PostgREST</h1>
+  <h1 class="title">Newt, assemble web applications with Pandoc,
+Postgres and PostgREST</h1>
   <p class="author">
-R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.edu</a>
+R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu"
+class="email">rsdoiel@caltech.edu</a>
+  </p>
+  <p class="institute">
+<p>Caltech Library, Digital Library Development</p>
   </p>
   <p class="date">July 14, 2023</p>
 </div>
@@ -39,7 +50,8 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <h2 id="a-small-system-experiment">a small system experiment</h2>
 <h3 id="but-first-some-context">… but first some context</h3>
 </div>
-<div id="lamp-and-the-stacks-of-complexity" class="slide section level1">
+<div id="lamp-and-the-stacks-of-complexity"
+class="slide section level1">
 <h1>LAMP and the stacks of complexity</h1>
 <table>
 <thead>
@@ -103,7 +115,9 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <h1>Scaling</h1>
 <dl>
 <dt>scale</dt>
-<dd>a euphemism for <strong>scaling big</strong>, usage “google scale”, “amazon scale”
+<dd>
+a euphemism for <strong>scaling big</strong>, usage “google scale”,
+“amazon scale”
 </dd>
 </dl>
 <ul>
@@ -136,12 +150,17 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <li>Try to <strong>Write less code</strong></li>
 </ul>
 </div>
-<div id="limit-the-moving-parts-three-abstractions" class="slide section level1">
+<div id="limit-the-moving-parts-three-abstractions"
+class="slide section level1">
 <h1>Limit the moving parts, three abstractions</h1>
 <ul>
-<li>JSON source to manage data =&gt; <a href="https://postgresql.org">Postgres</a> + <a href="https://postgrest.org">PostgREST</a></li>
-<li>A powerful template engine =&gt; <a href="https://pandoc.org">Pandoc</a></li>
-<li>data outer, form validator =&gt; <a href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+<li>JSON source to manage data =&gt; <a
+href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a></li>
+<li>A powerful template engine =&gt; <a
+href="https://pandoc.org">Pandoc</a></li>
+<li>data outer, form validator =&gt; <a
+href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
 </div>
 <div id="a-microservice-conversation" class="slide section level1">
@@ -180,7 +199,8 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <li>SQL allows us to model our data once</li>
 </ul>
 <blockquote>
-<p><strong>Minimize the source Luke!</strong> PostgreSQL+PostgREST is a code savings plan.</p>
+<p><strong>Minimize the source Luke!</strong> PostgreSQL+PostgREST is a
+code savings plan.</p>
 </blockquote>
 </div>
 <div id="a-scale-small-experiment" class="slide section level1">
@@ -188,8 +208,11 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <p>Let’s compare three implementations of a bird sighting website</p>
 </div>
 <div id="birds-1" class="slide section level1">
-<h1><a href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash" title="this is a static website">birds 1</a></h1>
-<p>CSV file, Pandoc, 2 directories, 5 files, 63 total line count</p>
+<h1><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash"
+title="this is a static website">birds 1</a></h1>
+<p>CSV file, Pandoc, 2 directories, 5 files, 53 total line count, static
+site hosting</p>
 <table>
 <thead>
 <tr class="header">
@@ -200,19 +223,23 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <tbody>
 <tr class="odd">
 <td align="left">5</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds1/README.md">README.md</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/README.md">README.md</a></td>
 </tr>
 <tr class="even">
 <td align="left">4</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds1/birds.csv">birds.csv</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/birds.csv">birds.csv</a></td>
 </tr>
 <tr class="odd">
 <td align="left">3</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds1/build.sh">build.sh</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/build.sh">build.sh</a></td>
 </tr>
 <tr class="even">
-<td align="left">13</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds1/page.tmpl">page.tmpl</a></td>
+<td align="left">8</td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds1/page.tmpl">page.tmpl</a></td>
 </tr>
 <tr class="odd">
 <td align="left">38</td>
@@ -220,11 +247,16 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 </tr>
 </tbody>
 </table>
-<p>See <a href="https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html" class="uri">https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html</a></p>
+<p>See <a
+href="https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html"
+class="uri">https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html</a></p>
 </div>
 <div id="birds-2" class="slide section level1">
-<h1><a href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash" title="this website requires a machine">birds 2</a></h1>
-<p>SQL (Postgres + PostgREST), Browser side JavaScript, 2 directories, 6 files, 177 total line count</p>
+<h1><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash"
+title="this website requires a machine">birds 2</a></h1>
+<p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6
+files, 177 total line count, dynamic site requires hosting</p>
 <table>
 <thead>
 <tr class="header">
@@ -235,23 +267,28 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <tbody>
 <tr class="odd">
 <td align="left">33</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds2/README.md">README.md</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/README.md">README.md</a></td>
 </tr>
 <tr class="even">
 <td align="left">4</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds2/birds.csv">birds.csv</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/birds.csv">birds.csv</a></td>
 </tr>
 <tr class="odd">
 <td align="left">50</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds2/setup.sql">setup.sql</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/setup.sql">setup.sql</a></td>
 </tr>
 <tr class="even">
 <td align="left">3</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds2/postgrest.conf">postgrest.conf</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds2/postgrest.conf">postgrest.conf</a></td>
 </tr>
 <tr class="odd">
 <td align="left">63</td>
-<td align="left">htdocs/<a href="https://caltechlibrary.github.io/newt/demos/birds2/htdocs/sightings.js">sightings.js</a></td>
+<td align="left">htdocs/<a
+href="https://caltechlibrary.github.io/newt/demos/birds2/htdocs/sightings.js">sightings.js</a></td>
 </tr>
 <tr class="even">
 <td align="left">24</td>
@@ -259,14 +296,14 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 </tr>
 </tbody>
 </table>
-<p>Dynamic site, requires hosting</p>
 </div>
 <div id="birds-3" class="slide section level1">
-<h1><a href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash" title="this website requires a machine">birds 3</a></h1>
-<ul>
-<li>Built with SQL (Postgres + PostgREST), Pandoc, Newt</li>
-<li>1 directory, 7 files, 162 total line count</li>
-</ul>
+<h1><a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash"
+title="this website requires a machine">birds 3</a></h1>
+<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 162
+total line count, dynamic site requires hosting, <strong>no JavaScript
+required</strong></p>
 <table>
 <thead>
 <tr class="header">
@@ -277,7 +314,8 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <tbody>
 <tr class="odd">
 <td align="left">33</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds3/README.md">README.md</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/README.md">README.md</a></td>
 </tr>
 <tr class="even">
 <td align="left">4</td>
@@ -289,15 +327,18 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 </tr>
 <tr class="even">
 <td align="left">25</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds3/birds.yaml">birds.yaml</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/birds.yaml">birds.yaml</a></td>
 </tr>
 <tr class="odd">
 <td align="left">40</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds3/page.tmpl">page.tmpl</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/page.tmpl">page.tmpl</a></td>
 </tr>
 <tr class="even">
 <td align="left">7</td>
-<td align="left"><a href="https://caltechlibrary.github.io/newt/demos/birds3/post_result.tmpl">post_result.tmpl</a></td>
+<td align="left"><a
+href="https://caltechlibrary.github.io/newt/demos/birds3/post_result.tmpl">post_result.tmpl</a></td>
 </tr>
 <tr class="odd">
 <td align="left">3</td>
@@ -305,7 +346,6 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 </tr>
 </tbody>
 </table>
-<p>Dynamic site, requires hosting, <strong>no JavaScript</strong></p>
 </div>
 <div id="newts-yaml-file" class="slide section level1">
 <h1>Newt’s YAML file</h1>
@@ -319,7 +359,9 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <li>(optional) Pandoc template filename</li>
 </ul></li>
 </ul>
-<p>See <a href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml" class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml</a></p>
+<p>See <a
+href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml"
+class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml</a></p>
 </div>
 <div id="developer-workflow" class="slide section level1">
 <h1>Developer workflow</h1>
@@ -398,9 +440,11 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <div id="weaknesses-in-my-proposal" class="slide section level1">
 <h1>Weaknesses in my proposal</h1>
 <ul>
-<li>Newt is <strong>an experimental prototype</strong> (June/July 2023)</li>
+<li>Newt is <strong>an experimental prototype</strong> (June/July
+2023)</li>
 <li>Newt doesn’t support file uploads</li>
-<li>Newt doesn’t eliminate learning curves, e.g. Postgres and SQL; Pandoc; using HTTP methods; YAML</li>
+<li>Newt doesn’t eliminate learning curves, e.g. Postgres and SQL;
+Pandoc; using HTTP methods; YAML</li>
 </ul>
 </div>
 <div id="newts-greatest-advantage" class="slide section level1">
@@ -459,32 +503,41 @@ R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.
 <div id="conclusions" class="slide section level1">
 <h1>Conclusions</h1>
 <ul>
-<li>“Off the shelf” microservices can make application construction easier</li>
+<li>“Off the shelf” microservices can make application construction
+easier</li>
 <li>Orchestrating the data pipeline in YAML seems reasonable</li>
 <li>SQL may turn some people off</li>
-<li>Pandoc templates are simple to learn and avoid embedding business logic</li>
-<li>You still have all the HTML5 goodness available in the front-end</li>
+<li>Pandoc templates are simple to learn and avoid embedding business
+logic</li>
+<li>You still have all the HTML5 goodness available in the
+front-end</li>
 </ul>
 </div>
 <div id="additional-resources" class="slide section level1">
 <h1>Additional resources</h1>
 <ul>
 <li><a href="https://github.com/caltechlibrary/newt">Newt</a></li>
-<li><a href="https://postgres.org">Postgres</a> + <a href="https://postgrest.org">PostgREST</a>
+<li><a href="https://postgres.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a>
 <ul>
-<li><a href="https://postgrest.org/en/stable/ecosystem.html">PostgREST Community Tutorials</a></li>
+<li><a href="https://postgrest.org/en/stable/ecosystem.html">PostgREST
+Community Tutorials</a></li>
 </ul></li>
 <li>Compiling Pandoc or PostgREST requires Haskell
 <ul>
-<li>Install Haskell <a href="https://https://www.haskell.org/ghcup/">ghcup</a></li>
+<li>Install Haskell <a
+href="https://https://www.haskell.org/ghcup/">ghcup</a></li>
 </ul></li>
 </ul>
 </div>
 <div id="thank-you" class="slide section level1">
 <h1>Thank you!</h1>
 <ul>
-<li>This Presentation <a href="https://caltechlibrary.github.io/newt/presentation/" class="uri">https://caltechlibrary.github.io/newt/presentation/</a></li>
-<li>Project: <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>This Presentation <a
+href="https://caltechlibrary.github.io/newt/presentation/"
+class="uri">https://caltechlibrary.github.io/newt/presentation/</a></li>
+<li>Project: <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
 <li>Email: rsdoiel@caltech.edu</li>
 </ul>
 </div>

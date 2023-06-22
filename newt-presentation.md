@@ -120,21 +120,21 @@ Let's compare three implementations of a bird sighting website
 
 # [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash "this is a static website")
 
-CSV file, Pandoc, 2 directories, 5 files, 63 total line count
+CSV file, Pandoc, 2 directories, 5 files, 53 total line count, static site hosting
 
 Lines   Files
 ------  ---------------
      5  [README.md](https://caltechlibrary.github.io/newt/demos/birds1/README.md)
      4  [birds.csv](https://caltechlibrary.github.io/newt/demos/birds1/birds.csv)
      3  [build.sh](https://caltechlibrary.github.io/newt/demos/birds1/build.sh)
-    13  [page.tmpl](https://caltechlibrary.github.io/newt/demos/birds1/page.tmpl)
+     8  [page.tmpl](https://caltechlibrary.github.io/newt/demos/birds1/page.tmpl)
     38  htdocs/index.html
 
 See <https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html>
 
 # [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Browser side JavaScript, 2 directories, 6 files, 177 total line count
+SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6 files, 177 total line count, dynamic site requires hosting
 
 Lines    Files
 ------   --------------
@@ -145,12 +145,9 @@ Lines    Files
     63   htdocs/[sightings.js](https://caltechlibrary.github.io/newt/demos/birds2/htdocs/sightings.js)
     24   htdocs/index.html
 
-Dynamic site, requires hosting
-
 # [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash "this website requires a machine")
 
-- Built with SQL (Postgres + PostgREST), Pandoc, Newt
-- 1 directory, 7 files, 162 total line count
+SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 162 total line count, dynamic site requires hosting, **no JavaScript required**
 
 Lines   Files
 ------  ---------------
@@ -161,8 +158,6 @@ Lines   Files
     40  [page.tmpl](https://caltechlibrary.github.io/newt/demos/birds3/page.tmpl)
      7  [post_result.tmpl](https://caltechlibrary.github.io/newt/demos/birds3/post_result.tmpl)
      3  postgrest.conf
-
-Dynamic site, requires hosting, **no JavaScript**
 
 # Newt's YAML file
 

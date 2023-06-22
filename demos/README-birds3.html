@@ -21,15 +21,35 @@
 </nav>
 
 <section>
-<h1 id="user-manual">User manual</h1>
-<ul>
-<li><a href="newt.1.html">newt</a></li>
-<li><a href="presentation/">Newt Presentation</a>, Code4Lib Meetup at
-UCLA, July 14, 2023</li>
-<li><a href="newt-router.html">Newt Router</a></li>
-<li><a href="route_dsl.html">Route DSL</a></li>
-<li><a href="INSTALL.html">Installation</a></li>
-</ul>
+<h1 id="birds-3-a-demo-of-postgresql-15-postgrest-11-and-newt">Birds 3,
+a demo of PostgreSQL 15, PostgREST 11 and Newt</h1>
+<p>This directory holds our demo.</p>
+<h2 id="setup-database">Setup Database</h2>
+<ol type="1">
+<li>Start psql and connect to the birds database</li>
+<li>Run <a href="setup.sql">setup.sql</a></li>
+<li>Run a select query and confirm the data loaded</li>
+<li>Quit psql, you are ready to setup PostgREST</li>
+</ol>
+<pre><code>psql
+\c birds
+\i setup.sql
+\copy birds.sighting from &#39;birds.csv&#39; with (FORMAT CSV, HEADER);
+SELECT * FROM birds.sighting;
+\q</code></pre>
+<h2 id="startup-postgrest">Startup PostgREST</h2>
+<ol type="1">
+<li>start PostgREST ‘postgrest postgrest.conf’</li>
+<li>Using curl make sure it is available
+‘http://localhost:3000/bird_view’</li>
+</ol>
+<h2 id="setup-newt">Setup Newt</h2>
+<ol type="1">
+<li>Create a birds.yaml file holding the routes for our birds
+application</li>
+<li>Start up Newt service using the YAML file.</li>
+<li>Point your web browser at the Newt and see what happens</li>
+</ol>
 </section>
 
 <footer>

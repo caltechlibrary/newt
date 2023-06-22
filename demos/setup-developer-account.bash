@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ "$USER" = "" ]; then
-	USER="rsdoiel-test"
+	USER="admin-test"
 fi
 # Make sure we have a database in PostgreSQL 15 for our username
 # and a database to match
