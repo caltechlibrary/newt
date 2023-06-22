@@ -1,5 +1,7 @@
 #!/bin/bash
-USER="rsdoiel-test"
+if [ "$USER" = "" ]; then
+	USER="rsdoiel-test"
+fi
 # Make sure we have a database in PostgreSQL 15 for our username
 # and a database to match
 if [ "$HOSTNAME" = "" ]; then
@@ -18,4 +20,11 @@ support user account and database needed for this demo.
          --host "localhost" "${USER}"
     createdb "${USER}"
 
+Depending on how your Postgres is setup it maybe easier to
+create a "superuser" account via SQL run from the postgres
+account via psql. If so
+
+    sudo -u postgres psql -c "CREATE USER ${USER} SUPERUSER"
+    createdb "${USER}"
+    
 EOT
