@@ -4,6 +4,9 @@
 # This file sets up a "birds" project folder and generates some of
 # the documents needed to build our web application.
 #
+if [ -d birds2 ]; then
+	rm -fR birds2
+fi
 mkdir -p birds2/htdocs
 
 # Create the database we'll use in the demo.

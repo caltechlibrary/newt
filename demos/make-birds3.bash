@@ -4,6 +4,9 @@
 # This file sets up a "birds" project folder and generates some of
 # the documents needed to build our web application.
 #
+if [ -d birds3 ]; then
+	rm -fR birds3
+fi
 mkdir -p birds3/htdocs
 
 # Create the database we'll use in the demo.
@@ -152,12 +155,21 @@ EOT
 cat <<EOT >birds3/page.tmpl
 <DOCTYPE html lang="en">
 <html>
-  <head><title>Birds 3 Demo</title></head>
+  <head></head>
   <body>
-    <header>Birds 3 Demo</header>
-	<p>
     <h1>Welcome to the bird list!</h1>
-    <p>
+	<table>
+		<thead>
+			<tr class="header"> <th>bird</th> <th>place</th> <th>sighted</th> </tr>
+		</thead>
+		<tbody>
+\$for(data)\$
+			<tr> <td>\$it.bird\$</td> <td>\$it.place\$</td> <td>\$it.sighted\$</td> </tr>
+\$endfor\$
+		</tbody>
+	</table>
+	<p>
+    
     <div id="bird-list"></div>
     <h2>Add a bird</h2>
     <div><form name="add_bird" method="POST" action="/">
@@ -175,19 +187,6 @@ cat <<EOT >birds3/page.tmpl
       </div>
       <button id="record-bird" type="submit">Add Bird Sighting</button>
     </form></div>
-    <h2>Bird List</h2>
-	<table>
-		<thead>
-			<tr class="header"> <th>bird</th> <th>place</th> <th>sighted</th> </tr>
-		</thead>
-		<tbody>
-\$for(data)\$
-			<tr> <td>\$it.bird\$</td> <td>\$it.place\$</td> <td>\$it.sighted\$</td> </tr>
-\$endfor\$
-		</tbody>
-	</table>
-	<p>
-	<footer></footer>
   </body>
 </html>
 EOT

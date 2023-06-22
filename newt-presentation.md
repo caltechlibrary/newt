@@ -142,12 +142,12 @@ Lines    Files
      4   [birds.csv](../demos/birds2/birds.csv)
     50   [setup.sql](../demos/birds2/setup.sql)
      3   [postgrest.conf](../demos/birds2/postgrest.conf)
-    63   htdocs/[sightings.js](../birds2/htdocs/sightings.js)
     24   htdocs/index.html
+    63   htdocs/[sightings.js](../demos/birds2/htdocs/sightings.js)
 
 # [birds 3](../demos/make-birds3.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 162 total line count, dynamic site requires hosting, **no JavaScript required**
+SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 158 total line count, dynamic site requires hosting, **no JavaScript required**
 
 Lines   Files
 ------  ---------------
@@ -155,7 +155,7 @@ Lines   Files
      4  birds.csv
     50  setup.sql
     25  [birds.yaml](../demos/birds3/birds.yaml)
-    40  [page.tmpl](../demos/birds3/page.tmpl)
+    36  [page.tmpl](../demos/birds3/page.tmpl)
      7  [post_result.tmpl](../demos/birds3/post_result.tmpl)
      3  postgrest.conf
 
