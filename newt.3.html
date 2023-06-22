@@ -31,85 +31,56 @@
 </ul></li>
 </ul>
 <h1 id="description">DESCRIPTION</h1>
-<p>newt YAML files can contain variable definitions in the routes
-attribute. Varaibles are declared as a key and value where the key is
-the variable name and the value is the variable’s type.</p>
-<p>newt uses variables to vet request paths that reference embedded
-variables as well as in getting the form data submitted with a request
-(e.g. GET, POST, PUT, PATCH).</p>
-<p>Varaibles can also be defined under the “model” attribute where they
-describe the scructure used to generate SQL and Pandoc templates.</p>
+<p>newt YAML files can contain variable definitions in the routes attribute. Varaibles are declared as a key and value where the key is the variable name and the value is the variable’s type.</p>
+<p>newt uses variables to vet request paths that reference embedded variables as well as in getting the form data submitted with a request (e.g. GET, POST, PUT, PATCH).</p>
+<p>Varaibles can also be defined under the “model” attribute where they describe the scructure used to generate SQL and Pandoc templates.</p>
 <h1 id="variable-types">VARIABLE TYPES</h1>
 <p>Currently newt supports a limited number of types.</p>
 <dl>
 <dt>Date [FORMAT]</dt>
-<dd>
-A date type by default is expressed in a YYYY-MM-DD style,
-e.g. 2006-01-02 but you can specify the specific format using dsl that
-Go uses in its time package, see <a href="https://pkg.go.dev/time"
-class="uri">https://pkg.go.dev/time</a>. E.g. <code>Date 2006</code>
-would express a four digit year, <code>Date 01</code> would express a
-two digit month, <code>Date 02</code> would express a two digit day.
+<dd>A date type by default is expressed in a YYYY-MM-DD style, e.g. 2006-01-02 but you can specify the specific format using dsl that Go uses in its time package, see <a href="https://pkg.go.dev/time" class="uri">https://pkg.go.dev/time</a>. E.g. <code>Date 2006</code> would express a four digit year, <code>Date 01</code> would express a two digit month, <code>Date 02</code> would express a two digit day.
 </dd>
 <dt>String</dt>
-<dd>
-This conforms to a sequence of utf8 characters except for <code>/</code>
-when part of a path (pathes are split first before their variables are
-evaluated)
+<dd>This conforms to a sequence of utf8 characters except for <code>/</code> when part of a path (pathes are split first before their variables are evaluated)
 </dd>
 <dt>Integer</dt>
-<dd>
-An integer value (e.g. “10”)
+<dd>An integer value (e.g. “10”)
 </dd>
 <dt>Real</dt>
-<dd>
-A float value expressed with a decimal point (e.g. “1.0”)
+<dd>A float value expressed with a decimal point (e.g. “1.0”)
 </dd>
 <dt>Boolean</dt>
-<dd>
-A boolean type expressed as “true” or “false”
+<dd>A boolean type expressed as “true” or “false”
 </dd>
 <dt>Basename</dt>
-<dd>
-A file’s basename (filename without an extension)
+<dd>A file’s basename (filename without an extension)
 </dd>
 <dt>Extname</dt>
-<dd>
-A file’s extension (e.g. “.html”, “.txt”, “.rss”, “.js”)
+<dd>A file’s extension (e.g. “.html”, “.txt”, “.rss”, “.js”)
 </dd>
 <dt>Isbn10</dt>
-<dd>
-A ten digit ISBN
+<dd>A ten digit ISBN
 </dd>
 <dt>Isbn13</dt>
-<dd>
-A thirteen digit ISBN
+<dd>A thirteen digit ISBN
 </dd>
 <dt>Isbn</dt>
-<dd>
-A ISBN (either 10 ro 13 digit)
+<dd>A ISBN (either 10 ro 13 digit)
 </dd>
 <dt>Issn</dt>
-<dd>
-An ISSN
+<dd>An ISSN
 </dd>
 <dt>DOI</dt>
-<dd>
-A DOI (digital object identifier)
+<dd>A DOI (digital object identifier)
 </dd>
 <dt>Isni</dt>
-<dd>
-An ISNI
+<dd>An ISNI
 </dd>
 <dt>ORCID</dt>
-<dd>
-An ORCID identifier
+<dd>An ORCID identifier
 </dd>
 <dt>Markdown</dt>
-<dd>
-A Markdown data type, Markdown text can be render as HTML and saved to
-another variable name and sent to the JSON source as part of the API
-request.
+<dd>A Markdown data type, Markdown text can be render as HTML and saved to another variable name and sent to the JSON source as part of the API request.
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>

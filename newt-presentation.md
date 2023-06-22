@@ -25,28 +25,24 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 ### ... but first some context
 
-# LAMP and stacks of complexity
+# LAMP and the stacks of complexity
 
 Software           Stack            
------------------  ---------------------
+-----------------  -------------------------------
 EPrints            Clasic LAMP + Xapian
-Islandora          Apache+MySQL+PHP 
-                   Fedora and Solr
-ArchivesSpace      Apache, MySQL, 
-                   Tomcat,
-                   Java+jRuby, Solr
-Invenio RDM        NginX, Python/pip,
-                   Postgres, Redis,
-                   Elasticsearch,
-                   Docker, NodeJS/NPM
+Islandora          Apache+MySQL+PHP, Fedora and Solr
+ArchivesSpace      Apache, MySQL, Tomcat, Java+jRuby, 
+                   Solr
+Invenio RDM        NginX, Python/pip, Postgres, Redis,
+                   Elasticsearch, Docker, NodeJS/NPM
 
-# Our Legacy of complexity
+# our Legacy of Complexity
 
 1. Applications are built on a stack
 2. Stacks are complex and divergent
 3. Sustaining them requires many coping strategies
 
-# The problem
+# the Problem
 
 - Our coping strategies are not sustainable
 - Complexity is part of the problem
@@ -62,11 +58,12 @@ Invenio RDM        NginX, Python/pip,
 scale
 : a euphemism for **scaling big**, usage "google scale", "amazon scale"
 
-# Scaling
-
 - Scaling big is hard
 - Scaling big can make things really complex
-- Scaling big, a path to scaling small
+
+# Scaling
+
+- Scaling big shows us a path to scaling small
   - **Can we pack only what is needed?**
 
 # Scaling strategies
@@ -83,9 +80,9 @@ scale
 
 # Limit the moving parts, three abstractions
 
-- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) => JSON source to manage data
-- [Pandoc](https://pandoc.org) =>  a powerful template engine
-- [Newt](https://github.com/caltechlibrary/newt/) => data router, form data validator
+- JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
+- A powerful template engine => [Pandoc](https://pandoc.org)
+- data outer, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
 # A microservice conversation
 
@@ -106,8 +103,7 @@ scale
 2. Take advantage of SQL
 3. Standardize templating with Pandoc
 
-> Postgres+PostgREST+Pandoc+Newt =>
-> No need to write any middle-ware
+> **Got middle-ware?** Postgres+PostgREST+Pandoc+Newt
 
 # Why SQL?
 
@@ -124,8 +120,7 @@ Let's compare three implementations of a bird sighting website
 
 # [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash "this is a static website")
 
-- Built with Pandoc from a CSV file and a Pandoc template
-- 2 directories, 5 files, 63 total line count
+CSV file, Pandoc, 2 directories, 5 files, 63 total line count
 
 Lines   Files
 ------  ---------------
@@ -139,8 +134,7 @@ See <https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html>
 
 # [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash "this website requires a machine")
 
-- Built with SQL (Postgres + PostgREST), Browser side JavaScript
-- 2 directories, 6 files, 177 total line count
+SQL (Postgres + PostgREST), Browser side JavaScript, 2 directories, 6 files, 177 total line count
 
 Lines    Files
 ------   --------------
@@ -257,9 +251,9 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 # Additional resources 
 
-- [Postgres](https://postgres.org) + [PostgREST](https://postgrest.org)
 - [Newt](https://github.com/caltechlibrary/newt)
-- [Solr](https://solr.apache.org/), [Opensearch](https://www.opensearch.org/)
+- [Postgres](https://postgres.org) + [PostgREST](https://postgrest.org)
+  - [PostgREST Community Tutorials](https://postgrest.org/en/stable/ecosystem.html)
 - Compiling Pandoc or PostgREST requires Haskell
   - Install Haskell [ghcup](https://https://www.haskell.org/ghcup/)
 
