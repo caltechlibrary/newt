@@ -24,6 +24,10 @@ SELECT * FROM birds.sighting;
 1. start PostgREST 'postgrest postgrest.conf'
 2. Using curl make sure it is available 'http://localhost:3000/bird_view'
 
+# Startup Pandoc in server mode
+
+1. 'pandoc server'
+
 ## Setup Newt
 
 1. Create a [birds.yaml](birds.yaml) file holding the routes for our birds application

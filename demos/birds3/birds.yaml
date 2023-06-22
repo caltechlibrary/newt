@@ -1,5 +1,5 @@
 env: [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
-port: 8004
+port: 8003
 htdocs: htdocs
 routes: 
   - req_path: /

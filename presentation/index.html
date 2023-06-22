@@ -8,8 +8,8 @@
   <meta name="generator" content="pandoc" />
   <meta name="author" content="R. S. Doiel, rsdoiel@caltech.edu" />
   <meta name="date" content="2023-07-14" />
-  <meta name="keywords" content="code4lib, meetup, Postgres, webstack, PostgREST, Pandoc" />
-  <title>Newt, assemble web applications with Pandoc, Postgres and PostgREST</title>
+  <meta name="keywords" content="code4lib, meetup, Postgres, PostgREST, Pandoc" />
+  <title>Newt, a small system experiment</title>
   <style type="text/css">
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -31,8 +31,7 @@
 </head>
 <body>
 <div class="slide titlepage">
-  <h1 class="title">Newt, assemble web applications with Pandoc,
-Postgres and PostgREST</h1>
+  <h1 class="title">Newt, a small system experiment</h1>
   <p class="author">
 R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu"
 class="email">rsdoiel@caltech.edu</a>
@@ -63,7 +62,7 @@ class="slide section level1">
 <tbody>
 <tr class="odd">
 <td align="left">EPrints</td>
-<td align="left">Clasic LAMP + Xapian</td>
+<td align="left">Classic LAMP + Xapian</td>
 </tr>
 <tr class="even">
 <td align="left">Islandora</td>
@@ -125,21 +124,20 @@ a euphemism for <strong>scaling big</strong>, usage “google scale”,
 <li>Scaling big can make things really complex</li>
 </ul>
 </div>
-<div id="scaling-1" class="slide section level1">
-<h1>Scaling</h1>
-<ul>
-<li>Scaling big shows us a path to scaling small
-<ul>
-<li><strong>Can we pack only what is needed?</strong></li>
-</ul></li>
-</ul>
-</div>
-<div id="scaling-strategies" class="slide section level1">
-<h1>Scaling strategies</h1>
+<div id="strategies-what-weve-learned-from-big"
+class="slide section level1">
+<h1>Strategies, what we’ve learned from big</h1>
 <ul>
 <li>distributed application design</li>
 <li>containers</li>
 <li>programmable infrastructure</li>
+</ul>
+</div>
+<div id="scaling-1" class="slide section level1">
+<h1>Scaling</h1>
+<ul>
+<li>Scaling big illuminates a path to scaling small</li>
+<li><strong>We pack only what is needed!</strong></li>
 </ul>
 </div>
 <div id="scaling-small" class="slide section level1">
@@ -159,7 +157,7 @@ href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
 <li>A powerful template engine =&gt; <a
 href="https://pandoc.org">Pandoc</a></li>
-<li>data outer, form validator =&gt; <a
+<li>data router, form validator =&gt; <a
 href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
 </div>
@@ -238,7 +236,7 @@ href="../demos/birds1/README.html">README.md</a></td>
 <td align="left"><a href="../demos/birds1/page.tmpl">page.tmpl</a></td>
 </tr>
 <tr class="odd">
-<td align="left">38</td>
+<td align="left">33</td>
 <td align="left">htdocs/index.html</td>
 </tr>
 </tbody>
@@ -251,7 +249,7 @@ class="uri">https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html
 <h1><a href="../demos/make-birds2.bash"
 title="this website requires a machine">birds 2</a></h1>
 <p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6
-files, 177 total line count, dynamic site requires hosting</p>
+files, 182 total line count, dynamic site requires hosting</p>
 <table>
 <thead>
 <tr class="header">
@@ -270,7 +268,7 @@ href="../demos/birds2/README.html">README.md</a></td>
 <td align="left"><a href="../demos/birds2/birds.csv">birds.csv</a></td>
 </tr>
 <tr class="odd">
-<td align="left">50</td>
+<td align="left">55</td>
 <td align="left"><a href="../demos/birds2/setup.sql">setup.sql</a></td>
 </tr>
 <tr class="even">
@@ -293,7 +291,7 @@ href="../demos/birds2/htdocs/sightings.js">sightings.js</a></td>
 <div id="birds-3" class="slide section level1">
 <h1><a href="../demos/make-birds3.bash"
 title="this website requires a machine">birds 3</a></h1>
-<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 158
+<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 167
 total line count, dynamic site requires hosting, <strong>no JavaScript
 required</strong></p>
 <table>
@@ -305,7 +303,7 @@ required</strong></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">33</td>
+<td align="left">37</td>
 <td align="left"><a
 href="../demos/birds3/README.html">README.md</a></td>
 </tr>
@@ -314,7 +312,7 @@ href="../demos/birds3/README.html">README.md</a></td>
 <td align="left">birds.csv</td>
 </tr>
 <tr class="odd">
-<td align="left">50</td>
+<td align="left">55</td>
 <td align="left">setup.sql</td>
 </tr>
 <tr class="even">
@@ -346,7 +344,7 @@ href="../demos/birds3/post_result.tmpl">post_result.tmpl</a></td>
 <ul>
 <li>(optional) variable definitions (path and form data)</li>
 <li>request routing details (e.g. path, method)</li>
-<li>JSON source details (e.g. api URL, method, content type)</li>
+<li>JSON source details (e.g. API URL, method, content type)</li>
 <li>(optional) Pandoc template filename</li>
 </ul></li>
 </ul>
@@ -460,10 +458,10 @@ Pandoc; using HTTP methods; YAML</li>
 <p>Newt can potentially scale big!</p>
 </blockquote>
 <ul>
-<li>Newt can be scaled wide (not stateful)</li>
-<li>Pandoc server can be scaled wide (not stateful)</li>
-<li>PostgREST can be scale wide (not stateful)</li>
-<li>Postgres can be clustered (stateful)</li>
+<li>Newt can be scaled wide</li>
+<li>Pandoc server can be scaled wide</li>
+<li>PostgREST can be scale wide</li>
+<li>Postgres can be clustered</li>
 </ul>
 </div>
 <div id="next-steps-for-newt" class="slide section level1">
@@ -474,8 +472,8 @@ Pandoc; using HTTP methods; YAML</li>
 <li>I hope to move beyond my proof of concept in Fall/Winter (2023)</li>
 </ul>
 </div>
-<div id="sameday-maybe" class="slide section level1">
-<h1>Sameday, maybe …</h1>
+<div id="someday-maybe" class="slide section level1">
+<h1>Someday, maybe …</h1>
 <ul>
 <li>Have Newt delegate file uploads to an S3 like service</li>
 <li>Enhance the Newt’s YAML to generate SQL models</li>

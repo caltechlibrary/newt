@@ -4,6 +4,9 @@
 # This file sets up a "birds" project folder and generates some of
 # the documents needed to build our web application.
 #
+if [ -d birds1 ]; then
+	rm -fR birds1
+fi
 mkdir -p birds1/htdocs
 
 # Generate a README
@@ -27,7 +30,6 @@ EOT
 cat <<EOT>birds1/page.tmpl
 <DOCTYPE html lang="en">
 <html>
-  <head><title>Birds 1 Demo</title></head>
   <body>
     <h1>Welcome to the bird list!</h1>
 \$body\$

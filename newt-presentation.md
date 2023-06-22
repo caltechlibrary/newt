@@ -1,5 +1,5 @@
 ---
-title: "Newt, assemble web applications with Pandoc, Postgres and PostgREST"
+title: "Newt, a small system experiment"
 author: "R. S. Doiel, <rsdoiel@caltech.edu>"
 institute: |
   Caltech Library,
@@ -15,7 +15,7 @@ place: UCLA
 date: July 14, 2023
 section-titles: false
 toc: true
-keywords: [ "code4lib", "meetup", "Postgres", "webstack", "PostgREST", "Pandoc" ]
+keywords: [ "code4lib", "meetup", "Postgres", "PostgREST", "Pandoc" ]
 url: "https://caltechlibrary.github.io/newt/presentation"
 ---
 
@@ -29,7 +29,7 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 Software           Stack            
 -----------------  -------------------------------
-EPrints            Clasic LAMP + Xapian
+EPrints            Classic LAMP + Xapian
 Islandora          Apache+MySQL+PHP, Fedora and Solr
 ArchivesSpace      Apache, MySQL, Tomcat, Java+jRuby, 
                    Solr
@@ -61,16 +61,16 @@ scale
 - Scaling big is hard
 - Scaling big can make things really complex
 
-# Scaling
-
-- Scaling big shows us a path to scaling small
-  - **Can we pack only what is needed?**
-
-# Scaling strategies
+# Strategies, what we've learned from big
 
 - distributed application design
 - containers
 - programmable infrastructure
+
+# Scaling
+
+- Scaling big illuminates a path to scaling small
+- **We pack only what is needed!**
 
 # Scaling small
 
@@ -82,7 +82,7 @@ scale
 
 - JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A powerful template engine => [Pandoc](https://pandoc.org)
-- data outer, form validator => [Newt](https://github.com/caltechlibrary/newt/)
+- data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
 # A microservice conversation
 
@@ -128,32 +128,32 @@ Lines   Files
      4  [birds.csv](../demos/birds1/birds.csv)
      3  [build.sh](../demos/birds1/build.sh)
      8  [page.tmpl](../demos/birds1/page.tmpl)
-    38  htdocs/index.html
+    33  htdocs/index.html
 
 See <https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html>
 
 # [birds 2](../demos/make-birds2.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6 files, 177 total line count, dynamic site requires hosting
+SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6 files, 182 total line count, dynamic site requires hosting
 
 Lines    Files
 ------   --------------
     33   [README.md](../demos/birds2/README.html)
      4   [birds.csv](../demos/birds2/birds.csv)
-    50   [setup.sql](../demos/birds2/setup.sql)
+    55   [setup.sql](../demos/birds2/setup.sql)
      3   [postgrest.conf](../demos/birds2/postgrest.conf)
     24   htdocs/index.html
     63   htdocs/[sightings.js](../demos/birds2/htdocs/sightings.js)
 
 # [birds 3](../demos/make-birds3.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 158 total line count, dynamic site requires hosting, **no JavaScript required**
+SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 167 total line count, dynamic site requires hosting, **no JavaScript required**
 
 Lines   Files
 ------  ---------------
-    33  [README.md](../demos/birds3/README.html)
+    37  [README.md](../demos/birds3/README.html)
      4  birds.csv
-    50  setup.sql
+    55  setup.sql
     25  [birds.yaml](../demos/birds3/birds.yaml)
     36  [page.tmpl](../demos/birds3/page.tmpl)
      7  [post_result.tmpl](../demos/birds3/post_result.tmpl)
@@ -165,7 +165,7 @@ Lines   Files
 - route definitions
   - (optional) variable definitions (path and form data)
   - request routing details (e.g. path, method)
-  - JSON source details (e.g. api URL, method, content type)
+  - JSON source details (e.g. API URL, method, content type)
   - (optional) Pandoc template filename
 
 See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml>
@@ -212,10 +212,10 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 > Newt can potentially scale big!
 
-- Newt can be scaled wide (not stateful)
-- Pandoc server can be scaled wide (not stateful)
-- PostgREST can be scale wide (not stateful)
-- Postgres can be clustered (stateful)
+- Newt can be scaled wide
+- Pandoc server can be scaled wide
+- PostgREST can be scale wide
+- Postgres can be clustered
 
 # Next steps for Newt?
 
@@ -223,7 +223,7 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 - I am building staff facing applications this Summer (2023)
 - I hope to move beyond my proof of concept in Fall/Winter (2023)
 
-# Sameday, maybe ...
+# Someday, maybe ...
 
 - Have Newt delegate file uploads to an S3 like service
 - Enhance the Newt's YAML to generate SQL models

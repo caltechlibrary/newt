@@ -41,6 +41,11 @@ GRANT SELECT, INSERT ON birds.sighting    TO birds_anonymous;
 GRANT SELECT ON birds.bird_view   TO birds_anonymous;
 GRANT EXECUTE ON FUNCTION birds.record_bird TO birds_anonymous;
 
+--
+-- NOTE: These next statements SHOULD NOT be in your SQL program.
+-- They are here because this is a demo and I need to show how
+-- to do this in SQL. Don't store secrets in your SQL!
+--
 DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
 GRANT birds_anonymous TO birds;

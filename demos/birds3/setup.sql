@@ -23,10 +23,10 @@ CREATE OR REPLACE VIEW birds.bird_view AS
 
 -- record_bird is a stored procedure and will save a new bird sighting
 CREATE OR REPLACE FUNCTION birds.record_bird(bird VARCHAR, place TEXT, sighted DATE)
-RETURNS bool LANGUAGE SQL AS $$
+RETURNS bool LANGUAGE SQL AS 10273
   INSERT INTO birds.sighting (bird, place, sighted) VALUES (bird, place, sighted);
   SELECT true;
-$$;
+10273;
 
 --
 -- The following additional steps are needed for PostgREST access.
@@ -41,10 +41,15 @@ GRANT SELECT, INSERT ON birds.sighting    TO birds_anonymous;
 GRANT SELECT ON birds.bird_view   TO birds_anonymous;
 GRANT EXECUTE ON FUNCTION birds.record_bird TO birds_anonymous;
 
+--
+-- NOTE: These next statements SHOULD NOT be in your SQL program.
+-- They are here because this is a demo and I need to show how
+-- to do this in SQL. Don't store secrets in your SQL!
+--
 DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
 GRANT birds_anonymous TO birds;
 
--- Import our CSV data into birds.sighting
+-- Now import our CSV file of birds.csv
 \copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
 
