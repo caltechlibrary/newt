@@ -118,45 +118,45 @@ scale
 
 Let's compare three implementations of a bird sighting website
 
-# [birds 1](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds1.bash "this is a static website")
+# [birds 1](../demos/make-birds1.bash "this is a static website")
 
 CSV file, Pandoc, 2 directories, 5 files, 53 total line count, static site hosting
 
 Lines   Files
 ------  ---------------
-     5  [README.md](https://caltechlibrary.github.io/newt/demos/birds1/README.md)
-     4  [birds.csv](https://caltechlibrary.github.io/newt/demos/birds1/birds.csv)
-     3  [build.sh](https://caltechlibrary.github.io/newt/demos/birds1/build.sh)
-     8  [page.tmpl](https://caltechlibrary.github.io/newt/demos/birds1/page.tmpl)
+     5  [README.md](../demos/birds1/README.html)
+     4  [birds.csv](../demos/birds1/birds.csv)
+     3  [build.sh](../demos/birds1/build.sh)
+     8  [page.tmpl](../demos/birds1/page.tmpl)
     38  htdocs/index.html
 
 See <https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html>
 
-# [birds 2](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds2.bash "this website requires a machine")
+# [birds 2](../demos/make-birds2.bash "this website requires a machine")
 
 SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6 files, 177 total line count, dynamic site requires hosting
 
 Lines    Files
 ------   --------------
-    33   [README.md](https://caltechlibrary.github.io/newt/demos/birds2/README.md)
-     4   [birds.csv](https://caltechlibrary.github.io/newt/demos/birds2/birds.csv)
-    50   [setup.sql](https://caltechlibrary.github.io/newt/demos/birds2/setup.sql)
-     3   [postgrest.conf](https://caltechlibrary.github.io/newt/demos/birds2/postgrest.conf)
-    63   htdocs/[sightings.js](https://caltechlibrary.github.io/newt/demos/birds2/htdocs/sightings.js)
+    33   [README.md](../demos/birds2/README.html)
+     4   [birds.csv](../demos/birds2/birds.csv)
+    50   [setup.sql](../demos/birds2/setup.sql)
+     3   [postgrest.conf](../demos/birds2/postgrest.conf)
+    63   htdocs/[sightings.js](../birds2/htdocs/sightings.js)
     24   htdocs/index.html
 
-# [birds 3](https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/make-birds3.bash "this website requires a machine")
+# [birds 3](../demos/make-birds3.bash "this website requires a machine")
 
 SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 162 total line count, dynamic site requires hosting, **no JavaScript required**
 
 Lines   Files
 ------  ---------------
-    33  [README.md](https://caltechlibrary.github.io/newt/demos/birds3/README.md)
+    33  [README.md](../demos/birds3/README.html)
      4  birds.csv
     50  setup.sql
-    25  [birds.yaml](https://caltechlibrary.github.io/newt/demos/birds3/birds.yaml)
-    40  [page.tmpl](https://caltechlibrary.github.io/newt/demos/birds3/page.tmpl)
-     7  [post_result.tmpl](https://caltechlibrary.github.io/newt/demos/birds3/post_result.tmpl)
+    25  [birds.yaml](../demos/birds3/birds.yaml)
+    40  [page.tmpl](../demos/birds3/page.tmpl)
+     7  [post_result.tmpl](../demos/birds3/post_result.tmpl)
      3  postgrest.conf
 
 # Newt's YAML file
