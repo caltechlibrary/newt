@@ -19,40 +19,6 @@ keywords: [ "code4lib", "meetup", "Postgres", "PostgREST", "Pandoc" ]
 url: "https://caltechlibrary.github.io/newt/presentation"
 ---
 
-# Newt
-
-## a small system experiment
-
-### ... but first some context
-
-# LAMP and the stacks of complexity
-
-Software           Stack            
------------------  -------------------------------
-EPrints            Classic LAMP + Xapian
-Islandora          Apache+MySQL+PHP, Fedora and Solr
-ArchivesSpace      Apache, MySQL, Tomcat, Java+jRuby, 
-                   Solr
-Invenio RDM        NginX, Python/pip, Postgres, Redis,
-                   Elasticsearch, Docker, NodeJS/NPM
-
-# our Legacy of Complexity
-
-1. Applications are built on a stack
-2. Stacks are complex and divergent
-3. Sustaining them requires many coping strategies
-
-# the Problem
-
-- Our coping strategies are not sustainable
-- Complexity is part of the problem
-
-# Why are these things so complex?
-
-1. We want more from our application, more code gets written
-2. We want "enhancements", complexity accrues overtime
-3. We build "systems designed to scale"
-
 # Scaling
 
 scale
@@ -61,15 +27,15 @@ scale
 - Scaling big is hard
 - Scaling big can make things really complex
 
-# Strategies, what we've learned from big
+# Scaling, lessons 
 
 - distributed application design
-- containers
+- concept of microservices
 - programmable infrastructure
 
 # Scaling
 
-- Scaling big illuminates a path to scaling small
+- Microservices illuminates a path to scaling small
 - **We pack only what is needed!**
 
 # Scaling small
