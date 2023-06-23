@@ -177,7 +177,7 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 # An unexpected result
 
-> Newt can potentially scale big!
+> Newt stack should scale big!
 
 - Newt can be scaled wide
 - Pandoc server can be scaled wide
