@@ -167,35 +167,39 @@
 <header id="title-block-header">
 <h1 class="title">Birds 2 Demo</h1>
 </header>
-<h1 id="birds-a-demo-of-postgresql-15-postgrest-11">Birds, a demo of
-PostgreSQL 15, PostgREST 11</h1>
-<p>This directory holds our demo.</p>
+<h1 id="birds-2-demo">Birds 2 Demo</h1>
+<blockquote>
+<p>Postgre+PostgREST and browser JavaScript</p>
+</blockquote>
 <h2 id="setup-database">Setup Database</h2>
 <ol type="1">
-<li>Start psql and connect to the birds database</li>
-<li>Run <a href="setup.sql">setup.sql</a></li>
-<li>Run a select query and confirm the data loaded</li>
-<li>Quit psql, you are ready to setup PostgREST</li>
+<li>Run <a href="setup.sql">setup.sql</a> to configure PostgREST access
+to Postgres (normally NOT checked into Git/SVN!)</li>
+<li>Run <a href="models.sql">models.sql</a> to create our data models
+additiojnal PostgREST end points.</li>
+<li>Run <a href="models_test.sql">models_test.sql</a> loads some test
+data and would run any SQL tests on the models.</li>
 </ol>
-<pre><code>psql
-\c birds
-\i setup.sql
-SELECT * FROM birds.sighting;
-\q</code></pre>
+<pre><code>psql -f setup.sql
+psql -f models.sql
+psql -f models_test.sql</code></pre>
 <h2 id="startup-postgrest">Startup PostgREST</h2>
 <ol type="1">
-<li>start PostgREST ‘postgrest postgrest.conf’</li>
+<li>Start PostgREST ‘postgrest postgrest.conf’</li>
 <li>Using curl make sure it is available
 ‘https://localhost:3000/bird_view’</li>
 </ol>
 <h2 id="startup-static-web-server-on-local-host">Startup static web
 server on local host</h2>
 <ol type="1">
-<li>in another shell session go to the htdocs directory</li>
-<li>start a static web server on localhost, e.g. ‘python3 -m http
+<li>In another shell session go to the htdocs directory</li>
+<li>Start a static web server on localhost, e.g. ‘python3 -m http
 http.server’</li>
-<li>Point your web browser at the static web server and see what
-happens</li>
+<li>Point your web browser at the static web server and confirm you see
+our birds 2 website</li>
+<li>Open your web browser tools and submit a new bird, you should see
+the transaction where the JavaScript executes, contacts PostgREST and
+then updates the page</li>
 </ol>
 </body>
 </html>

@@ -1,33 +1,29 @@
 
-# Birds, a demo of PostgreSQL 15, PostgREST 11
+# Birds 2 Demo
 
-This directory holds our demo.
+> Postgre+PostgREST and browser JavaScript
 
 ## Setup Database
 
-1. Start psql and connect to the birds database
-2. Run [setup.sql](setup.sql)
-3. Run a select query and confirm the data loaded
-4. Quit psql, you are ready to setup PostgREST
+1. Run [setup.sql](setup.sql) to configure PostgREST access to Postgres (normally NOT checked into Git/SVN!)
+2. Run [models.sql](models.sql) to create our data models additiojnal PostgREST end points.
+3. Run [models_test.sql](models_test.sql) loads some test data and would run any SQL tests on the models.
 
 ~~~
-psql
-\c birds
-\i setup.sql
-SELECT * FROM birds.sighting;
-\q
+psql -f setup.sql
+psql -f models.sql
+psql -f models_test.sql
 ~~~
 
 ## Startup PostgREST
 
-1. start PostgREST 'postgrest postgrest.conf'
+1. Start PostgREST 'postgrest postgrest.conf'
 2. Using curl make sure it is available 'https://localhost:3000/bird_view'
 
 ## Startup static web server on local host
 
-1. in another shell session go to the htdocs directory
-2. start a static web server on localhost, e.g. 'python3 -m http http.server'
-3. Point your web browser at the static web server and see what happens
-
-
+1. In another shell session go to the htdocs directory
+2. Start a static web server on localhost, e.g. 'python3 -m http http.server'
+3. Point your web browser at the static web server and confirm you see our birds 2 website
+4. Open your web browser tools and submit a new bird, you should see the transaction where the JavaScript executes, contacts PostgREST and then updates the page
 

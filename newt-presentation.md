@@ -9,7 +9,7 @@ urlcolor: blue
 linkstyle: bold
 aspectratio: 169
 createDate: 2023-05-16
-updateDate: 2023-06-14
+updateDate: 2023-06-23
 pubDate: 2023-07-14
 place: UCLA
 date: July 14, 2023
@@ -52,23 +52,25 @@ scale
 
 # Cognitive shifts
 
+- Write YAML, orchestrate our microservice conversation
 - Write SQL (Postgres), yields JSON source (PostgREST)
 - Write Pandoc templates, use JSON, yields HTML
-- Write YAML, orchestrate our microservice conversation
 
 # Writing less code
 
 1. Use "off the shelf" microservices
-2. Take advantage of SQL
-3. Standardize templating with Pandoc
+2. Standardize templating with Pandoc
+3. Take advantage of SQL
 
-> **Got middle-ware?** Postgres+PostgREST+Pandoc+Newt
+> **Got middle-ware?** We use the Newt stack, 
+> Postgres+PostgREST+Pandoc+Newt
 
 # Why SQL?
 
 - SQL is good at describing structured data
-- SQL provides views, functions, triggers, ...
+- SQL can do queries, views, functions, triggers, ...
 - SQL allows us to model our data once
+- PostgREST gives us a JSON api based on the SQL we write
 
 > **Minimize the source Luke!**
 > PostgreSQL+PostgREST is a code savings plan.
@@ -79,44 +81,49 @@ Let's compare three implementations of a bird sighting website
 
 # [birds 1](../demos/make-birds1.bash "this is a static website")
 
-CSV file, Pandoc, 2 directories, 5 files, 53 total line count, static site hosting
+CSV file, Pandoc, 2 directories, 5 files, **72 total line count**, static site hosting. Included is a typical setup I would use for a static site project.
 
 Lines   Files
 ------  ---------------
-     5  [README.md](../demos/birds1/README.html)
+    21  [README.md](../demos/birds1/README.html)
      4  [birds.csv](../demos/birds1/birds.csv)
-     3  [build.sh](../demos/birds1/build.sh)
-     8  [page.tmpl](../demos/birds1/page.tmpl)
-    33  htdocs/index.html
+     6  [build.sh](../demos/birds1/build.sh)
+     7  [page.tmpl](../demos/birds1/page.tmpl)
+    32  htdocs/index.html
 
 See <https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html>
 
 # [birds 2](../demos/make-birds2.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6 files, 182 total line count, dynamic site requires hosting
+SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 total line count**, dynamic site requires hosting
 
 Lines    Files
 ------   --------------
-    33   [README.md](../demos/birds2/README.html)
+    29   [README.md](../demos/birds2/README.html)
      4   [birds.csv](../demos/birds2/birds.csv)
-    55   [setup.sql](../demos/birds2/setup.sql)
+    34   [setup.sql](../demos/birds2/setup.sql)
+    60   [models.sql](../demos/birds2/models.sql)
+    15   [models_test.sql](../demos/birds2/models_test.sql)
      3   [postgrest.conf](../demos/birds2/postgrest.conf)
-    24   htdocs/index.html
+    24   htdocs/[index.html](../demos/birds2/htdocs/index.html)
     63   htdocs/[sightings.js](../demos/birds2/htdocs/sightings.js)
 
 # [birds 3](../demos/make-birds3.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 167 total line count, dynamic site requires hosting, **no JavaScript required**
+SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 277 total line count, dynamic site requires hosting, **no JavaScript required**
 
-Lines   Files
-------  ---------------
-    37  [README.md](../demos/birds3/README.html)
-     4  birds.csv
-    55  setup.sql
-    25  [birds.yaml](../demos/birds3/birds.yaml)
-    36  [page.tmpl](../demos/birds3/page.tmpl)
-     7  [post_result.tmpl](../demos/birds3/post_result.tmpl)
-     3  postgrest.conf
+Lines    Files
+------   ---------------
+    43   [README.md](../demos/birds3/README.html)
+     4   [birds.csv](../demos/birds2/birds.csv)
+    34   [setup.sql](../demos/birds2/setup.sql)
+    60   [models.sql](../demos/birds2/models.sql)
+    15   [models_test.sql](../demos/birds2/models_test.sql)
+     3   [postgrest.conf](../demos/birds2/postgrest.conf)
+    25   [birds.yaml](../demos/birds3/birds.yaml)
+    36   [page.tmpl](../demos/birds3/page.tmpl)
+     7   [post_result.tmpl](../demos/birds3/post_result.tmpl)
+
 
 # A microservice conversation
 
@@ -175,6 +182,14 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 - 21st Century tech
   - JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)
 
+# Experimental insights so far
+
+- "Off the shelf" microservices can make application construction easier
+- Orchestrating the data pipeline in YAML seems reasonable
+- SQL turns some people off, extending Newt YAML could mitigate that 
+- Pandoc templates are simple to learn
+- Newt stack does not enhibit all the HTML5 goodness available for front-end- Moving from JavaScript on the front end to Pandoc templates and birds.yaml for the back in was a wash interms of lines of code
+
 # An unexpected result
 
 > Newt stack should scale big!
@@ -203,21 +218,13 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 - share YAML files
 - improve Newt
 
-# Conclusions
-
-- "Off the shelf" microservices can make application construction easier
-- Orchestrating the data pipeline in YAML seems reasonable
-- SQL may turn some people off, extending Newt YAML could mitigate that 
-- Pandoc templates are simple to learn and avoid embedding business logic
-- You still have all the HTML5 goodness available in the front-end
-
 # Additional resources 
 
-- [Newt](https://github.com/caltechlibrary/newt)
-- [Postgres](https://postgres.org) + [PostgREST](https://postgrest.org)
-  - [PostgREST Community Tutorials](https://postgrest.org/en/stable/ecosystem.html)
+- Newt <https://github.com/caltechlibrary/newt>
+- Postgres <https://postgres.org> + PostgREST <https://postgrest.org>
+  - PostgREST Community Tutorials <https://postgrest.org/en/stable/ecosystem.html>
 - Compiling Pandoc or PostgREST requires Haskell
-  - Install Haskell [ghcup](https://https://www.haskell.org/ghcup/)
+  - Install Haskell GHCup <https://https://www.haskell.org/ghcup/>
 
 # Thank you!
 

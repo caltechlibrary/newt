@@ -18,48 +18,90 @@ fi
 # Generate a README
 cat <<EOT>birds2/README.md
 
-# Birds, a demo of PostgreSQL 15, PostgREST 11
+# Birds 2 Demo
 
-This directory holds our demo.
+> Postgre+PostgREST and browser JavaScript
 
 ## Setup Database
 
-1. Start psql and connect to the birds database
-2. Run [setup.sql](setup.sql)
-3. Run a select query and confirm the data loaded
-4. Quit psql, you are ready to setup PostgREST
+1. Run [setup.sql](setup.sql) to configure PostgREST access to Postgres (normally NOT checked into Git/SVN!)
+2. Run [models.sql](models.sql) to create our data models additiojnal PostgREST end points.
+3. Run [models_test.sql](models_test.sql) loads some test data and would run any SQL tests on the models.
 
 ~~~
-psql
-\\c birds
-\\i setup.sql
-SELECT * FROM birds.sighting;
-\\q
+psql -f setup.sql
+psql -f models.sql
+psql -f models_test.sql
 ~~~
 
 ## Startup PostgREST
 
-1. start PostgREST 'postgrest postgrest.conf'
+1. Start PostgREST 'postgrest postgrest.conf'
 2. Using curl make sure it is available 'https://localhost:3000/bird_view'
 
 ## Startup static web server on local host
 
-1. in another shell session go to the htdocs directory
-2. start a static web server on localhost, e.g. 'python3 -m http http.server'
-3. Point your web browser at the static web server and see what happens
-
-
+1. In another shell session go to the htdocs directory
+2. Start a static web server on localhost, e.g. 'python3 -m http http.server'
+3. Point your web browser at the static web server and confirm you see our birds 2 website
+4. Open your web browser tools and submit a new bird, you should see the transaction where the JavaScript executes, contacts PostgREST and then updates the page
 
 EOT
 
-# Generate our SQL setup modeling our simple data
+# Generate our SQL PostgREST access
 cat <<EOT>birds2/setup.sql
--- Make sure we're in the birds database
-\c birds
+--
+-- Following I would normally not include in a project SQL codebase.
+-- It contains a secret.  What I would recommend is writing a short
+-- shell script that could generate this in a file, use that, then
+-- checking in the shell script to version control since the secret
+-- would not be stored in the file!
+--
 
+-- Make sure we are in the birds database
+\\c birds
+
+--
+-- Setup a Postgres "schema" (a.k.a. namespace) for
+-- working with PostgREST
+--
 DROP SCHEMA IF EXISTS birds CASCADE;
 CREATE SCHEMA birds;
+
+--
+-- The following additional steps are needed for PostgREST access
+-- are birds schema and database.
+--
+DROP ROLE IF EXISTS birds_anonymous;
+CREATE ROLE birds_anonymous nologin;
+
+--
+-- NOTE: The "CREATE ROLL" line is the problem line for
+-- checking into your source control system. It contains a secret!
+-- **DO NOT** store secrets in your SQL if you can avoid it!
+--
+DROP ROLE IF EXISTS birds;
+CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
+GRANT birds_anonymous TO birds;
+
+EOT
+
+# This SQL models our data structures and behaviors
+cat <<EOT >birds2/models.sql
+--
+-- Below is the SQL I would noramally check into a project repository.
+-- It does not contain secrets. It contains our data models, views,
+-- and functions. This defines the behaviors made available through
+-- PostgRESTS.
+--
+
+-- Make sure we are in the birds database
+\\c birds
 SET search_path TO birds, public;
+
+--
+-- Data Models
+--
 
 --
 -- This file contains the create statements for our bird table.
@@ -72,12 +114,17 @@ CREATE TABLE birds.sighting
   sighted DATE
 );
 
--- bird_view will become an end point in PostgREST
+--
+-- Data Views and Behaviors.
+--
+
+-- bird_view will become an end point in PostgREST, '/bird_view'
 CREATE OR REPLACE VIEW birds.bird_view AS
   SELECT bird, place, sighted
   FROM birds.sighting ORDER BY sighted ASC, bird ASC;
 
--- record_bird is a stored procedure and will save a new bird sighting
+-- record_bird is a stored procedure and will save a new bird sighting.
+-- It becomes the end point '/rpc/record_bird'
 CREATE OR REPLACE FUNCTION birds.record_bird(bird VARCHAR, place TEXT, sighted DATE)
 RETURNS bool LANGUAGE SQL AS \$\$
   INSERT INTO birds.sighting (bird, place, sighted) VALUES (bird, place, sighted);
@@ -85,29 +132,40 @@ RETURNS bool LANGUAGE SQL AS \$\$
 \$\$;
 
 --
--- The following additional steps are needed for PostgREST access.
+-- PostgREST access and controls.
 --
-DROP ROLE IF EXISTS birds_anonymous;
-CREATE ROLE birds_anonymous nologin;
 
+-- Since our Postgres ROLE and SCHEMA exist and our models may change how
+-- we want PostgREST to expose our data via JSON API we GRANT or 
+-- revoke role permissions here.
+-- with our model.
 GRANT USAGE  ON SCHEMA birds      TO birds_anonymous;
--- NOTE: We're allowing insert because this is a demo and we're not
--- implementing a login requirement!!!!
+-- NOTE: We are allowing insert because this is a demo and we are not
+-- implementing an account login requirement. Normally I would force
+-- a form update via a SQL function or procedure only.
 GRANT SELECT, INSERT ON birds.sighting    TO birds_anonymous;
 GRANT SELECT ON birds.bird_view   TO birds_anonymous;
 GRANT EXECUTE ON FUNCTION birds.record_bird TO birds_anonymous;
 
+
+EOT
+
+# This SQL file loads test data into our data models.
+cat <<EOT >birds2/models_test.sql
 --
--- NOTE: These next statements SHOULD NOT be in your SQL program.
--- They are here because this is a demo and I need to show how
--- to do this in SQL. Don't store secrets in your SQL!
+-- This script is a convienence. It will use the psql client
+-- copy command to load the tables with some test data.
 --
-DROP ROLE IF EXISTS birds;
-CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
-GRANT birds_anonymous TO birds;
+
+-- Make sure we are in the birds database
+\\c birds
+
 
 -- Now import our CSV file of birds.csv
 \\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
+
+-- Make sure the data loaded, query with a select statement.
+SELECT * FROM birds.sighting;
 
 EOT
 

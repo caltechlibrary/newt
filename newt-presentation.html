@@ -62,24 +62,26 @@ href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
 <h1 id="cognitive-shifts">Cognitive shifts</h1>
 <ul>
+<li>Write YAML, orchestrate our microservice conversation</li>
 <li>Write SQL (Postgres), yields JSON source (PostgREST)</li>
 <li>Write Pandoc templates, use JSON, yields HTML</li>
-<li>Write YAML, orchestrate our microservice conversation</li>
 </ul>
 <h1 id="writing-less-code">Writing less code</h1>
 <ol type="1">
 <li>Use “off the shelf” microservices</li>
-<li>Take advantage of SQL</li>
 <li>Standardize templating with Pandoc</li>
+<li>Take advantage of SQL</li>
 </ol>
 <blockquote>
-<p><strong>Got middle-ware?</strong> Postgres+PostgREST+Pandoc+Newt</p>
+<p><strong>Got middle-ware?</strong> We use the Newt stack,
+Postgres+PostgREST+Pandoc+Newt</p>
 </blockquote>
 <h1 id="why-sql">Why SQL?</h1>
 <ul>
 <li>SQL is good at describing structured data</li>
-<li>SQL provides views, functions, triggers, …</li>
+<li>SQL can do queries, views, functions, triggers, …</li>
 <li>SQL allows us to model our data once</li>
+<li>PostgREST gives us a JSON api based on the SQL we write</li>
 </ul>
 <blockquote>
 <p><strong>Minimize the source Luke!</strong> PostgreSQL+PostgREST is a
@@ -89,8 +91,9 @@ code savings plan.</p>
 <p>Let’s compare three implementations of a bird sighting website</p>
 <h1 id="birds-1"><a href="../demos/make-birds1.bash"
 title="this is a static website">birds 1</a></h1>
-<p>CSV file, Pandoc, 2 directories, 5 files, 53 total line count, static
-site hosting</p>
+<p>CSV file, Pandoc, 2 directories, 5 files, <strong>72 total line
+count</strong>, static site hosting. Included is a typical setup I would
+use for a static site project.</p>
 <table>
 <thead>
 <tr class="header">
@@ -100,7 +103,7 @@ site hosting</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">5</td>
+<td style="text-align: left;">21</td>
 <td style="text-align: left;"><a
 href="../demos/birds1/README.html">README.md</a></td>
 </tr>
@@ -110,17 +113,17 @@ href="../demos/birds1/README.html">README.md</a></td>
 href="../demos/birds1/birds.csv">birds.csv</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">3</td>
+<td style="text-align: left;">6</td>
 <td style="text-align: left;"><a
 href="../demos/birds1/build.sh">build.sh</a></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">8</td>
+<td style="text-align: left;">7</td>
 <td style="text-align: left;"><a
 href="../demos/birds1/page.tmpl">page.tmpl</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">33</td>
+<td style="text-align: left;">32</td>
 <td style="text-align: left;">htdocs/index.html</td>
 </tr>
 </tbody>
@@ -130,8 +133,9 @@ href="https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html"
 class="uri">https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html</a></p>
 <h1 id="birds-2"><a href="../demos/make-birds2.bash"
 title="this website requires a machine">birds 2</a></h1>
-<p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 6
-files, 182 total line count, dynamic site requires hosting</p>
+<p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8
+files, <strong>232 total line count</strong>, dynamic site requires
+hosting</p>
 <table>
 <thead>
 <tr class="header">
@@ -141,7 +145,7 @@ files, 182 total line count, dynamic site requires hosting</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">33</td>
+<td style="text-align: left;">29</td>
 <td style="text-align: left;"><a
 href="../demos/birds2/README.html">README.md</a></td>
 </tr>
@@ -151,9 +155,19 @@ href="../demos/birds2/README.html">README.md</a></td>
 href="../demos/birds2/birds.csv">birds.csv</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">55</td>
+<td style="text-align: left;">34</td>
 <td style="text-align: left;"><a
 href="../demos/birds2/setup.sql">setup.sql</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">60</td>
+<td style="text-align: left;"><a
+href="../demos/birds2/models.sql">models.sql</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15</td>
+<td style="text-align: left;"><a
+href="../demos/birds2/models_test.sql">models_test.sql</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">3</td>
@@ -162,7 +176,8 @@ href="../demos/birds2/postgrest.conf">postgrest.conf</a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">24</td>
-<td style="text-align: left;">htdocs/index.html</td>
+<td style="text-align: left;">htdocs/<a
+href="../demos/birds2/htdocs/index.html">index.html</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">63</td>
@@ -173,7 +188,7 @@ href="../demos/birds2/htdocs/sightings.js">sightings.js</a></td>
 </table>
 <h1 id="birds-3"><a href="../demos/make-birds3.bash"
 title="this website requires a machine">birds 3</a></h1>
-<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 167
+<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 277
 total line count, dynamic site requires hosting, <strong>no JavaScript
 required</strong></p>
 <table>
@@ -185,36 +200,49 @@ required</strong></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">37</td>
+<td style="text-align: left;">43</td>
 <td style="text-align: left;"><a
 href="../demos/birds3/README.html">README.md</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4</td>
-<td style="text-align: left;">birds.csv</td>
+<td style="text-align: left;"><a
+href="../demos/birds2/birds.csv">birds.csv</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">55</td>
-<td style="text-align: left;">setup.sql</td>
+<td style="text-align: left;">34</td>
+<td style="text-align: left;"><a
+href="../demos/birds2/setup.sql">setup.sql</a></td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">60</td>
+<td style="text-align: left;"><a
+href="../demos/birds2/models.sql">models.sql</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">15</td>
+<td style="text-align: left;"><a
+href="../demos/birds2/models_test.sql">models_test.sql</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><a
+href="../demos/birds2/postgrest.conf">postgrest.conf</a></td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">25</td>
 <td style="text-align: left;"><a
 href="../demos/birds3/birds.yaml">birds.yaml</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">36</td>
 <td style="text-align: left;"><a
 href="../demos/birds3/page.tmpl">page.tmpl</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">7</td>
 <td style="text-align: left;"><a
 href="../demos/birds3/post_result.tmpl">post_result.tmpl</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">postgrest.conf</td>
 </tr>
 </tbody>
 </table>
@@ -332,6 +360,18 @@ Pandoc; using HTTP methods; YAML</li>
 <li>JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)</li>
 </ul></li>
 </ul>
+<h1 id="experimental-insights-so-far">Experimental insights so far</h1>
+<ul>
+<li>“Off the shelf” microservices can make application construction
+easier</li>
+<li>Orchestrating the data pipeline in YAML seems reasonable</li>
+<li>SQL turns some people off, extending Newt YAML could mitigate
+that</li>
+<li>Pandoc templates are simple to learn</li>
+<li>Newt stack does not enhibit all the HTML5 goodness available for
+front-end- Moving from JavaScript on the front end to Pandoc templates
+and birds.yaml for the back in was a wash interms of lines of code</li>
+</ul>
 <h1 id="an-unexpected-result">An unexpected result</h1>
 <blockquote>
 <p>Newt stack should scale big!</p>
@@ -362,31 +402,23 @@ Pandoc; using HTTP methods; YAML</li>
 <li>share YAML files</li>
 <li>improve Newt</li>
 </ul>
-<h1 id="conclusions">Conclusions</h1>
-<ul>
-<li>“Off the shelf” microservices can make application construction
-easier</li>
-<li>Orchestrating the data pipeline in YAML seems reasonable</li>
-<li>SQL may turn some people off, extending Newt YAML could mitigate
-that</li>
-<li>Pandoc templates are simple to learn and avoid embedding business
-logic</li>
-<li>You still have all the HTML5 goodness available in the
-front-end</li>
-</ul>
 <h1 id="additional-resources">Additional resources</h1>
 <ul>
-<li><a href="https://github.com/caltechlibrary/newt">Newt</a></li>
-<li><a href="https://postgres.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a>
+<li>Newt <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Postgres <a href="https://postgres.org"
+class="uri">https://postgres.org</a> + PostgREST <a
+href="https://postgrest.org" class="uri">https://postgrest.org</a>
 <ul>
-<li><a href="https://postgrest.org/en/stable/ecosystem.html">PostgREST
-Community Tutorials</a></li>
+<li>PostgREST Community Tutorials <a
+href="https://postgrest.org/en/stable/ecosystem.html"
+class="uri">https://postgrest.org/en/stable/ecosystem.html</a></li>
 </ul></li>
 <li>Compiling Pandoc or PostgREST requires Haskell
 <ul>
-<li>Install Haskell <a
-href="https://https://www.haskell.org/ghcup/">ghcup</a></li>
+<li>Install Haskell GHCup <a
+href="https://https://www.haskell.org/ghcup/"
+class="uri">https://https://www.haskell.org/ghcup/</a></li>
 </ul></li>
 </ul>
 <h1 id="thank-you">Thank you!</h1>

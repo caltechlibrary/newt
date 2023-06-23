@@ -1,37 +1,43 @@
 
-# Birds 3, a demo of PostgreSQL 15, PostgREST 11 and Newt
+# Birds 3 demo 
 
-This directory holds our demo.
-
-## Setup Database
-
-1. Start psql and connect to the birds database
-2. Run [setup.sql](setup.sql)
-3. Run a select query and confirm the data loaded
-4. Quit psql, you are ready to setup PostgREST
-
-~~~
-psql
-\c birds
-\i setup.sql
-\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
-SELECT * FROM birds.sighting;
-\q
-~~~
-
-## Startup PostgREST
-
-1. start PostgREST 'postgrest postgrest.conf'
-2. Using curl make sure it is available 'http://localhost:3000/bird_view'
-
-# Startup Pandoc in server mode
-
-1. 'pandoc server'
+> Newt, Pandoc and Postgres+PostgREST
 
 ## Setup Newt
 
 1. Create a [birds.yaml](birds.yaml) file holding the routes for our birds application
 2. Start up Newt service using the YAML file.
 3. Point your web browser at the Newt and see what happens
+
+## Setup Database
+
+1. Run [setup.sql](setup.sql) to configure PostgREST access to Postgres (normally NOT checked into Git/SVN!)
+2. Run [models.sql](models.sql) to create our data models additional PostgREST end points.
+3. Run [models_test.sql](models_test.sql) loads some test data and would run any SQL tests on the models.
+
+~~~
+psql -f setup.sql
+psql -f models.sql
+psql -f models_test.sql
+~~~
+
+## Start up our microservices
+
+### Startup PostgREST
+
+1. Start PostgREST 'postgrest postgrest.conf'
+2. Using curl make sure it is available 'https://localhost:3000/bird_view'
+
+### Startup Pandoc in server mode
+
+In a seperate shell session start Pandoc server
+
+1. 'pandoc server'
+
+### Start up Newt
+
+In a separate shell session start up Newt
+
+1. 'newt birds.yaml'
 
 

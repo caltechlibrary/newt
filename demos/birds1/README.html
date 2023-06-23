@@ -167,8 +167,17 @@
 <header id="title-block-header">
 <h1 class="title">Birds 1 Demo</h1>
 </header>
-<h1 id="birds-1-a-demo-with-csv-file-and-pandoc-3">Birds 1, a demo with
-CSV file and Pandoc 3</h1>
-<p>This directory holds our demo.</p>
+<h1 id="birds-1-demo">Birds 1 demo</h1>
+<p>This demo presents a list of birds. It is implement as a static site
+rendered with Pandoc.</p>
+<p>Pandoc takes the CSV file, “bids.csv” and converts the content to an
+HTML table then drops that in the “body” of the template called
+“page.tmpl”. A simple shell script called “build.sh” is provided to save
+some typing. The site is rendered to the “htdocs” directory. This can be
+copied to your static site host or served out with your web server.</p>
+<p>To update the website you edit the CSV file then re-run the
+“build.sh” script.</p>
+<pre><code>edit birds.csv
+./build.sh</code></pre>
 </body>
 </html>
