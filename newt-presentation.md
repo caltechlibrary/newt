@@ -44,7 +44,7 @@ scale
 - Limit the cognitive shifts
 - Try to **Write less code**
 
-# Limit the moving parts, three abstractions
+# Three abstractions
 
 - JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A powerful template engine => [Pandoc](https://pandoc.org)
@@ -57,10 +57,10 @@ scale
 3. Newt => Pandoc
 4. Newt => web browser
 
-# Limit the cognitive shifts
+# Cognitive shifts
 
-- Write SQL (Postgres), get JSON source (PostgREST)
-- Write Pandoc templates, use JSON, get HTML
+- Write SQL (Postgres), yields JSON source (PostgREST)
+- Write Pandoc templates, use JSON, yields HTML
 - Write YAML, orchestrate our microservice conversation
 
 # Writing less code
