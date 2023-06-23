@@ -207,7 +207,7 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 - "Off the shelf" microservices can make application construction easier
 - Orchestrating the data pipeline in YAML seems reasonable
-- SQL may turn some people off
+- SQL may turn some people off,Newt should mitigate that 
 - Pandoc templates are simple to learn and avoid embedding business logic
 - You still have all the HTML5 goodness available in the front-end
 
