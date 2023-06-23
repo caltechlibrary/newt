@@ -86,12 +86,12 @@ CSV file, Pandoc, 2 directories, 5 files, **72 total line count**, static site h
 Lines   Files
 ------  ---------------
     21  [README.md](../demos/birds1/README.html)
-     4  [birds.csv](../demos/birds1/birds.csv)
-     6  [build.sh](../demos/birds1/build.sh)
-     7  [page.tmpl](../demos/birds1/page.tmpl)
+     4  birds.csv
+     6  build.sh
+     7  page.tmpl
     32  htdocs/index.html
 
-See <https://caltechlibrary.github.io/newt/demos/birds1/htdocs/index.html>
+See <https://github.com/caltechlibrary/newt/tree/main/demos/birds1>
 
 # [birds 2](../demos/make-birds2.bash "this website requires a machine")
 
@@ -100,13 +100,15 @@ SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 to
 Lines    Files
 ------   --------------
     29   [README.md](../demos/birds2/README.html)
-     4   [birds.csv](../demos/birds2/birds.csv)
-    34   [setup.sql](../demos/birds2/setup.sql)
-    60   [models.sql](../demos/birds2/models.sql)
-    15   [models_test.sql](../demos/birds2/models_test.sql)
-     3   [postgrest.conf](../demos/birds2/postgrest.conf)
-    24   htdocs/[index.html](../demos/birds2/htdocs/index.html)
-    63   htdocs/[sightings.js](../demos/birds2/htdocs/sightings.js)
+     4   birds.csv
+    34   setup.sql
+    60   models.sql
+    15   models_test.sql
+     3   postgrest.conf
+    24   htdocs/index.html
+    63   htdocs/sightings.js
+
+See <https://github.com/caltechlibrary/newt/tree/main/demos/birds2>
 
 # [birds 3](../demos/make-birds3.bash "this website requires a machine")
 
@@ -115,15 +117,16 @@ SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 277 total line c
 Lines    Files
 ------   ---------------
     43   [README.md](../demos/birds3/README.html)
-     4   [birds.csv](../demos/birds2/birds.csv)
-    34   [setup.sql](../demos/birds2/setup.sql)
-    60   [models.sql](../demos/birds2/models.sql)
-    15   [models_test.sql](../demos/birds2/models_test.sql)
-     3   [postgrest.conf](../demos/birds2/postgrest.conf)
-    25   [birds.yaml](../demos/birds3/birds.yaml)
-    36   [page.tmpl](../demos/birds3/page.tmpl)
-     7   [post_result.tmpl](../demos/birds3/post_result.tmpl)
+     4   birds.csv
+    34   setup.sql
+    60   models.sql
+    15   models_test.sql
+     3   postgrest.conf
+    25   birds.yaml
+    36   page.tmpl
+     7   post_result.tmpl
 
+See <https://github.com/caltechlibrary/newt/tree/main/demos/birds3>
 
 # A microservice conversation
 
