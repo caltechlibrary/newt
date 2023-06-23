@@ -160,13 +160,13 @@ birds 3   dynamic     read/write data          requires SQL knowledge
                       easy to conceptualize    requires knowledge of Pandoc
                       no JavaScript required   requires knowledge of YAML
 
-# Weaknesses in my proposal
+# Newt stack weakness
 
 - Newt is **an experimental prototype** (June/July 2023)
 - Newt doesn't support file uploads
 - Newt doesn't eliminate learning curves, e.g. Postgres and SQL; Pandoc; using HTTP methods; YAML
 
-# Newt's greatest advantage
+# Newt stack strengths 
 
 > A mature foundation
 
