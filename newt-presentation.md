@@ -50,13 +50,6 @@ scale
 - A powerful template engine => [Pandoc](https://pandoc.org)
 - data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
-# A microservice conversation
-
-1. web browser => Newt
-2. Newt => PostgREST
-3. Newt => Pandoc
-4. Newt => web browser
-
 # Cognitive shifts
 
 - Write SQL (Postgres), yields JSON source (PostgREST)
@@ -124,6 +117,13 @@ Lines   Files
     36  [page.tmpl](../demos/birds3/page.tmpl)
      7  [post_result.tmpl](../demos/birds3/post_result.tmpl)
      3  postgrest.conf
+
+# A microservice conversation
+
+1. web browser => Newt
+2. Newt => PostgREST
+3. Newt => Pandoc
+4. Newt => web browser
 
 # Newt's YAML file
 
