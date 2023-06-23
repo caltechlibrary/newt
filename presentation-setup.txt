@@ -1,0 +1,36 @@
+
+# Notes on recording the presentation
+
+1. Use I can use Zoom to record the session on my local machine
+2. I need to have the three demos setup and running in a terminal session (via tux) that will not be featured in the presentation
+3. README's for each demo need to be better
+4. Use GitHub to walk through the generated demos' codebase that way I don't loose time switching out of browser sharing and back into it
+5. I'm not sure I need to show my image while presenting, if I'm sitting I tended to rock in my chair allot
+6. avoid putting my hand infront of my mouse or touching my nose
+7. enounciete better, e.g. postgREST (pronounce the "t" clearly)
+8. Talk is still over one hour, need to shoot for 40 minutes so their is time for questions
+9. demo demo time it about right but pre-demo time is too long
+
+# Content fixes
+
+1. improve the READM.md files to be meaning ful
+2. build.sh needs to show a multiline Pandoc statement
+3. decide if I am going to use `${...}` or `$...$` syntax in Newt and use the same in the templates
+4. Figure out how to remove "my_secret_password" from example setup.sql, I could use a SQL statement to generated a random password that is written out or I might be able to bring those in from the environment somehow
+
+# Service setup
+
+1. Run presentation on localhost:8000 via ws
+2. Run birds 1 
+	- `ws -url http://localhost:8001 htdocs`
+3. Run birds 2
+	- `ws -url http://localhost:8002 htdocs` 
+	- `psql -f setup.sql`
+	- `postgrest postgrest.conf`
+4. Run birds 3
+	- re-use postgrest from birds 2 as is
+	- `pandoc server`
+	- `../../bin/newt birds.yaml`
+5. Show code examples via GitHub site
+	- open `https://github.com/caltechlibrary/newt/tree/main/demos`
+	- click on "symbol" for to show side panel directory tree

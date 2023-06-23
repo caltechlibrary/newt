@@ -161,7 +161,8 @@ Lines   Files
 
 # Newt's YAML file
 
-- environment variable used to access JSON sources
+- htdocs directory for static concetnt (option)
+- environment variable used to access JSON sources (optional)
 - route definitions
   - (optional) variable definitions (path and form data)
   - request routing details (e.g. path, method)
@@ -219,9 +220,9 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 # Next steps for Newt?
 
-- Testing Solr/Elasticsearch as alternate JSON sources
-- I am building staff facing applications this Summer (2023)
-- I hope to move beyond my proof of concept in Fall/Winter (2023)
+1. Testing Solr/Elasticsearch as alternate JSON sources
+2. I am building staff facing applications this Summer (2023)
+3. I hope to move beyond my proof of concept in Winter (2023), Spring (2024)
 
 # Someday, maybe ...
 
