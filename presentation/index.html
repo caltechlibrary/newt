@@ -44,72 +44,6 @@ class="email">rsdoiel@caltech.edu</a>
 <div class="slide" id="TOC">
 
 </div>
-<div id="newt" class="slide section level1">
-<h1>Newt</h1>
-<h2 id="a-small-system-experiment">a small system experiment</h2>
-<h3 id="but-first-some-context">… but first some context</h3>
-</div>
-<div id="lamp-and-the-stacks-of-complexity"
-class="slide section level1">
-<h1>LAMP and the stacks of complexity</h1>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Software</th>
-<th align="left">Stack</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">EPrints</td>
-<td align="left">Classic LAMP + Xapian</td>
-</tr>
-<tr class="even">
-<td align="left">Islandora</td>
-<td align="left">Apache+MySQL+PHP, Fedora and Solr</td>
-</tr>
-<tr class="odd">
-<td align="left">ArchivesSpace</td>
-<td align="left">Apache, MySQL, Tomcat, Java+jRuby,</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Solr</td>
-</tr>
-<tr class="odd">
-<td align="left">Invenio RDM</td>
-<td align="left">NginX, Python/pip, Postgres, Redis,</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">Elasticsearch, Docker, NodeJS/NPM</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="our-legacy-of-complexity" class="slide section level1">
-<h1>our Legacy of Complexity</h1>
-<ol style="list-style-type: decimal">
-<li>Applications are built on a stack</li>
-<li>Stacks are complex and divergent</li>
-<li>Sustaining them requires many coping strategies</li>
-</ol>
-</div>
-<div id="the-problem" class="slide section level1">
-<h1>the Problem</h1>
-<ul>
-<li>Our coping strategies are not sustainable</li>
-<li>Complexity is part of the problem</li>
-</ul>
-</div>
-<div id="why-are-these-things-so-complex" class="slide section level1">
-<h1>Why are these things so complex?</h1>
-<ol style="list-style-type: decimal">
-<li>We want more from our application, more code gets written</li>
-<li>We want “enhancements”, complexity accrues overtime</li>
-<li>We build “systems designed to scale”</li>
-</ol>
-</div>
 <div id="scaling" class="slide section level1">
 <h1>Scaling</h1>
 <dl>
@@ -124,19 +58,18 @@ a euphemism for <strong>scaling big</strong>, usage “google scale”,
 <li>Scaling big can make things really complex</li>
 </ul>
 </div>
-<div id="strategies-what-weve-learned-from-big"
-class="slide section level1">
-<h1>Strategies, what we’ve learned from big</h1>
+<div id="scaling-lessons" class="slide section level1">
+<h1>Scaling, lessons</h1>
 <ul>
 <li>distributed application design</li>
-<li>containers</li>
+<li>concept of microservices</li>
 <li>programmable infrastructure</li>
 </ul>
 </div>
 <div id="scaling-1" class="slide section level1">
 <h1>Scaling</h1>
 <ul>
-<li>Scaling big illuminates a path to scaling small</li>
+<li>Microservices illuminates a path to scaling small</li>
 <li><strong>We pack only what is needed!</strong></li>
 </ul>
 </div>
@@ -148,9 +81,8 @@ class="slide section level1">
 <li>Try to <strong>Write less code</strong></li>
 </ul>
 </div>
-<div id="limit-the-moving-parts-three-abstractions"
-class="slide section level1">
-<h1>Limit the moving parts, three abstractions</h1>
+<div id="three-abstractions" class="slide section level1">
+<h1>Three abstractions</h1>
 <ul>
 <li>JSON source to manage data =&gt; <a
 href="https://postgresql.org">Postgres</a> + <a
@@ -161,20 +93,11 @@ href="https://pandoc.org">Pandoc</a></li>
 href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
 </div>
-<div id="a-microservice-conversation" class="slide section level1">
-<h1>A microservice conversation</h1>
-<ol style="list-style-type: decimal">
-<li>web browser =&gt; Newt</li>
-<li>Newt =&gt; PostgREST</li>
-<li>Newt =&gt; Pandoc</li>
-<li>Newt =&gt; web browser</li>
-</ol>
-</div>
-<div id="limit-the-cognitive-shifts" class="slide section level1">
-<h1>Limit the cognitive shifts</h1>
+<div id="cognitive-shifts" class="slide section level1">
+<h1>Cognitive shifts</h1>
 <ul>
-<li>Write SQL (Postgres), get JSON source (PostgREST)</li>
-<li>Write Pandoc templates, use JSON, get HTML</li>
+<li>Write SQL (Postgres), yields JSON source (PostgREST)</li>
+<li>Write Pandoc templates, use JSON, yields HTML</li>
 <li>Write YAML, orchestrate our microservice conversation</li>
 </ul>
 </div>
@@ -336,6 +259,15 @@ href="../demos/birds3/post_result.tmpl">post_result.tmpl</a></td>
 </tbody>
 </table>
 </div>
+<div id="a-microservice-conversation" class="slide section level1">
+<h1>A microservice conversation</h1>
+<ol style="list-style-type: decimal">
+<li>web browser =&gt; Newt</li>
+<li>Newt =&gt; PostgREST</li>
+<li>Newt =&gt; Pandoc</li>
+<li>Newt =&gt; web browser</li>
+</ol>
+</div>
 <div id="newts-yaml-file" class="slide section level1">
 <h1>Newt’s YAML file</h1>
 <ul>
@@ -427,8 +359,8 @@ class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/bir
 </tbody>
 </table>
 </div>
-<div id="weaknesses-in-my-proposal" class="slide section level1">
-<h1>Weaknesses in my proposal</h1>
+<div id="newt-stack-weakness" class="slide section level1">
+<h1>Newt stack weakness</h1>
 <ul>
 <li>Newt is <strong>an experimental prototype</strong> (June/July
 2023)</li>
@@ -437,8 +369,8 @@ class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/bir
 Pandoc; using HTTP methods; YAML</li>
 </ul>
 </div>
-<div id="newts-greatest-advantage" class="slide section level1">
-<h1>Newt’s greatest advantage</h1>
+<div id="newt-stack-strengths" class="slide section level1">
+<h1>Newt stack strengths</h1>
 <blockquote>
 <p>A mature foundation</p>
 </blockquote>
@@ -456,7 +388,7 @@ Pandoc; using HTTP methods; YAML</li>
 <div id="an-unexpected-result" class="slide section level1">
 <h1>An unexpected result</h1>
 <blockquote>
-<p>Newt can potentially scale big!</p>
+<p>Newt stack should scale big!</p>
 </blockquote>
 <ul>
 <li>Newt can be scaled wide</li>
@@ -497,7 +429,8 @@ Pandoc; using HTTP methods; YAML</li>
 <li>“Off the shelf” microservices can make application construction
 easier</li>
 <li>Orchestrating the data pipeline in YAML seems reasonable</li>
-<li>SQL may turn some people off</li>
+<li>SQL may turn some people off, extending Newt YAML could mitigate
+that</li>
 <li>Pandoc templates are simple to learn and avoid embedding business
 logic</li>
 <li>You still have all the HTML5 goodness available in the
