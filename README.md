@@ -7,12 +7,13 @@ Newt integrates microservices such as a JSON data source with Pandoc. This is ac
 
 Newt's configuration can contain a set of "route" definitions. These map a request to the JSON source via an HTTP call.  The route is vetted (e.g. URL variables and form data are validated) before making the JSON source request.  If the request fails validation Newt responds directly to the requesting web browser or service via HTTP status codes and message. If validation succeeds then the JSON source is contacted and the results (optionally) run through Pandoc via another HTTP call. The final results are returned to the requesting web browser (or service).
 
-An typical setup could be  Newt, [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) and [Pandoc](https://pandoc.org). An equally valid setup could be Solr or Elasticsearch integrating with Pandoc. They key is realizing there is a JSON data source that can be interacted with via URL and HTTP method (e.g. GET, POST) and that we can then process the result via Pandoc running as a web service.
+A typical setup could be  Newt, [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) and [Pandoc](https://pandoc.org). An equally valid setup could be Solr or Elasticsearch integrating with Pandoc. They key is realizing there is a JSON data source that can be interacted with via URL and HTTP method (e.g. GET, POST) and that we can then process the result via Pandoc running as a web service.
 
-Newt's scope is limited to validating the requests, routing and returning content. It doesn't know secrets. It doesn't persist application state. This allows Newt instance(s) to be run singularly or in parallel as desired.
+Newt's scope is limited to decribe a data model, validating the requests, routing and returning content. It doesn't know secrets. It doesn't persist application state. This allows Newt instance(s) to be run singularly or in parallel as desired.
 
-Newt runs as a localhost service. In a production setting you'd run Newt behind a traditional web server like Apache 2 or NginX. The front-end web service can provide access control via basic auth or single sign-on (e.g. Shibboleth). It plays nicely in a container environment or running straight up as a system service.
+Newt runs exclusively as a localhost service. In a production setting you'd run Newt behind a traditional web server like Apache 2 or NginX. The front-end web service can provide access control via basic auth or single sign-on (e.g. Shibboleth). It plays nicely in a container environment or running straight up as a system service.
 
+Newt is configured via a YAML file. It includes the abilty to pass through specific environment variables for making requests to a JSON data source (e.g. credentials).
 
 ## Motivation
 
@@ -30,6 +31,7 @@ From front-end to back-end
 
 - A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. single sign-on via Shibboleth)
 - Newt provides static file services but more importantly serves as a data router. It can validate and map a request to a JSON source, take those results then send them through Pandoc for transformation.
+
 - JSON data source(s) provide the actual metadata management
     - Postgres+PostgREST is an example of a JSON source integrated with a SQL server
     - Solr, Elasticsearch or Opensearch can also function as a JSON source oriented towards search
@@ -41,7 +43,7 @@ All these can be treated as "off the shelf". I.e. we're not writing them from sk
 
 ## Exploring Newt
 
-Presented are three [demos](https://github.com/caltechlibrary/newt/tree/main/demos). The demo code can be rendered using one of three Bash scripts. The goal of the three demo is to show Pandoc, Postgres+PostgREST work individually and can work together with Newt. The bash scripts will generate all the files needed to run the demo. A "read me" for each demo describes how to run it.
+Presented are three [demos](https://github.com/caltechlibrary/newt/tree/main/demos). The demo code can be rendered using one of three Bash scripts. The bash scripts will generate all the files needed to run the demo. A "read me" for each demo describes how to run it.
 
 [Birds 1 Demo](https://github.com/caltechlibrary/newt/blob/main/demos/setup-birds1.bash)
 : Shows a simple use of Pandoc to render a static bird sightings website
@@ -61,9 +63,9 @@ This is a simple static website. It introduces Pandoc. Pandoc is a good tool to 
 
 - README.md, demo "read me" file
 - birds.csv, our list of bird sightings
-- build.sh, a shell script that uses Pandoc to render site (3 lines)
+- build.sh, a shell script that uses Pandoc to render site
 - htdocs, the website document directory
-- page.tmpl, a Pandoc page template using by build.sh (13 lines)
+- page.tmpl, a Pandoc page template using by build.sh
 
 Pros                             Cons
 -------------------------------- -----------------------------------
