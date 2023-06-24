@@ -32,11 +32,12 @@ scale
 - distributed application design
 - concept of microservices
 - programmable infrastructure
+- composition by configuration 
 
 # Scaling
 
 - Microservices illuminates a path to scaling small
-- **We pack only what is needed!**
+- **Pack only what is needed!**
 
 # Scaling small
 
@@ -52,15 +53,16 @@ scale
 
 # Cognitive shifts
 
-- Write YAML, orchestrate our microservice conversation
+- Write YAML, orchestrate our microservice conversation (Newt)
 - Write SQL (Postgres), yields JSON source (PostgREST)
 - Write Pandoc templates, use JSON, yields HTML
 
 # Writing less code
 
 1. Use "off the shelf" microservices
-2. Standardize templating with Pandoc
-3. Take advantage of SQL
+2. Compose a system through configuration 
+3. Standardize templating with Pandoc
+4. Take advantage of SQL
 
 > **Got middle-ware?** We use the Newt stack, 
 > Postgres+PostgREST+Pandoc+Newt
@@ -128,7 +130,7 @@ Lines    Files
 
 See <https://github.com/caltechlibrary/newt/tree/main/demos/birds3>
 
-# A microservice conversation
+# Newt's microservice conversation
 
 1. web browser => Newt
 2. Newt => PostgREST
@@ -137,8 +139,9 @@ See <https://github.com/caltechlibrary/newt/tree/main/demos/birds3>
 
 # Newt's YAML file
 
-- htdocs directory for static concetnt (option)
+- htdocs directory for static content (option)
 - environment variable used to access JSON sources (optional)
+- models (optional, used to bootstrap SQL code)
 - route definitions
   - (optional) variable definitions (path and form data)
   - request routing details (e.g. path, method)
@@ -149,9 +152,9 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 
 # Developer workflow
 
-1. Model data in Postgres
-2. Create/update Pandoc templates
-3. Create/update routes/form data validation in YAML file
+1. Define models/routes/form validation in Newt YAML file
+2. Model data in Postgres
+3. Create/update Pandoc templates create UI
 4. (Re)start PostgREST and Newt to (re)load models and routes
 5. Test with our web browser
 
@@ -175,6 +178,7 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 - Newt is **an experimental prototype** (June/July 2023)
 - Newt doesn't support file uploads
 - Newt doesn't eliminate learning curves, e.g. Postgres and SQL; Pandoc; using HTTP methods; YAML
+- Moving from JavaScript on the front end to Pandoc templates and birds.yaml does not guarantee less lines of code
 
 # Newt stack strengths 
 
@@ -189,9 +193,9 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 - "Off the shelf" microservices can make application construction easier
 - Orchestrating the data pipeline in YAML seems reasonable
-- SQL turns some people off, extending Newt YAML could mitigate that 
+- SQL turns some people off, extending Newt YAML gemerate SQL could mitigate that 
 - Pandoc templates are simple to learn
-- Newt stack does not enhibit all the HTML5 goodness available for front-end- Moving from JavaScript on the front end to Pandoc templates and birds.yaml for the back in was a wash interms of lines of code
+- Newt stack does not enhibit HTML5 goodness available for front-end
 
 # An unexpected result
 
@@ -211,14 +215,14 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 # Someday, maybe ...
 
 - Have Newt delegate file uploads to an S3 like service
-- Enhance the Newt's YAML to generate SQL models
+- Enhance the Newt's YAML to generate SQL from models
 - Explore integrating SQLite3 support
 
 # If Newt had a community ...
 
 - share SQL code
 - share Pandoc templates
-- share YAML files
+- share Newt YAML files
 - improve Newt
 
 # Additional resources 
