@@ -13,7 +13,7 @@
     - [x] generate SQL table create statement
     - [ ] generate a default view
     - [ ] generate a default create, update, delete, functions for table
-    - [ ] genreate Pandoc template web for using the create/update functions 
+    - [ ] generate Pandoc template web for using the create/update functions 
 - [ ] Finish Newt prototype
     - [ ] Newt router handling for OPTIONS
     - [ ] Newt router handling for HEAD
