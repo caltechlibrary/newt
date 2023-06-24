@@ -103,7 +103,7 @@ api_content_type
 : This is the HTTP content type string to send with your JSON data source request, typically it is "application/json". 
 
 pandoc_template
-: If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source.
+: If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source. The data is provided to the Pandoc template as part of the "body" pandoc template variable.
 
 res_headers
 : This is any additional HTTP headers you want to send back to the client.

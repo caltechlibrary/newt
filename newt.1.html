@@ -165,7 +165,9 @@ request, typically it is “application/json”.
 <dt>pandoc_template</dt>
 <dd>
 If included Newt will load the Pandoc template file into memory and use
-it when results are returned from a JSON data source.
+it when results are returned from a JSON data source. The data is
+provided to the Pandoc template as part of the “body” pandoc template
+variable.
 </dd>
 <dt>res_headers</dt>
 <dd>

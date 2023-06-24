@@ -27,7 +27,7 @@ import (
 // Config holds a configuration for Newt.
 type Config struct {
 	// Models declare the data structures used in a Newt application.
-	// These generally are tables but can be thought of as objects.
+	// These generally thres are tables but can be thought of as objects.
 	// Models can be used to generate SQL CREATE statements suitable for
 	// use with Postgres.
 	Models []*ModelDSL `json:"models,omitempty" yaml:"models,omitempty"`
@@ -119,6 +119,39 @@ func LoadConfig(configFName string) (*Config, error) {
 		return nil, fmt.Errorf("NEWT_ROUTES and NEWT_HTDOCS are undefined.")
 	}
 	return cfg, nil
+}
+
+// RunGenerateSQL is a runner for generating SQL from a Newt YAML file.
+func RunGenerateSQL(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
+	configFName := ""
+	if len(args) > 0 {
+		configFName = args[0]
+	}
+	cfg, err := LoadConfig(configFName)
+	if err != nil {
+		fmt.Fprintf(eout, "%s\n", err)
+		return 1
+	}
+	if cfg.Models == nil {
+		fmt.Fprintln(eout, "-- No modules defined.")
+		return 1
+	}
+	// For each module we generate a table create statement,
+	// default view.
+	if configFName == "" {
+		configFName = "standard input"
+	}
+	exitCode := 0
+	for name, model := range cfg.Models {
+		src, err := ModelSQL(configFName, model)
+		if err != nil {
+			fmt.Fprintf(eout, "-- could not create %q, %s\n", name, err)
+			exitCode = 1
+		} else {
+			fmt.Fprintf(out, "%s\n", src)
+		}
+	}
+	return exitCode
 }
 
 // Run is a runner for Newt URL router and static file server

@@ -116,7 +116,7 @@ api_content_type
 : This is the HTTP content type string to send with your JSON data source request, typically it is "application/json". 
 
 pandoc_template
-: If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source.
+: If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source. The data is provided to the Pandoc template as part of the "body" pandoc template variable.
 
 res_headers
 : This is any additional HTTP headers you want to send back to the client.
@@ -237,7 +237,6 @@ routes:
 	showHelp    bool
 	showLicense bool
 	showVersion bool
-	dryRun      bool
 )
 
 func main() {
@@ -253,8 +252,12 @@ func main() {
 	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.BoolVar(&showVersion, "version", false, "display version")
 
+	
+
 	// App option(s)
-	flag.BoolVar(&dryRun, "dry-run", false, "evaluate configuration and routes but don't start web service")
+	generateSQL, dryRun := false, false
+	flag.BoolVar(&generateSQL, "sql", generateSQL, "generate example SQL from tables attribute")
+	flag.BoolVar(&dryRun, "dry-run", dryRun, "evaluate configuration and routes but don't start web service")
 
 	// We're ready to process args
 	flag.Parse()
@@ -275,6 +278,9 @@ func main() {
 	if showVersion {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
+	}
+	if generateSQL {
+		os.Exit(newt.RunGenerateSQL(in, out, eout, args))
 	}
 	os.Exit(newt.Run(in, out, eout, args, dryRun))
 }

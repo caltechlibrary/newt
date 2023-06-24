@@ -17,6 +17,7 @@ var (
 	// DataTypes is a map to the types defined in route_dsl_types.go
 	DataTypes = map[string]EvalType{
 		"String":   new(TypeString).EvalType,
+		"Text":     new(TypeText).EvalType,
 		"Integer":  new(TypeInteger).EvalType,
 		"Real":     new(TypeReal).EvalType,
 		"Boolean":  new(TypeBool).EvalType,
@@ -33,6 +34,7 @@ var (
 		"DOI":      new(TypeDOI).EvalType,
 		"ISNI":     new(TypeISNI).EvalType,
 		"ORCID":    new(TypeORCID).EvalType,
+		"ArXiv":    new(TypeArXiv).EvalType,
 		"Markdown": new(TypeMarkdown).EvalType,
 	}
 )
@@ -48,21 +50,26 @@ type DataType interface {
 	EvalType(string, string) (string, bool)
 }
 
-// TypeString implements a string data type
+// TypeString implements a string data type, it maps to the SQL VARCHAR
+// Max length is 256.
 type TypeString struct {
 }
 
 func (t TypeString) EvalType(expr string, val string) (string, bool) {
-	var layout string
-	layout = "%s"
-	if strings.Contains(expr, " ") {
-		parts := strings.SplitN(expr, " ", 2)
-		if len(parts) == 2 {
-			layout = parts[1]
-		}
+	if len(val) > 256 {
+		return val[0:256], false
 	}
-	return fmt.Sprintf(layout, val), true
+	return val, true
 }
+
+// TypeText represents a text block, this maps to the SQL TEXT
+type TypeText struct {
+}
+
+func (t TypeText) EvalType(expr string, val string) (string, bool) {
+	return val, true
+}
+
 
 // TypeInteger implements an integer data type
 type TypeInteger struct {
@@ -437,3 +444,36 @@ func (t TypeMarkdown) EvalType(expr string, val string) (string, bool) {
 	return fmt.Sprintf("%s", github_flavored_markdown.Markdown([]byte(val))), true
 }
 
+// TypeArXiv implements an arXiv identifier. 
+// See https://info.arxiv.org/help/arxiv_identifier.html
+type TypeArXiv struct {
+}
+
+func (t TypeArXiv) EvalType (expr string, val string) (string, bool) {
+	s := strings.ToLower(val)
+	if strings.HasPrefix(val, "arxiv:") {
+		s = strings.TrimPrefix(strings.ToLower(s), "arxiv:")
+	}
+	// Find the period after four character YYMM
+	if strings.Index(s, ".") != 4 {
+		return "", false
+	}
+	yy, mm := s[0:2], s[2:4]
+	_, err := strconv.Atoi(yy)
+	if err != nil {
+		return "", false
+	}
+	m, err := strconv.Atoi(mm)
+	if (err != nil) || (m < 1) || (m > 12) {
+		return "", false
+	}
+    serial := s[6:]
+	vPos := strings.Index(serial, "v")
+    if vPos >= 4 {
+	   serial = serial[0:vPos]
+	}
+    if len(serial) < 4 || len(serial) > 5 {
+		return "", false
+	}
+	return strings.TrimPrefix(strings.ToLower(val), "arxiv:"), true
+}

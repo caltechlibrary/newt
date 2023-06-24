@@ -1,0 +1,58 @@
+htdocs: htdocs
+env: [ "DB_USER", "DB_PASSWORD" ]
+models:
+- model: blog.posts
+  var:
+    by_line: String
+    content: Text
+    pub_date: Date 2006-01-02
+    year: Date 2006
+    month: Date 01
+    day: Date 02
+    title: String
+    title_slug: String*
+routes:
+- var:
+    day: Date 02
+    month: Date 01
+    year: Date 2006
+  req_path: /blog/${year}/${month}/${day}
+  req_method: GET
+  api_content_type: application/json
+  api_method: GET
+  api_url: http://localhost:3000/posts?year=${year}&month=${month}&day=${day}&order=pub_date.desc,title.asc
+  pandoc_template: list_year_month_day.tmpl
+- var:
+    month: Date 01
+    year: Date 2006
+  req_path: /blog/${year}/${month}
+  req_method: GET
+  api_content_type: application/json
+  api_method: GET
+  api_url: http://localhost:3000/posts?year=${year}&month=${month}&order=pub_date.desc,title.asc
+  pandoc_template: list_year_month.tmpl
+- var:
+    year: Date 2006
+  req_path: /blog/${year}
+  req_method: GET
+  api_content_type: application/json
+  api_method: GET
+  api_url: http://localhost:3000/posts?year=${year}&order=pub_date.desc,title.asc
+  pandoc_template: list_year.tmpl
+- req_path: /blog
+  req_method: GET
+  api_content_type: application/json
+  api_method: GET
+  api_url: http://localhost:3000/posts?order=pub_date.desc,title=asc
+  pandoc_template: list_all.tmpl
+- var:
+    day: Date 02
+    month: Date 01
+    title_slug: String
+    year: Date 2006
+  req_path: /blog/${year}/${month}/${day}/${title_slug}
+  req_method: GET
+  api_content_type: application/json
+  api_method: GET
+  api_url: http://localhost:3000/posts?pubDate=${year}-${month}-${day}&title_slug=${title_slug}&limit=1
+  pandoc_template: post.tmpl

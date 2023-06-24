@@ -164,7 +164,7 @@ func getStringAttr(m map[string]interface{}, attr string) string {
 func getMapStringAttr(m map[string]interface{}, attr string) map[string]string {
 	if val, ok := m[attr]; ok {
 		mVal := map[string]string{}
-		fmt.Fprintf(os.Stderr, "DEBUG m -> (%T) %+v\n", val, val)
+		//fmt.Fprintf(os.Stderr, "DEBUG m -> (%T) %+v\n", val, val)
 		switch val.(type) {
 			case map[string]interface{}:
 			    for k, v := range val.(map[string]interface{}) {
@@ -206,7 +206,7 @@ func mapToRoute(m map[string]interface{}) (*Route, error) {
 		route.PandocTemplate = fmt.Sprintf("%s", txt)
 	}
 	route.ResHeaders = getMapStringAttr(m, "res_headers")
-	fmt.Fprintf(os.Stderr, "\n\nDEBUG res_headers %+v\n\n", route.ResHeaders)
+	//fmt.Fprintf(os.Stderr, "\n\nDEBUG res_headers %+v\n\n", route.ResHeaders)
 	return route, nil
 }
 
@@ -448,7 +448,7 @@ func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
 // WriteResponse
 func (router *Router) WriteResponse(w http.ResponseWriter, rNo int, src []byte) {
 	for k, v := range router.Routes[rNo].ResHeaders {
-		fmt.Fprintf(os.Stderr, "DEBUG (%d) res header %q: %q\n", rNo, k, v)
+		//fmt.Fprintf(os.Stderr, "DEBUG (%d) res header %q: %q\n", rNo, k, v)
 		w.Header().Set(k, v)
 	}
 	w.WriteHeader(http.StatusOK)
@@ -471,7 +471,7 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 			body []byte
 			err  error
 		)
-		fmt.Fprintf(os.Stderr, "DEBUG router.Routes[%d].ResHeaders -> %+v\n", rNo, router.Routes[rNo].ResHeaders)
+		//fmt.Fprintf(os.Stderr, "DEBUG router.Routes[%d].ResHeaders -> %+v\n", rNo, router.Routes[rNo].ResHeaders)
 		// FIXME: Handle http.MethodOption
 		// FIXME: Handle http.MethodHead
 		// FIXME: Handle http.MethodGet

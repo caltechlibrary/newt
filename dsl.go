@@ -22,7 +22,7 @@ type EvalType func(string, string) (string, bool)
 type ModelDSL struct {
 	// Name of model, this may be translated into the table name when
 	// rendering SQL
-	Name string `json:"name,required" yaml:"name,required"`
+	Name string `json:"model,omitempty" yaml:"model,omitempty"`
 	// Var a map of key/values where key is a variable name and value
 	// is the data type.
 	Var map[string]string `json:"var,omitempty" yaml:"var,omitempty"`
