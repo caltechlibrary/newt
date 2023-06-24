@@ -9,6 +9,11 @@
 - [ ] Demo for DLD staff
 - [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler
 - [ ] Create a model attribute in YAML, see if that can be used to generate a basic SQL file for integration with Postgres/PostgREST, model could also be used for validating forms but maybe "global" to the routes
+    - [ ] generate PostgREST setup SQL
+    - [x] generate SQL table create statement
+    - [ ] generate a default view
+    - [ ] generate a default create, update, delete, functions for table
+    - [ ] genreate Pandoc template web for using the create/update functions 
 - [ ] Finish Newt prototype
     - [ ] Newt router handling for OPTIONS
     - [ ] Newt router handling for HEAD
