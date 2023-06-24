@@ -7,7 +7,8 @@
 
 - [ ] Present at Code4Lib meetup, July 14, 2023
 - [ ] Demo for DLD staff
-- [ ] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler)
+- [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler
+- [ ] Create a model attribute in YAML, see if that can be used to generate a basic SQL file for integration with Postgres/PostgREST, model could also be used for validating forms but maybe "global" to the routes
 - [ ] Finish Newt prototype
     - [ ] Newt router handling for OPTIONS
     - [ ] Newt router handling for HEAD
@@ -24,7 +25,7 @@
     - [ ] Test newt router handling PATCH
     - [ ] Test newt router handling DELETE
     - [ ] Test newt birds3 demo and debug
-    - [ ] Does the environment need to merge with objects sent to data API via POST, PUT, PATCH?
+    - [x] Does the environment need to merge with objects sent to data API via POST, PUT, PATCH?
     - [x] Debug interaction between static file service and Router
     - [x] Test assembled Newt static file handling
     - [x] Test newt router only handling
