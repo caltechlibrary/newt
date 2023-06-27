@@ -9,73 +9,50 @@ urlcolor: blue
 linkstyle: bold
 aspectratio: 169
 createDate: 2023-05-16
-updateDate: 2023-06-23
+updateDate: 2023-06-27
 pubDate: 2023-07-14
 place: UCLA
 date: July 14, 2023
 section-titles: false
 toc: true
-keywords: [ "code4lib", "meetup", "Postgres", "PostgREST", "Pandoc" ]
+keywords: [ "code4lib", "microservice", "Postgres", "PostgREST", "Pandoc" ]
 url: "https://caltechlibrary.github.io/newt/presentation"
 ---
 
 # Scaling
 
 scale
-: a euphemism for **scaling big**, usage "google scale", "amazon scale"
+: euphemism for **high availability, high demand**. Usage "google scale", "amazon scale". 
 
-- Scaling big is hard
-- Scaling big can make things really complex
-
-# Scaling, lessons 
-
-- distributed application design
-- concept of microservices
-- programmable infrastructure
-- composition by configuration 
-
-# Scaling
-
-- Microservices illuminates a path to scaling small
-- **Pack only what is needed!**
+> Scaling big is not the only way to scale.
 
 # Scaling small
 
-- Limit the moving parts
-- Limit the cognitive shifts
-- Try to **Write less code**
+- Pick a few microservices
+- System composition via configuration 
 
 # Three abstractions
 
-- JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
-- A powerful template engine => [Pandoc](https://pandoc.org)
-- data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
+- A Template engine => [Pandoc](https://pandoc.org)
+- A JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
+- A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
 # Cognitive shifts
 
-- Write YAML, orchestrate our microservice conversation (Newt)
-- Write SQL (Postgres), yields JSON source (PostgREST)
-- Write Pandoc templates, use JSON, yields HTML
-
-# Writing less code
-
-1. Use "off the shelf" microservices
-2. Compose a system through configuration 
-3. Standardize templating with Pandoc
-4. Take advantage of SQL
-
-> **Got middle-ware?** We use the Newt stack, 
-> Postgres+PostgREST+Pandoc+Newt
+- Use templates to generate HTML (Pandoc)
+- Model in SQL (Postgres) get JSON (PostgREST)
+- Orchestrate our microservice conversation with YAML (Newt)
 
 # Why SQL?
 
-- SQL is good at describing structured data
-- SQL can do queries, views, functions, triggers, ...
-- SQL allows us to model our data once
+- Good at describing structured data
+- Supports queries, views, functions, triggers, events, ...
+- Allows us to model our data once
 - PostgREST gives us a JSON api based on the SQL we write
 
 > **Minimize the source Luke!**
-> PostgreSQL+PostgREST is a code savings plan.
+
+> PostgreSQL+PostgREST, a code savings plan
 
 # A scale small experiment
 
@@ -153,32 +130,19 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 # Developer workflow
 
 1. Define models/routes/form validation in Newt YAML file
-2. Model data in Postgres
-3. Create/update Pandoc templates create UI
+2. Enhance models in SQL and Postgres
+3. Create/update Pandoc templates
 4. (Re)start PostgREST and Newt to (re)load models and routes
 5. Test with our web browser
 
 **Repeat as needed**
 
-# Recap
-
-version   site type   pros                     cons
--------   ---------   -----------------------  ----------------------------
-birds 1   static      easy to conceptualize,   read only
-                      no JavaScript required
-birds 2   dynamic     read/write data          requires SQL knowledge
-                                               requires browser JavaScript
-                                               JavaScript is complex
-birds 3   dynamic     read/write data          requires SQL knowledge
-                      easy to conceptualize    requires knowledge of Pandoc
-                      no JavaScript required   requires knowledge of YAML
-
 # Newt stack weakness
 
 - Newt is **an experimental prototype** (June/July 2023)
+- Newt's generated SQL presumes customization by developer
 - Newt doesn't support file uploads
 - Newt doesn't eliminate learning curves, e.g. Postgres and SQL; Pandoc; using HTTP methods; YAML
-- Moving from JavaScript on the front end to Pandoc templates and birds.yaml does not guarantee less lines of code
 
 # Newt stack strengths 
 
@@ -193,37 +157,31 @@ birds 3   dynamic     read/write data          requires SQL knowledge
 
 - "Off the shelf" microservices can make application construction easier
 - Orchestrating the data pipeline in YAML seems reasonable
-- SQL turns some people off, extending Newt YAML gemerate SQL could mitigate that 
+- SQL turns some people off, Newt may help mitigate that
 - Pandoc templates are simple to learn
-- Newt stack does not enhibit HTML5 goodness available for front-end
+- Newt stack plays well with HTML5 approaches and best practices
 
 # An unexpected result
 
-> Newt stack should scale big!
+> Newt stack can scale big
 
-- Newt can be scaled wide
-- Pandoc server can be scaled wide
-- PostgREST can be scale wide
+- Newt maintains very little "state"
+- Pandoc server requires no "state"
+- PostgREST maintains very little "state
 - Postgres can be clustered
 
 # Next steps for Newt?
 
-1. Testing Solr/Elasticsearch as alternate JSON sources
-2. I am building staff facing applications this Summer (2023)
-3. I hope to move beyond my proof of concept in Winter (2023), Spring (2024)
+1. Enhance SQL generation
+2. Test with Solr/Elasticsearch as alternate JSON sources
+3. Build staff facing applications this Summer (2023)
+4. Hopefully move beyond my proof of concept in Winter (2023), Spring (2024)
 
 # Someday, maybe ...
 
 - Have Newt delegate file uploads to an S3 like service
-- Enhance the Newt's YAML to generate SQL from models
-- Explore integrating SQLite3 support
-
-# If Newt had a community ...
-
-- share SQL code
-- share Pandoc templates
-- share Newt YAML files
-- improve Newt
+- Explore integrating SQLite3 support in addition to Postgres+PostgREST
+- A Newt community to share YAML, SQL and Pandoc templates
 
 # Additional resources 
 

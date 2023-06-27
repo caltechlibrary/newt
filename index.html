@@ -40,7 +40,7 @@ message. If validation succeeds then the JSON source is contacted and
 the results (optionally) run through Pandoc via another HTTP call. The
 final results are returned to the requesting web browser (or
 service).</p>
-<p>An typical setup could be Newt, <a
+<p>A typical setup could be Newt, <a
 href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a> and <a
 href="https://pandoc.org">Pandoc</a>. An equally valid setup could be
@@ -48,15 +48,18 @@ Solr or Elasticsearch integrating with Pandoc. They key is realizing
 there is a JSON data source that can be interacted with via URL and HTTP
 method (e.g. GET, POST) and that we can then process the result via
 Pandoc running as a web service.</p>
-<p>Newt’s scope is limited to validating the requests, routing and
-returning content. It doesn’t know secrets. It doesn’t persist
-application state. This allows Newt instance(s) to be run singularly or
-in parallel as desired.</p>
-<p>Newt runs as a localhost service. In a production setting you’d run
-Newt behind a traditional web server like Apache 2 or NginX. The
-front-end web service can provide access control via basic auth or
+<p>Newt’s scope is limited to decribe a data model, validating the
+requests, routing and returning content. It doesn’t know secrets. It
+doesn’t persist application state. This allows Newt instance(s) to be
+run singularly or in parallel as desired.</p>
+<p>Newt runs exclusively as a localhost service. In a production setting
+you’d run Newt behind a traditional web server like Apache 2 or NginX.
+The front-end web service can provide access control via basic auth or
 single sign-on (e.g. Shibboleth). It plays nicely in a container
 environment or running straight up as a system service.</p>
+<p>Newt is configured via a YAML file. It includes the abilty to pass
+through specific environment variables for making requests to a JSON
+data source (e.g. credentials).</p>
 <h2 id="motivation">Motivation</h2>
 <p>My belief is that many web services used by Archives, Libraries and
 Museums can benefit from a simplified and consistent back-end. If the
@@ -86,12 +89,12 @@ Newt in a easily managed may.</p>
 <h2 id="newts-approach">Newt’s approach</h2>
 <p>From front-end to back-end</p>
 <ul>
-<li>A front end web server (e.g. Apache 2, NginX) can provide access
-control where appropriate (e.g. single sign-on via Shibboleth)</li>
-<li>Newt provides static file services but more importantly serves as a
-data router. It can validate and map a request to a JSON source, take
-those results then send them through Pandoc for transformation.</li>
-<li>JSON data source(s) provide the actual metadata management
+<li><p>A front end web server (e.g. Apache 2, NginX) can provide access
+control where appropriate (e.g. single sign-on via Shibboleth)</p></li>
+<li><p>Newt provides static file services but more importantly serves as
+a data router. It can validate and map a request to a JSON source, take
+those results then send them through Pandoc for transformation.</p></li>
+<li><p>JSON data source(s) provide the actual metadata management</p>
 <ul>
 <li>Postgres+PostgREST is an example of a JSON source integrated with a
 SQL server</li>
@@ -102,8 +105,8 @@ as a JSON sources</li>
 <li>CrossRef, DataCite, ORCID are examples of services that function as
 JSON sources</li>
 </ul></li>
-<li>Pandoc server provides a templating engine to transform data
-sources</li>
+<li><p>Pandoc server provides a templating engine to transform data
+sources</p></li>
 </ul>
 <p>All these can be treated as “off the shelf”. I.e. we’re not writing
 them from skratch but we’re accessing them via configuration. Even using
@@ -113,11 +116,9 @@ implemented using SQL and configured with YAML and Pandoc templates.</p>
 <h2 id="exploring-newt">Exploring Newt</h2>
 <p>Presented are three <a
 href="https://github.com/caltechlibrary/newt/tree/main/demos">demos</a>.
-The demo code can be rendered using one of three Bash scripts. The goal
-of the three demo is to show Pandoc, Postgres+PostgREST work
-individually and can work together with Newt. The bash scripts will
-generate all the files needed to run the demo. A “read me” for each demo
-describes how to run it.</p>
+The demo code can be rendered using one of three Bash scripts. The bash
+scripts will generate all the files needed to run the demo. A “read me”
+for each demo describes how to run it.</p>
 <dl>
 <dt><a
 href="https://github.com/caltechlibrary/newt/blob/main/demos/setup-birds1.bash">Birds
@@ -152,10 +153,9 @@ direct access to a host machine to update them.</p>
 <ul>
 <li>README.md, demo “read me” file</li>
 <li>birds.csv, our list of bird sightings</li>
-<li>build.sh, a shell script that uses Pandoc to render site (3
-lines)</li>
+<li>build.sh, a shell script that uses Pandoc to render site</li>
 <li>htdocs, the website document directory</li>
-<li>page.tmpl, a Pandoc page template using by build.sh (13 lines)</li>
+<li>page.tmpl, a Pandoc page template using by build.sh</li>
 </ul>
 <table>
 <thead>
