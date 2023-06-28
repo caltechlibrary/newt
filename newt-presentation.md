@@ -19,17 +19,15 @@ keywords: [ "code4lib", "microservice", "Postgres", "PostgREST", "Pandoc" ]
 url: "https://caltechlibrary.github.io/newt/presentation"
 ---
 
-# Scaling
+# The experiment
 
-scale
-: euphemism for **high availability, high demand**. Usage "google scale", "amazon scale". 
+> Build a web application using a scaling small approach
 
-> Scaling big is not the only way to scale.
+# My Scaling Small Approach
 
-# Scaling small
-
-- Pick a few microservices
-- System composition via configuration 
+- Minimize the moving parts
+- Minimize the cognative shifts
+- Leverage "off the shelf" software
 
 # Three abstractions
 
@@ -37,24 +35,23 @@ scale
 - A JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
-# Cognitive shifts
+# Limiting our cognitive shifts
 
 - Use templates to generate HTML (Pandoc)
-- Model in SQL (Postgres) get JSON (PostgREST)
+- Model data in SQL (Postgres) get JSON (PostgREST)
 - Orchestrate our microservice conversation with YAML (Newt)
 
 # Why SQL?
 
+> PostgreSQL+PostgREST, my code savings plan
+
 - Good at describing structured data
 - Supports queries, views, functions, triggers, events, ...
 - Allows us to model our data once
-- PostgREST gives us a JSON api based on the SQL we write
 
 > **Minimize the source Luke!**
 
-> PostgreSQL+PostgREST, a code savings plan
-
-# A scale small experiment
+# The scale small experiment
 
 Let's compare three implementations of a bird sighting website
 
@@ -163,12 +160,12 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 
 # An unexpected result
 
-> Newt stack can scale big
-
 - Newt maintains very little "state"
 - Pandoc server requires no "state"
 - PostgREST maintains very little "state
 - Postgres can be clustered
+
+> The Newt stack can scale big
 
 # Next steps for Newt?
 

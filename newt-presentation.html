@@ -21,21 +21,15 @@
 </nav>
 
 <section>
-<h1 id="scaling">Scaling</h1>
-<dl>
-<dt>scale</dt>
-<dd>
-euphemism for <strong>high availability, high demand</strong>. Usage
-“google scale”, “amazon scale”.
-</dd>
-</dl>
+<h1 id="the-experiment">The experiment</h1>
 <blockquote>
-<p>Scaling big is not the only way to scale.</p>
+<p>Build a web application using a scaling small approach</p>
 </blockquote>
-<h1 id="scaling-small">Scaling small</h1>
+<h1 id="my-scaling-small-approach">My Scaling Small Approach</h1>
 <ul>
-<li>Pick a few microservices</li>
-<li>System composition via configuration</li>
+<li>Minimize the moving parts</li>
+<li>Minimize the cognative shifts</li>
+<li>Leverage “off the shelf” software</li>
 </ul>
 <h1 id="three-abstractions">Three abstractions</h1>
 <ul>
@@ -46,7 +40,8 @@ href="https://postgrest.org">PostgREST</a></li>
 <li>A data router, form validator =&gt; <a
 href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
-<h1 id="cognitive-shifts">Cognitive shifts</h1>
+<h1 id="limiting-our-cognitive-shifts">Limiting our cognitive
+shifts</h1>
 <ul>
 <li>Use templates to generate HTML (Pandoc)</li>
 <li>Model in SQL (Postgres) get JSON (PostgREST)</li>
@@ -56,7 +51,7 @@ href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 <ul>
 <li>Good at describing structured data</li>
 <li>Supports queries, views, functions, triggers, events, …</li>
-<li>Allows us to model our data once</li>
+<li><strong>Allows us to model our data once</strong></li>
 <li>PostgREST gives us a JSON api based on the SQL we write</li>
 </ul>
 <blockquote>
@@ -65,7 +60,7 @@ href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 <blockquote>
 <p>PostgreSQL+PostgREST, a code savings plan</p>
 </blockquote>
-<h1 id="a-scale-small-experiment">A scale small experiment</h1>
+<h1 id="the-scale-small-experiment">The scale small experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 <h1 id="birds-1"><a href="../demos/make-birds1.bash"
 title="this is a static website">birds 1</a></h1>

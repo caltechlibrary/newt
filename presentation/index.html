@@ -44,24 +44,18 @@ class="email">rsdoiel@caltech.edu</a>
 <div class="slide" id="TOC">
 
 </div>
-<div id="scaling" class="slide section level1">
-<h1>Scaling</h1>
-<dl>
-<dt>scale</dt>
-<dd>
-euphemism for <strong>high availability, high demand</strong>. Usage
-“google scale”, “amazon scale”.
-</dd>
-</dl>
+<div id="the-experiment" class="slide section level1">
+<h1>The experiment</h1>
 <blockquote>
-<p>Scaling big is not the only way to scale.</p>
+<p>Build a web application using a scaling small approach</p>
 </blockquote>
 </div>
-<div id="scaling-small" class="slide section level1">
-<h1>Scaling small</h1>
+<div id="my-scaling-small-approach" class="slide section level1">
+<h1>My Scaling Small Approach</h1>
 <ul>
-<li>Pick a few microservices</li>
-<li>System composition via configuration</li>
+<li>Minimize the moving parts</li>
+<li>Minimize the cognative shifts</li>
+<li>Leverage “off the shelf” software</li>
 </ul>
 </div>
 <div id="three-abstractions" class="slide section level1">
@@ -75,31 +69,30 @@ href="https://postgrest.org">PostgREST</a></li>
 href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
 </div>
-<div id="cognitive-shifts" class="slide section level1">
-<h1>Cognitive shifts</h1>
+<div id="limiting-our-cognitive-shifts" class="slide section level1">
+<h1>Limiting our cognitive shifts</h1>
 <ul>
 <li>Use templates to generate HTML (Pandoc)</li>
-<li>Model in SQL (Postgres) get JSON (PostgREST)</li>
+<li>Model data in SQL (Postgres) get JSON (PostgREST)</li>
 <li>Orchestrate our microservice conversation with YAML (Newt)</li>
 </ul>
 </div>
 <div id="why-sql" class="slide section level1">
 <h1>Why SQL?</h1>
+<blockquote>
+<p>PostgreSQL+PostgREST, my code savings plan</p>
+</blockquote>
 <ul>
 <li>Good at describing structured data</li>
 <li>Supports queries, views, functions, triggers, events, …</li>
 <li>Allows us to model our data once</li>
-<li>PostgREST gives us a JSON api based on the SQL we write</li>
 </ul>
 <blockquote>
 <p><strong>Minimize the source Luke!</strong></p>
 </blockquote>
-<blockquote>
-<p>PostgreSQL+PostgREST, a code savings plan</p>
-</blockquote>
 </div>
-<div id="a-scale-small-experiment" class="slide section level1">
-<h1>A scale small experiment</h1>
+<div id="the-scale-small-experiment" class="slide section level1">
+<h1>The scale small experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 </div>
 <div id="birds-1" class="slide section level1">
@@ -331,15 +324,15 @@ easier</li>
 </div>
 <div id="an-unexpected-result" class="slide section level1">
 <h1>An unexpected result</h1>
-<blockquote>
-<p>Newt stack can scale big</p>
-</blockquote>
 <ul>
 <li>Newt maintains very little “state”</li>
 <li>Pandoc server requires no “state”</li>
 <li>PostgREST maintains very little “state</li>
 <li>Postgres can be clustered</li>
 </ul>
+<blockquote>
+<p>The Newt stack can scale big</p>
+</blockquote>
 </div>
 <div id="next-steps-for-newt" class="slide section level1">
 <h1>Next steps for Newt?</h1>
