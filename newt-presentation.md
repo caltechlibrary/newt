@@ -21,9 +21,10 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 # The experiment
 
-- Build a web application using a scaling small approach
-- Build a web application largely from off the shelf parts
-- Build a web application primarily from configuration
+- Building web applications
+    1. using a scale small approach
+    2. largely from off the shelf parts
+    3. composition through configuration
 
 # Three abstractions
 
@@ -31,19 +32,26 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 - A JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
-# Limiting our cognitive shifts
+# Three cognitive shifts
 
 - Use templates to generate HTML (Pandoc)
 - Model data in SQL (Postgres) get JSON (PostgREST)
 - Orchestrate our microservice conversation with YAML (Newt)
 
-# Why SQL?
+# Newt's microservice conversation
+
+1. web browser => Newt
+2. Newt => PostgREST
+3. Newt => Pandoc
+4. Newt => web browser
+
+# Why model data with SQL?
 
 > PostgreSQL+PostgREST, my code savings plan
 
 - Good at describing structured data
 - Supports queries, views, functions, triggers, events, ...
-- Allows us to model our data once
+- Allows us to model our data once, in one place
 
 > **Minimize the source Luke!**
 
@@ -53,7 +61,8 @@ Let's compare three implementations of a bird sighting website
 
 # [birds 1](../demos/make-birds1.bash "this is a static website")
 
-CSV file, Pandoc, 2 directories, 5 files, **72 total line count**, static site hosting. Included is a typical setup I would use for a static site project.
+CSV file, Pandoc, 2 directories, 5 files, **70 total line count**, static site
+(I've included my typical project setup with a README)
 
 Lines   Files
 ------  ---------------
@@ -63,16 +72,14 @@ Lines   Files
      7  page.tmpl
     32  htdocs/index.html
 
-See <https://github.com/caltechlibrary/newt/tree/main/demos/birds1>
-
 # [birds 2](../demos/make-birds2.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 total line count**, dynamic site requires hosting
+SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 total line count**, dynamic site
 
 Lines    Files
 ------   --------------
     29   [README.md](../demos/birds2/README.html)
-     4   birds.csv
+     4   birds.csv <-- from birds1
     34   setup.sql
     60   models.sql
     15   models_test.sql
@@ -80,37 +87,26 @@ Lines    Files
     24   htdocs/index.html
     63   htdocs/sightings.js
 
-See <https://github.com/caltechlibrary/newt/tree/main/demos/birds2>
-
 # [birds 3](../demos/make-birds3.bash "this website requires a machine")
 
-SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 277 total line count, dynamic site requires hosting, **no JavaScript required**
+SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, **225 total line count**, dynamic site
 
 Lines    Files
 ------   ---------------
     43   [README.md](../demos/birds3/README.html)
-     4   birds.csv
-    34   setup.sql
-    60   models.sql
-    15   models_test.sql
-     3   postgrest.conf
-    25   birds.yaml
+     4   birds.csv <-- from birds1, birds2
+    34   setup.sql <-- from birds2
+    60   models.sql <-- from birds2
+    15   models_test.sql <-- from birds2
+     3   postgrest.conf <-- from birds2
+    23   birds.yaml
     36   page.tmpl
      7   post_result.tmpl
 
-See <https://github.com/caltechlibrary/newt/tree/main/demos/birds3>
-
-# Newt's microservice conversation
-
-1. web browser => Newt
-2. Newt => PostgREST
-3. Newt => Pandoc
-4. Newt => web browser
 
 # Newt's YAML file
 
 - htdocs directory for static content (option)
-- environment variable used to access JSON sources (optional)
 - route definitions
   - (optional) variable definitions (path and form data)
   - request routing details (e.g. path, method)
@@ -122,9 +118,9 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 # Developer workflow
 
 1. Define routes and form validation in Newt YAML file
-2. Implement models in SQL and Postgres
+2. Implement models in SQL using psql
 3. Create/update Pandoc templates
-4. (Re)start PostgREST and Newt to (re)load models and routes
+4. (Re)start PostgREST and Newt to load models and routes
 5. Test with our web browser
 
 **Repeat as needed**
@@ -133,31 +129,32 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 
 - Newt is **an experimental prototype** (June/July 2023)
 - Newt doesn't support file uploads
-- Newt doesn't eliminate learning curves, e.g. Postgres and SQL; Pandoc; using HTTP methods; YAML
+- Newt doesn't eliminate learning curves
 
 # Newt stack strengths
 
-> A mature foundation
+> A very mature foundation
 
 - 20th Century tech
   - SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)
 - 21st Century tech
   - JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)
 
-# Experimental insights so far
+# Insights from experiment
 
 - "Off the shelf" microservices can make application construction easier
 - Orchestrating the data pipeline in YAML seems reasonable
-- SQL turns some people off, models could be bootstraped from Newt's YAML
-- Pandoc templates are simple to learn, need some tutorials about running Pandoc as a service
+- SQL turns some people off
+    - models could be bootstraped from Newt's YAML using the form/path validation DSL
+- Pandoc templates are simple to learn, should include examples
 - Newt stack plays well with HTML5 approaches and best practices
-- And there was an unexpected result ...
+- I realized one unexpected result ...
 
-# An unexpected result
+# The unexpected result
 
 - Newt maintains very little "state"
-- Pandoc server requires no "state"
 - PostgREST maintains very little "state"
+- Pandoc server requires no "state"
 - Postgres can be clustered
 
 > The Newt stack can scale big
@@ -169,10 +166,10 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 3. Build staff facing applications this Summer (2023)
 4. Hopefully move beyond my proof of concept in Winter (2023), Spring (2024)
 
-# Someday, maybe ...
+# Newt's someday, maybe ...
 
-- Have Newt delegate file uploads to an S3 like service
-- Explore integrating SQLite3 support in addition to Postgres+PostgREST
+- Have Newt delegate file uploads to an S3 like service (minio via a file stream?)
+- Explore integrating SQLite3 support
 - A Newt community to share YAML, SQL and Pandoc templates
 
 # Related resources
@@ -181,7 +178,7 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 - Postgres <https://postgres.org> + PostgREST <https://postgrest.org>
   - PostgREST Community Tutorials <https://postgrest.org/en/stable/ecosystem.html>
 - Compiling Pandoc or PostgREST requires Haskell
-  - Install Haskell GHCup <https://https://www.haskell.org/ghcup/>
+  - Install Haskell GHCup <https://www.haskell.org/ghcup/>
 
 # Thank you!
 

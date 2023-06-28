@@ -53,9 +53,9 @@
 	/* Now we need to update our listing! */
 	list_elem.innerHTML = '';
 	setTimeout(() => {
-  		console.log("Delayed for 10 second.");
+  		console.log("Delayed before refresh.");
   		getData(list_elem, list_url, updateList);
-	}, "10 second");
+	}, 500);
     evt.preventDefault();
   });
 

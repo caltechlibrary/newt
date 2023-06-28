@@ -51,7 +51,7 @@ EOT
 # Generate our SQL PostgREST access
 cat <<EOT>birds2/setup.sql
 --
--- Following I would normally not include in a project SQL codebase.
+-- Following would not normally be include in a project's Git repository.
 -- It contains a secret.  What I would recommend is writing a short
 -- shell script that could generate this in a file, use that, then
 -- checking in the shell script to version control since the secret
@@ -76,9 +76,9 @@ DROP ROLE IF EXISTS birds_anonymous;
 CREATE ROLE birds_anonymous nologin;
 
 --
--- NOTE: The "CREATE ROLL" line is the problem line for
+-- NOTE: The "CREATE ROLE" line is the problem line for
 -- checking into your source control system. It contains a secret!
--- **DO NOT** store secrets in your SQL if you can avoid it!
+-- **DO NOT** store secrets in your in your repository if you can avoid it!
 --
 DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
@@ -136,7 +136,7 @@ RETURNS bool LANGUAGE SQL AS \$\$
 --
 
 -- Since our Postgres ROLE and SCHEMA exist and our models may change how
--- we want PostgREST to expose our data via JSON API we GRANT or 
+-- we want PostgREST to expose our data via JSON API we GRANT or
 -- revoke role permissions here.
 -- with our model.
 GRANT USAGE  ON SCHEMA birds      TO birds_anonymous;
@@ -164,8 +164,8 @@ cat <<EOT >birds2/models_test.sql
 -- Now import our CSV file of birds.csv
 \\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
 
--- Make sure the data loaded, query with a select statement.
-SELECT * FROM birds.sighting;
+-- Make sure the data loaded, query with a view statement.
+SELECT * FROM birds.bird_view;
 
 EOT
 
@@ -269,9 +269,9 @@ cat <<EOT>birds2/htdocs/sightings.js
 	/* Now we need to update our listing! */
 	list_elem.innerHTML = '';
 	setTimeout(() => {
-  		console.log("Delayed for 10 second.");
+  		console.log("Delayed before refresh.");
   		getData(list_elem, list_url, updateList);
-	}, "10 second");
+	}, 500);
     evt.preventDefault();
   });
 

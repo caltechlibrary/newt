@@ -10,6 +10,6 @@
 -- Now import our CSV file of birds.csv
 \copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
 
--- Make sure the data loaded, query with a select statement.
-SELECT * FROM birds.sighting;
+-- Make sure the data loaded, query with a view statement.
+SELECT * FROM birds.bird_view;
 

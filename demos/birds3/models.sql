@@ -46,7 +46,7 @@ $$;
 --
 
 -- Since our Postgres ROLE and SCHEMA exist and our models may change how
--- we want PostgREST to expose our data via JSON API we GRANT or 
+-- we want PostgREST to expose our data via JSON API we GRANT or
 -- revoke role permissions here.
 -- with our model.
 GRANT USAGE  ON SCHEMA birds      TO birds_anonymous;

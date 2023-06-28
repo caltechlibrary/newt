@@ -47,9 +47,12 @@ class="email">rsdoiel@caltech.edu</a>
 <div id="the-experiment" class="slide section level1">
 <h1>The experiment</h1>
 <ul>
-<li>Build a web application using a scaling small approach</li>
-<li>Build a web application largely from off the shelf parts</li>
-<li>Build a web application primarily from configuration</li>
+<li>Building web applications
+<ol style="list-style-type: decimal">
+<li>using a scale small approach</li>
+<li>largely from off the shelf parts</li>
+<li>composition through configuration</li>
+</ol></li>
 </ul>
 </div>
 <div id="three-abstractions" class="slide section level1">
@@ -63,23 +66,32 @@ href="https://postgrest.org">PostgREST</a></li>
 href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
 </div>
-<div id="limiting-our-cognitive-shifts" class="slide section level1">
-<h1>Limiting our cognitive shifts</h1>
+<div id="three-cognitive-shifts" class="slide section level1">
+<h1>Three cognitive shifts</h1>
 <ul>
 <li>Use templates to generate HTML (Pandoc)</li>
 <li>Model data in SQL (Postgres) get JSON (PostgREST)</li>
 <li>Orchestrate our microservice conversation with YAML (Newt)</li>
 </ul>
 </div>
-<div id="why-sql" class="slide section level1">
-<h1>Why SQL?</h1>
+<div id="newts-microservice-conversation" class="slide section level1">
+<h1>Newt’s microservice conversation</h1>
+<ol style="list-style-type: decimal">
+<li>web browser =&gt; Newt</li>
+<li>Newt =&gt; PostgREST</li>
+<li>Newt =&gt; Pandoc</li>
+<li>Newt =&gt; web browser</li>
+</ol>
+</div>
+<div id="why-model-data-with-sql" class="slide section level1">
+<h1>Why model data with SQL?</h1>
 <blockquote>
 <p>PostgreSQL+PostgREST, my code savings plan</p>
 </blockquote>
 <ul>
 <li>Good at describing structured data</li>
 <li>Supports queries, views, functions, triggers, events, …</li>
-<li>Allows us to model our data once</li>
+<li>Allows us to model our data once, in one place</li>
 </ul>
 <blockquote>
 <p><strong>Minimize the source Luke!</strong></p>
@@ -92,9 +104,9 @@ href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 <div id="birds-1" class="slide section level1">
 <h1><a href="../demos/make-birds1.bash"
 title="this is a static website">birds 1</a></h1>
-<p>CSV file, Pandoc, 2 directories, 5 files, <strong>72 total line
-count</strong>, static site hosting. Included is a typical setup I would
-use for a static site project.</p>
+<p>CSV file, Pandoc, 2 directories, 5 files, <strong>70 total line
+count</strong>, static site (I’ve included my typical project setup with
+a README)</p>
 <table>
 <thead>
 <tr class="header">
@@ -126,16 +138,12 @@ href="../demos/birds1/README.html">README.md</a></td>
 </tr>
 </tbody>
 </table>
-<p>See <a
-href="https://github.com/caltechlibrary/newt/tree/main/demos/birds1"
-class="uri">https://github.com/caltechlibrary/newt/tree/main/demos/birds1</a></p>
 </div>
 <div id="birds-2" class="slide section level1">
 <h1><a href="../demos/make-birds2.bash"
 title="this website requires a machine">birds 2</a></h1>
 <p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8
-files, <strong>232 total line count</strong>, dynamic site requires
-hosting</p>
+files, <strong>232 total line count</strong>, dynamic site</p>
 <table>
 <thead>
 <tr class="header">
@@ -151,7 +159,7 @@ href="../demos/birds2/README.html">README.md</a></td>
 </tr>
 <tr class="even">
 <td align="left">4</td>
-<td align="left">birds.csv</td>
+<td align="left">birds.csv &lt;– from birds1</td>
 </tr>
 <tr class="odd">
 <td align="left">34</td>
@@ -179,16 +187,12 @@ href="../demos/birds2/README.html">README.md</a></td>
 </tr>
 </tbody>
 </table>
-<p>See <a
-href="https://github.com/caltechlibrary/newt/tree/main/demos/birds2"
-class="uri">https://github.com/caltechlibrary/newt/tree/main/demos/birds2</a></p>
 </div>
 <div id="birds-3" class="slide section level1">
 <h1><a href="../demos/make-birds3.bash"
 title="this website requires a machine">birds 3</a></h1>
-<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, 277
-total line count, dynamic site requires hosting, <strong>no JavaScript
-required</strong></p>
+<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files,
+<strong>225 total line count</strong>, dynamic site</p>
 <table>
 <thead>
 <tr class="header">
@@ -204,26 +208,26 @@ href="../demos/birds3/README.html">README.md</a></td>
 </tr>
 <tr class="even">
 <td align="left">4</td>
-<td align="left">birds.csv</td>
+<td align="left">birds.csv &lt;– from birds1, birds2</td>
 </tr>
 <tr class="odd">
 <td align="left">34</td>
-<td align="left">setup.sql</td>
+<td align="left">setup.sql &lt;– from birds2</td>
 </tr>
 <tr class="even">
 <td align="left">60</td>
-<td align="left">models.sql</td>
+<td align="left">models.sql &lt;– from birds2</td>
 </tr>
 <tr class="odd">
 <td align="left">15</td>
-<td align="left">models_test.sql</td>
+<td align="left">models_test.sql &lt;– from birds2</td>
 </tr>
 <tr class="even">
 <td align="left">3</td>
-<td align="left">postgrest.conf</td>
+<td align="left">postgrest.conf &lt;– from birds2</td>
 </tr>
 <tr class="odd">
-<td align="left">25</td>
+<td align="left">23</td>
 <td align="left">birds.yaml</td>
 </tr>
 <tr class="even">
@@ -236,24 +240,11 @@ href="../demos/birds3/README.html">README.md</a></td>
 </tr>
 </tbody>
 </table>
-<p>See <a
-href="https://github.com/caltechlibrary/newt/tree/main/demos/birds3"
-class="uri">https://github.com/caltechlibrary/newt/tree/main/demos/birds3</a></p>
-</div>
-<div id="newts-microservice-conversation" class="slide section level1">
-<h1>Newt’s microservice conversation</h1>
-<ol style="list-style-type: decimal">
-<li>web browser =&gt; Newt</li>
-<li>Newt =&gt; PostgREST</li>
-<li>Newt =&gt; Pandoc</li>
-<li>Newt =&gt; web browser</li>
-</ol>
 </div>
 <div id="newts-yaml-file" class="slide section level1">
 <h1>Newt’s YAML file</h1>
 <ul>
 <li>htdocs directory for static content (option)</li>
-<li>environment variable used to access JSON sources (optional)</li>
 <li>route definitions
 <ul>
 <li>(optional) variable definitions (path and form data)</li>
@@ -270,9 +261,9 @@ class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/bir
 <h1>Developer workflow</h1>
 <ol style="list-style-type: decimal">
 <li>Define routes and form validation in Newt YAML file</li>
-<li>Implement models in SQL and Postgres</li>
+<li>Implement models in SQL using psql</li>
 <li>Create/update Pandoc templates</li>
-<li>(Re)start PostgREST and Newt to (re)load models and routes</li>
+<li>(Re)start PostgREST and Newt to load models and routes</li>
 <li>Test with our web browser</li>
 </ol>
 <p><strong>Repeat as needed</strong></p>
@@ -283,14 +274,13 @@ class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/bir
 <li>Newt is <strong>an experimental prototype</strong> (June/July
 2023)</li>
 <li>Newt doesn’t support file uploads</li>
-<li>Newt doesn’t eliminate learning curves, e.g. Postgres and SQL;
-Pandoc; using HTTP methods; YAML</li>
+<li>Newt doesn’t eliminate learning curves</li>
 </ul>
 </div>
 <div id="newt-stack-strengths" class="slide section level1">
 <h1>Newt stack strengths</h1>
 <blockquote>
-<p>A mature foundation</p>
+<p>A very mature foundation</p>
 </blockquote>
 <ul>
 <li>20th Century tech
@@ -303,26 +293,28 @@ Pandoc; using HTTP methods; YAML</li>
 </ul></li>
 </ul>
 </div>
-<div id="experimental-insights-so-far" class="slide section level1">
-<h1>Experimental insights so far</h1>
+<div id="insights-from-experiment" class="slide section level1">
+<h1>Insights from experiment</h1>
 <ul>
 <li>“Off the shelf” microservices can make application construction
 easier</li>
 <li>Orchestrating the data pipeline in YAML seems reasonable</li>
-<li>SQL turns some people off, models could be bootstraped from Newt’s
-YAML</li>
-<li>Pandoc templates are simple to learn, need some tutorials about
-running Pandoc as a service</li>
+<li>SQL turns some people off
+<ul>
+<li>models could be bootstraped from Newt’s YAML using the form/path
+validation DSL</li>
+</ul></li>
+<li>Pandoc templates are simple to learn, should include examples</li>
 <li>Newt stack plays well with HTML5 approaches and best practices</li>
-<li>And there was an unexpected result …</li>
+<li>I realized one unexpected result …</li>
 </ul>
 </div>
-<div id="an-unexpected-result" class="slide section level1">
-<h1>An unexpected result</h1>
+<div id="the-unexpected-result" class="slide section level1">
+<h1>The unexpected result</h1>
 <ul>
 <li>Newt maintains very little “state”</li>
-<li>Pandoc server requires no “state”</li>
 <li>PostgREST maintains very little “state”</li>
+<li>Pandoc server requires no “state”</li>
 <li>Postgres can be clustered</li>
 </ul>
 <blockquote>
@@ -339,12 +331,12 @@ running Pandoc as a service</li>
 (2024)</li>
 </ol>
 </div>
-<div id="someday-maybe" class="slide section level1">
-<h1>Someday, maybe …</h1>
+<div id="newts-someday-maybe" class="slide section level1">
+<h1>Newt’s someday, maybe …</h1>
 <ul>
-<li>Have Newt delegate file uploads to an S3 like service</li>
-<li>Explore integrating SQLite3 support in addition to
-Postgres+PostgREST</li>
+<li>Have Newt delegate file uploads to an S3 like service (minio via a
+file stream?)</li>
+<li>Explore integrating SQLite3 support</li>
 <li>A Newt community to share YAML, SQL and Pandoc templates</li>
 </ul>
 </div>
@@ -363,9 +355,8 @@ class="uri">https://postgrest.org/en/stable/ecosystem.html</a></li>
 </ul></li>
 <li>Compiling Pandoc or PostgREST requires Haskell
 <ul>
-<li>Install Haskell GHCup <a
-href="https://https://www.haskell.org/ghcup/"
-class="uri">https://https://www.haskell.org/ghcup/</a></li>
+<li>Install Haskell GHCup <a href="https://www.haskell.org/ghcup/"
+class="uri">https://www.haskell.org/ghcup/</a></li>
 </ul></li>
 </ul>
 </div>

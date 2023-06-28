@@ -1,12 +1,10 @@
-env: [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
-port: 8004
-htdocs: htdocs
-routes: 
+port: 8003
+routes:
   - req_path: /
     req_method: GET
     api_content_type: application/json
     api_method: GET
-    api_url: http://localhost:3000/sighting
+    api_url: http://localhost:3000/bird_view
     pandoc_template: page.tmpl
     res_headers: { "content-type": "text/html" }
   - var: { "bird": "String", "place": "String", "sighted": "Date" }
@@ -14,7 +12,7 @@ routes:
     req_method: POST
     api_content_type: application/json
     api_method: POST
-    api_url: http://localhost:3000/sighting
+    api_url: http://localhost:3000/rpc/record_bird
     pandoc_template: post_result.tmpl
     res_headers: { "content-type": "text/html" }
   - req_path: /bird_views

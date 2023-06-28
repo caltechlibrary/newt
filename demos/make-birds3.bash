@@ -18,7 +18,7 @@ fi
 # Generate a README
 cat <<EOT >birds3/README.md
 
-# Birds 3 demo 
+# Birds 3 demo
 
 > Newt, Pandoc and Postgres+PostgREST
 
@@ -65,7 +65,7 @@ EOT
 # Generate our SQL PostgREST access
 cat <<EOT>birds3/setup.sql
 --
--- Following I would normally not include in a project SQL codebase.
+-- Following would not normally be include in a project's Git repository.
 -- It contains a secret.  What I would recommend is writing a short
 -- shell script that could generate this in a file, use that, then
 -- checking in the shell script to version control since the secret
@@ -90,7 +90,7 @@ DROP ROLE IF EXISTS birds_anonymous;
 CREATE ROLE birds_anonymous nologin;
 
 --
--- NOTE: The "CREATE ROLL" line is the problem line for
+-- NOTE: The "CREATE ROLE" line is the problem line for
 -- checking into your source control system. It contains a secret!
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
@@ -150,7 +150,7 @@ RETURNS bool LANGUAGE SQL AS \$\$
 --
 
 -- Since our Postgres ROLE and SCHEMA exist and our models may change how
--- we want PostgREST to expose our data via JSON API we GRANT or 
+-- we want PostgREST to expose our data via JSON API we GRANT or
 -- revoke role permissions here.
 -- with our model.
 GRANT USAGE  ON SCHEMA birds      TO birds_anonymous;
@@ -178,8 +178,8 @@ cat <<EOT >birds3/models_test.sql
 -- Now import our CSV file of birds.csv
 \\copy birds.sighting from 'birds.csv' with (FORMAT CSV, HEADER);
 
--- Make sure the data loaded, query with a select statement.
-SELECT * FROM birds.sighting;
+-- Make sure the data loaded, query with a view statement.
+SELECT * FROM birds.bird_view;
 
 EOT
 
@@ -202,15 +202,13 @@ EOT
 
 # Generate birds.yaml
 cat <<EOT >birds3/birds.yaml
-env: [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
-port: 8004
-htdocs: htdocs
-routes: 
+port: 8003
+routes:
   - req_path: /
     req_method: GET
     api_content_type: application/json
     api_method: GET
-    api_url: http://localhost:3000/sighting
+    api_url: http://localhost:3000/bird_view
     pandoc_template: page.tmpl
     res_headers: { "content-type": "text/html" }
   - var: { "bird": "String", "place": "String", "sighted": "Date" }
@@ -218,7 +216,7 @@ routes:
     req_method: POST
     api_content_type: application/json
     api_method: POST
-    api_url: http://localhost:3000/sighting
+    api_url: http://localhost:3000/rpc/record_bird
     pandoc_template: post_result.tmpl
     res_headers: { "content-type": "text/html" }
   - req_path: /bird_views
@@ -248,7 +246,7 @@ cat <<EOT >birds3/page.tmpl
 		</tbody>
 	</table>
 	<p>
-    
+
     <div id="bird-list"></div>
     <h2>Add a bird</h2>
     <div><form name="add_bird" method="POST" action="/">

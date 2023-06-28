@@ -1,26 +1,16 @@
 
-# Newt as data router, web forms
+# Newt as data router, form validator
 
-Often middleware is written to handle URL request paths as [routes](newt-router.md). The other common attribute in a route handle function is validating inputs. This is particularly true with web form submission. 
+Often middleware is written to handle URL request based on the path element of the URL. Sometimes this is referred to as a "route" or "end point". Newt also supports the concept of [routes](newt-router.md) but carries it further with the concept of a request route being mapped to a JSON data source and continuing processing via Pandoc running in server mode. In custom middleware a common first order of business in a route function is to validate inputs.  Newt also includes this. It does this via annotations in the YAML configuration in the routes, var attribute. A small Model [DSL](https://en.wikipedia.org/wiki/Domain-specific_language "Domain Specific Language") is used to define a varaibles type. The [type definition](model-dsl.md "Model DSL") is what Newt uses to validate the inputs.
 
-Newt's [Route DSL](route-dsl.md) does this partially by validating the path. It doesn't do that for URL query paramaters. Since Route DSL does establish a syntax for a simple markup of variable names and their types it could be leverage to also describe the contents of a GET or POST request. This would effectively allow us to validate form input by it's type much like we do with the Route DSL. Since webform don't support array or object input (without resorting to JavaScript) a simple web form could be seen as a map between input element's attribute name and a type like those found in Route DSL.
-
-Here's an example of a our birds web form validation
-
-~~~
-{
-    "bird" : "String",
-    "place": "String",
-    "sighted": "Datestamp"
-}
-~~~
-
-If we use YAML to express the JSON then we'd get soemthing like
+Here's an example of a our birds web form validation in the "var" block
+of the route definition.
 
 ~~~
-bird: String
-place: String
-sighted: String
+var:
+  bird: String
+  place: Text
+  sighted: Date
 ~~~
 
 This would allow validating a simple webform like 
@@ -43,7 +33,8 @@ This would allow validating a simple webform like
 </form>
 ~~~
 
-## Use case: simple web forms and online magazine publisher
+
+## Use case: an article submittion form
 
 In this use case we'll add support to our birds demo for a local birder magazine. The idea is to support writups or articles from the local birding group. Something between a blog, magazine or news letter.
 
@@ -68,6 +59,29 @@ CREATE TABLE zine (
 );
 ~~~
 
-When adding an article we need a title, byline, article copy. When editing an article we access it through the article_id genrated on a SQL INSERT. To publish an article we need to set approved to true, set a publication date, volume number, issue and article number.
+The var attribute to validate the page for updating the zine table would look something like this.
+
+~~~
+var:
+  article_id: "integer*",
+  title: "string",
+  title_slug: "string",
+  byline: "string",
+  article_copy: "markdown",
+  created: "timestamp now",
+  updated: "timestamp now",
+  approved: "boolean",
+  published: "date",
+  volume: "integer",
+  issue: "integer",
+  article_no: "integer"
+~~~
+
+When adding an article we need a title, byline, article copy. When editing an article we access it through the article_id genrated on a SQL INSERT. To publish an article we need to set approved to true, set a publication date, volume number, issue and article number within the issue.  
+
+The model dsl closely aligns with the SQL but uses the terminology common to main stream programming jargon that has evolved since the original invention of SQL in the 1970s. 
+
+There are three variables defined with more than a single word. The first one is our article_id. There is an asterisk at the end of "integer". The asterisk indicates this will be the key used to retrieve this model values from the JSON API.  It also allows Newt to easily map our model description from JSON or YAML into Postgres dialect of SQL.  Similarly our two timestamps have a modifier of "now"  This is used when mapping to Posgres SQL timestamps with a default of now.  It can also be used in the route definition to inject a new "now" value like with the updated timestamp without the need for that to be expressed directly in the web form via JavaScript.
+
 
 

@@ -1,5 +1,5 @@
 
-# Birds 3 demo 
+# Birds 3 demo
 
 > Newt, Pandoc and Postgres+PostgREST
 

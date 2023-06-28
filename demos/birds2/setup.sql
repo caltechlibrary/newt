@@ -1,5 +1,5 @@
 --
--- Following I would normally not include in a project SQL codebase.
+-- Following would not normally be include in a project's Git repository.
 -- It contains a secret.  What I would recommend is writing a short
 -- shell script that could generate this in a file, use that, then
 -- checking in the shell script to version control since the secret
@@ -24,9 +24,9 @@ DROP ROLE IF EXISTS birds_anonymous;
 CREATE ROLE birds_anonymous nologin;
 
 --
--- NOTE: The "CREATE ROLL" line is the problem line for
+-- NOTE: The "CREATE ROLE" line is the problem line for
 -- checking into your source control system. It contains a secret!
--- **DO NOT** store secrets in your SQL if you can avoid it!
+-- **DO NOT** store secrets in your in your repository if you can avoid it!
 --
 DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD 'my_secret_password';
