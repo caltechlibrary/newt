@@ -6,7 +6,7 @@
 -- would not be stored in the file!
 --
 
--- Make sure we are in the birds database
+-- Make sure we are in the birds namespace/database
 \c birds
 
 --
