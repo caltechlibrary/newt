@@ -21,13 +21,9 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 # The experiment
 
-> Build a web application using a scaling small approach
-
-# My Scaling Small Approach
-
-- Minimize the moving parts
-- Minimize the cognative shifts
-- Leverage "off the shelf" software
+- Build a web application using a scaling small approach
+- Build a web application largely from off the shelf parts
+- Build a web application primarily from configuration
 
 # Three abstractions
 
@@ -51,7 +47,7 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 > **Minimize the source Luke!**
 
-# The scale small experiment
+# My scale small experiment
 
 Let's compare three implementations of a bird sighting website
 
@@ -115,7 +111,6 @@ See <https://github.com/caltechlibrary/newt/tree/main/demos/birds3>
 
 - htdocs directory for static content (option)
 - environment variable used to access JSON sources (optional)
-- models (optional, used to bootstrap SQL code)
 - route definitions
   - (optional) variable definitions (path and form data)
   - request routing details (e.g. path, method)
@@ -126,8 +121,8 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 
 # Developer workflow
 
-1. Define models/routes/form validation in Newt YAML file
-2. Enhance models in SQL and Postgres
+1. Define routes and form validation in Newt YAML file
+2. Implement models in SQL and Postgres
 3. Create/update Pandoc templates
 4. (Re)start PostgREST and Newt to (re)load models and routes
 5. Test with our web browser
@@ -137,11 +132,10 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 # Newt stack weakness
 
 - Newt is **an experimental prototype** (June/July 2023)
-- Newt's generated SQL presumes customization by developer
 - Newt doesn't support file uploads
 - Newt doesn't eliminate learning curves, e.g. Postgres and SQL; Pandoc; using HTTP methods; YAML
 
-# Newt stack strengths 
+# Newt stack strengths
 
 > A mature foundation
 
@@ -154,22 +148,23 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 
 - "Off the shelf" microservices can make application construction easier
 - Orchestrating the data pipeline in YAML seems reasonable
-- SQL turns some people off, Newt may help mitigate that
-- Pandoc templates are simple to learn
+- SQL turns some people off, models could be bootstraped from Newt's YAML
+- Pandoc templates are simple to learn, need some tutorials about running Pandoc as a service
 - Newt stack plays well with HTML5 approaches and best practices
+- And there was an unexpected result ...
 
 # An unexpected result
 
 - Newt maintains very little "state"
 - Pandoc server requires no "state"
-- PostgREST maintains very little "state
+- PostgREST maintains very little "state"
 - Postgres can be clustered
 
 > The Newt stack can scale big
 
 # Next steps for Newt?
 
-1. Enhance SQL generation
+1. Explore SQL generation from Newt's YAML
 2. Test with Solr/Elasticsearch as alternate JSON sources
 3. Build staff facing applications this Summer (2023)
 4. Hopefully move beyond my proof of concept in Winter (2023), Spring (2024)
@@ -180,7 +175,7 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 - Explore integrating SQLite3 support in addition to Postgres+PostgREST
 - A Newt community to share YAML, SQL and Pandoc templates
 
-# Additional resources 
+# Related resources
 
 - Newt <https://github.com/caltechlibrary/newt>
 - Postgres <https://postgres.org> + PostgREST <https://postgrest.org>

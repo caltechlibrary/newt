@@ -22,14 +22,10 @@
 
 <section>
 <h1 id="the-experiment">The experiment</h1>
-<blockquote>
-<p>Build a web application using a scaling small approach</p>
-</blockquote>
-<h1 id="my-scaling-small-approach">My Scaling Small Approach</h1>
 <ul>
-<li>Minimize the moving parts</li>
-<li>Minimize the cognative shifts</li>
-<li>Leverage “off the shelf” software</li>
+<li>Build a web application using a scaling small approach</li>
+<li>Build a web application largely from off the shelf parts</li>
+<li>Build a web application primarily from configuration</li>
 </ul>
 <h1 id="three-abstractions">Three abstractions</h1>
 <ul>
@@ -59,7 +55,7 @@ shifts</h1>
 <blockquote>
 <p><strong>Minimize the source Luke!</strong></p>
 </blockquote>
-<h1 id="the-scale-small-experiment">The scale small experiment</h1>
+<h1 id="my-scale-small-experiment">My scale small experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 <h1 id="birds-1"><a href="../demos/make-birds1.bash"
 title="this is a static website">birds 1</a></h1>
@@ -218,7 +214,6 @@ conversation</h1>
 <ul>
 <li>htdocs directory for static content (option)</li>
 <li>environment variable used to access JSON sources (optional)</li>
-<li>models (optional, used to bootstrap SQL code)</li>
 <li>route definitions
 <ul>
 <li>(optional) variable definitions (path and form data)</li>
@@ -232,8 +227,8 @@ href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bi
 class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml</a></p>
 <h1 id="developer-workflow">Developer workflow</h1>
 <ol type="1">
-<li>Define models/routes/form validation in Newt YAML file</li>
-<li>Enhance models in SQL and Postgres</li>
+<li>Define routes and form validation in Newt YAML file</li>
+<li>Implement models in SQL and Postgres</li>
 <li>Create/update Pandoc templates</li>
 <li>(Re)start PostgREST and Newt to (re)load models and routes</li>
 <li>Test with our web browser</li>
@@ -243,7 +238,6 @@ class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/bir
 <ul>
 <li>Newt is <strong>an experimental prototype</strong> (June/July
 2023)</li>
-<li>Newt’s generated SQL presumes customization by developer</li>
 <li>Newt doesn’t support file uploads</li>
 <li>Newt doesn’t eliminate learning curves, e.g. Postgres and SQL;
 Pandoc; using HTTP methods; YAML</li>
@@ -267,15 +261,18 @@ Pandoc; using HTTP methods; YAML</li>
 <li>“Off the shelf” microservices can make application construction
 easier</li>
 <li>Orchestrating the data pipeline in YAML seems reasonable</li>
-<li>SQL turns some people off, Newt may help mitigate that</li>
-<li>Pandoc templates are simple to learn</li>
+<li>SQL turns some people off, models could be bootstraped from Newt’s
+YAML</li>
+<li>Pandoc templates are simple to learn, need some tutorials about
+running Pandoc as a service</li>
 <li>Newt stack plays well with HTML5 approaches and best practices</li>
+<li>And there was an unexpected result …</li>
 </ul>
 <h1 id="an-unexpected-result">An unexpected result</h1>
 <ul>
 <li>Newt maintains very little “state”</li>
 <li>Pandoc server requires no “state”</li>
-<li>PostgREST maintains very little “state</li>
+<li>PostgREST maintains very little “state”</li>
 <li>Postgres can be clustered</li>
 </ul>
 <blockquote>
@@ -283,7 +280,7 @@ easier</li>
 </blockquote>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
 <ol type="1">
-<li>Enhance SQL generation</li>
+<li>Explore SQL generation from Newt’s YAML</li>
 <li>Test with Solr/Elasticsearch as alternate JSON sources</li>
 <li>Build staff facing applications this Summer (2023)</li>
 <li>Hopefully move beyond my proof of concept in Winter (2023), Spring
@@ -296,7 +293,7 @@ easier</li>
 Postgres+PostgREST</li>
 <li>A Newt community to share YAML, SQL and Pandoc templates</li>
 </ul>
-<h1 id="additional-resources">Additional resources</h1>
+<h1 id="related-resources">Related resources</h1>
 <ul>
 <li>Newt <a href="https://github.com/caltechlibrary/newt"
 class="uri">https://github.com/caltechlibrary/newt</a></li>
