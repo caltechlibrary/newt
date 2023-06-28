@@ -44,21 +44,20 @@ href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 shifts</h1>
 <ul>
 <li>Use templates to generate HTML (Pandoc)</li>
-<li>Model in SQL (Postgres) get JSON (PostgREST)</li>
+<li>Model data in SQL (Postgres) get JSON (PostgREST)</li>
 <li>Orchestrate our microservice conversation with YAML (Newt)</li>
 </ul>
 <h1 id="why-sql">Why SQL?</h1>
+<blockquote>
+<p>PostgreSQL+PostgREST, my code savings plan</p>
+</blockquote>
 <ul>
 <li>Good at describing structured data</li>
 <li>Supports queries, views, functions, triggers, events, …</li>
-<li><strong>Allows us to model our data once</strong></li>
-<li>PostgREST gives us a JSON api based on the SQL we write</li>
+<li>Allows us to model our data once</li>
 </ul>
 <blockquote>
 <p><strong>Minimize the source Luke!</strong></p>
-</blockquote>
-<blockquote>
-<p>PostgreSQL+PostgREST, a code savings plan</p>
 </blockquote>
 <h1 id="the-scale-small-experiment">The scale small experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
@@ -273,15 +272,15 @@ easier</li>
 <li>Newt stack plays well with HTML5 approaches and best practices</li>
 </ul>
 <h1 id="an-unexpected-result">An unexpected result</h1>
-<blockquote>
-<p>Newt stack can scale big</p>
-</blockquote>
 <ul>
 <li>Newt maintains very little “state”</li>
 <li>Pandoc server requires no “state”</li>
 <li>PostgREST maintains very little “state</li>
 <li>Postgres can be clustered</li>
 </ul>
+<blockquote>
+<p>The Newt stack can scale big</p>
+</blockquote>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
 <ol type="1">
 <li>Enhance SQL generation</li>
