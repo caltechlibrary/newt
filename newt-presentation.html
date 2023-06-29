@@ -22,45 +22,47 @@
 
 <section>
 <h1 id="the-experiment">The experiment</h1>
-<p>Web applications for Libraries, Archives and Museums</p>
-<ol type="1">
-<li>using a scale small approach (limit the moving parts)</li>
-<li>largely from off the shelf parts (avoid writing more code)</li>
-<li>system composition through configuration</li>
-</ol>
-<h1 id="three-abstractions-three-cognative-shifts">Three abstractions,
-three cognative shifts</h1>
+<p>How do we make building web applications for Libraries, Archives and
+Museums simpler?</p>
 <ul>
-<li><p>A JSON source for managing data =&gt; <a
+<li>use a scale small approach (limit the moving parts)</li>
+<li>build with off the shelf parts (avoid writing more code)</li>
+<li>define application through configuration</li>
+</ul>
+<h1 id="three-abstractions-three-cognative-shifts">Three abstractions
+=&gt; Three cognative shifts</h1>
+<ul>
+<li>A JSON source for managing data =&gt; <a
 href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a></p></li>
-<li><p>A Template engine =&gt; <a
-href="https://pandoc.org">Pandoc</a></p></li>
-<li><p>A data router, form validator =&gt; <a
-href="https://github.com/caltechlibrary/newt/">Newt</a></p></li>
-<li><p>Model data in SQL (Postgres) get JSON API (PostgREST)</p></li>
-<li><p>Use templates to transform JSON to HTML (Pandoc)</p></li>
-<li><p>Orchestrate our microservice conversation with YAML
-(Newt)</p></li>
+href="https://postgrest.org">PostgREST</a></li>
+<li>A Template engine =&gt; <a href="https://pandoc.org">Pandoc</a></li>
+<li>A data router, form validator =&gt; <a
+href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+</ul>
+<h1 id="sql-json-templates-orchestration">SQL =&gt; JSON + Templates +
+Orchestration</h1>
+<ul>
+<li>Model data in SQL (Postgres) get JSON API (PostgREST)</li>
+<li>Use templates to transform JSON to HTML (Pandoc)</li>
+<li>Orchestrate our microservice conversation with YAML (Newt)</li>
 </ul>
 <h1 id="why-model-data-with-sql">Why model data with SQL?</h1>
-<blockquote>
-<p>PostgreSQL+PostgREST, my code savings plan</p>
-</blockquote>
 <ul>
 <li>Good at describing structured data</li>
-<li>Supports queries, views, functions, triggers, events, …</li>
-<li>Allows us to model our data once in one language</li>
+<li>Robust data management capability (e..g queries, views, functions,
+…)</li>
+<li>Allows us to model our once in one language</li>
+<li>PostgREST makes SQL web friendly</li>
 </ul>
-<blockquote>
-<p><strong>Minimize the source Luke!</strong></p>
-</blockquote>
-<h1 id="my-small-system-experiment">My small system experiment</h1>
-<p>Let’s compare three implementations of a bird sighting website</p>
+<p><strong>PostgreSQL+PostgREST, a code savings plan!</strong></p>
+<h1 id="the-experiment-1">The experiment</h1>
+<p>I’ve implemented three bird sighting websites</p>
 <ul>
-<li>simple model</li>
+<li>simple data model
+<ul>
 <li>bird, place and date sighted</li>
-<li>A method to update the site</li>
+</ul></li>
+<li>a process to update the website</li>
 </ul>
 <h1 id="birds-1-static-site-pandoc"><a
 href="https://github.com/caltechlibrary/newt/tree/main/demos/birds1">birds

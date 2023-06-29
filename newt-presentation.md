@@ -21,17 +21,19 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 # The experiment
 
-Web applications for Libraries, Archives and Museums
+How do we make building web applications for Libraries, Archives and Museums simpler?
 
-1. using a scale small approach (limit the moving parts)
-2. largely from off the shelf parts (avoid writing more code)
-3. system composition through configuration
+- use a scale small approach (limit the moving parts)
+- build with off the shelf parts (avoid writing more code)
+- define application through configuration
 
-# Three abstractions, three cognative shifts
+# Three abstractions => Three cognative shifts
 
 - A JSON source for managing data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A Template engine => [Pandoc](https://pandoc.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
+
+# SQL => JSON + Templates + Orchestration
 
 - Model data in SQL (Postgres) get JSON API (PostgREST)
 - Use templates to transform JSON to HTML (Pandoc)
@@ -39,21 +41,20 @@ Web applications for Libraries, Archives and Museums
 
 # Why model data with SQL?
 
-> PostgreSQL+PostgREST, my code savings plan
-
 - Good at describing structured data
-- Supports queries, views, functions, triggers, events, ...
-- Allows us to model our data once in one language
+- Robust data management capability (e..g queries, views, functions, ...)
+- Allows us to model our once in one language
+- PostgREST makes SQL web friendly
 
-> **Minimize the source Luke!**
+__PostgreSQL+PostgREST, a code savings plan!__
 
-# My small system experiment
+# The experiment
 
-Let's compare three implementations of a bird sighting website
+I've implemented three bird sighting websites
 
-- simple model
-- bird, place and date sighted
-- A method to update the site
+- simple data model
+    - bird, place and date sighted
+- a process to update the website
 
 # [birds 1]( https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
 

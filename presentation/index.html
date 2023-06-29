@@ -46,51 +46,54 @@ class="email">rsdoiel@caltech.edu</a>
 </div>
 <div id="the-experiment" class="slide section level1">
 <h1>The experiment</h1>
-<p>Web applications for Libraries, Archives and Museums</p>
-<ol style="list-style-type: decimal">
-<li>using a scale small approach (limit the moving parts)</li>
-<li>largely from off the shelf parts (avoid writing more code)</li>
-<li>system composition through configuration</li>
-</ol>
+<p>How do we make building web applications for Libraries, Archives and
+Museums simpler?</p>
+<ul>
+<li>use a scale small approach (limit the moving parts)</li>
+<li>build with off the shelf parts (avoid writing more code)</li>
+<li>define application through configuration</li>
+</ul>
 </div>
 <div id="three-abstractions-three-cognative-shifts"
 class="slide section level1">
-<h1>Three abstractions, three cognative shifts</h1>
+<h1>Three abstractions =&gt; Three cognative shifts</h1>
 <ul>
-<li><p>A JSON source for managing data =&gt; <a
+<li>A JSON source for managing data =&gt; <a
 href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a></p></li>
-<li><p>A Template engine =&gt; <a
-href="https://pandoc.org">Pandoc</a></p></li>
-<li><p>A data router, form validator =&gt; <a
-href="https://github.com/caltechlibrary/newt/">Newt</a></p></li>
-<li><p>Model data in SQL (Postgres) get JSON API (PostgREST)</p></li>
-<li><p>Use templates to transform JSON to HTML (Pandoc)</p></li>
-<li><p>Orchestrate our microservice conversation with YAML
-(Newt)</p></li>
+href="https://postgrest.org">PostgREST</a></li>
+<li>A Template engine =&gt; <a href="https://pandoc.org">Pandoc</a></li>
+<li>A data router, form validator =&gt; <a
+href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+</ul>
+</div>
+<div id="sql-json-templates-orchestration" class="slide section level1">
+<h1>SQL =&gt; JSON + Templates + Orchestration</h1>
+<ul>
+<li>Model data in SQL (Postgres) get JSON API (PostgREST)</li>
+<li>Use templates to transform JSON to HTML (Pandoc)</li>
+<li>Orchestrate our microservice conversation with YAML (Newt)</li>
 </ul>
 </div>
 <div id="why-model-data-with-sql" class="slide section level1">
 <h1>Why model data with SQL?</h1>
-<blockquote>
-<p>PostgreSQL+PostgREST, my code savings plan</p>
-</blockquote>
 <ul>
 <li>Good at describing structured data</li>
-<li>Supports queries, views, functions, triggers, events, …</li>
-<li>Allows us to model our data once in one language</li>
+<li>Robust data management capability (e..g queries, views, functions,
+…)</li>
+<li>Allows us to model our once in one language</li>
+<li>PostgREST makes SQL web friendly</li>
 </ul>
-<blockquote>
-<p><strong>Minimize the source Luke!</strong></p>
-</blockquote>
+<p><strong>PostgreSQL+PostgREST, a code savings plan!</strong></p>
 </div>
-<div id="my-small-system-experiment" class="slide section level1">
-<h1>My small system experiment</h1>
-<p>Let’s compare three implementations of a bird sighting website</p>
+<div id="the-experiment-1" class="slide section level1">
+<h1>The experiment</h1>
+<p>I’ve implemented three bird sighting websites</p>
 <ul>
-<li>simple model</li>
+<li>simple data model
+<ul>
 <li>bird, place and date sighted</li>
-<li>A method to update the site</li>
+</ul></li>
+<li>a process to update the website</li>
 </ul>
 </div>
 <div id="birds-1-static-site-pandoc" class="slide section level1">
