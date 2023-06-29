@@ -235,6 +235,7 @@ cat <<EOT >birds3/page.tmpl
   <head></head>
   <body>
     <h1>Welcome to the bird list!</h1>
+    <div id="bird-list">
 	<table>
 		<thead>
 			<tr class="header"> <th>bird</th> <th>place</th> <th>sighted</th> </tr>
@@ -245,9 +246,8 @@ cat <<EOT >birds3/page.tmpl
 \$endfor\$
 		</tbody>
 	</table>
-	<p>
+	</div>
 
-    <div id="bird-list"></div>
     <h2>Add a bird</h2>
     <div><form name="add_bird" method="POST" action="/">
       <div>
