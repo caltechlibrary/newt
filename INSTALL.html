@@ -64,6 +64,35 @@ E.g.</p>
 are available at <a
 href="https://github.com/caltechlibrary/newt/releases"
 class="uri">https://github.com/caltechlibrary/newt/releases</a>.</p>
+<p>The binaries are available in a Zip archive file for download. The
+name uses the form
+<code>newt-&lt;VERSION_NO&gt;-&lt;OS_TYPE&gt;-&lt;CPU_TYPE&gt;.zip</code>.
+VERSION_NO will be a semver associated with the release (e.g. “v0.0.2”),
+the OS_TYPE will be either “Linux” (including Raspbery Pi OS), “Windows”
+and “macOS”. The CPU_TYPE will vary based on how the CPU type is
+reported on the POSIX system (e.g. what is returned by
+<code>uname -m</code>) or in the case of Windows either “x86_64” for
+Intel CPU types or “arm64” for ARM CPU (e.g. those in selected Surface
+tablets or Microsoft’s ARM Development Kit 2023).</p>
+<ul>
+<li>macOS example
+<ul>
+<li><code>newt-v0.0.2-macOS-arm64.zip</code> (M1, M2 CPU) or
+<code>newt-v0.0.2-macOS-x86_64.zip</code> (older Intel based Macs)</li>
+</ul></li>
+<li>Windows example
+<ul>
+<li><code>newt-v0.0.2-Windows-x86_64.zip</code> (for Most Windows
+machines)</li>
+</ul></li>
+<li>Linux example (including Raspberry Pi OS)
+<ul>
+<li><code>newt-v0.0.2-Linux-x86_64.zip</code> (Linux on Intel CPUs)</li>
+<li><code>newt-v0.0.2-Linux-armv7l.zip</code> (Raspberry Pi OS,
+32bit)</li>
+<li><code>newt-v0.0.2-Linux-aarch64.zip</code> (Linux on ARM 64)</li>
+</ul></li>
+</ul>
 </section>
 
 <footer>
