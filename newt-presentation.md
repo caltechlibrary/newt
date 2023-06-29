@@ -59,7 +59,6 @@ I've implemented three bird sighting websites
 # [birds 1]( https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
 
 CSV file, Pandoc, 2 directories, 5 files, **75 total line count**, static site
-(I've included my typical project setup with a README)
 
 Lines   Files
 ------  ---------------

@@ -3,7 +3,7 @@
 -- copy command to load the tables with some test data.
 --
 
--- Make sure we are in the birds database
+-- Make sure we are in the birds namespace/database
 \c birds
 
 

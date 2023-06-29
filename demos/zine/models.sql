@@ -1,8 +1,8 @@
 --
--- Model: blog.posts
--- Based on blogish.yaml, 2023-06-23
+-- Model: zine.arts
+-- Based on zine.yaml, 2023-06-23
 --
-CREATE TABLE blog.posts (
+CREATE TABLE zine.articles (
     year DATE,
     month DATE,
     day DATE,
@@ -14,12 +14,12 @@ CREATE TABLE blog.posts (
 );
 
 --
--- LIST VIEW: blog.posts 
+-- LIST VIEW: zine.articles 
 -- FIXME: You probably want to customized this statement 
 -- (e.g. add WHERE CLAUSE, ORDER BY, GROUP BY).
 --
-CREATE OR REPLACE VIEW blog.posts_list_view AS
+CREATE OR REPLACE VIEW zine.articles_list_view AS
     SELECT title, title_slug, by_line, content, pub_date, year, month, day
-    FROM blog.posts;
+    FROM zine.articles;
 
 

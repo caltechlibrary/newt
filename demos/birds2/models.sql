@@ -5,8 +5,9 @@
 -- PostgRESTS.
 --
 
--- Make sure we are in the birds database
+-- Make sure we are in the birds namespace/database
 \c birds
+-- Make sure our namespace is first in the search path
 SET search_path TO birds, public;
 
 --
@@ -47,8 +48,7 @@ $$;
 
 -- Since our Postgres ROLE and SCHEMA exist and our models may change how
 -- we want PostgREST to expose our data via JSON API we GRANT or
--- revoke role permissions here.
--- with our model.
+-- revoke role permissions here to match our model.
 GRANT USAGE  ON SCHEMA birds      TO birds_anonymous;
 -- NOTE: We are allowing insert because this is a demo and we are not
 -- implementing an account login requirement. Normally I would force
