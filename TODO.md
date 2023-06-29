@@ -50,14 +50,8 @@
 
 ## Someday, maybe
 
-- [ ] The YAML file should allow including other YAML files to make it easy to integrate one Newt for a variety of projects
-- [ ] Have Newt read a YAML file expression a declarative presentation of routes and form validation
-	- this could function like the backend of forms processing service
-- [ ] Form validation could be  used to generate default HTML markup for the form, might standardize that code a bit in the process (e.g. allow a vanilla JavaScript integration for complex form fields)
-- [ ] A tool that would Convert CSV, Excel, Open Office Spreadsheets into YAML defining our routes table and forms with their validation rules leveraging the router DSL types
-- [ ] Support Excel and Open Office Spreadsheets
-	- [ ] If form validation is supported in Newt then you could have sheet "routes" that defines routes and other sheets defining forms (pairs of input element name attributes and types from route dsl)
-- [ ] Add a declaritive way to validate form input in Newt without sending it to a JSON data API for validation, this would improve POST, PUT, PATCH handling in the same way URL vetting is implemented
-	- [ ] forms could be validated from a simple YAML file using the router DSL types paired with a input element's name attribute
-- [ ] Add file upload support to Newt via an S3 like service call
+- [ ] Newt could delegate file uploads to an S3 like service, Minio is written in Go and I think supports a file streaming model
+- [ ] Integrate SQLite3 support as a "JSON Data Source", might be a separate service or synthesize the results from direct access to SQLite3 database file(s)
+- [ ] Consider porting Newt from Golang to Haskell for integration opportunities with Pandoc
+- [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Pandoc templates
 
