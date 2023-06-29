@@ -8,7 +8,7 @@
     "downloadUrl": "https://github.com/caltechlibrary/releases",
     "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
     "name": "Newt",
-    "version": "0.0.2",
+    "version": "0.0.3-dev",
     "description": "A new take on developing web applications, services and sites using Postgres, PostgREST, a URL router and front end web server.",
     "applicationCategory": "computer science",
     "releaseNotes": "This is exploratory project. Newt is a microservice designed to work with Pandoc server, Postgres+PostgREST (or other JSON API).",
@@ -25,8 +25,9 @@
         "pandoc"
     ],
     "programmingLanguage": [
-        "SQL",
-        "Golang"
+		"YAML",
+		"SQL",
+		"Golang"
     ],
     "operatingSystem": [
         "Linux",
