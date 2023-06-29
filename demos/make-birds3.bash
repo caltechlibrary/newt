@@ -219,7 +219,7 @@ routes:
     api_url: http://localhost:3000/rpc/record_bird
     pandoc_template: post_result.tmpl
     res_headers: { "content-type": "text/html" }
-  - req_path: /bird_views
+  - req_path: /api/bird_views
     req_method: GET
     api_content_type: application/json
     api_method: GET

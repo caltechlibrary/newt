@@ -51,19 +51,20 @@ Orchestration</h1>
 <li>Good at describing structured data</li>
 <li>Robust data management capability (e..g queries, views, functions,
 …)</li>
-<li>Allows us to model our once in one language</li>
+<li>Allows us to model our data once and in one language</li>
 <li>PostgREST makes SQL web friendly</li>
 </ul>
 <p><strong>PostgreSQL+PostgREST, a code savings plan!</strong></p>
 <h1 id="the-experiment-1">The experiment</h1>
-<p>I’ve implemented three bird sighting websites</p>
+<p>The versions of a bird sighting website</p>
 <ul>
 <li>simple data model
 <ul>
 <li>bird, place and date sighted</li>
 </ul></li>
-<li>a process to update the website</li>
+<li>each has a process to update the website</li>
 </ul>
+<p>What are trade-offs?</p>
 <h1 id="birds-1-static-site-pandoc"><a
 href="https://github.com/caltechlibrary/newt/tree/main/demos/birds1">birds
 1</a>, static site, Pandoc</h1>
@@ -100,9 +101,9 @@ the demos</td>
 </tr>
 </tbody>
 </table>
-<h1 id="birds-2-synamic-site-requires-browser-javascript"><a
+<h1 id="birds-2-dynamic-site-browser-javascript"><a
 href="https://github.com/caltechlibrary/newt/tree/main/demos/birds2">birds
-2</a>, synamic site, requires browser JavaScript</h1>
+2</a>, dynamic site, browser JavaScript</h1>
 <p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8
 files, <strong>232 total line count</strong>, dynamic site</p>
 <table>
@@ -127,7 +128,8 @@ files, <strong>232 total line count</strong>, dynamic site</p>
 </tr>
 <tr class="even">
 <td style="text-align: left;">60</td>
-<td style="text-align: left;">models.sql</td>
+<td style="text-align: left;">models.sql &lt;– implements our data
+models</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">15</td>
@@ -139,11 +141,11 @@ files, <strong>232 total line count</strong>, dynamic site</p>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">24</td>
-<td style="text-align: left;">htdocs/index.html</td>
+<td style="text-align: left;">htdocs/index.html &lt;– hand coded</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">63</td>
-<td style="text-align: left;">htdocs/sightings.js</td>
+<td style="text-align: left;">htdocs/sightings.js &lt;– hand coded</td>
 </tr>
 </tbody>
 </table>

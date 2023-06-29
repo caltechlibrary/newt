@@ -43,18 +43,20 @@ How do we make building web applications for Libraries, Archives and Museums sim
 
 - Good at describing structured data
 - Robust data management capability (e..g queries, views, functions, ...)
-- Allows us to model our once in one language
+- Allows us to model our data once and in one language
 - PostgREST makes SQL web friendly
 
 __PostgreSQL+PostgREST, a code savings plan!__
 
 # The experiment
 
-I've implemented three bird sighting websites
+The versions of a bird sighting website
 
 - simple data model
     - bird, place and date sighted
-- a process to update the website
+- each has a process to update the website
+
+What are trade-offs?
 
 # [birds 1]( https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
 
@@ -68,7 +70,7 @@ Lines   Files
      7  page.tmpl
     32  htdocs/index.html
 
-# [birds 2](https://github.com/caltechlibrary/newt/tree/main/demos/birds2), synamic site, requires browser JavaScript
+# [birds 2](https://github.com/caltechlibrary/newt/tree/main/demos/birds2), dynamic site, browser JavaScript
 
 SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 total line count**, dynamic site
 
@@ -77,11 +79,11 @@ Lines    Files
     29   README.md
      4   birds.csv <-- from birds1
     34   setup.sql
-    60   models.sql
+    60   models.sql <-- implements our data models
     15   models_test.sql
      3   postgrest.conf
-    24   htdocs/index.html
-    63   htdocs/sightings.js
+    24   htdocs/index.html   <-- hand coded
+    63   htdocs/sightings.js <-- hand coded
 
 # [birds 3](https://github.com/caltechlibrary/newt/tree/main/demos/birds3), dynamic site, no browser JavaScript
 
