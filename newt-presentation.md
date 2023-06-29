@@ -27,17 +27,11 @@ How do we make building web applications for Libraries, Archives and Museums sim
 - build with off the shelf parts (avoid writing more code)
 - define application through configuration
 
-# Three abstractions => Three cognative shifts
+# Three abstractions 
 
 - A JSON source for managing data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A Template engine => [Pandoc](https://pandoc.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
-
-# SQL => JSON + Templates + Orchestration
-
-- Model data in SQL (Postgres) get JSON API (PostgREST)
-- Use templates to transform JSON to HTML (Pandoc)
-- Orchestrate our microservice conversation with YAML (Newt)
 
 # Why model data with SQL?
 
@@ -50,7 +44,7 @@ __PostgreSQL+PostgREST, a code savings plan!__
 
 # The experiment
 
-The versions of a bird sighting website
+Three versions of a bird sighting website
 
 - simple data model
     - bird, place and date sighted
@@ -58,7 +52,7 @@ The versions of a bird sighting website
 
 What are trade-offs?
 
-# [birds 1]( https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
+# [birds 1](https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
 
 CSV file, Pandoc, 2 directories, 5 files, **75 total line count**, static site
 
