@@ -225,6 +225,18 @@ cat <<EOT>birds2/htdocs/sightings.js
     sighted_elem = document.getElementById('sighted'),
     add_button = document.getElementById('record-bird');
 
+  function getData(elem, url, updateFn) {
+    /* We use a xhr to retrieve the current list of sightings. */
+    const req = new XMLHttpRequest();
+    req.addEventListener("load", function(evt) {
+      /* Call our page update function */
+      updateFn(elem, this.responseText);
+    });
+    req.open("GET", url);
+	req.setRequestHeader('Cache-Control', 'no-cache');
+    req.send();
+  };
+
   function updateList(elem, src) {
     let bird_list = JSON.parse(src),
       parts = [];
@@ -240,18 +252,6 @@ cat <<EOT>birds2/htdocs/sightings.js
   function birdRecord(bird_elem, place_elem, sighted_elem) {
     return { "bird": bird_elem.value, "place": place_elem.value, "sighted": sighted_elem.value };
   }
-
-  function getData(elem, url, updateFn) {
-    /* We use a xhr to retrieve the current list of sightings. */
-    const req = new XMLHttpRequest();
-    req.addEventListener("load", function(evt) {
-      /* Call our page update function */
-      updateFn(elem, this.responseText);
-    });
-    req.open("GET", url);
-	req.setRequestHeader('Cache-Control', 'no-cache');
-    req.send();
-  };
 
   function postData(obj, url) {
     const req = new XMLHttpRequest();
