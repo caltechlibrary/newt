@@ -22,36 +22,27 @@
 
 <section>
 <h1 id="the-experiment">The experiment</h1>
-<ul>
-<li>Web applications for Libraries, Archives and Museums
+<p>Web applications for Libraries, Archives and Museums</p>
 <ol type="1">
-<li>using a scale small approach</li>
-<li>largely from off the shelf parts</li>
-<li>composition through configuration</li>
-</ol></li>
-</ul>
+<li>using a scale small approach (limit the moving parts)</li>
+<li>largely from off the shelf parts (avoid writing more code)</li>
+<li>system composition through configuration</li>
+</ol>
 <h1 id="three-abstractions-three-cognative-shifts">Three abstractions,
 three cognative shifts</h1>
 <ul>
-<li><p>A Template engine =&gt; <a
-href="https://pandoc.org">Pandoc</a></p></li>
-<li><p>A JSON source to manage data =&gt; <a
+<li><p>A JSON source for managing data =&gt; <a
 href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></p></li>
+<li><p>A Template engine =&gt; <a
+href="https://pandoc.org">Pandoc</a></p></li>
 <li><p>A data router, form validator =&gt; <a
 href="https://github.com/caltechlibrary/newt/">Newt</a></p></li>
-<li><p>Use templates to generate HTML (Pandoc)</p></li>
 <li><p>Model data in SQL (Postgres) get JSON API (PostgREST)</p></li>
+<li><p>Use templates to transform JSON to HTML (Pandoc)</p></li>
 <li><p>Orchestrate our microservice conversation with YAML
 (Newt)</p></li>
 </ul>
-<h1 id="a-microservice-conversation">A microservice conversation</h1>
-<ol type="1">
-<li>web browser =&gt; Newt</li>
-<li>Newt =&gt; Postgres+PostgREST</li>
-<li>Newt =&gt; Pandoc</li>
-<li>Newt =&gt; web browser</li>
-</ol>
 <h1 id="why-model-data-with-sql">Why model data with SQL?</h1>
 <blockquote>
 <p>PostgreSQL+PostgREST, my code savings plan</p>
@@ -64,14 +55,16 @@ href="https://github.com/caltechlibrary/newt/">Newt</a></p></li>
 <blockquote>
 <p><strong>Minimize the source Luke!</strong></p>
 </blockquote>
-<h1 id="my-scale-small-experiment">My scale small experiment</h1>
+<h1 id="my-small-system-experiment">My small system experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
 <ul>
 <li>simple model</li>
 <li>bird, place and date sighted</li>
+<li>A method to update the site</li>
 </ul>
-<h1 id="birds-1"><a href="../demos/make-birds1.bash"
-title="this is a static website">birds 1</a></h1>
+<h1 id="birds-1-static-site-pandoc"><a
+href="https://github.com/caltechlibrary/newt/tree/main/demos/birds1">birds
+1</a>, static site, Pandoc</h1>
 <p>CSV file, Pandoc, 2 directories, 5 files, <strong>75 total line
 count</strong>, static site (I’ve included my typical project setup with
 a README)</p>
@@ -106,8 +99,9 @@ the demos</td>
 </tr>
 </tbody>
 </table>
-<h1 id="birds-2"><a href="../demos/make-birds2.bash"
-title="this website requires a machine">birds 2</a></h1>
+<h1 id="birds-2-synamic-site-requires-browser-javascript"><a
+href="https://github.com/caltechlibrary/newt/tree/main/demos/birds2">birds
+2</a>, synamic site, requires browser JavaScript</h1>
 <p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8
 files, <strong>232 total line count</strong>, dynamic site</p>
 <table>
@@ -152,8 +146,9 @@ files, <strong>232 total line count</strong>, dynamic site</p>
 </tr>
 </tbody>
 </table>
-<h1 id="birds-3"><a href="../demos/make-birds3.bash"
-title="this website requires a machine">birds 3</a></h1>
+<h1 id="birds-3-dynamic-site-no-browser-javascript"><a
+href="https://github.com/caltechlibrary/newt/tree/main/demos/birds3">birds
+3</a>, dynamic site, no browser JavaScript</h1>
 <p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files,
 <strong>225 total line count</strong>, dynamic site</p>
 <table>
@@ -200,31 +195,28 @@ title="this website requires a machine">birds 3</a></h1>
 <td style="text-align: left;">7</td>
 <td style="text-align: left;">post_result.tmpl</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"># Insight</td>
-<td style="text-align: left;">s from experiment</td>
-</tr>
 </tbody>
 </table>
+<h1 id="insights-from-experiment">Insights from experiment</h1>
 <ul>
 <li>“Off the shelf” microservices can make application construction
 easier</li>
 <li>Orchestrating the data pipeline in YAML seems reasonable</li>
 <li>SQL turns some people off
 <ul>
-<li>models could be bootstraped from Newt’s YAML using the form/path
-validation DSL</li>
+<li>models could be bootstraped from Newt’s YAML</li>
 </ul></li>
-<li>Pandoc templates are simple to learn, should include examples</li>
-<li>Newt stack plays well with HTML5 approaches and best practices</li>
-<li>I realized one unexpected result …</li>
+<li>Pandoc templates are simple to learn, well documented at
+pandoc.org</li>
+<li>Newt stack plays well with HTML5 and front-end best practices</li>
+<li>I encountered an unexpected result …</li>
 </ul>
 <h1 id="the-unexpected-result">The unexpected result</h1>
 <ul>
-<li>Newt does not maintain “syncronous state”</li>
-<li>PostgREST maintains very little “syncronous state”</li>
-<li>Pandoc server maintains no “syncronous state”</li>
-<li>Postgres can be clustered</li>
+<li>Newt like PostgREST and Pandoc do require shared syncronous
+state</li>
+<li>Postgres can be deployed in a <a href="High-availability"
+title="high available cluster">HA cluster</a></li>
 </ul>
 <blockquote>
 <p>The Newt stack can scale big</p>
@@ -251,17 +243,20 @@ six weeks old)</li>
 </ul>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
 <ol type="1">
-<li>Explore SQL generation from Newt’s YAML</li>
+<li>Explore PostgREST configuration/SQL Models from Newt’s YAML</li>
 <li>Test with Solr/Elasticsearch as alternate JSON sources</li>
 <li>Build staff facing applications this Summer (2023)</li>
-<li>Hopefully move beyond my proof of concept in Winter (2023), Spring
-(2024)</li>
+<li>Hopefully move beyond my proof of concept in Fall/Winter (2023)</li>
 </ol>
 <h1 id="newts-someday-maybe">Newt’s someday, maybe …</h1>
 <ul>
-<li>Have Newt delegate file uploads to an S3 like service (minio via a
-file stream?)</li>
-<li>Explore integrating SQLite3 support</li>
+<li>Have Newt delegate file uploads to an S3 like service
+<ul>
+<li>One approach would be Minio using file streams</li>
+</ul></li>
+<li>Explore integrating SQLite3 support as a JSON data source</li>
+<li>Consider implementing Newt in Haskell for richer Pandoc
+integration</li>
 <li>A Newt community to share YAML, SQL and Pandoc templates</li>
 </ul>
 <h1 id="related-resources">Related resources</h1>

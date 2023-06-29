@@ -21,27 +21,21 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 # The experiment
 
-- Web applications for Libraries, Archives and Museums
-  1. using a scale small approach
-  2. largely from off the shelf parts
-  3. composition through configuration
+Web applications for Libraries, Archives and Museums
+
+1. using a scale small approach (limit the moving parts)
+2. largely from off the shelf parts (avoid writing more code)
+3. system composition through configuration
 
 # Three abstractions, three cognative shifts
 
+- A JSON source for managing data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A Template engine => [Pandoc](https://pandoc.org)
-- A JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
-- Use templates to generate HTML (Pandoc)
 - Model data in SQL (Postgres) get JSON API (PostgREST)
+- Use templates to transform JSON to HTML (Pandoc)
 - Orchestrate our microservice conversation with YAML (Newt)
-
-# A microservice conversation
-
-1. web browser => Newt
-2. Newt => Postgres+PostgREST
-3. Newt => Pandoc
-4. Newt => web browser
 
 # Why model data with SQL?
 
@@ -53,14 +47,15 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 > **Minimize the source Luke!**
 
-# My scale small experiment
+# My small system experiment
 
 Let's compare three implementations of a bird sighting website
 
 - simple model
 - bird, place and date sighted
+- A method to update the site
 
-# [birds 1](../demos/make-birds1.bash "this is a static website")
+# [birds 1]( https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
 
 CSV file, Pandoc, 2 directories, 5 files, **75 total line count**, static site
 (I've included my typical project setup with a README)
@@ -73,7 +68,7 @@ Lines   Files
      7  page.tmpl
     32  htdocs/index.html
 
-# [birds 2](../demos/make-birds2.bash "this website requires a machine")
+# [birds 2](https://github.com/caltechlibrary/newt/tree/main/demos/birds2), synamic site, requires browser JavaScript
 
 SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 total line count**, dynamic site
 
@@ -88,7 +83,7 @@ Lines    Files
     24   htdocs/index.html
     63   htdocs/sightings.js
 
-# [birds 3](../demos/make-birds3.bash "this website requires a machine")
+# [birds 3](https://github.com/caltechlibrary/newt/tree/main/demos/birds3), dynamic site, no browser JavaScript
 
 SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, **225 total line count**, dynamic site
 
@@ -103,22 +98,21 @@ Lines    Files
     23   birds.yaml
     36   page.tmpl
      7   post_result.tmpl
+
 # Insights from experiment
 
 - "Off the shelf" microservices can make application construction easier
 - Orchestrating the data pipeline in YAML seems reasonable
 - SQL turns some people off
-  - models could be bootstraped from Newt's YAML using the form/path validation DSL
-- Pandoc templates are simple to learn, should include examples
-- Newt stack plays well with HTML5 approaches and best practices
-- I realized one unexpected result ...
+  - models could be bootstraped from Newt's YAML
+- Pandoc templates are simple to learn, well documented at pandoc.org
+- Newt stack plays well with HTML5 and front-end best practices
+- I encountered an unexpected result ...
 
 # The unexpected result
 
-- Newt does not maintain "syncronous state"
-- PostgREST maintains very little "syncronous state"
-- Pandoc server maintains no "syncronous state"
-- Postgres can be clustered
+- Newt like PostgREST and Pandoc do require shared syncronous state
+- Postgres can be deployed in a [HA cluster](High-availability "high available cluster")
 
 > The Newt stack can scale big
 
@@ -138,15 +132,17 @@ Lines    Files
 
 # Next steps for Newt?
 
-1. Explore SQL generation from Newt's YAML
+1. Explore PostgREST configuration/SQL Models from Newt's YAML
 2. Test with Solr/Elasticsearch as alternate JSON sources
 3. Build staff facing applications this Summer (2023)
-4. Hopefully move beyond my proof of concept in Winter (2023), Spring (2024)
+4. Hopefully move beyond my proof of concept in Fall/Winter (2023)
 
 # Newt's someday, maybe ...
 
-- Have Newt delegate file uploads to an S3 like service (minio via a file stream?)
-- Explore integrating SQLite3 support
+- Have Newt delegate file uploads to an S3 like service 
+  - One approach would be Minio using file streams
+- Explore integrating SQLite3 support as a JSON data source
+- Consider implementing Newt in Haskell for richer Pandoc integration
 - A Newt community to share YAML, SQL and Pandoc templates
 
 # Related resources
