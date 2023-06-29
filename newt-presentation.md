@@ -9,7 +9,7 @@ urlcolor: blue
 linkstyle: bold
 aspectratio: 169
 createDate: 2023-05-16
-updateDate: 2023-06-27
+updateDate: 2023-06-28
 pubDate: 2023-07-14
 place: UCLA
 date: July 14, 2023
@@ -21,27 +21,25 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 # The experiment
 
-- Building web applications
-    1. using a scale small approach
-    2. largely from off the shelf parts
-    3. composition through configuration
+- Web applications for Libraries, Archives and Museums
+  1. using a scale small approach
+  2. largely from off the shelf parts
+  3. composition through configuration
 
-# Three abstractions
+# Three abstractions, three cognative shifts
 
 - A Template engine => [Pandoc](https://pandoc.org)
 - A JSON source to manage data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
-# Three cognitive shifts
-
 - Use templates to generate HTML (Pandoc)
-- Model data in SQL (Postgres) get JSON (PostgREST)
+- Model data in SQL (Postgres) get JSON API (PostgREST)
 - Orchestrate our microservice conversation with YAML (Newt)
 
-# Newt's microservice conversation
+# A microservice conversation
 
 1. web browser => Newt
-2. Newt => PostgREST
+2. Newt => Postgres+PostgREST
 3. Newt => Pandoc
 4. Newt => web browser
 
@@ -51,13 +49,16 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 - Good at describing structured data
 - Supports queries, views, functions, triggers, events, ...
-- Allows us to model our data once, in one place
+- Allows us to model our data once in one language
 
 > **Minimize the source Luke!**
 
 # My scale small experiment
 
 Let's compare three implementations of a bird sighting website
+
+- simple model
+- bird, place and date sighted
 
 # [birds 1](../demos/make-birds1.bash "this is a static website")
 
@@ -66,8 +67,8 @@ CSV file, Pandoc, 2 directories, 5 files, **70 total line count**, static site
 
 Lines   Files
 ------  ---------------
-    21  [README.md](../demos/birds1/README.html)
-     4  birds.csv
+    21  README.md
+     4  birds.csv <-- this is used in each of the demos
      6  build.sh
      7  page.tmpl
     32  htdocs/index.html
@@ -78,7 +79,7 @@ SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 to
 
 Lines    Files
 ------   --------------
-    29   [README.md](../demos/birds2/README.html)
+    29   README.md
      4   birds.csv <-- from birds1
     34   setup.sql
     60   models.sql
@@ -93,8 +94,8 @@ SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, **225 total line
 
 Lines    Files
 ------   ---------------
-    43   [README.md](../demos/birds3/README.html)
-     4   birds.csv <-- from birds1, birds2
+    43   README.md
+     4   birds.csv <-- from birds1
     34   setup.sql <-- from birds2
     60   models.sql <-- from birds2
     15   models_test.sql <-- from birds2
@@ -102,36 +103,31 @@ Lines    Files
     23   birds.yaml
     36   page.tmpl
      7   post_result.tmpl
+# Insights from experiment
 
+- "Off the shelf" microservices can make application construction easier
+- Orchestrating the data pipeline in YAML seems reasonable
+- SQL turns some people off
+  - models could be bootstraped from Newt's YAML using the form/path validation DSL
+- Pandoc templates are simple to learn, should include examples
+- Newt stack plays well with HTML5 approaches and best practices
+- I realized one unexpected result ...
 
-# Newt's YAML file
+# The unexpected result
 
-- htdocs directory for static content (option)
-- route definitions
-  - (optional) variable definitions (path and form data)
-  - request routing details (e.g. path, method)
-  - JSON source details (e.g. API URL, method, content type)
-  - (optional) Pandoc template filename
+- Newt does not maintain "syncronous state"
+- PostgREST maintains very little "syncronous state"
+- Pandoc server maintains no "syncronous state"
+- Postgres can be clustered
 
-See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml>
+> The Newt stack can scale big
 
-# Developer workflow
+# Newt has weaknesses
 
-1. Define routes and form validation in Newt YAML file
-2. Implement models in SQL using psql
-3. Create/update Pandoc templates
-4. (Re)start PostgREST and Newt to load models and routes
-5. Test with our web browser
-
-**Repeat as needed**
-
-# Newt stack weakness
-
-- Newt is **an experimental prototype** (June/July 2023)
+- Newt is **an experimental prototype** (June/July 2023, six weeks old)
 - Newt doesn't support file uploads
-- Newt doesn't eliminate learning curves
 
-# Newt stack strengths
+# Newt stack has strengths
 
 > A very mature foundation
 
@@ -139,25 +135,6 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
   - SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)
 - 21st Century tech
   - JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)
-
-# Insights from experiment
-
-- "Off the shelf" microservices can make application construction easier
-- Orchestrating the data pipeline in YAML seems reasonable
-- SQL turns some people off
-    - models could be bootstraped from Newt's YAML using the form/path validation DSL
-- Pandoc templates are simple to learn, should include examples
-- Newt stack plays well with HTML5 approaches and best practices
-- I realized one unexpected result ...
-
-# The unexpected result
-
-- Newt maintains very little "state"
-- PostgREST maintains very little "state"
-- Pandoc server requires no "state"
-- Postgres can be clustered
-
-> The Newt stack can scale big
 
 # Next steps for Newt?
 
@@ -185,4 +162,3 @@ See <https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/bir
 - This Presentation <https://caltechlibrary.github.io/newt/presentation/>
 - Project: <https://github.com/caltechlibrary/newt>
 - Email: rsdoiel@caltech.edu
-

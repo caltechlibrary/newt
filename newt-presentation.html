@@ -23,33 +23,32 @@
 <section>
 <h1 id="the-experiment">The experiment</h1>
 <ul>
-<li>Building web applications
+<li>Web applications for Libraries, Archives and Museums
 <ol type="1">
 <li>using a scale small approach</li>
 <li>largely from off the shelf parts</li>
 <li>composition through configuration</li>
 </ol></li>
 </ul>
-<h1 id="three-abstractions">Three abstractions</h1>
+<h1 id="three-abstractions-three-cognative-shifts">Three abstractions,
+three cognative shifts</h1>
 <ul>
-<li>A Template engine =&gt; <a href="https://pandoc.org">Pandoc</a></li>
-<li>A JSON source to manage data =&gt; <a
+<li><p>A Template engine =&gt; <a
+href="https://pandoc.org">Pandoc</a></p></li>
+<li><p>A JSON source to manage data =&gt; <a
 href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a></li>
-<li>A data router, form validator =&gt; <a
-href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+href="https://postgrest.org">PostgREST</a></p></li>
+<li><p>A data router, form validator =&gt; <a
+href="https://github.com/caltechlibrary/newt/">Newt</a></p></li>
+<li><p>Use templates to generate HTML (Pandoc)</p></li>
+<li><p>Model data in SQL (Postgres) get JSON API (PostgREST)</p></li>
+<li><p>Orchestrate our microservice conversation with YAML
+(Newt)</p></li>
 </ul>
-<h1 id="three-cognitive-shifts">Three cognitive shifts</h1>
-<ul>
-<li>Use templates to generate HTML (Pandoc)</li>
-<li>Model data in SQL (Postgres) get JSON (PostgREST)</li>
-<li>Orchestrate our microservice conversation with YAML (Newt)</li>
-</ul>
-<h1 id="newts-microservice-conversation">Newt’s microservice
-conversation</h1>
+<h1 id="a-microservice-conversation">A microservice conversation</h1>
 <ol type="1">
 <li>web browser =&gt; Newt</li>
-<li>Newt =&gt; PostgREST</li>
+<li>Newt =&gt; Postgres+PostgREST</li>
 <li>Newt =&gt; Pandoc</li>
 <li>Newt =&gt; web browser</li>
 </ol>
@@ -60,13 +59,17 @@ conversation</h1>
 <ul>
 <li>Good at describing structured data</li>
 <li>Supports queries, views, functions, triggers, events, …</li>
-<li>Allows us to model our data once, in one place</li>
+<li>Allows us to model our data once in one language</li>
 </ul>
 <blockquote>
 <p><strong>Minimize the source Luke!</strong></p>
 </blockquote>
 <h1 id="my-scale-small-experiment">My scale small experiment</h1>
 <p>Let’s compare three implementations of a bird sighting website</p>
+<ul>
+<li>simple model</li>
+<li>bird, place and date sighted</li>
+</ul>
 <h1 id="birds-1"><a href="../demos/make-birds1.bash"
 title="this is a static website">birds 1</a></h1>
 <p>CSV file, Pandoc, 2 directories, 5 files, <strong>70 total line
@@ -82,12 +85,12 @@ a README)</p>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">21</td>
-<td style="text-align: left;"><a
-href="../demos/birds1/README.html">README.md</a></td>
+<td style="text-align: left;">README.md</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4</td>
-<td style="text-align: left;">birds.csv</td>
+<td style="text-align: left;">birds.csv &lt;– this is used in each of
+the demos</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">6</td>
@@ -117,8 +120,7 @@ files, <strong>232 total line count</strong>, dynamic site</p>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">29</td>
-<td style="text-align: left;"><a
-href="../demos/birds2/README.html">README.md</a></td>
+<td style="text-align: left;">README.md</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4</td>
@@ -164,12 +166,11 @@ title="this website requires a machine">birds 3</a></h1>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">43</td>
-<td style="text-align: left;"><a
-href="../demos/birds3/README.html">README.md</a></td>
+<td style="text-align: left;">README.md</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4</td>
-<td style="text-align: left;">birds.csv &lt;– from birds1, birds2</td>
+<td style="text-align: left;">birds.csv &lt;– from birds1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">34</td>
@@ -199,53 +200,12 @@ href="../demos/birds3/README.html">README.md</a></td>
 <td style="text-align: left;">7</td>
 <td style="text-align: left;">post_result.tmpl</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;"># Insight</td>
+<td style="text-align: left;">s from experiment</td>
+</tr>
 </tbody>
 </table>
-<h1 id="newts-yaml-file">Newt’s YAML file</h1>
-<ul>
-<li>htdocs directory for static content (option)</li>
-<li>route definitions
-<ul>
-<li>(optional) variable definitions (path and form data)</li>
-<li>request routing details (e.g. path, method)</li>
-<li>JSON source details (e.g. API URL, method, content type)</li>
-<li>(optional) Pandoc template filename</li>
-</ul></li>
-</ul>
-<p>See <a
-href="https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml"
-class="uri">https://raw.githubusercontent.com/caltechlibrary/newt/main/demos/birds3/birds.yaml</a></p>
-<h1 id="developer-workflow">Developer workflow</h1>
-<ol type="1">
-<li>Define routes and form validation in Newt YAML file</li>
-<li>Implement models in SQL using psql</li>
-<li>Create/update Pandoc templates</li>
-<li>(Re)start PostgREST and Newt to load models and routes</li>
-<li>Test with our web browser</li>
-</ol>
-<p><strong>Repeat as needed</strong></p>
-<h1 id="newt-stack-weakness">Newt stack weakness</h1>
-<ul>
-<li>Newt is <strong>an experimental prototype</strong> (June/July
-2023)</li>
-<li>Newt doesn’t support file uploads</li>
-<li>Newt doesn’t eliminate learning curves</li>
-</ul>
-<h1 id="newt-stack-strengths">Newt stack strengths</h1>
-<blockquote>
-<p>A very mature foundation</p>
-</blockquote>
-<ul>
-<li>20th Century tech
-<ul>
-<li>SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)</li>
-</ul></li>
-<li>21st Century tech
-<ul>
-<li>JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)</li>
-</ul></li>
-</ul>
-<h1 id="insights-from-experiment">Insights from experiment</h1>
 <ul>
 <li>“Off the shelf” microservices can make application construction
 easier</li>
@@ -261,14 +221,34 @@ validation DSL</li>
 </ul>
 <h1 id="the-unexpected-result">The unexpected result</h1>
 <ul>
-<li>Newt maintains very little “state”</li>
-<li>PostgREST maintains very little “state”</li>
-<li>Pandoc server requires no “state”</li>
+<li>Newt does not maintain “syncronous state”</li>
+<li>PostgREST maintains very little “syncronous state”</li>
+<li>Pandoc server maintains no “syncronous state”</li>
 <li>Postgres can be clustered</li>
 </ul>
 <blockquote>
 <p>The Newt stack can scale big</p>
 </blockquote>
+<h1 id="newt-has-weaknesses">Newt has weaknesses</h1>
+<ul>
+<li>Newt is <strong>an experimental prototype</strong> (June/July 2023,
+six weeks old)</li>
+<li>Newt doesn’t support file uploads</li>
+</ul>
+<h1 id="newt-stack-has-strengths">Newt stack has strengths</h1>
+<blockquote>
+<p>A very mature foundation</p>
+</blockquote>
+<ul>
+<li>20th Century tech
+<ul>
+<li>SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)</li>
+</ul></li>
+<li>21st Century tech
+<ul>
+<li>JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)</li>
+</ul></li>
+</ul>
 <h1 id="next-steps-for-newt">Next steps for Newt?</h1>
 <ol type="1">
 <li>Explore SQL generation from Newt’s YAML</li>
