@@ -40,8 +40,7 @@ Postgres, PostgREST, a URL router and front end web server.
 ### Programming languages
 
 - SQL
-- JavaScript
-- HTMLl
+- Golang
 
 ### Operating Systems
 
@@ -54,4 +53,5 @@ Postgres, PostgREST, a URL router and front end web server.
 - Postgres &gt;= 15
 - PostgREST &gt;= 11
 - Pandoc &gt;= 3
+- Golang &gt; 1.20
 - A front end web server supporting reverse proxy (e.g. Apache2, NginX)

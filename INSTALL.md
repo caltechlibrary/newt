@@ -19,10 +19,10 @@ Install from source
 
 ## Requirements
 
-- Golang >= 1.20
-- Pandoc >= 3
-- Postgres >= 15
-- PostgREST >= 11
+- Golang > 1.20
+- Pandoc > 3
+- Postgres > 15
+- PostgREST > 11
 - GNU Make
 - Git
 
@@ -50,5 +50,9 @@ export PATH="$HOME/bin:$PATH"
 ~~~
 
 Can be added to your `.profile`, `.bashrc` or `.zshrc` file depending on your system's shell.
+
+## Precompiled binaries
+
+You can find pre-compiled binaries for some versions of Newt. They are available at <https://github.com/caltechlibrary/newt/releases>.
 
 
