@@ -32,6 +32,11 @@ edit birds.csv
 ./build.sh
 ~~~
 
+## Start up a web server
+
+We still need to serve the content in the htdocs directory. This
+could like Apache 2 or NginX.
+
 EOT
 
 # Generate some test data to load into our models
@@ -64,7 +69,7 @@ pandoc --from csv --to html \\
 EOT
 chmod 775 birds1/build.sh
 START=$(pwd)
-cd birds1 && ./build.sh 
+cd birds1 && ./build.sh
 cd "${START}" || exit 1
 tree birds1
 wc -l birds1/*.* birds1/htdocs/*.*

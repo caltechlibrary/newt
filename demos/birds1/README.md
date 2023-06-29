@@ -19,3 +19,8 @@ edit birds.csv
 ./build.sh
 ~~~
 
+## Start up a web server
+
+We still need to serve the content in the htdocs directory. This
+could like Apache 2 or NginX.
+

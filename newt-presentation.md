@@ -62,12 +62,12 @@ Let's compare three implementations of a bird sighting website
 
 # [birds 1](../demos/make-birds1.bash "this is a static website")
 
-CSV file, Pandoc, 2 directories, 5 files, **70 total line count**, static site
+CSV file, Pandoc, 2 directories, 5 files, **75 total line count**, static site
 (I've included my typical project setup with a README)
 
 Lines   Files
 ------  ---------------
-    21  README.md
+    26  README.md
      4  birds.csv <-- this is used in each of the demos
      6  build.sh
      7  page.tmpl
