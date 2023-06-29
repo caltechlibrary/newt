@@ -107,7 +107,7 @@ Lines    Files
 - Orchestrating the data pipeline in YAML seems reasonable
 - SQL turns some people off
   - models could be bootstraped from Newt's YAML
-- Pandoc templates are simple to learn, well documented at pandoc.org
+- Pandoc templates are simple to learn, well documented at [pandoc.org](https://pandoc.org)
 - Newt stack plays well with HTML5 and front-end best practices
 - I encountered an unexpected result ...
 
@@ -152,6 +152,9 @@ Lines    Files
 - Newt <https://github.com/caltechlibrary/newt>
 - Postgres <https://postgres.org> + PostgREST <https://postgrest.org>
   - PostgREST Community Tutorials <https://postgrest.org/en/stable/ecosystem.html>
+- Pandoc <https://pandoc.org>
+    - Templates <https://pandoc.org/MANUAL.html#templates>
+    - Pandoc Server <https://pandoc.org/pandoc-server.html>
 - Compiling Pandoc or PostgREST requires Haskell
   - Install Haskell GHCup <https://www.haskell.org/ghcup/>
 
