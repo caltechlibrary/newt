@@ -30,7 +30,7 @@ How do we make building web applications for Libraries, Archives and Museums sim
 # Three abstractions 
 
 - A JSON source for managing data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
-- A Template engine => [Pandoc](https://pandoc.org)
+- A template engine => [Pandoc](https://pandoc.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
 # Why model data with SQL?
