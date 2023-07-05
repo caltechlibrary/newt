@@ -79,6 +79,27 @@ display version
 Load YAML configuration and report any errors found
 </dd>
 </dl>
+<p>Newt has some experimental options to render Postgres dialect of SQL
+from a YAML file containing models. These options will render SQL
+suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based
+project.</p>
+<dl>
+<dt>-pg-setup</dt>
+<dd>
+This renders a SQL document suitable for bootstraping Postgres+PostgREST
+access
+</dd>
+<dt>-pg-models</dt>
+<dd>
+This renders a SQL file to bootstrap modeling data with
+Postgres+PostgREST
+</dd>
+<dt>-pg-models-test</dt>
+<dd>
+This renders a SQL file to bootstrap writing SQL tests for
+Postgres+PostgREST
+</dd>
+</dl>
 <h1 id="configuration">CONFIGURATION</h1>
 <p><strong>newt</strong> looks for four environment variables at
 startup.</p>

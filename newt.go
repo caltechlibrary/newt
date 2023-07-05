@@ -111,18 +111,11 @@ func LoadConfig(configFName string) (*Config, error) {
 			return nil, fmt.Errorf("Can't read %q from %s, %s", cfg.Htdocs, dir, err)
 		}
 	}
-	// Finally make sure we have cfg.Htdocs or cfg.Routes set.
-	if cfg.Routes == nil && cfg.Htdocs == "" {
-		if cfg.FName != "" {
-			return nil, fmt.Errorf("routes and htdocs are not set.")
-		} 
-		return nil, fmt.Errorf("NEWT_ROUTES and NEWT_HTDOCS are undefined.")
-	}
 	return cfg, nil
 }
 
-// RunGenerateSQL is a runner for generating SQL from a Newt YAML file.
-func RunGenerateSQL(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
+// RunPostgresSQL is a runner for generating SQL from a Newt YAML file.
+func RunPostgresSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, pgSetupSQL bool, pgModelsSQL bool, pgModelsTestSQL bool) int {
 	configFName := ""
 	if len(args) > 0 {
 		configFName = args[0]
@@ -142,13 +135,37 @@ func RunGenerateSQL(in io.Reader, out io.Writer, eout io.Writer, args []string) 
 		configFName = "standard input"
 	}
 	exitCode := 0
-	for name, model := range cfg.Models {
-		src, err := ModelSQL(configFName, model)
-		if err != nil {
-			fmt.Fprintf(eout, "-- could not create %q, %s\n", name, err)
-			exitCode = 1
-		} else {
-			fmt.Fprintf(out, "%s\n", src)
+	if pgSetupSQL {
+		for name, model := range cfg.Models {
+			src, err := PgSetupSQL(configFName, model)
+			if err != nil {
+				fmt.Fprintf(eout, "-- could not create setup for %q, %s\n", name, err)
+				exitCode = 1
+			} else {
+				fmt.Fprintf(out, "%s\n", src)
+			}
+		}
+	}
+	if pgModelsSQL {
+		for name, model := range cfg.Models {
+			src, err := PgModelSQL(configFName, model)
+			if err != nil {
+				fmt.Fprintf(eout, "-- could not create model %q, %s\n", name, err)
+				exitCode = 1
+			} else {
+				fmt.Fprintf(out, "%s\n", src)
+			}
+		}
+	}
+	if pgModelsTestSQL {
+		for name, model := range cfg.Models {
+			src, err := PgModelTestSQL(configFName, model)
+			if err != nil {
+				fmt.Fprintf(eout, "-- could not create model test %q, %s\n", name, err)
+				exitCode = 1
+			} else {
+				fmt.Fprintf(out, "%s\n", src)
+			}
 		}
 	}
 	return exitCode
@@ -163,6 +180,16 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 	cfg, err := LoadConfig(configFName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
+		return 1
+	}
+	// Finally make sure we have cfg.Htdocs or cfg.Routes 
+	// set to run service.
+	if cfg.Routes == nil && cfg.Htdocs == "" {
+		if cfg.FName != "" {
+			fmt.Fprintf(eout, "routes and htdocs are not set.")
+			return 1
+		} 
+		fmt.Fprintf(eout, "NEWT_ROUTES and NEWT_HTDOCS are undefined.")
 		return 1
 	}
 

@@ -76,9 +76,12 @@ func dslToSQLType(s string) (string, error) {
     isPrimaryKey := (tName != parts[0])
     if sqlType, ok := SQLTypes[tName]; ok {
        if isPrimaryKey {
-       	  return fmt.Sprintf("%s PRIMARY KEY", sqlType), nil
+		   if strings.HasPrefix(sqlType, "INTEGER ") {
+			   return fmt.Sprintf("SERIAL PRIMARY KEY"), nil
+		   }
+       	   return fmt.Sprintf("%s PRIMARY KEY", sqlType), nil
        } else {
-       	  return sqlType, nil
+       	   return sqlType, nil
        }
     }
     return "", fmt.Errorf("Cannot map type %q to SQL", parts[0])
@@ -118,9 +121,17 @@ CREATE OR REPLACE VIEW %s_list_view AS
 	return []byte(fmt.Sprintf("%s%s%s", prefix, strings.Join(parts, ", "), suffix)), nil
 }
 
-// ModelSQL generate SQL from a model given a configuration name,
-// model name and a *ModelDSL struct.
-func ModelSQL(configFName string, model *ModelDSL) ([]byte, error) {
+// PgSetupSQL generate PostgREST setup SQL for models given a configuration name and model.
+func PgSetupSQL(configFName string, model *ModelDSL) ([]byte, error) {
+	if model == nil {
+		return nil, fmt.Errorf("No model found in %s", configFName)
+	}
+	return nil, fmt.Errorf("PgSetupSQL() not implemented")
+}
+
+// PgModelSQL generate Postgres SQL from a model given a configuration name
+// and model. 
+func PgModelSQL(configFName string, model *ModelDSL) ([]byte, error) {
 	if model == nil {
 		return nil, fmt.Errorf("No model found in %s", configFName)
 	}
@@ -140,3 +151,28 @@ func ModelSQL(configFName string, model *ModelDSL) ([]byte, error) {
 	// record (row) given a primary key value.
 	return src, nil
 }
+
+// PgModelTestSQL generate Postgres SQL from a model given a 
+// configuration name and model. 
+func PgModelTestSQL(configFName string, model *ModelDSL) ([]byte, error) {
+	if model == nil {
+		return nil, fmt.Errorf("No model found in %s", configFName)
+	}
+    src := []byte{}
+    src = append(src, commentSection(configFName, model.Name)...)
+    s, err := createStatement(model)
+    if err != nil {
+    	return nil, err
+    }
+    src = append(src, s...)
+	s, err = createListView(model)
+	if err != nil {
+		return nil, err
+	}
+    src = append(src, s...)
+	//FIXME: Need to figure out a function/procedure to return a single
+	// record (row) given a primary key value.
+	return src, nil
+}
+
+

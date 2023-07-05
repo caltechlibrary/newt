@@ -11,7 +11,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.2
+version: 0.0.3-dev
 
 keywords: [ "web
 development", "microservice", "postgres", "postgrest", "pandoc" ]
@@ -21,7 +21,7 @@ date-released: 2023-06-15
 About this software
 ===================
 
-## Newt 0.0.2
+## Newt 0.0.3-dev
 
 ### Authors
 
@@ -39,6 +39,7 @@ Postgres, PostgREST, a URL router and front end web server.
 
 ### Programming languages
 
+- YAML
 - SQL
 - Golang
 

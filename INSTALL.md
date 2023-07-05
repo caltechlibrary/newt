@@ -66,3 +66,58 @@ The binaries are available in a Zip archive file for download. The name uses the
     - `newt-v0.0.2-Linux-armv7l.zip` (Raspberry Pi OS, 32bit)
     - `newt-v0.0.2-Linux-aarch64.zip` (Linux on ARM 64)
 
+## Getting recent versions of Pandoc and PostgREST on M1/M2 Macs
+
+Newt is intended to work along side Pandoc and PostgREST. I usually install these from source.  I've had the best results on both Linux and macOS using GHCup to provide my Haskell compile and build environment.  Below are quick recipes for building and installing PostgREST and Pandoc, these are not a replacement for their respective project documentation instruction. They reflect what I did to get Pandoc/PostgREST current releases installed on a Mac Mini with a M1 processor. Your mileage may vary.
+
+The basic recipe is
+
+1. Install Haskell with [GHCup](https://www.haskell.org/ghcup/) (I accept the defaults and use the "recommended" versions set via `ghcup tui`)
+2. Make sure the GHCup environment is available, `source $HOME/.ghcup/env`
+3. Make sure I am using the "recommended" of GHC, Cabal, Stack, etc.
+4. Clone the GitHub [PostgREST](https://github.com/PostgREST/postgrest) and  [Pandoc](https://github.com/jgm/pandoc) repositories to your machine
+5. Change to the cloned repository directory
+6. Checkout the version you want to build
+7. Run the usual Haskell/Cabal build process
+
+Here is the steps I typed at the command line to install PostgREST on my M1 Mac Mini.
+
+~~~
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+source $HOME/.ghcup/env
+ghcup tui
+git clone git@github.com:PostgREST/postgrest
+cd postgrest
+git checkout v11.1.0
+cabal clean
+cabal update
+cabal build
+cabal install
+cd ..
+~~~
+
+Here are the steps I typed at the command line to install Pandoc on my M1 Mac Mini. The basic recipe is modified because of a potential link conflict in which libiconv to use I've encountered on macOS running on my M1 Mac Mini.  I need the Mac Ports version for the Mac Ports installed of Git to work. This means I need to do all my Git commands before I removing libiconv. I then invoking Cabal and put libiconv back afterward Pandoc installation is complete. If you're not using the libiconv installed as part of Mac Ports applications you can skip those steps.
+
+NOTE: I've skipped installing GHCup because I assume you've already installed it when you compiled.
+
+1. Clone [Pandoc](https://github.com/jgm/pandoc) repository from GitHub
+2. Change into the Pandoc directory
+3. Checkout the version of Pandoc you want to build (e.g. 3.1.4)
+4. Remove the Mac Ports libiconv library using Ports command
+5. Run the usual Haskell/Cabal build process
+6. Put the Mac Ports libiconv back using the Ports command
+
+
+~~~
+git clone git@github.com:jgm/pandoc
+cd pandoc
+git checkout 3.1.4
+sudo port uninstall libiconv
+cabal clean
+cabal update
+cabal install pandoc-cli
+sudo port install libiconv
+cd ..
+~~~
+
+Even though you are installing “pandoc-cli” it can function as the Pandoc web service by invoking pandoc server command.

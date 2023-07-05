@@ -12,7 +12,7 @@ authors:
 
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.2
+version: 0.0.3-dev
 
 keywords: [ "web
 development", "microservice", "postgres", "postgrest", "pandoc" ]
