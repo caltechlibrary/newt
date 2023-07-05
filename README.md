@@ -10,7 +10,7 @@ Newt is an experimental [microservice](https://en.wikipedia.org/wiki/Microservic
     - [Pandoc](https://pandoc.org) server
     - [Postgres](https://postgres.org) + [PostgREST](https://postgrest.org) JSON API
 
-## MP^3 plus
+## NP^3 plus
 
 The targetted microservices all run on localhost.  Individually they have very narrow focuses. In a production setting you would normally run them behind a front-end web server like Apache 2 or NginX. The advantage of this approach is that the front-end web service can provide things like authentication or single sign-on integration.  It also allows a NP^3 based application to sit along many other web applications on the same virtual host.
 
