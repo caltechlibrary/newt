@@ -57,8 +57,8 @@ Museums simpler?</p>
 <li>define application through configuration</li>
 </ul>
 </div>
-<div id="three-abstractions" class="slide section level1">
-<h1>Three abstractions</h1>
+<div id="pick-three-abstractions" class="slide section level1">
+<h1>Pick three abstractions</h1>
 <ul>
 <li>A JSON source for managing data =&gt; <a
 href="https://postgresql.org">Postgres</a> + <a
@@ -251,8 +251,8 @@ href="https://pandoc.org">pandoc.org</a></li>
 <div id="the-unexpected-result" class="slide section level1">
 <h1>The unexpected result</h1>
 <ul>
-<li>Newt like PostgREST and Pandoc do require shared syncronous
-state</li>
+<li>Newt like PostgREST and Pandoc <strong>do not require</strong>
+shared syncronous state</li>
 <li>Postgres can be deployed in a <a href="High-availability"
 title="high available cluster">HA cluster</a></li>
 </ul>
@@ -287,7 +287,8 @@ six weeks old)</li>
 <div id="next-steps-for-newt" class="slide section level1">
 <h1>Next steps for Newt?</h1>
 <ol style="list-style-type: decimal">
-<li>Explore PostgREST configuration/SQL Models from Newt’s YAML</li>
+<li>Explore generating PostgREST configuration/SQL Models from Newt’s
+YAML</li>
 <li>Test with Solr/Elasticsearch as alternate JSON sources</li>
 <li>Build staff facing applications this Summer (2023)</li>
 <li>Hopefully move beyond my proof of concept in Fall/Winter (2023)</li>
@@ -331,6 +332,12 @@ class="uri">https://pandoc.org/pandoc-server.html</a></li>
 <ul>
 <li>Install Haskell GHCup <a href="https://www.haskell.org/ghcup/"
 class="uri">https://www.haskell.org/ghcup/</a></li>
+<li><a
+href="https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-PostgREST-M1.html">Quick
+recipe, Compile PostgREST (M1)</a></li>
+<li><a
+href="https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-Pandoc-M1.html">Quick
+recipe, Compiling Pandoc (M1)</a></li>
 </ul></li>
 </ul>
 </div>

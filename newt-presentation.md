@@ -27,7 +27,7 @@ How do we make building web applications for Libraries, Archives and Museums sim
 - build with off the shelf parts (avoid writing more code)
 - define application through configuration
 
-# Three abstractions 
+# Pick three abstractions 
 
 - A JSON source for managing data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A template engine => [Pandoc](https://pandoc.org)
@@ -107,7 +107,7 @@ Lines    Files
 
 # The unexpected result
 
-- Newt like PostgREST and Pandoc do require shared syncronous state
+- Newt like PostgREST and Pandoc **do not require** shared syncronous state
 - Postgres can be deployed in a [HA cluster](High-availability "high available cluster")
 
 > The Newt stack can scale big
@@ -128,7 +128,7 @@ Lines    Files
 
 # Next steps for Newt?
 
-1. Explore PostgREST configuration/SQL Models from Newt's YAML
+1. Explore generating PostgREST configuration/SQL Models from Newt's YAML
 2. Test with Solr/Elasticsearch as alternate JSON sources
 3. Build staff facing applications this Summer (2023)
 4. Hopefully move beyond my proof of concept in Fall/Winter (2023)
@@ -151,6 +151,8 @@ Lines    Files
     - Pandoc Server <https://pandoc.org/pandoc-server.html>
 - Compiling Pandoc or PostgREST requires Haskell
   - Install Haskell GHCup <https://www.haskell.org/ghcup/>
+  - [Quick recipe, Compile PostgREST (M1)](https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-PostgREST-M1.html)
+  - [Quick recipe, Compiling Pandoc (M1)](https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-Pandoc-M1.html)
 
 # Thank you!
 
