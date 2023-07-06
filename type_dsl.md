@@ -209,7 +209,7 @@ converted to the type suggested in the variable's type definition. The constrain
 
 In this case our types "Month", "Day", "Year" converted the values to JSON numbers and the rest were left as JSON strings.
 
-## Reference materials
+## Prior approach reference materials
 
 - [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
 - [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) at MDN
