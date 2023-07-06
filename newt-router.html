@@ -67,12 +67,12 @@ static files.</p>
 <h2 id="what-is-a-request-route">What is a request route?</h2>
 <p>A route is a URL path similar to a Unix file path. It main be an
 explicit route or one that describes an expression expressed in a <a
-href="route_dsl.html"
-title="route domain specific language">RouteDSL</a>. The RouteDSL
-enables a request route to be parsed and transformed into a data API
-request and Pandoc template.</p>
+href="type_dsl.html"
+title="a domain specific language used to describe a variable&#39;s type">TypeDSL</a>.
+The TypeDSL enables a request route to be parsed and transformed into a
+data API request and Pandoc template.</p>
 <pre><code>/about.html
-/blog/{year Year}/{month Month}/{day Day}/</code></pre>
+/blog/${year}/${month}/${day}/</code></pre>
 <p>Routes can contain variables that are re-used in forming a data API
 request or used by Pandoc server if that is defined for the route.</p>
 <h2 id="what-does-a-data-api-url-look-like">What does a data API URL
@@ -86,10 +86,12 @@ combination in your routes CSV file).</p>
 <p>Here’s an example of a data URL that uses the route information from
 our “blog” path as well as two variables defined in the environment
 (i.e. DB_USER, DB_PASSWD).</p>
-<pre><code>http://{DB_USER}:{DB_PASSWD}@localhost:3000/blog?year={year}&amp;month={month}&amp;day={day}</code></pre>
-<p>In the template values for “{year}”, “{month}”, “{day}” came from our
-request route while “{DB_USER}” and “{DB_PASSWD}” came from the
-environment.</p>
+<pre><code>http://${DB_USER}:${DB_PASSWD}@localhost:3000/blog?year=${year}&amp;month=${month}&amp;day=${day}</code></pre>
+<p>In the template values for “<span class="math inline">${year}",
+"$</span>{month}”, “<span class="math inline">${day}" came from our
+request route while "$</span>{DB_USER}” and “${DB_PASSWD}” came from the
+environment. Environment variables are not vetted and are treated as
+strings.</p>
 <h2 id="the-routes-csv-columns-defined">The routes CSV columns
 defined</h2>
 <dl>

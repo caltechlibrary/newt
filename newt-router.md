@@ -37,11 +37,11 @@ From this Newt can build a service that talks to microservices that provide data
 
 ## What is a request route?
 
-A route is a URL path similar to a Unix file path. It main be an explicit route or one that describes an expression expressed in a [RouteDSL](route_dsl.md "route domain specific language").  The RouteDSL enables a request route to be parsed and transformed into a data API request and Pandoc template.
+A route is a URL path similar to a Unix file path. It main be an explicit route or one that describes an expression expressed in a [TypeDSL](type_dsl.md "a domain specific language used to describe a variable's type").  The TypeDSL enables a request route to be parsed and transformed into a data API request and Pandoc template.
 
 ~~~
 /about.html
-/blog/{year Year}/{month Month}/{day Day}/
+/blog/${year}/${month}/${day}/
 ~~~
 
 Routes can contain variables that are re-used in forming a data API request or used by Pandoc server if that is defined for the route.
@@ -54,11 +54,12 @@ Here's an example of a data URL that uses the route information from our "blog" 
 two variables defined in the environment (i.e. DB_USER, DB_PASSWD).
 
 ~~~
-http://{DB_USER}:{DB_PASSWD}@localhost:3000/blog?year={year}&month={month}&day={day}
+http://${DB_USER}:${DB_PASSWD}@localhost:3000/blog?year=${year}&month=${month}&day=${day}
 ~~~
 
-In the template values for "{year}", "{month}", "{day}" came from our request route while
-"{DB_USER}" and "{DB_PASSWD}" came from the environment.
+In the template values for "${year}", "${month}", "${day}" came from our request route while
+"${DB_USER}" and "${DB_PASSWD}" came from the environment. Environment variables are not vetted
+and are treated as strings.
 
 
 ## The routes CSV columns defined

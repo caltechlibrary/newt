@@ -1,13 +1,13 @@
 
-# A TypeDSL, a domain specific language describing routing
+# TypeDSL, a domain specific language describing a variables' type
 
 How do you describe mapping of one path to another? Many web frameworks implement the concept of a "route" which is similar to a file path but may include a placeholder notation for values bound to variable names. The variable names are then available to route handler functions.
 
-Newt's route handler capability is fixed. It can perform a mapping from a request to data API, and optional run the results through Pandoc. A route in Newt is defined using variables including a type. A given type can be validated before transforming the request to a data API call or Pandoc. This provides a level of assurance that the URL requested is what is expected by the back-end data source like PostgREST, Solr or Elasticsearch.
+Newt's route handler capability is fixed. It can perform a mapping from a request to a JSON data source (e.g. JSON API), and optional run the results through Pandoc. A route containing variables in Newt needs to include a definition built from the variable name and its type. A given type can be validated before transforming the request to a data API call or Pandoc. This provides a level of assurance that the URL requested is what is expected by the back-end data source like PostgREST, Solr or Elasticsearch.
 
-## Why create yet another DSL?
+## Why create yet a Type DSL?
 
-I surveyed the route descriptions available in several Python and JavaScript frameworks. There was no consensus. None provided a mechanism to validate the variables captured int he in-bound request. Since Newt's scope is extremely limited this lead me to think about a simple, light weight markup that would be intuitive for web developers. Since Newt is intended to work with Pandoc templates I chose a similar delimiter for template variables.  What was missing a type annotation for in-bound requests.  Injecting a type annotation for the request URL pattern mean that the URL composed or the JSON data API request or Pandoc server request could just be simple handlebars template strings. This means the is only one added concept for a well known template notation.
+I surveyed the route descriptions available in several Python and JavaScript frameworks. There was no consensus about how to declare variables and nothing that would allow vetting the variables by type. Newt implemented a Type DSL to provide a way we could declare typed variables as they may occur in the req_route or used in an API request. The typed variables are also used to vet form data submitted via GET, POST, PUT, and PATCH. 
 
 ## Blogging URLs, a use case
 
