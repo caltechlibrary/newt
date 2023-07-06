@@ -276,7 +276,7 @@ cat <<EOT >birds3/post_result.tmpl
 <html>
 <head> <meta http-equiv="refresh" content="0; url="/" /> </head>
 <body>
-Thank you for submitting a bird, <a href="/sighthings">View List</a>.
+Thank you for submitting a bird, <a href="/">View List</a>.
 </body>
 </html>
 EOT

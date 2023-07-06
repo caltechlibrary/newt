@@ -23,32 +23,17 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 How do we make building web applications for Libraries, Archives and Museums simpler?
 
-- use a scale small approach (limit the moving parts)
-- build with off the shelf parts (avoid writing more code)
-- define application through configuration
-
-# Pick three abstractions 
+# Focus on three abstractions 
 
 - A JSON source for managing data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A template engine => [Pandoc](https://pandoc.org)
 - A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
-# Why model data with SQL?
+# Three implementations
 
-- Good at describing structured data
-- Robust data management capability (e..g queries, views, functions, ...)
-- Allows us to model our data once and in one language
-- PostgREST makes SQL web friendly
-
-__PostgreSQL+PostgREST, a code savings plan!__
-
-# The experiment
-
-Three versions of a bird sighting website
-
-- simple data model
-    - bird, place and date sighted
-- each has a process to update the website
+1. static site from CSV file
+2. dynamic, SQL and browser JavaScript
+3. dynamic, SQL and no browser JavaScript
 
 What are trade-offs?
 
@@ -97,20 +82,20 @@ Lines    Files
 
 # Insights from experiment
 
-- "Off the shelf" microservices can make application construction easier
-- Orchestrating the data pipeline in YAML seems reasonable
+- A few "Off the shelf" microservices can make application construction easier
+- Orchestrating the data pipeline in YAML is reasonable
 - SQL turns some people off
   - models could be bootstraped from Newt's YAML
-- Pandoc templates are simple to learn, well documented at [pandoc.org](https://pandoc.org)
+- Pandoc templates are simple to learn and well documented at [pandoc.org](https://pandoc.org)
 - Newt stack plays well with HTML5 and front-end best practices
 - I encountered an unexpected result ...
 
-# The unexpected result
+# An unexpected result
 
 - Newt like PostgREST and Pandoc **do not require** shared syncronous state
 - Postgres can be deployed in a [HA cluster](High-availability "high available cluster")
 
-> The Newt stack can scale big
+> The Newt stack can scale really big
 
 # Newt has weaknesses
 
@@ -128,10 +113,10 @@ Lines    Files
 
 # Next steps for Newt?
 
-1. Explore generating PostgREST configuration/SQL Models from Newt's YAML
-2. Test with Solr/Elasticsearch as alternate JSON sources
-3. Build staff facing applications this Summer (2023)
-4. Hopefully move beyond my proof of concept in Fall/Winter (2023)
+1. Test with Solr/Elasticsearch as alternate JSON sources
+2. Build staff facing applications this Summer (2023)
+3. Explore generating PostgREST configuration/SQL Models from Newt's YAML
+4. (hopefully) move beyond my proof of concept in Fall/Winter (2023)
 
 # Newt's someday, maybe ...
 

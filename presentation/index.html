@@ -51,14 +51,9 @@ class="email">rsdoiel@caltech.edu</a>
 <h1>The experiment</h1>
 <p>How do we make building web applications for Libraries, Archives and
 Museums simpler?</p>
-<ul>
-<li>use a scale small approach (limit the moving parts)</li>
-<li>build with off the shelf parts (avoid writing more code)</li>
-<li>define application through configuration</li>
-</ul>
 </div>
-<div id="pick-three-abstractions" class="slide section level1">
-<h1>Pick three abstractions</h1>
+<div id="focus-on-three-abstractions" class="slide section level1">
+<h1>Focus on three abstractions</h1>
 <ul>
 <li>A JSON source for managing data =&gt; <a
 href="https://postgresql.org">Postgres</a> + <a
@@ -68,27 +63,13 @@ href="https://postgrest.org">PostgREST</a></li>
 href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
 </div>
-<div id="why-model-data-with-sql" class="slide section level1">
-<h1>Why model data with SQL?</h1>
-<ul>
-<li>Good at describing structured data</li>
-<li>Robust data management capability (e..g queries, views, functions,
-…)</li>
-<li>Allows us to model our data once and in one language</li>
-<li>PostgREST makes SQL web friendly</li>
-</ul>
-<p><strong>PostgreSQL+PostgREST, a code savings plan!</strong></p>
-</div>
-<div id="the-experiment-1" class="slide section level1">
-<h1>The experiment</h1>
-<p>Three versions of a bird sighting website</p>
-<ul>
-<li>simple data model
-<ul>
-<li>bird, place and date sighted</li>
-</ul></li>
-<li>each has a process to update the website</li>
-</ul>
+<div id="three-implementations" class="slide section level1">
+<h1>Three implementations</h1>
+<ol style="list-style-type: decimal">
+<li>static site from CSV file</li>
+<li>dynamic, SQL and browser JavaScript</li>
+<li>dynamic, SQL and no browser JavaScript</li>
+</ol>
 <p>What are trade-offs?</p>
 </div>
 <div id="birds-1-static-site-pandoc" class="slide section level1">
@@ -235,21 +216,21 @@ href="https://github.com/caltechlibrary/newt/tree/main/demos/birds3">birds
 <div id="insights-from-experiment" class="slide section level1">
 <h1>Insights from experiment</h1>
 <ul>
-<li>“Off the shelf” microservices can make application construction
-easier</li>
-<li>Orchestrating the data pipeline in YAML seems reasonable</li>
+<li>A few “Off the shelf” microservices can make application
+construction easier</li>
+<li>Orchestrating the data pipeline in YAML is reasonable</li>
 <li>SQL turns some people off
 <ul>
 <li>models could be bootstraped from Newt’s YAML</li>
 </ul></li>
-<li>Pandoc templates are simple to learn, well documented at <a
+<li>Pandoc templates are simple to learn and well documented at <a
 href="https://pandoc.org">pandoc.org</a></li>
 <li>Newt stack plays well with HTML5 and front-end best practices</li>
 <li>I encountered an unexpected result …</li>
 </ul>
 </div>
-<div id="the-unexpected-result" class="slide section level1">
-<h1>The unexpected result</h1>
+<div id="an-unexpected-result" class="slide section level1">
+<h1>An unexpected result</h1>
 <ul>
 <li>Newt like PostgREST and Pandoc <strong>do not require</strong>
 shared syncronous state</li>
@@ -257,7 +238,7 @@ shared syncronous state</li>
 title="high available cluster">HA cluster</a></li>
 </ul>
 <blockquote>
-<p>The Newt stack can scale big</p>
+<p>The Newt stack can scale really big</p>
 </blockquote>
 </div>
 <div id="newt-has-weaknesses" class="slide section level1">
@@ -287,11 +268,12 @@ six weeks old)</li>
 <div id="next-steps-for-newt" class="slide section level1">
 <h1>Next steps for Newt?</h1>
 <ol style="list-style-type: decimal">
-<li>Explore generating PostgREST configuration/SQL Models from Newt’s
-YAML</li>
 <li>Test with Solr/Elasticsearch as alternate JSON sources</li>
 <li>Build staff facing applications this Summer (2023)</li>
-<li>Hopefully move beyond my proof of concept in Fall/Winter (2023)</li>
+<li>Explore generating PostgREST configuration/SQL Models from Newt’s
+YAML</li>
+<li>(hopefully) move beyond my proof of concept in Fall/Winter
+(2023)</li>
 </ol>
 </div>
 <div id="newts-someday-maybe" class="slide section level1">
