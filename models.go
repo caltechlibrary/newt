@@ -260,11 +260,11 @@ DROP SCHEMA IF EXISTS {namespace} CASCADE;
 CREATE SCHEMA {namespace};
 
 --
--- Create an "authenticator" role, 
+-- Create an "authenticator" role if use jwt authentication, 
 -- per docs, <https://postgrest.org/en/stable/references/auth.html>
 --
-DROP ROLE IF EXISTS {namespace}_authenticator;
-CREATE ROLE {namespace}_authenticator LOGIN NOINHERIT NOCREATEDB NOCREATEROLE NOSUPERUSER;
+-- DROP ROLE IF EXISTS {namespace}_authenticator;
+-- CREATE ROLE {namespace}_authenticator LOGIN NOINHERIT NOCREATEDB NOCREATEROLE NOSUPERUSER;
 
 --
 -- Create role "{namespace}_anonymous"
