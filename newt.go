@@ -26,9 +26,12 @@ import (
 
 // Config holds a configuration for Newt.
 type Config struct {
+	// Namespace holds the Postgres Schema name It is used to generate
+	// a setup.sql file using the -pg-setup option in newt cli.
+	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`
 	// Models declare the data structures used in a Newt application.
-	// These generally thres are tables but can be thought of as objects.
-	// Models can be used to generate SQL CREATE statements suitable for
+	// These generally these are tables but can be thought of as objects.
+	// Models are used to generate SQL CREATE statements suitable for
 	// use with Postgres.
 	Models []*ModelDSL `json:"models,omitempty" yaml:"models,omitempty"`
 	// Port is the name of the localhost port Newt will listen on.
@@ -136,25 +139,33 @@ func RunPostgresSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 	}
 	exitCode := 0
 	if pgSetupSQL {
-		for name, model := range cfg.Models {
-			src, err := PgSetupSQL(configFName, model)
-			if err != nil {
-				fmt.Fprintf(eout, "-- could not create setup for %q, %s\n", name, err)
-				exitCode = 1
-			} else {
-				fmt.Fprintf(out, "%s\n", src)
-			}
+		src, err := PgSetupSQL(configFName, cfg.Namespace, "")
+		if err != nil {
+			fmt.Fprintf(eout, "-- could not create setup for %q based on %q, %s\n", cfg.Namespace, configFName, err)
+			exitCode = 1
+		} else {
+			fmt.Fprintf(out, "%s\n", src)
 		}
 	}
 	if pgModelsSQL {
-		for name, model := range cfg.Models {
+		modelNames := []string{}
+		for i, model := range cfg.Models {
 			src, err := PgModelSQL(configFName, model)
 			if err != nil {
-				fmt.Fprintf(eout, "-- could not create model %q, %s\n", name, err)
+				fmt.Fprintf(eout, "-- could not create model %q (%d), %s\n", model.Name, i, err)
 				exitCode = 1
 			} else {
 				fmt.Fprintf(out, "%s\n", src)
 			}
+			modelNames = append(modelNames, model.Name)
+		}
+
+		src, err := PgModelPermissions(configFName, cfg.Namespace, modelNames)
+		if err != nil {
+			fmt.Fprintf(eout, "-- could not permissions for models in %q, %s\n", configFName, err)
+			exitCode = 1
+		} else {
+			fmt.Fprintf(out, "%s\n", src)
 		}
 	}
 	if pgModelsTestSQL {

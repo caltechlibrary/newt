@@ -3,8 +3,11 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "Newt"
-abstract: "A new take on developing web applications, services and sites
-using Postgres, PostgREST, a URL router and front end web server."
+abstract: "Newt is an experimental microservice providing two stage data
+routing, form data validation, simple static file services. Newt can
+route data from a request to a JSON data source
+(e.g. Postgres+PostgREST) and then take the JSON results and run them
+through Pandoc server."
 authors:
   - family-names: Doiel
     given-names: R. S.
@@ -15,7 +18,7 @@ version: 0.0.3-dev
 
 keywords: [ "web
 development", "microservice", "postgres", "postgrest", "pandoc" ]
-date-released: 2023-06-15
+
 ---
 
 About this software
@@ -29,8 +32,10 @@ About this software
 
 
 
-A new take on developing web applications, services and sites using
-Postgres, PostgREST, a URL router and front end web server.
+Newt is an experimental microservice providing two stage data routing,
+form data validation, simple static file services. Newt can route data
+from a request to a JSON data source (e.g. Postgres+PostgREST) and then
+take the JSON results and run them through Pandoc server.
 
 
 - GitHub: <git+https://github.com/caltechlibrary/newt>
