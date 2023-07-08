@@ -260,10 +260,17 @@ DROP SCHEMA IF EXISTS {namespace} CASCADE;
 CREATE SCHEMA {namespace};
 
 --
+-- Create an "authenticator" role, 
+-- per docs, <https://postgrest.org/en/stable/references/auth.html>
+--
+DROP ROLE IF EXISTS {namespace}_authenticator;
+CREATE ROLE {namespace}_authenticator LOGIN NOINHERIT NOCREATEDB NOCREATEROLE NOSUPERUSER;
+
+--
 -- Create role "{namespace}_anonymous"
 --
 DROP ROLE IF EXISTS {namespace}_anonymous;
-CREATE ROLE {namespace}_anonymous nologin;
+CREATE ROLE {namespace}_anonymous NOLOGIN;
 
 --
 -- Create role "{namespace}_authenticated"
@@ -271,7 +278,7 @@ CREATE ROLE {namespace}_anonymous nologin;
 DROP ROLE IF EXISTS {namespace}_authenticated;
 -- WARNING: This "CREATE ROLE" statement sets a password!!!!
 -- Don't make this publically available!!!!
-CREATE ROLE {namespace}_authenticated NOINHERIT LOGIN PASSWORD '{password_goes_here}';
+CREATE ROLE {namespace}_authenticated NOINHERIT LOGIN NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password_goes_here}';
 
 `, now.Format("2006-01-02"))
 	if namespace == "" {
