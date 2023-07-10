@@ -30,19 +30,29 @@ Museums simpler?</p>
 href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
 <li>A template engine =&gt; <a href="https://pandoc.org">Pandoc</a></li>
-<li>A data router, form validator =&gt; <a
+<li>A data router and form validator =&gt; <a
 href="https://github.com/caltechlibrary/newt/">Newt</a></li>
 </ul>
-<h1 id="three-implementations">Three implementations</h1>
+<h1 id="three-implementations-a-bird-sighting-website">Three
+implementations a bird sighting website</h1>
 <ol type="1">
-<li>static site from CSV file</li>
-<li>dynamic, SQL and browser JavaScript</li>
-<li>dynamic, SQL and no browser JavaScript</li>
+<li>static site derived from CSV data file
+<ul>
+<li>(CSV file holds our sighting list)</li>
+</ul></li>
+<li>dynamic, SQL and browser JavaScript
+<ul>
+<li>(bird sighting list held in SQL database)</li>
+</ul></li>
+<li>dynamic, SQL and no browser JavaScript
+<ul>
+<li>(bird sighting list held in SQL database)</li>
+</ul></li>
 </ol>
 <p>What are trade-offs?</p>
-<h1 id="birds-1-static-site-pandoc"><a
+<h1 id="birds-version-1-static-site-pandoc"><a
 href="https://github.com/caltechlibrary/newt/tree/main/demos/birds1">birds
-1</a>, static site, Pandoc</h1>
+version 1</a>, static site, Pandoc</h1>
 <p>CSV file, Pandoc, 2 directories, 5 files, <strong>75 total line
 count</strong>, static site</p>
 <table>
@@ -76,9 +86,9 @@ the demos</td>
 </tr>
 </tbody>
 </table>
-<h1 id="birds-2-dynamic-site-browser-javascript"><a
+<h1 id="birds-version-2-dynamic-site-browser-javascript"><a
 href="https://github.com/caltechlibrary/newt/tree/main/demos/birds2">birds
-2</a>, dynamic site, browser JavaScript</h1>
+version 2</a>, dynamic site, browser JavaScript</h1>
 <p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8
 files, <strong>232 total line count</strong>, dynamic site</p>
 <table>
@@ -124,10 +134,10 @@ models</td>
 </tr>
 </tbody>
 </table>
-<h1 id="birds-3-dynamic-site-no-browser-javascript"><a
+<h1 id="birds-version-3-dynamic-site-no-browser-javascript"><a
 href="https://github.com/caltechlibrary/newt/tree/main/demos/birds3">birds
-3</a>, dynamic site, no browser JavaScript</h1>
-<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files,
+version 3</a>, dynamic site, no browser JavaScript</h1>
+<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 9 files,
 <strong>225 total line count</strong>, dynamic site</p>
 <table>
 <thead>

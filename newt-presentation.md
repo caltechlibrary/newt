@@ -23,21 +23,24 @@ url: "https://caltechlibrary.github.io/newt/presentation"
 
 How do we make building web applications for Libraries, Archives and Museums simpler?
 
-# Focus on three abstractions 
+# Focus on three abstractions
 
 - A JSON source for managing data => [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - A template engine => [Pandoc](https://pandoc.org)
-- A data router, form validator => [Newt](https://github.com/caltechlibrary/newt/)
+- A data router and form validator => [Newt](https://github.com/caltechlibrary/newt/)
 
-# Three implementations
+# Three implementations a bird sighting website
 
-1. static site from CSV file
+1. static site derived from CSV data file
+    - (CSV file holds our sighting list)
 2. dynamic, SQL and browser JavaScript
+    - (bird sighting list held in SQL database)
 3. dynamic, SQL and no browser JavaScript
+    - (bird sighting list held in SQL database)
 
 What are trade-offs?
 
-# [birds 1](https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
+# [birds version 1](https://github.com/caltechlibrary/newt/tree/main/demos/birds1), static site, Pandoc
 
 CSV file, Pandoc, 2 directories, 5 files, **75 total line count**, static site
 
@@ -49,7 +52,7 @@ Lines   Files
      7  page.tmpl
     32  htdocs/index.html
 
-# [birds 2](https://github.com/caltechlibrary/newt/tree/main/demos/birds2), dynamic site, browser JavaScript
+# [birds version 2](https://github.com/caltechlibrary/newt/tree/main/demos/birds2), dynamic site, browser JavaScript
 
 SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, **232 total line count**, dynamic site
 
@@ -64,9 +67,9 @@ Lines    Files
     24   htdocs/index.html   <-- hand coded
     63   htdocs/sightings.js <-- hand coded
 
-# [birds 3](https://github.com/caltechlibrary/newt/tree/main/demos/birds3), dynamic site, no browser JavaScript
+# [birds version 3](https://github.com/caltechlibrary/newt/tree/main/demos/birds3), dynamic site, no browser JavaScript
 
-SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 7 files, **225 total line count**, dynamic site
+SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 9 files, **225 total line count**, dynamic site
 
 Lines    Files
 ------   ---------------
@@ -120,7 +123,7 @@ Lines    Files
 
 # Newt's someday, maybe ...
 
-- Have Newt delegate file uploads to an S3 like service 
+- Have Newt delegate file uploads to an S3 like service
   - One approach would be Minio using file streams
 - Explore integrating SQLite3 support as a JSON data source
 - Consider implementing Newt in Haskell for richer Pandoc integration
