@@ -166,11 +166,12 @@ func createGetRecord(model *ModelDSL) ([]byte, error) {
 	txt := fmt.Sprintf(`--
 -- {func_name} provides a 'get record' for model %s
 --
-DROP FUNCTION IF EXISTS {namespace}.{func_name}(_pid {primary_key_def});
-CREATE FUNCTION {namespace}.{func_name}(_pid {primary_key_def})
+DROP FUNCTION IF EXISTS {namespace}.{func_name}(_{primary_key} {primary_key_def});
+CREATE FUNCTION {namespace}.{func_name}(_{primary_key} {primary_key_def})
 RETURNS TABLE ({sql_col_defs}) AS $$
-	SELECT {col_names} FROM {model_name} WHERE {primary_key} = _pid LIMIT 1
+	SELECT {col_names} FROM {model_name} WHERE {primary_key} = _{primary_key} LIMIT 1
 $$ LANGUAGE SQL;
+
 `, model.Name)
 	src := []byte(
 		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
@@ -219,6 +220,7 @@ RETURNS {primary_key_def} AS $$
         VALUES ({col_names})
     RETURNING {primary_key}
 $$ LANGUAGE SQL;
+
 `, model.Name)
 	src := []byte(
 		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
@@ -236,13 +238,53 @@ $$ LANGUAGE SQL;
 // returning the updated row.
 func createUpdateRecord(model *ModelDSL) ([]byte, error) {
 	namespace, flatName := getNamespaceFlatName(model.Name)
+	fnName := "update_" + flatName
+	colDefs := []string{}
+	fieldsAndValues := []string{}
+	colParams := []string{}
+	primaryKey, primaryKeyDef := "", ""
+	for varName, tVal := range model.Var {
+		sqlType, err := dslToSQLType(tVal, true)
+		if err != nil {
+			return nil, fmt.Errorf("-- Failed to generate function %q for model %q, %s", fnName, model.Name, err)
+		}
+		if strings.HasSuffix(tVal, "*") {
+			primaryKey = varName
+			primaryKeyDef = sqlType
+		} else {
+			fieldsAndValues = append(fieldsAndValues, fmt.Sprintf("%s = _%s", varName, varName))
+			colDefs = append(colDefs, fmt.Sprintf("_%s %s", varName, sqlType))
+			colParams = append(colParams, "_" + varName)
+		}
+	}
+	if primaryKey == "" {
+		return nil, fmt.Errorf("-- Failed to find primary key to generate function %q for model %q", fnName, model.Name)
+	}
+
+
 	txt := fmt.Sprintf(`--
--- FIXME: Need to generate a 'update record' for model %s
--- FIXME: namespace %q, flat name %q
+-- {func_name} provides an 'update record' for model %s
+-- It returns the updated row primary key
+DROP FUNCTION IF EXISTS {namespace}.{func_name}(_{primary_key} {primary_key_def}, {col_defs});
+CREATE FUNCTION {namespace}.{func_name}(_{primary_key} {primary_key_def}, {col_defs})
+RETURNS {primary_key_def} AS $$
+    UPDATE {model_name} SET {fields_and_values}
+    WHERE {primary_key} = _{primary_key}
+    RETURNING {primary_key}
+$$ LANGUAGE SQL;
 
-`, model.Name, namespace, flatName)
-
-	return []byte(txt), nil
+`, model.Name)
+	src := []byte(
+		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
+			txt, "{func_name}", fnName),
+			"{namespace}", namespace),
+			"{primary_key_def}", primaryKeyDef),
+			"{col_defs}", strings.Join(colDefs, ", ")),
+			"{col_params}", strings.Join(colParams, ", ")),
+			"{fields_and_values}", strings.Join(fieldsAndValues, ", ")),
+			"{model_name}", model.Name),
+			"{primary_key}", primaryKey))
+	return []byte(src), nil
 }
 
 // PgSetupSQL generate Postgres+PostgREST setup SQL for roles in a
@@ -332,14 +374,12 @@ SET search_path TO %s, public;
 	}
 	src = append(src, s...)
 
-/*
 	// Create an update record function. PostgREST path `/rpc/update_{model_name}`
 	s, err = createUpdateRecord(model)
 	if err != nil {
 		return nil, err
 	}
 	src = append(src, s...)
-*/
 	return src, nil
 }
 
@@ -370,7 +410,7 @@ func PgModelTestSQL(configFName string, model *ModelDSL) ([]byte, error) {
 // a Schema's anonymous and authenticated roles.
 func PgModelPermissions(configFName, namespace string, modelNames []string) ([]byte, error) {
 	anonRole := namespace + "_anonymous"
-	authRole := namespace + "_authenticated"
+	authRole := namespace
 	src := []byte(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(`--
 -- PostgREST access and controls.
 --
@@ -396,8 +436,8 @@ GRANT EXECUTE ON FUNCTION {namespace}.get_{flat_name} TO {anon_role};
 GRANT SELECT, INSERT, UPDATE, DELETE ON {model_name} TO {auth_role};
 GRANT SELECT ON {namespace}.{flat_name}_view TO {auth_role};
 GRANT EXECUTE ON FUNCTION {namespace}.get_{flat_name} TO {auth_role};
--- GRANT EXECUTE ON FUNCTION {namespace}.add_{flat_name} TO {auth_role};
--- GRANT EXECUTE ON FUNCTION {namespace}.update_{flat_name} TO {auth_role};
+GRANT EXECUTE ON FUNCTION {namespace}.add_{flat_name} TO {auth_role};
+GRANT EXECUTE ON FUNCTION {namespace}.update_{flat_name} TO {auth_role};
 
 `
 	for _, modelName := range modelNames {
