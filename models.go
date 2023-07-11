@@ -163,14 +163,13 @@ func createGetRecord(model *ModelDSL) ([]byte, error) {
 	if primaryKey == "" {
 		return nil, fmt.Errorf("-- Failed to find primary key to generate function %q for model %q", fnName, model.Name)
 	}
-
 	txt := fmt.Sprintf(`--
 -- {func_name} provides a 'get record' for model %s
 --
-DROP FUNCTION IF EXISTS {namespace}.{func_name}({primary_key} {primary_key_def});
-CREATE FUNCTION {namespace}.{func_name}({primary_key} {primary_key_def})
+DROP FUNCTION IF EXISTS {namespace}.{func_name}(_pid {primary_key_def});
+CREATE FUNCTION {namespace}.{func_name}(_pid {primary_key_def})
 RETURNS TABLE ({sql_col_defs}) AS $$
-	SELECT {col_names} FROM {model_name} WHERE {primary_key} = {primary_key} LIMIT 1
+	SELECT {col_names} FROM {model_name} WHERE {primary_key} = _pid LIMIT 1
 $$ LANGUAGE SQL;
 `, model.Name)
 	src := []byte(
@@ -260,25 +259,19 @@ DROP SCHEMA IF EXISTS {namespace} CASCADE;
 CREATE SCHEMA {namespace};
 
 --
--- Create an "authenticator" role if use jwt authentication, 
--- per docs, <https://postgrest.org/en/stable/references/auth.html>
---
--- DROP ROLE IF EXISTS {namespace}_authenticator;
--- CREATE ROLE {namespace}_authenticator LOGIN NOINHERIT NOCREATEDB NOCREATEROLE NOSUPERUSER;
-
---
 -- Create role "{namespace}_anonymous"
 --
 DROP ROLE IF EXISTS {namespace}_anonymous;
 CREATE ROLE {namespace}_anonymous NOLOGIN;
 
 --
--- Create role "{namespace}_authenticated"
+-- Create role "{namespace}"
 --
-DROP ROLE IF EXISTS {namespace}_authenticated;
+DROP ROLE IF EXISTS {namespace};
 -- WARNING: This "CREATE ROLE" statement sets a password!!!!
 -- Don't make this publically available!!!!
-CREATE ROLE {namespace}_authenticated NOINHERIT LOGIN NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password_goes_here}';
+CREATE ROLE {namespace} NOINHERIT LOGIN PASSWORD '{password_goes_here}';
+GRANT {namespace}_anonymous TO {namespace};
 
 `, now.Format("2006-01-02"))
 	if namespace == "" {
