@@ -287,6 +287,29 @@ $$ LANGUAGE SQL;
 	return []byte(src), nil
 }
 
+// testListView tests a previously defined SQL view statement for a model.
+func testListView(model *ModelDSL) ([]byte, error) {
+	namespace, flatName := getNamespaceFlatName(model.Name)
+	parts := []string{}
+	stmt := fmt.Sprintf(`--
+\c %s
+-- Test SELECT STATEMENT: %s
+--
+-- SELECT * FROM %s.%s ORDER BY RANDOM() LIMIT 10;
+
+-- Test LIST VIEW: %s 
+--
+SELECT %%s FROM %s.%s_view;
+
+`, namespace, model.Name, namespace, flatName, model.Name, namespace, flatName)
+	//FIXME: need to code up table attributes.
+	for k, _ := range model.Var {
+		parts = append(parts, k)
+	}
+	return []byte(fmt.Sprintf(stmt, strings.Join(parts, ", "))), nil
+}
+
+
 // PgSetupSQL generate Postgres+PostgREST setup SQL for roles in a
 // given namespace
 func PgSetupSQL(configFName string, namespace string, password string) ([]byte, error) {
@@ -391,12 +414,7 @@ func PgModelTestSQL(configFName string, model *ModelDSL) ([]byte, error) {
 	}
 	src := []byte{}
 	src = append(src, commentSection(configFName, model.Name)...)
-	s, err := createStatement(model)
-	if err != nil {
-		return nil, err
-	}
-	src = append(src, s...)
-	s, err = createListView(model)
+	s, err := testListView(model)
 	if err != nil {
 		return nil, err
 	}
