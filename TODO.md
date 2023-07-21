@@ -5,6 +5,10 @@
 
 ## Next
 
+- [ ] It would be nice to be able to define some global constants to minimize repeated strings like a common PostgREST url prefix, `http://localhost:3000` expressed as `{api}` 
+- [ ] Prune required boiler plate in Newt's YAML file
+    - [ ] Make sure `*_method:` defaults to "GET"
+    - [ ] Make sure `api_content_type:` defaults to "application/json"
 - [ ] Present at Code4Lib meetup, July 14, 2023
 - [ ] Demo for DLD staff
 - [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler
