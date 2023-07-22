@@ -2,6 +2,8 @@ package newt
 
 import (
 	"fmt"
+	"net/mail"
+	"net/url"
 	"path"
 	"regexp"
 	"strconv"
@@ -36,7 +38,15 @@ var (
 		"ORCID":    new(TypeORCID).EvalType,
 		"ArXiv":    new(TypeArXiv).EvalType,
 		"Markdown": new(TypeMarkdown).EvalType,
+		"ROR":      new(TypeROR).EvalType,
+		"URL":      new(TypeURL).EvalType,
+		"EMail":    new(TypeEMail).EvalType,
+		"Timestamp": new(TypeTimestamp).EvalType,
 	}
+
+	// isRORDomain is the regular expression for the ROR domain per 
+	// https://ror.readme.io/docs/ror-identifier-pattern
+	isRORDomain = regexp.MustCompile(`^0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$`)
 )
 
 func lastChar(s string) string {
@@ -476,4 +486,59 @@ func (t TypeArXiv) EvalType (expr string, val string) (string, bool) {
 		return "", false
 	}
 	return strings.TrimPrefix(strings.ToLower(val), "arxiv:"), true
+}
+
+// TypeROR implements a naive ROR validator
+type TypeROR struct {
+}
+
+func (t TypeROR) EvalType (expr string, val string) (string, bool) {
+	// FIXME: This is a naive implementation based on https://ror.org/about/faqs/
+	// and https://ror.readme.io/docs/ror-identifier-pattern
+	rorDomain := val
+	if strings.HasPrefix(expr, "https://ror.org/") {
+		rorDomain = strings.TrimPrefix(expr, "https://ror.org/")
+	} 
+	if isRORDomain.MatchString(rorDomain) {
+		return "https://ror.org/" + rorDomain, true
+	}
+	return "", false
+}
+
+
+// TypeURL implements a niave URL validator using net/url's Parser
+type TypeURL struct {
+}
+
+func (t TypeURL) EvalType (expr string, val string) (string, bool) {
+	_, err := url.Parse(val)
+	if err != nil {
+		return "", false
+	}
+	return val, true
+}
+
+// TypeEMail implements a simlpe EMail validator using Go's mail package
+type TypeEMail struct {
+}
+
+func (t TypeEMail) EvalType(expr string, val string) (string, bool) {
+    _, err := mail.ParseAddress(val)
+	if err != nil {
+		return "", false
+	}
+    return val, true
+}
+
+// TypeTimestamp implements a simple timestamp format based on Go's time package
+// using the RFC3339 format for parsing and writing out.
+type TypeTimestamp struct {
+}
+
+func (t TypeTimestamp) EvalType(expr string, val string) (string, bool) {
+	ts, err := time.Parse(time.RFC3339, val)
+	if err != nil {
+		return "", false
+	}
+	return ts.Format(time.RFC3339), true
 }

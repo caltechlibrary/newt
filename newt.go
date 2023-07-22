@@ -49,22 +49,47 @@ type Config struct {
 	Routes []map[string]interface{} `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
-// LoadConfig loads a configuration return a Config object and error value.
-func LoadConfig(configFName string) (*Config, error) {
+// ParseConfig will read []byte of YAML or JSON, 
+// populate the provided *Config object and return an error.
+//
+//```
+// src, _ := os.ReadFile("newt.yaml")
+// cfg := new(Config)
+// if err := ParseConfig(src, cfg); err != nil {
+//     // ... handle error
+// }
+//```
+func Parse(src []byte, cfg *Config) error {
+	if bytes.HasPrefix(src, []byte("{")) {
+		if err := json.Unmarshal(src, &cfg); err != nil {
+			return err
+		}
+	} else {
+		if err := yaml.Unmarshal(src, &cfg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Load read a configuration file and returns a Config object and error value.
+// It merges in the Newt specific environment variables.
+//
+//```
+// cfg, err := Load("newt.yaml")
+// if err != nil {
+//     // ... handle error
+// }
+//```
+func Load(configFName string) (*Config, error) {
 	cfg := new(Config)
 	if configFName != "" {
 		src, err := os.ReadFile(configFName)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read %q, %s", configFName, err)
 		}
-		if bytes.HasPrefix(src, []byte("{")) {
-			if err := json.Unmarshal(src, &cfg); err != nil {
-				return nil, fmt.Errorf("failed to read JSON %q, %s", configFName, err)
-			}
-		} else {
-			if err := yaml.Unmarshal(src, &cfg); err != nil {
-				return nil, fmt.Errorf("failed YAML parse %q, %s", configFName, err)
-			}
+		if err := Parse(src, cfg); err != nil {
+			return nil, fmt.Errorf("failed to read %q, %s", configFName, err)
 		}
 	}
 
@@ -123,7 +148,7 @@ func RunPostgresSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 	if len(args) > 0 {
 		configFName = args[0]
 	}
-	cfg, err := LoadConfig(configFName)
+	cfg, err := Load(configFName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return 1
@@ -188,7 +213,7 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 	if len(args) > 0 {
 		configFName = args[0]
 	}
-	cfg, err := LoadConfig(configFName)
+	cfg, err := Load(configFName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return 1

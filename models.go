@@ -29,6 +29,12 @@ var (
 		"ORCID":    "VARCHAR(19) DEFAULT ''",
 		"ArXiv":    "VARCHAR(10) DEFAULT ''",
 		"Markdown": "TEXT DEFAULT ''",
+		"ROR":      "VARCHAR(25)",
+		// FIXME: find out the actual max length of URL if exists
+		"URL":      "VARCHAR(1028)",
+		// FIXME: find out the actual max length of an email address if exists
+		"EMail":    "VARCHAR(256)",
+		"Timestamp": "TIMESTAMP",
 	}
 )
 
@@ -140,28 +146,40 @@ CREATE OR REPLACE VIEW %s.%s_view AS
 	return []byte(fmt.Sprintf("%s%s%s", prefix, strings.Join(parts, ", "), suffix)), nil
 }
 
+// sqlPrimaryKeyAndColumns reads a model and renders the primary key/definition pair
+// and column name/definition pairs as SQL types based the model provided.
+func sqlPrimaryKeyAndColumns(model *ModelDSL, requirePrimaryKey bool) (string, string, []string, []string, error) {
+	useSimpleType := ! requirePrimaryKey
+	colDefs := []string{}
+	colNames := []string{}
+	primaryKey, primaryKeyDef := "", ""
+	for varName, tVal := range model.Var {
+		sqlType, err := dslToSQLType(tVal, useSimpleType)
+		if err != nil {
+			return "", "", nil, nil, fmt.Errorf("failed to generate sql type for the variable %q in model %q, %s", varName, model.Name, err)
+		}
+		if strings.HasSuffix(tVal, "*") {
+			primaryKey = varName
+			primaryKeyDef = sqlType
+			varName = strings.TrimSuffix(varName, "*")
+		} 
+		colNames = append(colNames, varName)
+		colDefs = append(colDefs, fmt.Sprintf("%s %s", varName, sqlType))
+	}
+	if requirePrimaryKey && (primaryKey == "") {
+		return "", "", nil, nil, fmt.Errorf("primary key is missing in model %q", model.Name)
+	}
+	return primaryKey, primaryKeyDef, colNames, colDefs, nil
+}
+
 // createGetRecord generates a SQL function for retrieving record
 // by primary key.
 func createGetRecord(model *ModelDSL) ([]byte, error) {
 	namespace, flatName := getNamespaceFlatName(model.Name)
 	fnName := "get_" + flatName
-	sqlColDefs := []string{}
-	colNames := []string{}
-	primaryKey, primaryKeyDef := "", ""
-	for varName, tVal := range model.Var {
-		sqlType, err := dslToSQLType(tVal, true)
-		if err != nil {
-			return nil, fmt.Errorf("-- Failed to generate function %q for model %q, %s", fnName, model.Name, err)
-		}
-		if strings.HasSuffix(tVal, "*") {
-			primaryKey = varName
-			primaryKeyDef = sqlType
-		}
-		sqlColDefs = append(sqlColDefs, fmt.Sprintf("%s %s", varName, sqlType))
-		colNames = append(colNames, varName)
-	}
-	if primaryKey == "" {
-		return nil, fmt.Errorf("-- Failed to find primary key to generate function %q for model %q", fnName, model.Name)
+	primaryKey, primaryKeyDef, colNames, colDefs, err := sqlPrimaryKeyAndColumns(model, true) 
+	if err != nil {
+		return nil, fmt.Errorf("failed generate function %q, %s", fnName, err)
 	}
 	txt := fmt.Sprintf(`--
 -- {func_name} provides a 'get record' for model %s
@@ -178,7 +196,7 @@ $$ LANGUAGE SQL;
 			txt, "{func_name}", fnName),
 			"{namespace}", namespace),
 			"{primary_key_def}", primaryKeyDef),
-			"{sql_col_defs}", strings.Join(sqlColDefs, ", ")),
+			"{sql_col_defs}", strings.Join(colDefs, ", ")),
 			"{col_names}", strings.Join(colNames, ", ")),
 			"{model_name}", model.Name),
 			"{primary_key}", primaryKey))
@@ -190,23 +208,9 @@ $$ LANGUAGE SQL;
 func createAddRecord(model *ModelDSL) ([]byte, error) {
 	namespace, flatName := getNamespaceFlatName(model.Name)
 	fnName := "add_" + flatName
-	sqlColDefs := []string{}
-	colNames := []string{}
-	primaryKey, primaryKeyDef := "", ""
-	for varName, tVal := range model.Var {
-		sqlType, err := dslToSQLType(tVal, true)
-		if err != nil {
-			return nil, fmt.Errorf("-- Failed to generate function %q for model %q, %s", fnName, model.Name, err)
-		}
-		if strings.HasSuffix(tVal, "*") {
-			primaryKey = varName
-			primaryKeyDef = sqlType
-		}
-		sqlColDefs = append(sqlColDefs, fmt.Sprintf("%s %s", varName, sqlType))
-		colNames = append(colNames, varName)
-	}
-	if primaryKey == "" {
-		return nil, fmt.Errorf("-- Failed to find primary key to generate function %q for model %q", fnName, model.Name)
+	primaryKey, primaryKeyDef, colNames, colDefs, err := sqlPrimaryKeyAndColumns(model, true)
+	if err != nil {
+		return nil, fmt.Errorf("failed generate function %q, %s", fnName, err)
 	}
 
 	txt := fmt.Sprintf(`--
@@ -227,7 +231,7 @@ $$ LANGUAGE SQL;
 			txt, "{func_name}", fnName),
 			"{namespace}", namespace),
 			"{primary_key_def}", primaryKeyDef),
-			"{sql_col_defs}", strings.Join(sqlColDefs, ", ")),
+			"{sql_col_defs}", strings.Join(colDefs, ", ")),
 			"{col_names}", strings.Join(colNames, ", ")),
 			"{model_name}", model.Name),
 			"{primary_key}", primaryKey))
@@ -239,34 +243,25 @@ $$ LANGUAGE SQL;
 func createUpdateRecord(model *ModelDSL) ([]byte, error) {
 	namespace, flatName := getNamespaceFlatName(model.Name)
 	fnName := "update_" + flatName
-	colDefs := []string{}
+	primaryKey, primaryKeyDef, colNames, colDefs, err := sqlPrimaryKeyAndColumns(model, true)
+	if err != nil {
+		return nil, fmt.Errorf("failed generate function %q, %s", fnName, err)
+	}
 	fieldsAndValues := []string{}
-	colParams := []string{}
-	primaryKey, primaryKeyDef := "", ""
-	for varName, tVal := range model.Var {
-		sqlType, err := dslToSQLType(tVal, true)
-		if err != nil {
-			return nil, fmt.Errorf("-- Failed to generate function %q for model %q, %s", fnName, model.Name, err)
-		}
-		if strings.HasSuffix(tVal, "*") {
-			primaryKey = varName
-			primaryKeyDef = sqlType
-		} else {
+    paramDefs := []string{}
+	for i, _ := range colNames {
+		varName, varDef := colNames[i], colDefs[i]
+		if varName != primaryKey {
 			fieldsAndValues = append(fieldsAndValues, fmt.Sprintf("%s = _%s", varName, varName))
-			colDefs = append(colDefs, fmt.Sprintf("_%s %s", varName, sqlType))
-			colParams = append(colParams, "_" + varName)
+			paramDefs = append(paramDefs, fmt.Sprintf("_%s %s", varName, varDef))
 		}
 	}
-	if primaryKey == "" {
-		return nil, fmt.Errorf("-- Failed to find primary key to generate function %q for model %q", fnName, model.Name)
-	}
-
 
 	txt := fmt.Sprintf(`--
 -- {func_name} provides an 'update record' for model %s
 -- It returns the updated row primary key
-DROP FUNCTION IF EXISTS {namespace}.{func_name}(_{primary_key} {primary_key_def}, {col_defs});
-CREATE FUNCTION {namespace}.{func_name}(_{primary_key} {primary_key_def}, {col_defs})
+DROP FUNCTION IF EXISTS {namespace}.{func_name}(_{primary_key} {primary_key_def}, {param_defs});
+CREATE FUNCTION {namespace}.{func_name}(_{primary_key} {primary_key_def}, {param_defs})
 RETURNS {primary_key_def} AS $$
     UPDATE {model_name} SET {fields_and_values}
     WHERE {primary_key} = _{primary_key}
@@ -275,12 +270,11 @@ $$ LANGUAGE SQL;
 
 `, model.Name)
 	src := []byte(
-		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
+		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
 			txt, "{func_name}", fnName),
 			"{namespace}", namespace),
 			"{primary_key_def}", primaryKeyDef),
-			"{col_defs}", strings.Join(colDefs, ", ")),
-			"{col_params}", strings.Join(colParams, ", ")),
+			"{param_defs}", strings.Join(paramDefs, ", ")),
 			"{fields_and_values}", strings.Join(fieldsAndValues, ", ")),
 			"{model_name}", model.Name),
 			"{primary_key}", primaryKey))
