@@ -211,16 +211,3 @@ In this case our types "Month", "Day", "Year" converted the values to JSON numbe
 
 When exploring working building application directory on Postgres via PostgREST one of the reactions I encountered was a resistence to SQL. This I think is unfortunate as modern SQL, exspecially in Postgres, is a rich capable langauge for managing and manipulating data.  One thing I've noticed over the years is that colleagues will often feel more confortable modifying SQL then writing it from scratch.  The Type DSL was initially developed for vetting routes but it occurred to me that is can also be used to describe a data model.  This lead to the "models" attribute in a Newt YAML file. RDMS support table datastructures. These are easily calculated from a simple key/value notation. It then is possible to bootstrap simple data models in Postgres by evaluating a map of variable names and their type descriptions.  Once you know the table structure you can also calculate some basic views and functions for working with the table (e.g. most applications need to support CRUD, create, read, update and delete).
 
-
-## Prior approach reference materials
-
-- [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
-- [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) at MDN
-- [URLPattern](https://developer.chrome.com/articles/urlpattern/) at Chrome Developer site
-- [Flask Route tutorial](https://pythonbasics.org/flask-tutorial-routes/)
-- [router.js](https://github.com/tildeio/router.js/)
-- [Azure application gateway routing](https://learn.microsoft.com/en-us/azure/application-gateway/url-route-overview#pathbasedrouting-rule)
-- [React Router](https://reactrouter.com/en/main/route/route)
-- [Nextjs routing](https://nextjs.org/docs/app/building-your-application/routing)
-- [dJango routing](https://www.django-rest-framework.org/api-guide/routers/)
-
