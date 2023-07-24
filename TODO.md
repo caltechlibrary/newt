@@ -5,6 +5,7 @@
 
 ## Next
 
+- [ ] Update generate SQL to confirm to the style suggestion in "The Art of Postgres"
 - [ ] It would be nice to be able to define some global constants to minimize repeated strings like a common PostgREST url prefix, `http://localhost:3000` expressed as `{api}` 
 - [ ] Prune required boiler plate in Newt's YAML file
     - [ ] Make sure `*_method:` defaults to "GET"

@@ -1,13 +1,11 @@
 
-# TypeDSL, a domain specific language describing a variables' type
+# Type DSL, a domain specific language describing a variables' type
 
-How do you describe mapping of one path to another? Many web frameworks implement the concept of a "route" which is similar to a file path but may include a placeholder notation for values bound to variable names. The variable names are then available to route handler functions.
+Type DSL evolved from thinking about mapping of one URL path to another. Many web frameworks implement the concept of a "route" which is similar to a file path but may include a placeholder notation for values bound to variable names. The variable names are then available to route handler functions. If you are extracting values and binding them to varaible names it is extremely helpful to have type information.
 
-Newt's route handler capability is fixed. It can perform a mapping from a request to a JSON data source (e.g. JSON API), and optional run the results through Pandoc. A route containing variables in Newt needs to include a definition built from the variable name and its type. A given type can be validated before transforming the request to a data API call or Pandoc. This provides a level of assurance that the URL requested is what is expected by the back-end data source like PostgREST, Solr or Elasticsearch.
+Newt needed to support embedded typed variables in it mapping ability. It also was needed by Newt to support generating SQL bootstrap code from a simplified Model description.  Newt uses the type information to vet inputs bound to a varaible name as well as when generating bootstrep SQL for a Newt+Postgres+PostgREST+Pandoc (N3P) application.
 
-## Why create yet a Type DSL?
-
-I surveyed the route descriptions available in several Python and JavaScript frameworks. There was no consensus about how to declare variables and nothing that would allow vetting the variables by type. Newt implemented a Type DSL to provide a way we could declare typed variables as they may occur in the req_route or used in an API request. The typed variables are also used to vet form data submitted via GET, POST, PUT, and PATCH. 
+I surveyed the route descriptions available in several Python and JavaScript frameworks. There was no consensus about how to declare variables and nothing that would allow vetting the variables by type. Newt implemented a Type DSL to provide a way to remedy this situation. 
 
 ## Blogging URLs, a use case
 
@@ -208,6 +206,11 @@ converted to the type suggested in the variable's type definition. The constrain
 ~~~
 
 In this case our types "Month", "Day", "Year" converted the values to JSON numbers and the rest were left as JSON strings.
+
+## SQL generation, a use case
+
+When exploring working building application directory on Postgres via PostgREST one of the reactions I encountered was a resistence to SQL. This I think is unfortunate as modern SQL, exspecially in Postgres, is a rich capable langauge for managing and manipulating data.  One thing I've noticed over the years is that colleagues will often feel more confortable modifying SQL then writing it from scratch.  The Type DSL was initially developed for vetting routes but it occurred to me that is can also be used to describe a data model.  This lead to the "models" attribute in a Newt YAML file. RDMS support table datastructures. These are easily calculated from a simple key/value notation. It then is possible to bootstrap simple data models in Postgres by evaluating a map of variable names and their type descriptions.  Once you know the table structure you can also calculate some basic views and functions for working with the table (e.g. most applications need to support CRUD, create, read, update and delete).
+
 
 ## Prior approach reference materials
 
