@@ -7,7 +7,7 @@
     "downloadUrl": "https://github.com/caltechlibrary/releases",
     "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
     "name": "Newt",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Newt is an experimental microservice providing two stage data routing, form data validation, simple static file services. Newt can route data from a request to a JSON data source (e.g. Postgres+PostgREST) and then take the JSON results and run them through Pandoc server.",
     "applicationCategory": "computer science",
     "releaseNotes": "This release is focused on providing SQL for bootstraping application built around Postgres+PostgREST and Pandoc. Two additional configuration attributes are namespace and models. Three types of SQL outputs are demonstrated, pg-setup SQL, pg-models SQL and pg-models-test SQL.",

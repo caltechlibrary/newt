@@ -14,7 +14,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.4
+version: 0.0.5
 
 keywords: [ "web
 development", "microservice", "postgres", "postgrest", "pandoc" ]
@@ -24,7 +24,7 @@ development", "microservice", "postgres", "postgrest", "pandoc" ]
 About this software
 ===================
 
-## Newt 0.0.4
+## Newt 0.0.5
 
 ### Authors
 
