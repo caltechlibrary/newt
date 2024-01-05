@@ -35,9 +35,9 @@
     ],
     "softwareRequirements": [
         "Postgres >= 15",
-        "PostgREST >= 11",
+        "PostgREST >= 12",
         "Pandoc >= 3",
-        "Golang > 1.20",
+        "Golang >= 1.22",
         "A front end web server supporting reverse proxy (e.g. Apache2, NginX)"
     ],
     "relatedLink": [

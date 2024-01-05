@@ -5,6 +5,14 @@
 
 ## Next
 
+- [ ] Go 1.22 will include sane routing, this will simplify Newt's codebase I need to prepare for this.
+- [ ] Flesh out support for S3 object store as well as JSON API data sources
+    - [ ] decide how it will be expressed in YAML
+    - [ ] decide if it only operates on FILE uploads or if it can work for other content that might get processed via Pandoc
+    - [ ] Figure out what package I want to use to integrate with S3 Object store
+        - [ ] Review Minio and see if I can just use it for S3 object store integration
+        - [ ] Review s5cmd and its dependencies to see how s5 does S3 integration
+        - [ ] Review the Go SWS SDK and see if this will also work for other S3 object stores
 - [ ] Update generate SQL to confirm to the style suggestion in "The Art of Postgres"
 - [ ] It would be nice to be able to define some global constants to minimize repeated strings like a common PostgREST url prefix, `http://localhost:3000` expressed as `{api}` 
 - [ ] Prune required boiler plate in Newt's YAML file
@@ -47,6 +55,7 @@
     - [x] Add load routes to Runner
     - [x] Implement web service for Newt router
     - [x] Dry run and start up web service to Runner
+- [ ] Review Stonebooks' DbOS project at https://dbos-project.github.io/ and see what Ideas might be useful for integration into Newt
 - [x] Create birds demo 3 (using Postgres+PostgREST, Pandoc, Newt)
 - [x] Create birds demo 1 (static site with Pandoc)
 - [x] Create birds demo 2 (dynamic site with Postgres+PostgREST and JavaScript using xhr calls)
@@ -60,4 +69,3 @@
 - [ ] Integrate SQLite3 support as a "JSON Data Source", might be a separate service or synthesize the results from direct access to SQLite3 database file(s)
 - [ ] Consider porting Newt from Golang to Haskell for integration opportunities with Pandoc
 - [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Pandoc templates
-
