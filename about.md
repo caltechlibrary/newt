@@ -57,7 +57,7 @@ take the JSON results and run them through Pandoc server.
 ### Software Requiremets
 
 - Postgres &gt;= 15
-- PostgREST &gt;= 11
+- PostgREST &gt;= 12
 - Pandoc &gt;= 3
-- Golang &gt; 1.20
+- Golang &gt;= 1.22
 - A front end web server supporting reverse proxy (e.g. Apache2, NginX)
