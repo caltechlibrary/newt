@@ -3,6 +3,8 @@
 
 ## Bugs
 
+- [ ] Dependency volns: GitHub found 4 vulnerabilities on caltechlibrary/newt's default branch (1 high, 3 moderate). To find out more, visit: https://github.com/caltechlibrary/newt/security/dependabot
+
 ## Next
 
 - [ ] Go 1.22 will include sane routing, this will simplify Newt's codebase I need to prepare for this.
