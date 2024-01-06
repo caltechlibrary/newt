@@ -1,9 +1,11 @@
 module github.com/rsdoiel/newt
 
-go 1.20
+go 1.21
+
+toolchain go1.21.5
 
 require (
-	github.com/caltechlibrary/wsfn v0.0.10
+	github.com/caltechlibrary/wsfn v0.0.11
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20210228213109-c3a9aa474629
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -12,7 +14,7 @@ require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.24 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.26 // indirect
 	github.com/russross/blackfriday v1.5.2 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/shurcooL/go v0.0.0-20230706063926-5fe729b41b3a // indirect
@@ -25,5 +27,5 @@ require (
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e // indirect
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/sys v0.16.0 // indirect
 )
