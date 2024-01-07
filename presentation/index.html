@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="R. S. Doiel, rsdoiel@caltech.edu" />
+  <meta name="date" content="2023-07-14" />
+  <meta name="keywords" content="code4lib, microservice, Postgres, PostgREST, Pandoc" />
+  <title>Newt, a small system experiment</title>
+  <style type="text/css">
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="https://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="https://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Newt, a small system experiment</h1>
+  <p class="author">
+R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.edu</a>
+  </p>
+  <p class="date">July 14, 2023</p>
+</div>
+<div class="slide" id="TOC">
+
+</div>
+<div id="the-experiment" class="slide section level1">
+<h1>The experiment</h1>
+<p>How do we make building web applications for Libraries, Archives and Museums simpler?</p>
+</div>
+<div id="focus-on-three-abstractions" class="slide section level1">
+<h1>Focus on three abstractions</h1>
+<ul>
+<li>A JSON source for managing data =&gt; <a href="https://postgresql.org">Postgres</a> + <a href="https://postgrest.org">PostgREST</a></li>
+<li>A template engine =&gt; <a href="https://pandoc.org">Pandoc</a></li>
+<li>A data router and form validator =&gt; <a href="https://github.com/caltechlibrary/newt/">Newt</a></li>
+</ul>
+</div>
+<div id="three-implementations-a-bird-sighting-website" class="slide section level1">
+<h1>Three implementations a bird sighting website</h1>
+<ol style="list-style-type: decimal">
+<li>static site derived from CSV data file
+<ul>
+<li>(CSV file holds our sighting list)</li>
+</ul></li>
+<li>dynamic, SQL and browser JavaScript
+<ul>
+<li>(bird sighting list held in SQL database)</li>
+</ul></li>
+<li>dynamic, SQL and no browser JavaScript
+<ul>
+<li>(bird sighting list held in SQL database)</li>
+</ul></li>
+</ol>
+<p>What are trade-offs?</p>
+</div>
+<div id="birds-version-1-static-site-pandoc" class="slide section level1">
+<h1><a href="https://github.com/caltechlibrary/newt/tree/main/demos/birds1">birds version 1</a>, static site, Pandoc</h1>
+<p>CSV file, Pandoc, 2 directories, 5 files, <strong>75 total line count</strong>, static site</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Lines</th>
+<th align="left">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">26</td>
+<td align="left">README.md</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">birds.csv &lt;– this is used in each of the demos</td>
+</tr>
+<tr class="odd">
+<td align="left">6</td>
+<td align="left">build.sh</td>
+</tr>
+<tr class="even">
+<td align="left">7</td>
+<td align="left">page.tmpl</td>
+</tr>
+<tr class="odd">
+<td align="left">32</td>
+<td align="left">htdocs/index.html</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="birds-version-2-dynamic-site-browser-javascript" class="slide section level1">
+<h1><a href="https://github.com/caltechlibrary/newt/tree/main/demos/birds2">birds version 2</a>, dynamic site, browser JavaScript</h1>
+<p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 8 files, <strong>232 total line count</strong>, dynamic site</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Lines</th>
+<th align="left">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">29</td>
+<td align="left">README.md</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">birds.csv &lt;– from birds1</td>
+</tr>
+<tr class="odd">
+<td align="left">34</td>
+<td align="left">setup.sql</td>
+</tr>
+<tr class="even">
+<td align="left">60</td>
+<td align="left">models.sql &lt;– implements our data models</td>
+</tr>
+<tr class="odd">
+<td align="left">15</td>
+<td align="left">models_test.sql</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">postgrest.conf</td>
+</tr>
+<tr class="odd">
+<td align="left">24</td>
+<td align="left">htdocs/index.html &lt;– hand coded</td>
+</tr>
+<tr class="even">
+<td align="left">63</td>
+<td align="left">htdocs/sightings.js &lt;– hand coded</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="birds-version-3-dynamic-site-no-browser-javascript" class="slide section level1">
+<h1><a href="https://github.com/caltechlibrary/newt/tree/main/demos/birds3">birds version 3</a>, dynamic site, no browser JavaScript</h1>
+<p>SQL (Postgres + PostgREST), Pandoc, Newt, 1 directory, 9 files, <strong>225 total line count</strong>, dynamic site</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Lines</th>
+<th align="left">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">43</td>
+<td align="left">README.md</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">birds.csv &lt;– from birds1</td>
+</tr>
+<tr class="odd">
+<td align="left">34</td>
+<td align="left">setup.sql &lt;– from birds2</td>
+</tr>
+<tr class="even">
+<td align="left">60</td>
+<td align="left">models.sql &lt;– from birds2</td>
+</tr>
+<tr class="odd">
+<td align="left">15</td>
+<td align="left">models_test.sql &lt;– from birds2</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">postgrest.conf &lt;– from birds2</td>
+</tr>
+<tr class="odd">
+<td align="left">23</td>
+<td align="left">birds.yaml</td>
+</tr>
+<tr class="even">
+<td align="left">36</td>
+<td align="left">page.tmpl</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="left">post_result.tmpl</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="insights-from-experiment" class="slide section level1">
+<h1>Insights from experiment</h1>
+<ul>
+<li>A few “Off the shelf” microservices can make application construction easier</li>
+<li>Orchestrating the data pipeline in YAML is reasonable</li>
+<li>SQL turns some people off
+<ul>
+<li>models could be bootstraped from Newt’s YAML</li>
+</ul></li>
+<li>Pandoc templates are simple to learn and well documented at <a href="https://pandoc.org">pandoc.org</a></li>
+<li>Newt stack plays well with HTML5 and front-end best practices</li>
+<li>I encountered an unexpected result …</li>
+</ul>
+</div>
+<div id="an-unexpected-result" class="slide section level1">
+<h1>An unexpected result</h1>
+<ul>
+<li>Newt like PostgREST and Pandoc <strong>do not require</strong> shared syncronous state</li>
+<li>Postgres can be deployed in a <a href="High-availability" title="high available cluster">HA cluster</a></li>
+</ul>
+<blockquote>
+<p>The Newt stack can scale really big</p>
+</blockquote>
+</div>
+<div id="newt-has-weaknesses" class="slide section level1">
+<h1>Newt has weaknesses</h1>
+<ul>
+<li>Newt is <strong>an experimental prototype</strong> (June/July 2023, six weeks old)</li>
+<li>Newt doesn’t support file uploads</li>
+</ul>
+</div>
+<div id="newt-stack-has-strengths" class="slide section level1">
+<h1>Newt stack has strengths</h1>
+<blockquote>
+<p>A very mature foundation</p>
+</blockquote>
+<ul>
+<li>20th Century tech
+<ul>
+<li>SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)</li>
+</ul></li>
+<li>21st Century tech
+<ul>
+<li>JSON (2001), YAML (2001), Pandoc (2006), PostgREST (2014)</li>
+</ul></li>
+</ul>
+</div>
+<div id="next-steps-for-newt" class="slide section level1">
+<h1>Next steps for Newt?</h1>
+<ol style="list-style-type: decimal">
+<li>Test with Solr/Elasticsearch as alternate JSON sources</li>
+<li>Build staff facing applications this Summer (2023)</li>
+<li>Explore generating PostgREST configuration/SQL Models from Newt’s YAML</li>
+<li>(hopefully) move beyond my proof of concept in Fall/Winter (2023)</li>
+</ol>
+</div>
+<div id="newts-someday-maybe" class="slide section level1">
+<h1>Newt’s someday, maybe …</h1>
+<ul>
+<li>Have Newt delegate file uploads to an S3 like service
+<ul>
+<li>One approach would be Minio using file streams</li>
+</ul></li>
+<li>Explore integrating SQLite3 support as a JSON data source</li>
+<li>Consider implementing Newt in Haskell for richer Pandoc integration</li>
+<li>A Newt community to share YAML, SQL and Pandoc templates</li>
+</ul>
+</div>
+<div id="related-resources" class="slide section level1">
+<h1>Related resources</h1>
+<ul>
+<li>Newt <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Postgres <a href="https://postgres.org" class="uri">https://postgres.org</a> + PostgREST <a href="https://postgrest.org" class="uri">https://postgrest.org</a>
+<ul>
+<li>PostgREST Community Tutorials <a href="https://postgrest.org/en/stable/ecosystem.html" class="uri">https://postgrest.org/en/stable/ecosystem.html</a></li>
+</ul></li>
+<li>Pandoc <a href="https://pandoc.org" class="uri">https://pandoc.org</a>
+<ul>
+<li>Templates <a href="https://pandoc.org/MANUAL.html#templates" class="uri">https://pandoc.org/MANUAL.html#templates</a></li>
+<li>Pandoc Server <a href="https://pandoc.org/pandoc-server.html" class="uri">https://pandoc.org/pandoc-server.html</a></li>
+</ul></li>
+<li>Compiling Pandoc or PostgREST requires Haskell
+<ul>
+<li>Install Haskell GHCup <a href="https://www.haskell.org/ghcup/" class="uri">https://www.haskell.org/ghcup/</a></li>
+<li><a href="https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-PostgREST-M1.html">Quick recipe, Compile PostgREST (M1)</a></li>
+<li><a href="https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-Pandoc-M1.html">Quick recipe, Compiling Pandoc (M1)</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="thank-you" class="slide section level1">
+<h1>Thank you!</h1>
+<ul>
+<li>This Presentation <a href="https://caltechlibrary.github.io/newt/presentation/" class="uri">https://caltechlibrary.github.io/newt/presentation/</a></li>
+<li>Project: <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Email: rsdoiel@caltech.edu</li>
+</ul>
+</div>
+</body>
+</html>
