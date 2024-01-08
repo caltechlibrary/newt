@@ -66,6 +66,7 @@
 
 ## Someday, maybe
 
+- [ ] Think about creating a newtmustache microservice with the same API as Pandoc running in server mode, this would allow people who prefer Mustache to use it instead of Pandoc templates, see https://github.com/cbroglie/mustache
 - [ ] Think about moving the `type_dsl.go` to its own package
 - [ ] Newt could delegate file uploads to an S3 like service, Minio is written in Go and I think supports a file streaming model
 - [ ] Integrate SQLite3 support as a "JSON Data Source", might be a separate service or synthesize the results from direct access to SQLite3 database file(s)

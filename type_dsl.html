@@ -21,13 +21,49 @@
 </nav>
 
 <section>
-<h1 id="type-dsl-a-domain-specific-language-describing-a-variables-type">Type DSL, a domain specific language describing a variables’ type</h1>
-<p>Type DSL evolved from thinking about mapping of one URL path to another. Many web frameworks implement the concept of a “route” which is similar to a file path but may include a placeholder notation for values bound to variable names. The variable names are then available to route handler functions. If you are extracting values and binding them to varaible names it is extremely helpful to have type information.</p>
-<p>Newt needed to support embedded typed variables in it mapping ability. It also was needed by Newt to support generating SQL bootstrap code from a simplified Model description. Newt uses the type information to vet inputs bound to a varaible name as well as when generating bootstrep SQL for a Newt+Postgres+PostgREST+Pandoc (N3P) application.</p>
-<p>I surveyed the route descriptions available in several Python and JavaScript frameworks. There was no consensus about how to declare variables and nothing that would allow vetting the variables by type. Newt implemented a Type DSL to provide a way to remedy this situation.</p>
+<h1
+id="type-dsl-a-domain-specific-language-describing-a-variables-type">Type
+DSL, a domain specific language describing a variables’ type</h1>
+<p>Type DSL evolved from thinking about mapping of one URL path to
+another. Many web frameworks implement the concept of a “route” which is
+similar to a file path but may include a placeholder notation for values
+bound to variable names. The variable names are then available to route
+handler functions. If you are extracting values and binding them to
+varaible names it is extremely helpful to have type information.</p>
+<p>Newt needed to support embedded typed variables in it mapping
+ability. It also was needed by Newt to support generating SQL bootstrap
+code from a simplified Model description. Newt uses the type information
+to vet inputs bound to a varaible name as well as when generating
+bootstrep SQL for a Newt+Postgres+PostgREST+Pandoc (N3P)
+application.</p>
+<p>I surveyed the route descriptions available in several Python and
+JavaScript frameworks. There was no consensus about how to declare
+variables and nothing that would allow vetting the variables by type.
+Newt implemented a Type DSL to provide a way to remedy this
+situation.</p>
 <h2 id="blogging-urls-a-use-case">Blogging URLs, a use case</h2>
-<p>TypeDSL should be able to handle simple mappings such as those seen in blogs. Blog paths are often predictable. A home page is at <code>/</code>, a feed of items might be at <code>/feed/</code> and individual blog posts might be found in a path formed by embedding four digit year, two digit month, two digit day and a title slug. Let’s first look at how that would be described as a Mustache template – <code>/blog/${year}/${month}/${day}/${title-slug}</code>. This is pretty easy to read.</p>
-<p>How do we know when a path value matches a route? For a literal path you can simply perform a string comparison but for a path with embedded variables you need to vet the variables to make sure they make sense. A type check needs to be done. In our simple Mustache version though there is no type information. The place holder <code>${year}</code> might hold an integer or maybe something completely unrelated. What if we added an annotation about the variables type? A “year” certainly can be validate. Years are normally four digit numbers. Likewise month and day could have a simple validation based on being an integer with two digits allowing for leading zeros. These are common enough date formats that many languages provide via standard libraries. Creating types for these types becomes a matter of wrapping our implementation of referencing the variables with a type system. Here’s how we might express that in YAML.</p>
+<p>TypeDSL should be able to handle simple mappings such as those seen
+in blogs. Blog paths are often predictable. A home page is at
+<code>/</code>, a feed of items might be at <code>/feed/</code> and
+individual blog posts might be found in a path formed by embedding four
+digit year, two digit month, two digit day and a title slug. Let’s first
+look at how that would be described as a Mustache template –
+<code>/blog/${year}/${month}/${day}/${title-slug}</code>. This is pretty
+easy to read.</p>
+<p>How do we know when a path value matches a route? For a literal path
+you can simply perform a string comparison but for a path with embedded
+variables you need to vet the variables to make sure they make sense. A
+type check needs to be done. In our simple Mustache version though there
+is no type information. The place holder <code>${year}</code> might hold
+an integer or maybe something completely unrelated. What if we added an
+annotation about the variables type? A “year” certainly can be validate.
+Years are normally four digit numbers. Likewise month and day could have
+a simple validation based on being an integer with two digits allowing
+for leading zeros. These are common enough date formats that many
+languages provide via standard libraries. Creating types for these types
+becomes a matter of wrapping our implementation of referencing the
+variables with a type system. Here’s how we might express that in
+YAML.</p>
 <pre><code>var:
   year: Year
   month: Month
@@ -35,7 +71,9 @@
   title-slug: String</code></pre>
 <p>Now we can validate our path against the types assigned.</p>
 <pre><code>/blog/${year}/${month}/${day}/${title-slug}</code></pre>
-<p>Now we know the type and validation method to apply to the embedded variable. Let’s explore some values and see if they can be validated.</p>
+<p>Now we know the type and validation method to apply to the embedded
+variable. Let’s explore some values and see if they can be
+validated.</p>
 <table>
 <thead>
 <tr class="header">
@@ -74,18 +112,41 @@
 </tr>
 </tbody>
 </table>
-<p>Knowing the type lets the router know that path is not valid and reject it if it is not without contacting other services.</p>
-<p>While the TypeDSL specification is not intended to describe a canonical set of types an implementation of a TypeDSL certain would. It should be easy to implement the type system with one or two functions per type. I suspect as TypeDSL are implemented a canonical core set of type will emerge.</p>
-<p>In my prototype implementation of TypeDSL I plan to implement the following types and validating primitive data types – “Integer”, “String”, “Real”, “Boolean”, “Date”, “Year”, “Month”, “Day”, “Hour”, “Minute”, “Second”. The Python project <a href="https://idutils.readthedocs.io/en/latest/">IdUtils</a> also suggests a common set of identifiers used in the Library, Archive and Museum communities. A subset of these will be implemented for the prototype of TypeDSL (e.g. “ORCID”, “DOI”, “ROR”).</p>
-<p>Using the previously defined types our URL provides the validated values we need to transform to a API URL.</p>
+<p>Knowing the type lets the router know that path is not valid and
+reject it if it is not without contacting other services.</p>
+<p>While the TypeDSL specification is not intended to describe a
+canonical set of types an implementation of a TypeDSL certain would. It
+should be easy to implement the type system with one or two functions
+per type. I suspect as TypeDSL are implemented a canonical core set of
+type will emerge.</p>
+<p>In my prototype implementation of TypeDSL I plan to implement the
+following types and validating primitive data types – “Integer”,
+“String”, “Real”, “Boolean”, “Date”, “Year”, “Month”, “Day”, “Hour”,
+“Minute”, “Second”. The Python project <a
+href="https://idutils.readthedocs.io/en/latest/">IdUtils</a> also
+suggests a common set of identifiers used in the Library, Archive and
+Museum communities. A subset of these will be implemented for the
+prototype of TypeDSL (e.g. “ORCID”, “DOI”, “ROR”).</p>
+<p>Using the previously defined types our URL provides the validated
+values we need to transform to a API URL.</p>
 <pre><code>http://localhost:3000/blog?year=${year}&amp;month=${month}&amp;day=${day}&amp;title_slug=${title-slug}</code></pre>
-<p>If the request value matches both form and type of embedded variables then you have enough information to call a microservice like PostgREST, Solr or Opensearch.</p>
-<h2 id="use-case-representing-filenames-and-extensions-in-a-path">Use case, representing filenames and extensions in a path</h2>
-<p>What if your request URL uses file extensions to indicate the choice of template to use when rendering with Pandoc? Here’s three examples where the content might be the same but the format changes (e.g. HTML, Markdown and plain text).</p>
+<p>If the request value matches both form and type of embedded variables
+then you have enough information to call a microservice like PostgREST,
+Solr or Opensearch.</p>
+<h2 id="use-case-representing-filenames-and-extensions-in-a-path">Use
+case, representing filenames and extensions in a path</h2>
+<p>What if your request URL uses file extensions to indicate the choice
+of template to use when rendering with Pandoc? Here’s three examples
+where the content might be the same but the format changes (e.g. HTML,
+Markdown and plain text).</p>
 <pre><code>/blog/2023/02/28/my-daily-post.html
 /blog/2023/02/28/my-daily-post.md
 /blog/2023/02/28/my-daily-post.txt</code></pre>
-<p>In our prior example each embedded variable was contained in one element of the path. A filename can be thought of as one element or as a “basename” and “extension”. How can we allow for that use case? In the use case about the “title-slug” corresponds to the “basename” but the file extension indicates which template to send to Pandoc server.</p>
+<p>In our prior example each embedded variable was contained in one
+element of the path. A filename can be thought of as one element or as a
+“basename” and “extension”. How can we allow for that use case? In the
+use case about the “title-slug” corresponds to the “basename” but the
+file extension indicates which template to send to Pandoc server.</p>
 <p>Here’s how you might represent that in TypeDSL.</p>
 <pre><code>var:
   year: Year
@@ -95,9 +156,21 @@
   ext: Extname</code></pre>
 <p>We can then use our request path expression.</p>
 <pre><code>`/blog/${year}/${month}/${day}/${title-slug}${ext}`</code></pre>
-<p>Many implementation languages support parsing path into directory components as well as filename and extension. TypeDSL should be able to leverage this. This suggests an algorithmic behavior in our TypeDSL evaluation.</p>
-<p>First TypeDSL should split the path into it’s component, then it should determine if the component is a literal string or a variable definition. For each component the variable definition needs to conform to it’s type. The trailing element in a URL path can also have the types of “basename” (excluding the file extension), extname (for the file extension value). In the case where you want to treat both the basename and extension as a single unit we have the String type shown previously.</p>
-<h2 id="algorithm-for-evaluating-a-path-value-against-a-typedsl-expression">Algorithm for evaluating a path value against a TypeDSL expression</h2>
+<p>Many implementation languages support parsing path into directory
+components as well as filename and extension. TypeDSL should be able to
+leverage this. This suggests an algorithmic behavior in our TypeDSL
+evaluation.</p>
+<p>First TypeDSL should split the path into it’s component, then it
+should determine if the component is a literal string or a variable
+definition. For each component the variable definition needs to conform
+to it’s type. The trailing element in a URL path can also have the types
+of “basename” (excluding the file extension), extname (for the file
+extension value). In the case where you want to treat both the basename
+and extension as a single unit we have the String type shown
+previously.</p>
+<h2
+id="algorithm-for-evaluating-a-path-value-against-a-typedsl-expression">Algorithm
+for evaluating a path value against a TypeDSL expression</h2>
 <ul>
 <li>A TypeDSL expression decode into it’s path components parts
 <ul>
@@ -117,13 +190,15 @@
 <li>zero or more directory names</li>
 <li>zero or one filename and extension</li>
 </ul></li>
-<li>Compare each path value element against each TypeDSL expression elements
+<li>Compare each path value element against each TypeDSL expression
+elements
 <ul>
 <li>if both are literals
 <ul>
 <li>stop processing if they do not match, return false</li>
 </ul></li>
-<li>if TypeDSL component is a variable, valid the path value component against variable type
+<li>if TypeDSL component is a variable, valid the path value component
+against variable type
 <ul>
 <li>stop of it does not validate, return false</li>
 </ul></li>
@@ -131,15 +206,27 @@
 <li>If comparison completes without return false we have a match</li>
 </ul>
 <h2 id="variable-definitions">Variable definitions</h2>
-<p>In the use cases we’ve suggested how a variable in a TypeDSL expression can include a variable name as well as a type annotation to use to validate the value bound to the variable name. Let’s specify this in more detail.</p>
+<p>In the use cases we’ve suggested how a variable in a TypeDSL
+expression can include a variable name as well as a type annotation to
+use to validate the value bound to the variable name. Let’s specify this
+in more detail.</p>
 <ul>
-<li>variable definition start with two opening curly brace and conclude with a closing curly brace (i.e. basic Mustache template style notation)</li>
-<li>following the opening curly braces is a variable name which is formed from a letter and one or more alphanumeric characters or an underscores or dashes (i.e. what would be a valid attribute name in a JSON object). E.g. - <code>a</code>, <code>a1</code>, <code>a_long_variable_name</code>, <code>title-slug</code> are valid variable names
+<li>variable definition start with two opening curly brace and conclude
+with a closing curly brace (i.e. basic Mustache template style
+notation)</li>
+<li>following the opening curly braces is a variable name which is
+formed from a letter and one or more alphanumeric characters or an
+underscores or dashes (i.e. what would be a valid attribute name in a
+JSON object). E.g. - <code>a</code>, <code>a1</code>,
+<code>a_long_variable_name</code>, <code>title-slug</code> are valid
+variable names
 <ul>
-<li><code>""</code>, <code>1a</code>, <code>+1</code>, <code>{}</code>, <code>()</code>, <code>$foo</code> are not valid variable names</li>
+<li><code>""</code>, <code>1a</code>, <code>+1</code>, <code>{}</code>,
+<code>()</code>, <code>$foo</code> are not valid variable names</li>
 </ul></li>
 <li>a variable name is followed by a space and type expression</li>
-<li>a type expression starts with a letter and can be followed by one or more characters excluding a closing curly brace</li>
+<li>a type expression starts with a letter and can be followed by one or
+more characters excluding a closing curly brace</li>
 </ul>
 <p>Here’s some example variable definitions.</p>
 <pre><code>var:
@@ -154,10 +241,20 @@
     &quot;day&quot;: &quot;Day&quot;,
     &quot;orcid&quot;: &quot;ORCID&quot;
 }</code></pre>
-<p>When a request URL is evaluated against the route template’s type it will return a simple object with variable names mapped to string versions of the values. This will allow transforming both data API URLs and calls to Pandoc service via a simple Mustache like template implementation.</p>
-<p>The TypeDSL does not define the supported types only that the information can be extracted from a TypeDSL expression as a map between variable names and a type description. It is up to the specific TypeDSL implementation to define how the type information is interpreted.</p>
+<p>When a request URL is evaluated against the route template’s type it
+will return a simple object with variable names mapped to string
+versions of the values. This will allow transforming both data API URLs
+and calls to Pandoc service via a simple Mustache like template
+implementation.</p>
+<p>The TypeDSL does not define the supported types only that the
+information can be extracted from a TypeDSL expression as a map between
+variable names and a type description. It is up to the specific TypeDSL
+implementation to define how the type information is interpreted.</p>
 <h2 id="variable-decoding">Variable decoding</h2>
-<p>If a path value matches a TypeDSL expression then when the variables and values can be extracted as a map of variable names and values. The only constraint is that the map be expressible as a valid JSON object. E.g.</p>
+<p>If a path value matches a TypeDSL expression then when the variables
+and values can be extracted as a map of variable names and values. The
+only constraint is that the map be expressible as a valid JSON object.
+E.g.</p>
 <p>Given the TypeDSL expression</p>
 <pre><code>var:
   orcid: ORCID</code></pre>
@@ -180,7 +277,10 @@
 <pre><code>/blog/${year}/${month}/${day}/${title-slug}${ext}</code></pre>
 <p>And the path value</p>
 <pre><code>/blog/2022/11/07/compiling-pandoc-from-source.html</code></pre>
-<p>A TypeDSL implementation should return a map, dictionary or associative array with the values converted to the type suggested in the variable’s type definition. The constraint is that the map can be expressed as a JSON object. E.g.</p>
+<p>A TypeDSL implementation should return a map, dictionary or
+associative array with the values converted to the type suggested in the
+variable’s type definition. The constraint is that the map can be
+expressed as a JSON object. E.g.</p>
 <pre><code>{
     &quot;year&quot;: 2022,
     &quot;month&quot;: 11,
@@ -188,9 +288,24 @@
     &quot;title-slug&quot;: &quot;compiling-pandoc-from-source&quot;,
     &quot;ext&quot;: &quot;.html&quot;
 }</code></pre>
-<p>In this case our types “Month”, “Day”, “Year” converted the values to JSON numbers and the rest were left as JSON strings.</p>
+<p>In this case our types “Month”, “Day”, “Year” converted the values to
+JSON numbers and the rest were left as JSON strings.</p>
 <h2 id="sql-generation-a-use-case">SQL generation, a use case</h2>
-<p>When exploring working building application directory on Postgres via PostgREST one of the reactions I encountered was a resistence to SQL. This I think is unfortunate as modern SQL, exspecially in Postgres, is a rich capable langauge for managing and manipulating data. One thing I’ve noticed over the years is that colleagues will often feel more confortable modifying SQL then writing it from scratch. The Type DSL was initially developed for vetting routes but it occurred to me that is can also be used to describe a data model. This lead to the “models” attribute in a Newt YAML file. RDMS support table datastructures. These are easily calculated from a simple key/value notation. It then is possible to bootstrap simple data models in Postgres by evaluating a map of variable names and their type descriptions. Once you know the table structure you can also calculate some basic views and functions for working with the table (e.g. most applications need to support CRUD, create, read, update and delete).</p>
+<p>When exploring working building application directory on Postgres via
+PostgREST one of the reactions I encountered was a resistence to SQL.
+This I think is unfortunate as modern SQL, exspecially in Postgres, is a
+rich capable langauge for managing and manipulating data. One thing I’ve
+noticed over the years is that colleagues will often feel more
+confortable modifying SQL then writing it from scratch. The Type DSL was
+initially developed for vetting routes but it occurred to me that is can
+also be used to describe a data model. This lead to the “models”
+attribute in a Newt YAML file. RDMS support table datastructures. These
+are easily calculated from a simple key/value notation. It then is
+possible to bootstrap simple data models in Postgres by evaluating a map
+of variable names and their type descriptions. Once you know the table
+structure you can also calculate some basic views and functions for
+working with the table (e.g. most applications need to support CRUD,
+create, read, update and delete).</p>
 </section>
 
 <footer>

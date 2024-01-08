@@ -5,16 +5,16 @@ type: software
 title: "Newt"
 abstract: "Newt is an experimental microservice providing two stage data
 routing, form data validation, simple static file services. Newt can
-route data from a request to a JSON or S3 data source
-(e.g. Postgres+PostgREST, Minio instance) and then take the results and
-run them through Pandoc server."
+route data from a request to a JSON data source
+(e.g. Postgres+PostgREST) and then take the results and run them through
+Pandoc server."
 authors:
   - family-names: Doiel
     given-names: R. S.
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.6-dev
+version: 0.0.6
 
 keywords: [ "web
 development", "microservice", "postgres", "postgrest", "pandoc" ]
@@ -24,7 +24,7 @@ development", "microservice", "postgres", "postgrest", "pandoc" ]
 About this software
 ===================
 
-## Newt 0.0.6-dev
+## Newt 0.0.6
 
 ### Authors
 
@@ -34,9 +34,8 @@ About this software
 
 Newt is an experimental microservice providing two stage data routing,
 form data validation, simple static file services. Newt can route data
-from a request to a JSON or S3 data source (e.g. Postgres+PostgREST,
-Minio instance) and then take the results and run them through Pandoc
-server.
+from a request to a JSON data source (e.g. Postgres+PostgREST) and then
+take the results and run them through Pandoc server.
 
 
 - GitHub: <git+https://github.com/caltechlibrary/newt>

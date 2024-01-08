@@ -51,20 +51,6 @@ Additionally **{app_name}** can function as a static content web service.  This 
 -dry-run
 : Load YAML configuration and report any errors found
 
-Newt has some experimental options to render Postgres dialect of
-SQL from a YAML file containing models. These options will render SQL
-suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based project.
-
--pg-setup
-: This renders a SQL document suitable for bootstraping Postgres+PostgREST access
-
--pg-models
-: This renders a SQL file to bootstrap modeling data with Postgres+PostgREST
-
--pg-models-test
-: This renders a SQL file to bootstrap writing SQL tests for Postgres+PostgREST
-
-
 # CONFIGURATION
 
 **{app_name}** looks for four environment variables at startup.
@@ -270,10 +256,6 @@ func main() {
 
 	// App option(s)
 	dryRun := false
-	pgSetupSQL, pgModelsSQL, pgModelsTestSQL := false, false, false
-	flag.BoolVar(&pgSetupSQL, "pg-setup", pgSetupSQL, "generate PostgREST setup SQL") 
-	flag.BoolVar(&pgModelsSQL, "pg-models", pgModelsSQL, "generate Postgres Models SQL")
-	flag.BoolVar(&pgModelsTestSQL, "pg-models-test", pgModelsTestSQL, "generate Postgrest Models Test SQL")
 	flag.BoolVar(&dryRun, "dry-run", dryRun, "evaluate configuration and routes but don't start web service")
 
 	// We're ready to process args
@@ -295,9 +277,6 @@ func main() {
 	if showVersion {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
-	}
-	if pgSetupSQL || pgModelsSQL || pgModelsTestSQL {
-		os.Exit(newt.RunPostgresSQL(in, out, eout, args, pgSetupSQL, pgModelsSQL, pgModelsTestSQL))
 	}
 	os.Exit(newt.Run(in, out, eout, args, dryRun))
 }

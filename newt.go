@@ -1,5 +1,5 @@
 /**
- * newt.go an implementation of the Newt URL router.
+ * newt.go an implementation of the Newt data router and Newt Postgres SQL generator.
  *
  * @author R. S. Doiel
  */
@@ -266,3 +266,5 @@ func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool
 	http.ListenAndServe(":"+cfg.Port, mux)
 	return 0
 }
+
+

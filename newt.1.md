@@ -38,20 +38,6 @@ Additionally **newt** can function as a static content web service.  This is han
 -dry-run
 : Load YAML configuration and report any errors found
 
-Newt has some experimental options to render Postgres dialect of
-SQL from a YAML file containing models. These options will render SQL
-suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based project.
-
--pg-setup
-: This renders a SQL document suitable for bootstraping Postgres+PostgREST access
-
--pg-models
-: This renders a SQL file to bootstrap modeling data with Postgres+PostgREST
-
--pg-models-test
-: This renders a SQL file to bootstrap writing SQL tests for Postgres+PostgREST
-
-
 # CONFIGURATION
 
 **newt** looks for four environment variables at startup.
