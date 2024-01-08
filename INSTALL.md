@@ -19,10 +19,10 @@ Install from source
 
 ## Requirements
 
-- Golang > 1.20
+- Golang > 1.21
 - Pandoc > 3
 - Postgres > 15
-- PostgREST > 11
+- PostgREST > 12
 - GNU Make
 - Git
 
@@ -120,4 +120,4 @@ sudo port install libiconv
 cd ..
 ~~~
 
-Even though you are installing “pandoc-cli” it can function as the Pandoc web service by invoking pandoc server command.
+Even though you are installing “pandoc-cli” it can function as the Pandoc web service by invoking pandoc server command option.

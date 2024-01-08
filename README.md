@@ -1,9 +1,9 @@
 
 # Newt
 
-Newt is an experimental [microservice](https://en.wikipedia.org/wiki/Microservices) designed for working with other "off the shelf" microservices. The primary purpose of Newt is to function as a localhost data router between a data source and rendering engine. The goal of the project is to create a rapid development platform through existing microservices targetting web applications suitable in libraries, archives, colleges and museums. The name "Newt" comes from the phrase "new take".
+Newt is an experimental [microservice](https://en.wikipedia.org/wiki/Microservices) designed for working with other "off the shelf" microservices. The primary purpose of Newt is to function as a localhost data router between a data source and rendering engine. The goal of the project is to create a rapid development platform through existing microservices targetting web applications suitable for libraries, archives, colleges and museums. The name "Newt" comes from the phrase "new take".
 
-Newt comes with three commands. `newt` is a web service it is designed to sit behind your favorite web server (e.g. Apache 2, NginX) and route requests from the browser to a data source (e.g. JSON API) and optionally take the result and run it through rendering engined (e.g. Pandoc running in server mode).  `newtmustache` is a Pandoc server inspired rendering microsevice based implementing Mustache template support. `newtpg` is a command line program designed to generate SQL used bootstrap a JSON API built with PostgREST and Postgres.  Combined `newt` and `newtpg`  saves you from building yet another middleware microservice. Instead your development time is focused instead on three areas.
+Newt comes with three commands. [newt](newt.1.md) is a web service it is designed to sit behind your favorite web server (e.g. Apache 2, NginX) and route requests from the browser to a data source (e.g. JSON API) and optionally take the result and run it through rendering engined (e.g. Pandoc running in server mode).  [newtmustache](newtmustache.1.md) is a Pandoc server inspired microsevice based implementing a Mustache template rendering engine. [newtpg](newtpg.1.md) is a command line program designed to generate SQL used bootstrap a JSON API built with PostgREST and Postgres.  Combined `newt` and `newtpg`  saves you from building yet another middleware microservice. Instead your development time is focused instead on three areas.
 
 1. Modeling your data using SQL
 2. Rendering content using simple templates (e.g. Pandoc or Mustache templates)
@@ -168,11 +168,11 @@ api_method
 api_content_type
 : The HTTP content type expression used when submitting the request to the JSON data source
 
-pandoc_template
-: (optional) The path to the pandoc template used to process the results of the JSON data source request results
+template
+: (optional) The path to the pandoc or mustache template used to process the results of the JSON data source request results
 
-pandoc_options
-: (optional) Any options to pass when building the request to Pandoc server
+render_port
+: (optional) Set the port to use for contacting the render engine. If not set it assume 3030 is the port for the render engine.
 
 The **models** attribute holds a list of models expressed in Newt's data model DSL. Models are optional but can be used to by Newt to generate bootstrap SQL code for use with PostgREST+Postgres. This is very experimental (2024) and likely to change as usage of Newt increases. Each model has a `model` attribute holding the models name (conforming to a variable name found in langauges like JavaScript, Python, or Lua). Each model also contains a `var` attribute which is a list of key/value pairs. The key/value pairs are made from a variable name (key) and type definition (value). The type definitions are mapped to suitable Postgres SQL schema when generating table definitions. Example models used for groups and people metadata. The asterix at the end of a type string indicates this is to be used as a key when looking up the object.
 

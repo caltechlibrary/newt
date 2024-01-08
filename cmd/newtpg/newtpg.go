@@ -49,13 +49,13 @@ Newt has some experimental options to render Postgres dialect of
 SQL from a YAML file containing models. These options will render SQL
 suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based project.
 
--pg-setup
+-setup
 : This renders a SQL document suitable for bootstraping Postgres+PostgREST access
 
--pg-models
+-models
 : This renders a SQL file to bootstrap modeling data with Postgres+PostgREST
 
--pg-models-test
+-models-test
 : This renders a SQL file to bootstrap writing SQL tests for Postgres+PostgREST
 
 
@@ -190,9 +190,9 @@ func main() {
 	// App option(s)
 	dryRun := false
 	pgSetupSQL, pgModelsSQL, pgModelsTestSQL := false, false, false
-	flag.BoolVar(&pgSetupSQL, "pg-setup", pgSetupSQL, "generate PostgREST setup SQL") 
-	flag.BoolVar(&pgModelsSQL, "pg-models", pgModelsSQL, "generate Postgres Models SQL")
-	flag.BoolVar(&pgModelsTestSQL, "pg-models-test", pgModelsTestSQL, "generate Postgrest Models Test SQL")
+	flag.BoolVar(&pgSetupSQL, "setup", pgSetupSQL, "generate PostgREST setup SQL") 
+	flag.BoolVar(&pgModelsSQL, "models", pgModelsSQL, "generate Postgres Models SQL")
+	flag.BoolVar(&pgModelsTestSQL, "models-test", pgModelsTestSQL, "generate Postgrest Models Test SQL")
 	flag.BoolVar(&dryRun, "dry-run", dryRun, "evaluate configuration and routes but don't start web service")
 
 	// We're ready to process args
@@ -203,7 +203,7 @@ func main() {
 	out := os.Stdout
 	eout := os.Stderr
 
-	if showHelp {
+	if showHelp || (pgSetupSQL == false && pgModelsSQL == false && pgModelsTestSQL == false) {
 		fmt.Fprintf(out, "%s\n", fmtHelp(helpText, appName, version, releaseDate, releaseHash))
 		os.Exit(0)
 	}

@@ -3,8 +3,6 @@
 
 ## Bugs
 
-- [ ] Dependency volns: GitHub found 4 vulnerabilities on caltechlibrary/newt's default branch (1 high, 3 moderate). To find out more, visit: https://github.com/caltechlibrary/newt/security/dependabot
-
 ## Next
 
 - [ ] Go 1.22 will include sane routing, this will simplify Newt's codebase I need to prepare for this.
@@ -20,8 +18,8 @@
 - [ ] Prune required boiler plate in Newt's YAML file
     - [ ] Make sure `*_method:` defaults to "GET"
     - [ ] Make sure `api_content_type:` defaults to "application/json"
-- [ ] Present at Code4Lib meetup, July 14, 2023
-- [ ] Demo for DLD staff
+- [x] Present at Code4Lib meetup, July 14, 2023
+- [x] Demo for DLD staff
 - [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler
 - [ ] Create a model attribute in YAML, see if that can be used to generate a basic SQL file for integration with Postgres/PostgREST, model could also be used for validating forms but maybe "global" to the routes
     - [ ] generate PostgREST setup SQL
@@ -57,18 +55,18 @@
     - [x] Add load routes to Runner
     - [x] Implement web service for Newt router
     - [x] Dry run and start up web service to Runner
-- [ ] Review Stonebooks' DbOS project at https://dbos-project.github.io/ and see what Ideas might be useful for integration into Newt
 - [x] Create birds demo 3 (using Postgres+PostgREST, Pandoc, Newt)
 - [x] Create birds demo 1 (static site with Pandoc)
 - [x] Create birds demo 2 (dynamic site with Postgres+PostgREST and JavaScript using xhr calls)
 - [x] Draft presentation
 - [x] Documenting ideas
+- [x] Prototype a Mustache render engine that funtions similar to Pandoc server
 
 ## Someday, maybe
 
-- [ ] Think about creating a newtmustache microservice with the same API as Pandoc running in server mode, this would allow people who prefer Mustache to use it instead of Pandoc templates, see https://github.com/cbroglie/mustache
 - [ ] Think about moving the `type_dsl.go` to its own package
 - [ ] Newt could delegate file uploads to an S3 like service, Minio is written in Go and I think supports a file streaming model
 - [ ] Integrate SQLite3 support as a "JSON Data Source", might be a separate service or synthesize the results from direct access to SQLite3 database file(s)
 - [ ] Consider porting Newt from Golang to Haskell for integration opportunities with Pandoc
 - [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Pandoc templates
+- [x] Review Stonebooks' DbOS project at https://dbos-project.github.io/ and see what Ideas might be useful for integration into Newt

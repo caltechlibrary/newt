@@ -4,6 +4,7 @@
 - [To do](TODO.md), prototype todo list
 - [newt](newt.1.md) microservice
 - [newtpg](newtpg.1.md) Postgres+PostgREST SQL generator
+- [newtmustache](newtmustache.1.md) a mustache render engine as microservice
 - [Type DSL](type_dsl.md)
 - [Newt Router](newt-router.md)
 - [Installation](INSTALL.md)

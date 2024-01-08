@@ -1,5 +1,5 @@
 ---
-title: "newt(1) user manual | 0.0.6 8586e88"
+title: "newt(1) user manual | 0.0.6 0d3fed7"
 pubDate: 2024-01-08
 author: "R. S. Doiel"
 ---
@@ -106,7 +106,7 @@ template
 : If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source. The data is provided to the Pandoc template as part of the "body" pandoc template variable.
 
 render_port (optional)
-: This is the port number used by Pandoc server or **newtmustache** render engines. It defaults to 3030.
+: This is the port number used for the render engine, e.g. Pandoc server or **newtmustache** render. It not specified then port 3030 is assumed.
 
 res_headers
 : This is any additional HTTP headers you want to send back to the client.
@@ -117,8 +117,8 @@ Each route can have its own associated set of variables. Variables are "typed". 
 
 Variables are defined in the YAML "var" attribute. Here's an example "var" definition defining three form variables for a route. The variable names are "bird", "place" and "sighted" with the types "String", "String" and "Date".
 
-~~~
-var: { "bird": "String", "place": "String", "sighted": "Date" }
+~~~yaml
+var: [ "bird": "String", "place": "String", "sighted": "Date" ]
 ~~~
 
 If a web browser injected additional form values they would not get passed along via the JSON data API request, they would be ignored. This is part of the declaritive approach for defining Newt's behavior.

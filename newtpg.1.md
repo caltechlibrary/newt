@@ -1,5 +1,5 @@
 ---
-title: "newtpg(1) user manual | 0.0.6 8586e88"
+title: "newtpg(1) user manual | 0.0.6 0d3fed7"
 pubDate: 2024-01-08
 author: "R. S. Doiel"
 ---
@@ -36,13 +36,13 @@ Newt has some experimental options to render Postgres dialect of
 SQL from a YAML file containing models. These options will render SQL
 suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based project.
 
--pg-setup
+-setup
 : This renders a SQL document suitable for bootstraping Postgres+PostgREST access
 
--pg-models
+-models
 : This renders a SQL file to bootstrap modeling data with Postgres+PostgREST
 
--pg-models-test
+-models-test
 : This renders a SQL file to bootstrap writing SQL tests for Postgres+PostgREST
 
 
