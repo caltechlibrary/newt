@@ -1,6 +1,6 @@
 ---
-title: "newt(1) user manual | Version 0.0.1 f75250d"
-pubDate: 2023-06-03
+title: "newt(1) user manual | 0.0.6 8586e88"
+pubDate: 2024-01-08
 author: "R. S. Doiel"
 ---
 
@@ -102,8 +102,11 @@ api_method
 api_content_type
 : This is the HTTP content type string to send with your JSON data source request, typically it is "application/json". 
 
-pandoc_template
+template
 : If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source. The data is provided to the Pandoc template as part of the "body" pandoc template variable.
+
+render_port (optional)
+: This is the port number used by Pandoc server or **newtmustache** render engines. It defaults to 3030.
 
 res_headers
 : This is any additional HTTP headers you want to send back to the client.

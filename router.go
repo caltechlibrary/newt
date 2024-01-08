@@ -23,7 +23,7 @@ const (
 	apiURL
 	apiMethod
 	apiContentType
-	pandocTemplate
+	template
 	resHeaders
 )
 
@@ -35,7 +35,7 @@ var (
 		"api_url",
 		"api_method",
 		"api_content_type",
-		"pandoc_template",
+		"template",
 		"res_headers",
 	}
 )
@@ -60,8 +60,11 @@ type Route struct {
 	// ApiContentType is the content type to be used to contact the data source api
 	ApiContentType string `json:"api_content_type,omitempty" yaml:"api_content_type,omitempty"`
 
-	// PandocTemplate holds the source to a Pandoc template
-	PandocTemplate string `json:"pandoc_template,omitempty" yaml:"pandoc_template,omitempty"`
+	// Template holds the source to a Pandoc or Mustache template
+	Template string `json:"render_template,omitempty" yaml:"render_template,omitempty"`
+
+	// RenderPort holds the port number used for Pandoc Server or Newt's Mustache render engine
+	RenderPort string `json:"render_port,omitempty" yaml:"render_port,omitempty"`
 
 	// ResHeaders holds any additional response headers to send back to the
 	// browser or front end web server
@@ -197,13 +200,13 @@ func mapToRoute(m map[string]interface{}) (*Route, error) {
 	route.ApiContentType = getStringAttr(m, "api_content_type")
 	route.ApiMethod = getStringAttr(m, "api_method")
 	route.ApiURL = getStringAttr(m, "api_url")
-	fName := getStringAttr(m, "pandoc_template")
+	fName := getStringAttr(m, "template")
 	if fName != "" {
 		txt, err := os.ReadFile(fName)
 		if err != nil {
 			return nil, err
 		}
-		route.PandocTemplate = fmt.Sprintf("%s", txt)
+		route.Template = fmt.Sprintf("%s", txt)
 	}
 	route.ResHeaders = getMapStringAttr(m, "res_headers")
 	//fmt.Fprintf(os.Stderr, "\n\nDEBUG res_headers %+v\n\n", route.ResHeaders)
@@ -294,13 +297,13 @@ func (router *Router) ReadCSV(fName string) error {
 			route.ApiMethod = record[apiMethod]
 			// FIXME: validate content type
 			route.ApiContentType = record[apiContentType]
-			templateName := record[pandocTemplate]
+			templateName := record[template]
 			if templateName != "" {
 				tSrc, err := os.ReadFile(templateName)
 				if err != nil {
 					return fmt.Errorf("failed to load template %q, line %d in %q, %s", templateName, rowNo, fName, err)
 				}
-				route.PandocTemplate = fmt.Sprintf("%s", tSrc)
+				route.Template = fmt.Sprintf("%s", tSrc)
 			}
 			if record[resHeaders] != "" {
 				headers := map[string]string{}
@@ -408,15 +411,15 @@ func JSONSrcToFrontMatter(src []byte) (string, error) {
 	return fmt.Sprintf("---\n%s\n---\n\n", mSrc), nil
 }
 
-// RequestPandoc
-func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
-	template := router.Routes[rNo].PandocTemplate
+// RequestRender
+func (router *Router) RequestRender(rNo int, src []byte) ([]byte, string, int) {
+	template := router.Routes[rNo].Template
 	u := "http://localhost:3030"
 	// NOTE: Need to unpack our JSON data and repack it as front matter with
 	// the name "data".
 	txt, err := JSONSrcToFrontMatter(src)
 	if err != nil {
-		log.Printf("RequestPandoc(%d, %s), failed to build text from JSON resource, %s", rNo, src, err)
+		log.Printf("RequestRender(%d, %s), failed to build text from JSON resource, %s", rNo, src, err)
 		return nil, http.StatusText(502), 502
 	}
 	m := map[string]interface{}{}
@@ -428,18 +431,18 @@ func (router *Router) RequestPandoc(rNo int, src []byte) ([]byte, string, int) {
 	// FIXME: Make an http call to Pandoc server
 	buf, err := json.Marshal(m)
 	if err != nil {
-		log.Printf("RequestPandoc(%d, src), %s", rNo, err)
+		log.Printf("RequestRender(%d, src), %s", rNo, err)
 		return nil, http.StatusText(502), 502
 	}
 	res, err := http.Post(u, "application/json", bytes.NewBuffer(buf))
 	if err != nil {
-		log.Printf("RequestPandoc(%d, src), %s", rNo, err)
+		log.Printf("RequestRender(%d, src), %s", rNo, err)
 		return nil, http.StatusText(502), 502
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		log.Printf("RequestPandoc(%d, src), %s", rNo, err)
+		log.Printf("RequestRender(%d, src), %s", rNo, err)
 		return nil, http.StatusText(res.StatusCode), res.StatusCode
 	}
 	return body, http.StatusText(res.StatusCode), res.StatusCode
@@ -510,8 +513,8 @@ func (router *Router) Newt(next http.Handler) http.Handler {
 			return
 		}
 		// NOTE: if Pandoc transform data request
-		if router.Routes[rNo].PandocTemplate != "" {
-			src, statusText, statusCode = router.RequestPandoc(rNo, src)
+		if router.Routes[rNo].Template != "" {
+			src, statusText, statusCode = router.RequestRender(rNo, src)
 			if statusCode < 200 || statusCode >= 300 {
 				// echo back the pandoc request status code and text
 				http.Error(w, statusText, statusCode)

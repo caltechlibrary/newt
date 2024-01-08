@@ -3,10 +3,10 @@
 
 Newt is an experimental [microservice](https://en.wikipedia.org/wiki/Microservices) designed for working with other "off the shelf" microservices. The primary purpose of Newt is to function as a localhost data router between a data source and rendering engine. The goal of the project is to create a rapid development platform through existing microservices targetting web applications suitable in libraries, archives, colleges and museums. The name "Newt" comes from the phrase "new take".
 
-Newt comes with two commands. `newt` is a web service it is designed to sit behind your favorite web server (e.g. Apache 2, NginX) and route requests from the browser to a data source (e.g. JSON API) and optionally take the result and run it through rendering engined (i.e. Pandoc running in server mode).  `newtpg` is a command line program designed to generate SQL used bootstrap a JSON API built with PostgREST and Postgres.  Combined `newt` and `newtpg`  saves you from building yet another middleware microservice. Instead your development time is focused instead on three areas.
+Newt comes with three commands. `newt` is a web service it is designed to sit behind your favorite web server (e.g. Apache 2, NginX) and route requests from the browser to a data source (e.g. JSON API) and optionally take the result and run it through rendering engined (e.g. Pandoc running in server mode).  `newtmustache` is a Pandoc server inspired rendering microsevice based implementing Mustache template support. `newtpg` is a command line program designed to generate SQL used bootstrap a JSON API built with PostgREST and Postgres.  Combined `newt` and `newtpg`  saves you from building yet another middleware microservice. Instead your development time is focused instead on three areas.
 
 1. Modeling your data using SQL
-2. Rendering content using simple templates (i.e. Pandoc templates)
+2. Rendering content using simple templates (e.g. Pandoc or Mustache templates)
 3. Enhancing the user expereience browser side using HTML5, CSS and if needed JavaScript
 
 Newt achieves this division of responsibity through a YAML configuration file that describes your data models and the mapping of requested URL paths to a multistage pipe line of data sources and render engine.  Data sources are typically JSON API. The currently support render engine is Pandoc running as a microservice. Newt was inspired by my work with PostgREST and Postgres which allows you to quickly build a fully featured JSON API in the Postgres database using SQL. PostgREST+Postgres functions as an "off the shelf" data source.  Newt is design to work with "off the shelf" JSON data sources so it also works well with Solr, Elasticsearch and Opensearch.  Support for S3 object stores is in the early planning stages.
@@ -29,14 +29,14 @@ With Newt there's no more writing middleware, no need to reach for an ORM, not e
 
 ## What about security, single sign-on, integration with websites or services?
 
-Newt is just a microservice providing data routing. It's a team player.  At many universities, colleges, research libraries, archives and museums there is an existing single sign-on mechanism like Shibboleth running along with Apache 2 or NginX web servers.  Newt would run behind those services via reverse proxy. Newt itself doesn't know about users, it only routes data. Newt after reading the configuration file doesn't maintain state.  While the log output can contain identifiable information (e.g. IP address of request) or the JSON data source could contain sensitive information Newt doesn't retaining it. It just routes the data and gets out of the way.
+The `newt` is a simple microservice providing data routing based on its configuration at startup. It's a team player.  At many universities, colleges, research libraries, archives and museums there is an existing single sign-on mechanism like Shibboleth running along with Apache 2 or NginX web servers.  Newt would run behind those services via reverse proxy. Newt itself doesn't know about users, it only routes data. Newt after reading the configuration file doesn't maintain state.  While the log output can contain identifiable information (e.g. IP address of request) or the JSON data source could contain sensitive information Newt doesn't retaining it. It just routes the data and gets out of the way.
 
-A typical Newt production setup might look like this
+A typical `newt` production setup might look like this
 
-1. NginX with Shibboleth controls access to web site resources and where appropriate proxies to Newt
-2. Newt responds to requests and maps those to a data source (e.g. PostgREST+Postgres JSON API) and gets back a response
-3. Newt can take a data source response and send it to a render engine (i.e. Pandoc in server mode)
-4. Newts' assembled result is handed back to the NginX web server to pass onto the requesting web browser
+1. NginX with Shibboleth controls access to web site resources and where appropriate proxies to `newt`
+2. `newt` responds to requests and maps those to a data source (e.g. PostgREST+Postgres JSON API) and gets back a response
+3. `newt` can take a data source response and send it to a render engine (e.g. Pandoc in server mode or `newtmustache`)
+4. `newt' assembled result is handed back to the NginX web server to pass onto the requesting web browser
 
 In the example securing your application can happen both at the NginX level (e.g. requiring single sign-on) and
 at the JSON API level via Postgres's management of PostgREST responses. NginX can also be used to proxy external resources you may wish Newt to route to.
@@ -60,7 +60,7 @@ Newt application development is friendly to version control systems (e.g. Git). 
 - `/` project folder
   - `htdocs` this directory holds your static content needed by your web application
   - `*.sql` these are the SQL files used by your application to define your models and behaviors in Postgres
-  - `templates` this directory holds your Pandoc templates
+  - `templates` this directory holds your Pandoc or Mustache templates
   - `tests` this directory holds your tests of your data model
   - `application.yaml` would hold the a Newt configuration file (this is an example name for the configuration file)
 

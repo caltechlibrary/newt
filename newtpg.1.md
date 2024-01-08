@@ -1,6 +1,6 @@
 ---
-title: "newtpg(1) user manual | Version 0.0.1 f75250d"
-pubDate: 2023-06-03
+title: "newtpg(1) user manual | 0.0.6 8586e88"
+pubDate: 2024-01-08
 author: "R. S. Doiel"
 ---
 

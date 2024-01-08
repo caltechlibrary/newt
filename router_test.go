@@ -134,11 +134,11 @@ func TestPandoc(t *testing.T) {
 	for k, v := range dMap {
 		rNo, ok := tMap[k]
 		if ok {
-			if len(router.Routes[rNo].PandocTemplate) == 0 {
+			if len(router.Routes[rNo].Template) == 0 {
 				t.Errorf("expected pandoc template for route %d, %q", rNo, apiURL)
 				continue
 			}
-			src, _, statusCode := router.RequestPandoc(rNo, v)
+			src, _, statusCode := router.RequestRender(rNo, v)
 			if statusCode != 200 {
 				t.Errorf("expected 200 status code (pandoc api), got %d, %s", statusCode, src)
 			}
@@ -147,3 +147,5 @@ func TestPandoc(t *testing.T) {
 		}
 	}
 }
+
+

@@ -13,6 +13,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/cbroglie/mustache v1.4.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.26 // indirect
 	github.com/russross/blackfriday v1.5.2 // indirect

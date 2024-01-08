@@ -12,8 +12,8 @@ import (
 
 var (
 	helpText = `---
-title: "{app_name}(1) user manual | Version 0.0.1 f75250d"
-pubDate: 2023-06-03
+title: "{app_name}(1) user manual | {version} {release_hash}"
+pubDate: {release_date}
 author: "R. S. Doiel"
 ---
 

@@ -40,7 +40,7 @@ type Config struct {
 	FName string `json:"route_file,omitempty" yaml:"route_file,omitempty"`
 	// Env is a list of environment variables that can be passed
 	// through to the RouteDSL when rendering JSON data API calls or
-	// calls to Pandoc server.
+	// calls to Pandoc server or Mustache server.
 	Env []string `json:"env,omitempty" yaml:"env,omitempty"`
 	// Htdocs holds any static files you want to make available through
 	// Newt router.
@@ -203,6 +203,17 @@ func RunPostgresSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 				fmt.Fprintf(out, "%s\n", src)
 			}
 		}
+	}
+	return exitCode
+}
+
+// RunMustache is a runner for a Mustache redner engine service based on the Pandoc server API.
+func RunMustache(in io.Reader, out io.Writer, eout io.Writer, port string, timeout int, verbose bool) int {
+	exitCode := 0
+	err := MustacheServer(out, eout, port, timeout, verbose)
+	if err != nil {
+		fmt.Fprintf(eout, "error starting server: %s\n", err)
+		exitCode = 1
 	}
 	return exitCode
 }

@@ -1,0 +1,10 @@
+{
+	"content_type": "text/html",
+	"data": {
+		"page_title": "Mustache Test Page",
+		"title": "Me and my Mustache",
+		"byline": "Me, I'm famous",
+		"body": "Talking about my famous mustache, yeah!"
+	},
+	"template": "<DOCTYPE html><html><head><title>{{page_title}}</title></head><article><h1>{{title}}</h1><h2>{{byline}}</h2><p>{{body}}<p></article></html>"
+}
