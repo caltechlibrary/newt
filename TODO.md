@@ -70,4 +70,5 @@
 - [ ] Consider porting Newt from Golang to Haskell for integration opportunities with Pandoc
 - [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Pandoc templates
 - [x] Review Stonebooks' DbOS project at https://dbos-project.github.io/ and see what Ideas might be useful for integration into Newt
-- [ ] Look at libSQL (SQLite3 database wrapped to support Postgres wire protocol), turso databsase and see if it's HTTP REST API can be supported by Newt
+- [ ] Make a PostgREST work alike that uses SQLite3 databases
+    - [ ] Look at libSQL (SQLite3 database wrapped to support Postgres wire protocol), turso databsase and see if it's HTTP REST API can be supported by Newt
