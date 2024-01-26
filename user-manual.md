@@ -9,3 +9,4 @@
 - [Newt Router](newt-router.md)
 - [Installation](INSTALL.md)
 - [Newt Presentation](presentation/), Code4Lib Meetup at UCLA, July 14, 2023
+- [Improving Newt's model and type DSL](improving_the_type_dsl.md), January 26, 2024
