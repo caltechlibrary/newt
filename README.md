@@ -1,35 +1,54 @@
 
 # Newt
 
-Newt is an experimental [microservice](https://en.wikipedia.org/wiki/Microservices) designed for working with other "off the shelf" microservices. The primary purpose of Newt is to function as a localhost data router between a data source and rendering engine. The goal of the project is to create a rapid development platform through existing microservices targetting web applications suitable for libraries, archives, colleges and museums. The name "Newt" comes from the phrase "new take".
+Newt project is a collection of tools providing a rapid web application development platform for libraries, archives and museums. The collection of commands focuses on using "off the shelf"  micro services combined with a web application composition via a YAML file. Newt provides the following commands.
 
-Newt comes with three commands. [newt](newt.1.md) is a web service it is designed to sit behind your favorite web server (e.g. Apache 2, NginX) and route requests from the browser to a data source (e.g. JSON API) and optionally take the result and run it through rendering engined (e.g. Pandoc running in server mode).  [newtmustache](newtmustache.1.md) is a Pandoc server inspired microsevice based implementing a Mustache template rendering engine. [newtpg](newtpg.1.md) is a command line program designed to generate SQL used bootstrap a JSON API built with PostgREST and Postgres.  Combined `newt` and `newtpg`  saves you from building yet another middleware microservice. Instead your development time is focused instead on three areas.
+- [newt](newt.1.md) is an experimental [micro service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" micro services. The primary purpose is to function as a localhost data router between a data source and rendering engine. It can also function as a static file server when development an application
+- [newtmustache](newmustache.1.md) is a extremely light weigth [Mustache](https://mustache.github.io/) template rendering engine inspired by Pandoc server
+- [newtpg](newtpg.1.md) is a command line program designed to generate SQL used bootstrap a JSON API built with PostgREST and Postgres.  Combined `newt` and `newtpg`  saves you from building yet another middleware micro service
+- **newtform** (planned but not prototyped) is a web form generator mathcing the SQL generated for the JSON API
 
-1. Modeling your data using SQL
-2. Rendering content using simple templates (e.g. Pandoc or Mustache templates)
-3. Enhancing the user expereience browser side using HTML5, CSS and if needed JavaScript
+## Why rapid development tools? Why Newt?
 
-Newt achieves this division of responsibity through a YAML configuration file that describes your data models and the mapping of requested URL paths to a multistage pipe line of data sources and render engine.  Data sources are typically JSON API. The currently support render engine is Pandoc running as a microservice. Newt was inspired by my work with PostgREST and Postgres which allows you to quickly build a fully featured JSON API in the Postgres database using SQL. PostgREST+Postgres functions as an "off the shelf" data source.  Newt is design to work with "off the shelf" JSON data sources so it also works well with Solr, Elasticsearch and Opensearch.  Support for S3 object stores is in the early planning stages.
+The promise of modern [RAD](https://en.wikipedia.org/wiki/Rapid_application_development "Rapid Application Development") tools is a faster development cycle delivering a minimal viable application sooner.  The RAD system accomplishes this by code generation taking a splecification (a.k. configuration file) and rendering the code described. The system eases development by providing either a simple highlevel configuration language or a GUI that generated the application code. Often a RAD system will include GUI building tools as well along with a means of hooking up the GUI elements to specific actions. In the past these systems tended to be propriary and often required developer specialization to use it.
 
-## Steps to build an a Newt web application
+Newt is a lightweight set of RAD tools. They all use the same configuration langauge, [YAML](https://en.wikipedia.org/wiki/YAML). Why YAML? Must developers and even some none developers already know it.  The Newt specific aspects of YAML are the data structures represented as YAML used by Newt's commands. Newt doesn't have a GUI and doesn't provide layout tools. The reason if there is lots of software that already does that for web development. Instead Newt focuses on composing the conversation between "office the shelf" micro services and static file assets that result in a "web application". As a result Newt is very narrowly focused. It provides a simple data router that can sit behind a traditional front end web server. Typically this is a JSON data source such as that provided by Postgres+PostgREST. It includes a lightweight Mustache template engine that accepts a JSON structure and template rendering the result. It include a SQL code generator for creating JSON API using Postgres and PostgREST. It will include a simple tool for processing the Newt YAML into web forms suitable for including along with your static assets of your application. Finally Newt is focus in the application domain of metadata curation for libraries, archives and museums.
+
+If successful then Newt will assist technically inclined library staff or librarians in standing simple web applications for metadata curation.
+
+## Where is development time spent?
+
+With Newt your development time is focused on three areas.
+
+1. Modeling your data in YAML and using that to generate SQL and HTML 5 web forms
+2. Rendering content coming from JSON API using simple templates engines (e.g. Pandoc or Mustache templates)
+3. Enhancing the user expereience browser side using HTML5, CSS and if needed JavaScript (a.k.a. traditional front end development)
+
+Newt achieves this division of responsibities. Newt's YAML file is responsible for describing the data models used by your application and for defining the specific routes used to access your data pipeline. Your data pipeline is a small set of micro services. In Newt's protype I've used Postgres and PostgREST to provide a JSON data source and Pandoc running in server mode for a template rendering engine. The generative tools that come with Newt provide the means to render the SQL needed to setup Postgres and PostgREST as well as generating HTML/Markdown for your web forms interacting with the JSON API data source.
+
+## Example steps to demonstrate building with Newt
 
 The following example describes using PostgREST+Postgres to provide a JSON API, Pandoc server as your render engine and Newt to serve static content and route requests to the JSON API and render engine.
 
 1. Create a directory/folder for your project and change into that directory (setup version control if desired)
 2. Create a Newt configuration file describing the models and routes your application will need
 3. Use `newtpg` and the Newt configuration file to generate SQL to bootstrap your PostgREST+Postgres JSON service
-4. Add/update your initial SQL data models and test inside Postgres (psql works nicely for this)
-5. Add/update the routes in the routes section of the YAML configuration file if needed
-6. Add/update any Pandoc templates, HTML, CSS and JavaScript as needed for your application
-7. (re)start PostgREST and `newt` then test with your web browser
+4. Use `newtform` to render HTML/Markdown of your applications' web forms
 
-You repeat steps 4 through 7. This is where your application development time is spent. As your data models in Postgres stablize your focus as a developer can then shift naturally to providing an effective human facing experience working primarily with the templates and static web assets.
+At this point you should have a skeleton of your application working. The following are iterative steps you
+use to refine your application.
 
-With Newt there's no more writing middleware, no need to reach for an ORM, not even a need to send JavaScript to the browser unless you choose to. Newt routes the request so you can focus on modeling your data in SQL and content presentation via Pandoc templates and static web assets.
+1. Add/update your initial SQL data models and test inside Postgres (psql works nicely for this)
+2. Add/update the routes in the routes section of the YAML configuration file if needed
+3. Add/update any Pandoc templates, HTML, CSS and JavaScript as needed for your application
+4. (re)start PostgREST and `newt` then test with your web browser
+
+These steps repeat and are you spend most of your application development time.  Notice that each of the steps
+are focused on a specific area of your application. Step one, improving your data modeling and data management. Step two refining the selection of URLs your application responds to. Step three Is were we start front end development by taking the JSON data and rendering it into HTML. It is here where you can also augment the HTML produced by the template engine to do more browser side. The least step refreshes your development view of your application by reloading the JSON API and data router. This is easily done via a shell script.
 
 ## What about security, single sign-on, integration with websites or services?
 
-The `newt` is a simple microservice providing data routing based on its configuration at startup. It's a team player.  At many universities, colleges, research libraries, archives and museums there is an existing single sign-on mechanism like Shibboleth running along with Apache 2 or NginX web servers.  Newt would run behind those services via reverse proxy. Newt itself doesn't know about users, it only routes data. Newt after reading the configuration file doesn't maintain state.  While the log output can contain identifiable information (e.g. IP address of request) or the JSON data source could contain sensitive information Newt doesn't retaining it. It just routes the data and gets out of the way.
+The `newt` command is a simple micro service providing data routing based on its configuration at startup. It's a team player.  At many universities, colleges, research libraries, archives and museums there is an existing single sign-on mechanism like Shibboleth running along with Apache 2 or NginX web servers.  Newt would run behind those services via reverse proxy. Newt itself doesn't know about users, it knows about routing requests. Newt after reading the configuration file doesn't maintain state.  While the log output may contain identifiable information (e.g. IP address of request) or the JSON data source could contain sensitive information Newt doesn't retaining it. It just routes the data and gets out of the way.
 
 A typical `newt` production setup might look like this
 
@@ -41,21 +60,21 @@ A typical `newt` production setup might look like this
 In the example securing your application can happen both at the NginX level (e.g. requiring single sign-on) and
 at the JSON API level via Postgres's management of PostgREST responses. NginX can also be used to proxy external resources you may wish Newt to route to.
 
-Newt tries to do as little as possible while still providing data routing and static content services. This reduces the attack surface. Newts log output is written to standard out and standard error and not directly to disk to avoid the problem of high traffic logging filling up your disk drive. Logging can easily be captured by your servers logging system (e.g. systemd and it's log handling).  Newt is configured through the environment so does not require storing secrets in the configuration file.  Newt only reads the configuration at startup and can not write it back to disk. In fact Newt can't write to disk at all.  Newt focuses on data routing at the web application level only. It has a limited two stage pipeline for requests processing. For any given route defined in Newt's configuration it can contact a data source (e.g. PostgREST+Postgres JSON API) and optionally send the result through a rendering service (i.e. Pandoc running in server mode) before handing that result back to the requestor. Newt only knows how to speak http and s3 protocols for systems running on localhost. It only allows that for the routes defined when Newt starts up.
+Newt tries to do as little as possible while still providing data routing and static content services. This reduces the attack surface. Newts log output is written to standard out and standard error and not directly to disk to avoid the problem of high traffic logging filling up your disk drive. Logging can easily be captured by your servers logging system (e.g. systemd and it's log handler).  Newt is configured through the environment so does not require storing secrets in the configuration file.  Newt only reads the configuration at startup and can not write it back to disk. In fact Newt can't write to disk at all.  Newt focuses on data routing at the web application level only. It has a limited two stage pipeline for requests processing. For any given route defined in Newt's configuration it can contact a data source (e.g. PostgREST+Postgres JSON API) and optionally send the result through a rendering service (i.e. Pandoc running in server mode) before handing that result back to the requestor. Newt only knows how to speak http and can only communicate via localhost so can't access outside systems with you proxying to them. Newt only listens for routes defined at startup or derived from a designated htdocs directory.
 
-Keeping Newt simple minimizes the attack surface and keeps Newt a team player in your microservice based application.
+Keeping Newt simple minimizes the attack surface and keeps Newt a team player in your micro service based applications.
 
 ### What about "scaling"?
 
 Newt is just a data router. You can safely run many Newt instances in parallel as needed. They can run them on the same machine or separate machines. The instances don't share data or coordinate. They just read their configuration files when they start up and route data accordingly.
 
-A typical Newt stack of PostgREST+Postgres and Pandoc also can scale up. You can run as many instances of Pandoc server or PostgREST as you need. You can spread them across machines. They are both stateless systems like Newt. The Postgres database provides consistency and itself can be configured in an HA cluster.
+A typical Newt stack of PostgREST+Postgres and Pandoc server also can scale up. You can run as many instances of Pandoc server or PostgREST as you need. You can spread them across machines. They are both stateless systems like Newt. A Postgres database provides consistency and can be configured in a high availability cluster. Postgres scales.
 
-When I created Newt I was interested in small scale applications but since Newt is a microservice it scales as wide as you need just like Pandoc server, PostgREST and Postgres.
+When I created Newt I was interested in small scale applications. I created it as a simple stateless micro service. Because it is a simple stateless micro service can scales as wide as you like. It scales in the same way as Pandoc server or PostgREST.
 
 ### Annatomy of a Newt based web application
 
-Newt application development is friendly to version control systems (e.g. Git). It consists of a Newt configuration file, SQL files, Pandoc templates and any static web assets you need. A typical disk layout of a Newt project could look like this-
+Newt application development is friendly to version control systems (e.g. Git). It consists of a Newt configuration file, SQL files, HTML templates and any static web assets you need. A typical disk layout of a Newt project could look like this-
 
 - `/` project folder
   - `htdocs` this directory holds your static content needed by your web application
@@ -78,26 +97,29 @@ Newt came about when I realized that all I needed was a data router that could m
 
 I demonstrated the Newt concept to my colleagues with a prototype. The prototype talked to a JSON API provided by PostgREST+Postgres and used Pandoc running in server mode for a rendering engine. I got some polite supportive comments. No one was particularly excited by it. I demonstrated a prototype Newt at a my local SoCal Code4Lib group. There people were excited by PostgREST and Postgres and not so excited about data routing. This was discouraging. I thought I was barking up the wrong tree. Eventually I realized the ambivalence of the router was a type of success. Newt isn't exciting. Newt should never be exciting. It just routes data! You configure it and forget it. It just runs.
 
-The important take away was I had failed to appreceate how Newt successfully shifted the discussion from programming language frameworks, package management and build systems to to modeling data in SQL and using simpler HTML5, CSS and JavaScript for display.
+The important take away was I had failed to appreciate how Newt successfully shifted the discussion from programming language frameworks, package management and build systems to to modeling data in SQL and using simpler HTML5, CSS and JavaScript for display.
 
 > Newt, a type of salamander, doesn't seek attention. It does its own thing. You only notice a salamander if you look carefully.
 
 ## System design choices
 
-Demonstrating the "Newt stack" has resulted in questions. I think I can address the big four.
+Demonstrating the "Newt stack" has resulted in questions. Here's the big four questions.
 
 1. Why SQL? Why build your data models with SQL?
 2. Pandoc as rendering engine, why?
 3. Why YAML for configuration?
-4. How do I handle file uploads in my web application if I'm so focused on Postgres and SQL?
+4. How do I handle file uploads?
 
-Here's my answer the first question. I think knowing at least some SQL is unavoidable as a web developer. While many have adopted an ORM[1] to generate SQL the models and manage data the resulting SQL is often far from ideal. This remains true in 2024 even though ORM implementations have been around decades.  The real problem with the ORM approach isn't inefficiency at all. The real problem is it obscures the data model and that discourages data re-use.  The ORM is a layer of abstraction on a system that itself is a set of abstractions already. I feel you can skip the extra layer, keep things simplier and avoid additional brittleness of tieing your data models to closely to a single application version. Focus on SQL to describe the data model and how to manage it.  In 2024 SQL remains the common language to manage data in a database. Even for non-relational data this has become true[2]. SQL may look ugly or quirky but it definately has legs and plans to stick around for a very long time. Let's embrace it!
+My answer to the first question: I think knowing at least some SQL is unavoidable as a web developer. While many have adopted an ORM[1] to generate the SQL to render models and manage data the resulting SQL is often far from ideal. This is inspite of the fact that the ORM concept is decades old. The problem I worry about with ORM (yes, I've use them) isn't inefficiency. The real problem is the ORM obscures the data model and that discourages data re-use. The vast majority of web applications run in institutional settings use SQL databases (e.g. MySQL, Postgres, Oracle, SQLite3). Embracing SQL gives you power to extend those systems and even integrte them.  In 2024 SQL remains the common language to manage data in a database. That's true even have a half century of existence. Even for non-relational data this has become true[2]. SQL may look ugly or quirky but it definately has legs and plans to stick around for a very long time. Let's embrace it!
 
-For libraries, archives and museums managing metadata about our collections is critical.  Ditching the ORM and focusing on SQL increases our ability to share techniques with non-developer colleagues. The simple act of teaching the SQL SELECT statement can be liberating for someone who has only curated data via a web form or spreadsheets. SQL is well suited to the approach of incremental learning. Learn as much as you need when you need it.
+You may protest, "but some people really hate writing SQL!" Newt does provide a tool to address this. Newt provides `newtpg` that can take a data model described in the Newt configuration file and render SQL suitable for standanding up and managing data in Postgres and PostgREST. Another tool, `newtform` planed for development, will render the same model to HTML 5 and JavaScript so you can keep your model paired between the JSON API that manages the data and your brower's web form for doing data entry. in YAML that can be used to generate Postgres SQL as well as simple HTML 5 web forms.  Of course Newt just provides a tool, you don't have to use it and you're welcome to write SQL and your web forms from scratch.
 
-The second question I run into is why Pandoc?  Each of the programming languages I used over the three decades offer some of template language(s). Even PHP which started out as a template language has template languages and frameworks! In the meantime no common template systems has emerged[3] which is language agnostic and widely adopted. Inspite of that designing sites with templates remains a mainstay in web application development. If you're going to use a template language and engine, which one? Inventing a new one doesn't help situation. I want one that can function as a microservice standing on it's own.
+The second question, why run Pandoc server to render things? Pandoc is good at transforming structured text. JSON is structured text and Pandoc can easily turn that into HTML.  It is also ready to go in the spirit of using "off the shelf" micro services. In the data science and library circles I travel I've seen a huge adoption of Pandoc for static site generation. That lead me to pick PAndoc as a rendering engine for my Newt[4] prototype. If another template language and engine comes on the scene, Newt can be adapted to us it instead[5]. If you really don't like Pandoc templates Newt now provides a similar engine that supports Mustache templates, `newtmustache`.
 
-In the data science and library circles I travel I've seen a huge adoption of Pandoc for static site generation. When I eventually stumbled on the feature that Pandoc can run as a web service it hit me.  I could Pandoc as a rendering engine.It doesn't even require configuration. That lead me to pick it to be the rendering engine of Newt[4]. If another template language and engine comes on the scene, Newt can be adapted to us it instead[5].
+The third question, "Why YAML for configuration?". Personally I'm enthusiastic about YAML. It is sort of boring. But I think that is is strength. YAML has become umbiquious for describing configuration and simple data structures. It easily converts to JSON. It's declarative. Newt uses YAML largely because it's well known and is specifically known by my colleagues at Caltech Library. Why invent a new language when I can use one that is already known?
+
+Final question is "How do I handle file uploads?". The short answer is Newt doesn't. Eventually I plan to support for S3 protocol storage systems (e.g. Minio, S3) but I haven't had time to implement this and do not need it for the application I am building with Newt.  A longer answer is yes, it is possible but you need to know Postgres really well.  Technically Postgres+PostgreSQL can handle file uploads because you can store files or large objects in Postgres. Personally I don't want to store files in my data base management system. I'd rather store them in an object store like S3. I don't recomment Newt for applications that require handling file uploads unless you want to write your own micro service to implement it.
+
 
 [1]: ORM, object relational mapper. An ORM maps programs objects to a SQL syntax. With the advent of JSON columns in SQL tables this is rearly a problem anymore. Just focus on SQL.
 
@@ -115,8 +137,9 @@ Newt's configuration langauge is YAML. YAML was picked because it is widely use 
 - `newt` as a two stage data router
 - `newt` as static file service
 - `newtpg` can use the Newt configuration file to render simple data models as SQL generator suitable to bootstrap a PostgREST+Postgres JSON API
+- `newtform` can use the Newt configuration file to render simple HTML/Markdown forms
 
-Here's the data flow steps
+Here's the data flow steps of `newt` data router.
 
 1. Web browser => (Web Server proxy) => Newt
 2. Newt => data source (e.g. Postgres + PostgREST or S3 Object store)
@@ -142,7 +165,7 @@ namespace
 : This is the schema name used to interact with PostgREST+Postgres
 
 models
-: This is a list of data models used by Newt to generate bootstrap SQL code for PostgREST+Postgres
+: This is a list of data models used by Newt to generate bootstrap SQL code for PostgREST+Postgres. The markup will be models is based on GitHub YAML issues template syntax.
 
 The **htdocs** just points at a standard directory holding your static web content. It has no sub attributes.
 
@@ -174,49 +197,15 @@ template
 render_port
 : (optional) Set the port to use for contacting the render engine. If not set it assume 3030 is the port for the render engine.
 
-The **models** attribute holds a list of models expressed in Newt's data model DSL. Models are optional but can be used to by Newt to generate bootstrap SQL code for use with PostgREST+Postgres. This is very experimental (2024) and likely to change as usage of Newt increases. Each model has a `model` attribute holding the models name (conforming to a variable name found in langauges like JavaScript, Python, or Lua). Each model also contains a `var` attribute which is a list of key/value pairs. The key/value pairs are made from a variable name (key) and type definition (value). The type definitions are mapped to suitable Postgres SQL schema when generating table definitions. Example models used for groups and people metadata. The asterix at the end of a type string indicates this is to be used as a key when looking up the object.
-
-```yaml
-namespace: groups_and_people
-models:
-- model: cl_person
-  var:
-    family_name: String
-    given_name: String
-    orcid: ORCID
-    ror: ROR
-    created: Timestamp
-    updated: Timestamp
-- model: cl_group
-  var:
-    cl_group_id: String*
-    short_name: String
-    display_name: String
-    description: Text
-    contact: EMail
-    created: Timestamp
-    updated: Timestamp
-    founded: Date 2006-01-02
-    disbanded: Date 2006-01-02
-    approx_founding: Boolean
-    active: Boolean
-    website: URL
-    ror: ROR
-    grid: String
-    isni: ISNI
-    ringold: String
-    viaf: String
-```
-
-The models and namespace attributes are used when generate SQL for PostgREST+Postgres.  The type strings are used in both generating SQL and also when embedded in a route definition to vet requests and fail early before contact the data source if the required information is not provided.
+The **models** attribute holds a list of models expressed in Newt's data model DSL. The original protype DSL is going to be replaced with the YAML described in [Syntax for Github's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms). That syntax will allow the creation of `newtform` to generate web forms as well as be used by `newtpg` to generate Postgres compatible SQL models and behaviors. Here is an example using the old syntax as a placeholder.
 
 ### Handling errors
 
-Newt vets the initial request before contacting the JSON data source. If the request has a problem it will return an appropriate HTTP status code and message.  If the request to the JSON data source has a problem, it will pass through the HTTP status code and message provided by the JSON data source.  Likewise if Pandoc server has a problem Newt will forward that HTTP status code and message. If either the JSON data source or Pandoc server is unavailable Newt will return a "Gateway" http status code and message.
+Newt command vets the initial request before contacting the JSON data source. If the request has a problem it will return an appropriate HTTP status code and message.  If the request to the JSON data source has a problem, it will pass through the HTTP status code and message provided by the JSON data source.  Likewise if Pandoc server has a problem Newt will forward that HTTP status code and message. If either the JSON data source or Pandoc server is unavailable Newt will return a "Gateway" http status code and message.
 
 ### Static file support
 
-Newt first checks if a request is matched in one of the defined routes. If not it'll try to service the content from the "htdocs" location if that is defined in the configuration. If the file is not found or an htdocs directory has not been specified a http status of 404 is returned.
+Newt command first checks if a request is matched in one of the defined routes. If not it'll try to service the content from the "htdocs" location if that is defined in the configuration. If the file is not found or an htdocs directory has not been specified a http status of 404 is returned.
 
 Note Newt's static file services are very basic. You can't configure mime type responses or modify behavior via "htaccess" files. If Newt is running behind a traditional web server like Apache 2 or NginX then you could use that service to host your static content providing additional flexibilty.
 
@@ -228,45 +217,10 @@ While Newt was conceived to be used on as a small scale web application platform
 
 Presently Newt does not supports file uploads. The plan is to integrated support for an S3 object store. That support is still very much in the planning stages.
 
-Newt runs exclusively as a localhost service. In a production setting you'd run Newt behind a traditional web server like Apache 2 or NginX. The front end web service can provide access control via basic auth or single sign-on (e.g. Shibboleth). Newt plays nicely in a container environment, running as a system service or invoked from the command line.
-
-## Motivation
-
-My belief is that many web services used by archives, libraries and museums can benefit from a simplified and consistent back end. If the back end is "easy" then the limited developer resources can be focused on the front end which is what us humans experience day to day.
-
-I've written many web applications over the years. Newt is focused on providing very specific glue leveraging existing microservices already used by libraries, archives and museums.  For many of these apps the core of an application is a JSON service (e.g. Invenio-RDM, ArchivesSpace). Newt can be used to extend these if needed. Let's take advantage of that. When we do need a custom application let also take advantage of a similar microservices approach. Build your core application in SQL with PostgREST+Postgres, hand of rendering to Pandoc running as a service. Newt can route your data between them two giving you similar benefits to complicated systems like Invenio but simple enough to be implemented by a single person.
-
-## Newt stack, front to back
-
-- A front end web server (e.g. Apache 2, NginX) can provide access control where appropriate (e.g. single sign-on via Shibboleth)
-- Newt provides static file services but more importantly serves as a data router. It can validate and map a request to a JSON source, take those results then send them through Pandoc for transformation.
-
-- JSON data source(s) provide the actual metadata management
-  - Postgres+PostgREST is an example of a JSON source integrated with a SQL server
-  - Solr, Elasticsearch or Opensearch can also function as a JSON source oriented towards search
-  - ArchivesSpace, Invenio RDM are examples of systems that can function as a JSON sources
-  - CrossRef, DataCite, ORCID are examples of services that function as JSON sources
-- Pandoc server provides a templating engine to transform data sources
-
-All these can be treated as "off the shelf". I.e. we're not writing them from scratch but we're accessing them via configuration. Even using PostgREST with Postgres the "source" boils down to SQL used to define the data models hosted by the SQL service.  Your application is implemented using SQL and configured with YAML and Pandoc templates.
-
-## Taking advantage of JSON and S3 data sources
-
-Newt was inspired by my working with PostgREST, Postgres and Pandoc. I also work allot of S3 object stores. I want Newt to be light weight. I wanted Newt to avoid writing anything to disk. That's possible now working with JSON API as data sources. I am in the planning stages of adding S3 protocol support to allow Newt applications to support a bigger domain space. Current plans are focused on using Minio as an off the shelf microservices to fill that responsibility.
-
-## Getting Newt, Pandoc, PostgREST, Postgres and Minio
-
-Newt is an experimental prototype (June/July 2023, and January/February 2024). It is only distributed in source code form.  You need a working Go language environment, git, make and Pandoc to compile Newt from source code. See [INSTALL.md](INSTALL.md) for details. Go is available from <https://golang.org>.
-
-Pandoc is available from <https://pandoc.org>
-
-PostgREST is available from <https://postgrest.org>.
-
-Both Pandoc and PostgREST are written in Haskell, if you're going to compile them from source I recommend using GHCup <https://www.haskell.org/ghcup/>.
+Newt command runs exclusively as a localhost service. In a production setting you'd run Newt behind a traditional web server like Apache 2 or NginX. The front end web service can provide access control via basic auth or single sign-on (e.g. Shibboleth). Newt plays nicely in a container environment, running as a system service or invoked from the command line.
 
 Postgres is available from <https://postgres.org>.
 
-Minio is available from <https://github.com/minio/minio> and the Minio website at <https://min.io>.
 
 ## About the Newt source repository
 

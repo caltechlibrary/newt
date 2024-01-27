@@ -22,11 +22,12 @@
 - [x] Present at Code4Lib meetup, July 14, 2023
 - [x] Demo for DLD staff
 - [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler
-- [ ] Create a model attribute in YAML, see if that can be used to generate a basic SQL file for integration with Postgres/PostgREST, model could also be used for validating forms but maybe "global" to the routes
+- [ ] Create a data model structure YAML syntax (and processor) to do the following
     - [ ] generate PostgREST setup SQL
     - [x] generate SQL table create statement
     - [ ] generate a default view
     - [ ] generate a default create, update, delete, functions for table
+    - [ ] generate HTML web forms for the SQL table models described in the YAML file
     - [ ] generate Pandoc template web for using the create/update functions 
 - [ ] Finish Newt prototype
     - [ ] Newt router handling for OPTIONS
@@ -65,11 +66,11 @@
 
 ## Someday, maybe
 
+- [ ] Think about how to support SQLLite 3 data files in the Newt data pipe line
+    - [ ] Make a PostgREST work alike that uses SQLite3 databases
+        - [ ] Look at libSQL (SQLite3 database wrapped to support Postgres wire protocol), turso databsase and see if it's HTTP REST API can be supported by Newt
+    - [ ] better yet, find one that is already implemented and point to it!
 - [ ] Think about moving the `type_dsl.go` to its own package
-- [ ] Newt could delegate file uploads to an S3 like service, Minio is written in Go and I think supports a file streaming model
-- [ ] Integrate SQLite3 support as a "JSON Data Source", might be a separate service or synthesize the results from direct access to SQLite3 database file(s)
-- [ ] Consider porting Newt from Golang to Haskell for integration opportunities with Pandoc
+- [ ] Newt should delegate file uploads to an S3 like service, Minio is written in Go and I think supports a file streaming model
 - [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Pandoc templates
 - [x] Review Stonebooks' DbOS project at https://dbos-project.github.io/ and see what Ideas might be useful for integration into Newt
-- [ ] Make a PostgREST work alike that uses SQLite3 databases
-    - [ ] Look at libSQL (SQLite3 database wrapped to support Postgres wire protocol), turso databsase and see if it's HTTP REST API can be supported by Newt
