@@ -20,4 +20,5 @@ These are links to prior art, related efforts and resources for considatiion in 
 - [PostgREST](https://postgrest.org), build a REST JSON API directly on top of Postgres. This is what started my think about Newt prototype
 - [MRS](https://dev.mysql.com/doc/dev/mysql-rest-service/latest/), MySQL REST Service
 - [sqlite2rest](https://github.com/nside/sqlite2rest), Automatically RESTful OpenAPI server from SQLite database
+- [Soul](https://github.com/thevahidal/soul), A SQLite REST and realtime server built on NodeJS (wonder if it runs in Deno?)
 
