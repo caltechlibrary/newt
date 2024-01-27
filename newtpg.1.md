@@ -1,5 +1,5 @@
 ---
-title: "newtpg(1) user manual | 0.0.6 91ac5dd"
+title: "newtpg(1) user manual | 0.0.6 cef35c8"
 pubDate: 2024-01-26
 author: "R. S. Doiel"
 ---
