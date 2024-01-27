@@ -5,6 +5,7 @@
 
 ## Next
 
+- [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server
 - [ ] Make the model/type DSL compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)
 - [ ] Go 1.22 will include sane routing, this will simplify Newt's codebase I need to prepare for this.
 - [ ] Flesh out support for S3 object store as well as JSON API data sources
