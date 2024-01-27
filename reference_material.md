@@ -22,3 +22,16 @@ These are links to prior art, related efforts and resources for considatiion in 
 - [sqlite2rest](https://github.com/nside/sqlite2rest), Automatically RESTful OpenAPI server from SQLite database
 - [Soul](https://github.com/thevahidal/soul), A SQLite REST and realtime server built on NodeJS (wonder if it runs in Deno?)
 
+## SQL JSON support
+
+- SQL dialects
+    - [database guide](https://database.guide/), documentation for various SQL dialects including Postgres and SQLite
+- Postgres
+    - [Postgres JSON functions and operators](https://www.postgresql.org/docs/16/functions-json.html)
+    - [Postgres JSON tutorial](https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-json/)
+- SQLite 3
+    - SQLite [Overview JSON functions](https://sqlite.org/json1.html)
+    - [JSON improvements in SQLite 3.38.0](https://tirkarthi.github.io/programming/2022/02/26/sqlite-json-improvements.html)
+    - SQLite [JSON function enhancements (2022)](https://sqlite.org/src/doc/json-enhancements/doc/json-enhancements.md)
+    - SQLite cli [docs](https://sqlite.org/cli.html), e.g. "Changing output formats" in section 5 covers `.mode json`
+
