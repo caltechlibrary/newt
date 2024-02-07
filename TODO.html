@@ -25,37 +25,29 @@
 <h2 id="bugs">Bugs</h2>
 <h2 id="next">Next</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Look at sqlite2rest (a Python
-project, automatic REST API for SQLite databases), work up a demo using
-it with Newt server</label></li>
-<li><label><input type="checkbox" />Make the model/type DSL compatible
-with <a
-href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema">GitHub
-YAML issue template schema</a></label></li>
-<li><label><input type="checkbox" />Go 1.22 will include sane routing,
-this will simplify Newt’s codebase I need to prepare for
-this.</label></li>
-<li><label><input type="checkbox" />Flesh out support for S3 object
-store as well as JSON API data sources</label>
-<ul class="task-list">
-<li><label><input type="checkbox" />decide how it will be expressed in
-YAML</label></li>
-<li><label><input type="checkbox" />decide if it only operates on FILE
-uploads or if it can work for other content that might get processed via
-Pandoc</label></li>
-<li><label><input type="checkbox" />Figure out what package I want to
-use to integrate with S3 Object store</label>
-<ul class="task-list">
-<li><label><input type="checkbox" />Review Minio and see if I can just
-use it for S3 object store integration</label></li>
-<li><label><input type="checkbox" />Review s5cmd and its dependencies to
-see how s5 does S3 integration</label></li>
-<li><label><input type="checkbox" />Review the Go SWS SDK and see if
-this will also work for other S3 object stores</label></li>
-</ul></li>
-</ul></li>
 <li><label><input type="checkbox" />Update generate SQL to confirm to
-the style suggestion in “The Art of Postgres”</label></li>
+the style suggestion in “The Art of Postgres” (link as a reference in
+Newt documentatation)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Include a short SQL tutorial split
+between DDL (data definition language), DQL (data query language) and
+DML (data modification langauge), touch on transactions</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Next version of Newt needs to be
+based on Go 1.22, it includes sane routing dsl and will let Newt be
+simplier</label></li>
+<li><label><input type="checkbox" />Adopt GitHub’s YAML Issue Syntax for
+describing models</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />evaluate the DSL that
+Newt’s existing has to see if it still makes sense (probably
+doesn’t)</label></li>
+<li><label><input type="checkbox" />Can the model/type DSL be made
+compatible with <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema">GitHub
+YAML issue template schema</a>? Or should it be replaced by
+it?</label></li>
+</ul></li>
 <li><label><input type="checkbox" />It would be nice to be able to
 define some global constants to minimize repeated strings like a common
 PostgREST url prefix, <code>http://localhost:3000</code> expressed as
@@ -167,6 +159,35 @@ render engine that funtions similar to Pandoc server</label></li>
 </ul>
 <h2 id="someday-maybe">Someday, maybe</h2>
 <ul class="task-list">
+<li><label><input type="checkbox" />Newt should support development with
+SQLite 3 database</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Look at sqlite2rest (a Python
+project, automatic REST API for SQLite databases), work up a demo using
+it with Newt server</label></li>
+<li><label><input type="checkbox" />Think about a dsn that could read to
+the tabel level, or think about the API end points provided by web form
+building platforms (e.g. Google’s forms, WuFoo, etc)</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Flesh out support for S3 object
+store as well as JSON API data sources</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />decide how it will be expressed in
+YAML</label></li>
+<li><label><input type="checkbox" />decide if it only operates on FILE
+uploads or if it can work for other content that might get processed via
+Pandoc</label></li>
+<li><label><input type="checkbox" />Figure out what package I want to
+use to integrate with S3 Object store</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Review Minio and see if I can just
+use it for S3 object store integration</label></li>
+<li><label><input type="checkbox" />Review s5cmd and its dependencies to
+see how s5 does S3 integration</label></li>
+<li><label><input type="checkbox" />Review the Go SWS SDK and see if
+this will also work for other S3 object stores</label></li>
+</ul></li>
+</ul></li>
 <li><label><input type="checkbox" />Think about how to support SQLLite 3
 data files in the Newt data pipe line</label>
 <ul class="task-list">

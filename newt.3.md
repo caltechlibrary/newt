@@ -6,7 +6,7 @@ author: R. S. Doiel
 
 # NAME
 
-new variables
+newt variables
 
 # SYNOPSIS
 

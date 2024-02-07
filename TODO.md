@@ -5,17 +5,12 @@
 
 ## Next
 
-- [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server
-- [ ] Make the model/type DSL compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)
-- [ ] Go 1.22 will include sane routing, this will simplify Newt's codebase I need to prepare for this.
-- [ ] Flesh out support for S3 object store as well as JSON API data sources
-    - [ ] decide how it will be expressed in YAML
-    - [ ] decide if it only operates on FILE uploads or if it can work for other content that might get processed via Pandoc
-    - [ ] Figure out what package I want to use to integrate with S3 Object store
-        - [ ] Review Minio and see if I can just use it for S3 object store integration
-        - [ ] Review s5cmd and its dependencies to see how s5 does S3 integration
-        - [ ] Review the Go SWS SDK and see if this will also work for other S3 object stores
-- [ ] Update generate SQL to confirm to the style suggestion in "The Art of Postgres"
+- [ ] Update generate SQL to confirm to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentatation)
+    - [ ] Include a short SQL tutorial split between DDL (data definition language), DQL (data query language) and DML (data modification langauge), touch on transactions
+- [ ] Next version of Newt needs to be based on Go 1.22, it includes sane routing dsl and will let Newt be simplier
+- [ ] Adopt GitHub's YAML Issue Syntax for describing models
+    - [x] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
+    - [ ] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
 - [ ] It would be nice to be able to define some global constants to minimize repeated strings like a common PostgREST url prefix, `http://localhost:3000` expressed as `{api}` 
 - [ ] Prune required boiler plate in Newt's YAML file
     - [ ] Make sure `*_method:` defaults to "GET"
@@ -67,6 +62,16 @@
 
 ## Someday, maybe
 
+- [ ] Newt should support development with SQLite 3 database
+    - [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server
+    - [ ] Think about a dsn that could read to the tabel level, or think about the API end points provided by web form building platforms (e.g. Google's forms, WuFoo, etc)
+- [ ] Flesh out support for S3 object store as well as JSON API data sources
+    - [ ] decide how it will be expressed in YAML
+    - [ ] decide if it only operates on FILE uploads or if it can work for other content that might get processed via Pandoc
+    - [ ] Figure out what package I want to use to integrate with S3 Object store
+        - [ ] Review Minio and see if I can just use it for S3 object store integration
+        - [ ] Review s5cmd and its dependencies to see how s5 does S3 integration
+        - [ ] Review the Go SWS SDK and see if this will also work for other S3 object stores
 - [ ] Think about how to support SQLLite 3 data files in the Newt data pipe line
     - [ ] Make a PostgREST work alike that uses SQLite3 databases
         - [ ] Look at libSQL (SQLite3 database wrapped to support Postgres wire protocol), turso databsase and see if it's HTTP REST API can be supported by Newt
