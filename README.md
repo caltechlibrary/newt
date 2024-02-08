@@ -1,7 +1,7 @@
 
 # Newt Project
 
-The Newt Project is an experiment in rapid web application development for libraries, archives and museums (a.k.a. <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture forming data pipelines[^0]. The pipelines compose the web application.
+The Newt Project is an experiment in rapid web application development for libraries, archives and museums (abbr: <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture forming data pipelines[^0]. The pipelines compose the web application.
 
 [^0]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
@@ -17,7 +17,7 @@ The Newt Project is trying to encourage the following characteristics.
 
 The Newt Project is exploring this by providing three tools to fill in the gaps.
 
-- `newt` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipe line built from other web services
+- `newt` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
 - `newtgen` is a code generator that can take a set of data models described in YAML and generate SQL, HTML and templates based on those models
 - `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
 
@@ -39,19 +39,23 @@ Most LAS applications are focused on managing and curating some sort of metadata
 
 ## Motivation
 
-Over the last several decade web applications become very complex. This complexity is expensive in terms of reliability, enhancement, big fixes and software sustainability.
+Over the last several decade web applications became very complex. This complexity is expensive in terms of reliability, enhancement, bug fixes and software sustainability.
 
 > A brief historic detour to set context
 
-Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. The web as an application was born and proceeded to eat all the venerable green screen systems to could find. When that was complete it continued to engorge itself until we have the web today and along with a problematic surveillance economy. Somewhere in that time frame became a good platform for providing useful organizational software.
+Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. The web as an application was born and proceeded to eat all the venerable green screen systems it could find. When that was complete it continued to engorge itself until we have the web today and along with a problematic surveillance economy. Somewhere in that time frame the web became a good platform for providing useful organizational software.
 
-In the 1990s the Open Source databases of choice were MySQL and Postgres. Neither MySQL or Postgres spoke HTTP (the protocol the web runs on). To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular web server software called Apache. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture". The basic concept was to "data feeds" and combined them into a useful human friendly web pages. Specialization has continued. Some of these systems have become less bespoke. Eventual the useful concept between software that could be used "off the shelf". A good example is Apache's [Solr](https://solr.apache.org) search engine. 
+> moving forward in time
 
-Fast forward to 2024. The back end of web applications can largely be assemble from off the shelf software. While middleware has grown large and complex that can be viewed as a by product of inertia and the assumption that what is good for "Google Scale" is good for everyone. 
+In the 1990s the Open Source databases of choice were MySQL and Postgres. Neither MySQL or Postgres spoke HTTP (the protocol the web runs on). To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular web server software called Apache. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture". The basic concept was to "data feeds" and combined them into a useful human friendly web pages. Specialization has continued. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases. Common use cases lead to "off the shelf" programs. A good example is Apache's [Solr](https://solr.apache.org) search engine. 
 
-I think a radical simplification is due.  Most software doesn't need to scale that large. Even in the research and LAS communities we don't routinely write software that scales as large as Zenodo.  We just to typically see tens of thousands of simultaneous users. If that premise is acceptable then we can focus our efforts around orchestrating off the shelf components and put most of our efforts into improving the human experience of using our software.
+> fast forward to 2024, context set
 
-A big key to simplification is realizing that the middleware no longer needs to be responsible for managing data models, access and users, data transformation and doesn't even need need to be completely bespoke. If you can configure the data routes and your data models the rest could become turn key.
+The back end of web applications can largely be assemble from off the shelf software. While middleware has grown large and complex that can be viewed as a by product of inertia and the assumption that what is good for "Google Scale" is good for everyone. 
+
+I think a radical simplification is due.  Most software doesn't need to scale that large. Even in the research and LAS communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software.
+
+A big key to simplification is realizing that the middleware no longer needs to be responsible for managing data models, access and users, data transformation and doesn't need to be bespoke. If you can configure the data routes and your data models the rest could become turn key.
 
 ## Off the shelf delivers
 
@@ -63,22 +67,20 @@ A big key to simplification is realizing that the middleware no longer needs to 
 
 ## This missing bits
 
-With the above list along you can build complex applications that run inside the web browser and never move beyond that for the back end aside from configuration and loading your database schema, views and functions.  The trouble is relying on JavaScript assemble of content in the web browser is not a nice user experience[^1]. It's nicer if the web browser can make a minimum number of requests to a single web service and get back useful results without having to process more than HTML and CSS. 
+With the above list can already can build complex applications that run inside the web browser. The cost is JavaScript is required to render everything. The trouble is relying on JavaScript assemble of content in the web browser is a horrible idea[^2]. A better approach is then web browser can make a minimum number of requests to a single web service and get back useful results without having to process more than HTML and CSS. 
 
-Typically the answer has been to write more middleware and I want to avoid that complexity. 
+Taking the better approach in the past has required the writing of more middleware. I think we can avoid that or at least avoid complex middleware.
 
-Over the last many years many web frameworks developed for Go, Java, JavaScript, PHP, Python, Ruby, etc. rely on a concept of "routes" in defining the behavior of web applications. A route can be though of as an HTTP method and a URL path. To build something for the web in these environments you wind up creating a bunch of functions that map a route to a data source, assemble it and then hand it back. Sometimes those functions are well encapsulated (e.g. static file access) requiring minimal coding. More comply they become complex, setting up data, validating things, managing data and eventually returning what the web browser requested. 
+Over the last many years many web frameworks developed for Go, Java, JavaScript, PHP, Python, Ruby, etc. that rely on a concept of "routes". The routes form the applications expressed through a collection of predictable URLs.  A route can be though of as an HTTP method and a URL path. To build something for the web in these environments you wind up creating a bunch of functions that map a route to a data source, assemble it and then hand it back. Sometimes those functions are well encapsulated (e.g. static file access) requiring minimal coding. More commonly they become complex. They perform data modeling and validating. They may require coordination between data models. Often the middleware gets stuck also imposing a access management system and thus user profile manage. Of course they still need to eventually returning an appropriate response to the web browser. 
 
-What if we could treat the output of a data pipeline as easily as we provide static file access?  I think the answer is yes. Newt provides a simple web service that takes a YAML file and pairs the requests it receives with a data pipe line. The last stage of the pipeline executed is returned to the web browser. If there is a failure in the pipe line then an appropriate error is returned to the requesting web browser. Additionally Newt's web service can provide basic data validation by using its knowledge of the data models available in the pipe line. Newt's code generator can create the SQL, templates and HTML to make that consistent.
+What if we align access crontrol with our front end web server or express it at the database level? What if we could treat the output of a data pipeline as easily as we provide static file access?  I think the answer is "yes we can" to both of these propositions. Newt provides a simple web service that takes a YAML file and pairs the requests it receives with a data pipeline. The last stage of the pipeline executed is returned to the web browser. If there is a failure in the pipeline then an appropriate error is returned to the requesting web browser. Additionally Newt's web service can provide basic data validation by using its knowledge of the data models available in the pipeline. Newt's code generator can create the SQL, templates and HTML needed to assemble a basic human user interface. If that is correct there isn't much middleware left to write.
 
-With that there isn't much middleware left to write.
-
-[^1]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
+[^2]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
 ## What comes with the Newt Project?
 
-- [newt](newt.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" micro services. It functions both as a data router and as a static file server. It is responsible for vetting requests against the models described in the YAML file. The same models used to generate the SQL for the database and the templates for user with a template engine.
-- [newtgen](newtgen.1.md) is a command line program that reads the Newt YAML file and generates SQL and templates used to build your application.  The SQL generated currently target Postgres+PostgREST.
+- [newt](newt.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a data router and as a static file server. It is responsible for vetting requests against the models described in the YAML file. The same models used to generate the SQL for the database and the templates for user with a template engine.
+- [newtgen](newtgen.1.md) is a command line program that reads the Newt YAML file and generates SQL and templates used to build your application.  The generated SQL currently targets Postgres+PostgREST.
 - [newtmustache](newmustache.1.md) is a recent additional to the prototype suite. When discussing using Pandoc templates with colleagues some people pointed out they didn't like Pandoc templates. Newt's template engine uses [Mustache](https://mustache.github.io/) template markup to render JSON content. It functions like Pandoc in server mode. You POST a request to the template engine that includes both your template and JSON data and it returns the transformed result. This demonstrates that you can swap out the template engine and still use the Newt web service. 
 
 NOTE: See the [user manual](user_manual.md) for details
@@ -140,7 +142,7 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 ## Getting help
 
-**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is most likely broken. At a stretch it could be considered a working prototype. You should not use it for production systems.  However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in remains an **experiment** as of February 2024.
+**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is most likely broken. At a stretch it could be considered a working prototype. You should not use it for production systems.  However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in mind it remains an **experiment** as of February 2024.
 
 ## Documentation
 
