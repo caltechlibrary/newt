@@ -1,15 +1,18 @@
 
 # User manual
 
-- [To do](TODO.md), prototype todo list
-- [newt](newt.1.md) microservice
-- [newtgen](newtgen.1.md) Postgres+PostgREST SQL generator
-- [newtmustache](newtmustache.1.md) a mustache template engine, an alternative to Pandoc server
 - [Newt YAML Syntax](newt_yaml_syntax.md)
-- [Newt Router](newt_router.md)
-- [Newt Generator](newt_generator.md)
-- [Installation](INSTALL.md)
-- [Newt Presentation](presentation/), Code4Lib Meetup at UCLA, July 14, 2023
-- [Origin Story](origin_story.md), notes, from 2023 for Newt Project
+- Newt provided services
+  - [Newt Router](newt.1.md)
+  - [Newt Generator](newt.1.md)
+  - [Newt Template Engine](newtmustache.1.md)
+
+- [Installing Newt](INSTALL.md)
+- [Installing PostgREST](INSTALL-PostgREST.md)
+- [Installing Pandoc](INSTALL-Pandoc.md)
+- [Origin Story](origin_story.md), Feb 7, 2024
 - [Improving Newt's YAML DSL](improving_the_type_dsl.md), January 26, 2024
+- [Newt Presentation](presentation/), Code4Lib Meetup at UCLA, July 14, 2023
+
 - [Reference Material](reference_material.md), January 26, 2024, links to prior art and documentation
+- [Todo](TODO.md), prototype todo list

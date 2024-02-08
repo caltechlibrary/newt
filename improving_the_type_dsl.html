@@ -12,7 +12,7 @@
 <ul>
 	<li><a href="/">Home</a></li>
 	<li><a href="./">README</a></li>
-	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
 	<li><a href="LICENSE">LICENSE</a></li>
 	<li><a href="INSTALL.html">INSTALL</a></li>
 	<li><a href="about.html">About</a></li>
@@ -48,36 +48,34 @@ implemented a small DSL on top of YAML to describe data models that are
 rendered as SQL. The SQL can be used to provide a JSON API via Postgres
 and PostgREST. The problem is the prototype’s DSL is too narrowly
 focused to also describe a web form. If Newt is to be a rapid web
-application development tool then generating the HTML and JavaScript for
-a web form that maps to SQL needed to implement PostgREST JSON API is
-highly desirable.</p>
+application development tool then generating the HTML and SQL
+implementing a PostgREST JSON API is highly desirable.</p>
 <h2 id="proposed-solution">Proposed Solution</h2>
 <p>If I adopt the syntax supported by GitHub YAML issue templates<a
 href="#fn3" class="footnote-ref" id="fnref3"
-role="doc-noteref"><sup>3</sup></a> I gain the advantage of our staff
-already being familiar with the GitHub YAML DSL describing the issues
-web forms. The GitHub syntax appears sufficient to render both SQL
+role="doc-noteref"><sup>3</sup></a> (abbr: GHYT). I gain the advantage
+of our staff already being familiar with the GHYT DSL describing the
+issue templates. The GitHub syntax appears sufficient to render both SQL
 models and HTML 5 forms. Adding the SQL support is a matter of mapping
-the DSL types used to describe HTML form elements to their respective
-SQL data types.</p>
-<p>Libraries, archives and museums work with structured metadata. The
+GHTY input types to both general purpose HTML and their respective SQL
+data types.</p>
+<p>There is room for further enhancement without breaking GHYT.
+Libraries, archives and museums work with structured metadata. The
 metadata attributes often conform to a known data type. This is
-particularly true of identifiers (e.g. orcid, doi, ror, arXiv). Using
-the existing GitHub YAML DSL syntax I could support a wider diversity of
-types through the value associated in the type attribute.</p>
-<p>The type attribute in the GitHub syntax controls both the rendered
-Markdown/HTML markup but also representation in SQL used to render the
-JSON API via Postgres+PostgREST.</p>
-<p>Newt’s type DSL is implemented using a Go struct found in <a
-href="type_dsl.go">type_dsl.go</a>. The current<a href="#fn4"
+particularly true of identifiers (e.g. ORCID, DOI, ROR, arXiv). Using
+the existing GitHub YAML issue template syntax I could support a wider
+diversity of types through the value associated in the type attribute of
+the input element.</p>
+<p>This would require replacing original prototype DSL defined in a Go
+struct found in <a href="type_dsl.go">type_dsl.go</a> with a new series
+of struct that map out GHYT. The current<a href="#fn4"
 class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>
 prototype’s ModelDSL struct is minimal. If I enhance the ModelDSL struct
 to match the syntax described in the GitHub YAML issue schema
 documentation then I should be able to support the GitHub YAML syntax
-with minimal modifications to Newt’s type DSL. An additional tool can
-then be included with Newt to support rendering HTML or Markdown forms
-from same YAML model I use to generate the SQL for
-Postgres+PostgREST.</p>
+with minimal modifications to the rest of the Newt data router. I can
+also improve the code generation ability with this simpler structure for
+mapping data and representations.</p>
 <h3 id="advantages-of-adopting-a-common-syntax">Advantages of adopting a
 common syntax</h3>
 <p>GitHub’s YAML syntax promises the following advantages</p>
@@ -85,16 +83,16 @@ common syntax</h3>
 <li>Standardize syntax for library staff who implement web forms</li>
 <li>Leverage GitHub documentation approach with the Newt YAML DSL for
 modeling</li>
-<li>A process that is prototype using GitHub issue templates and actions
-could be ported to a Newt base application eliminating the problem of
-SAAS vendor lock in</li>
+<li>Supports a protyping a process in GitHub issue templates and GitHub
+action while leaving the door open to easily self host those processes
+in our machines</li>
 </ul>
 <h3 id="disadvantages-to-adopting-a-common-syntax">Disadvantages to
 adopting a common syntax</h3>
 <ul>
-<li>GitHub’s YAML issue syntax is in beta and not formalized</li>
-<li>Newt project would need to tracking an informal specification
-changes</li>
+<li>GitHub’s YAML issue syntax is in beta and is subject to change</li>
+<li>Newt project will need to tracking any changes to remain
+compatible</li>
 </ul>
 <h2 id="footnotes">Footnotes</h2>
 <section id="footnotes" class="footnotes footnotes-end-of-document"

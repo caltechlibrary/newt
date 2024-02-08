@@ -12,7 +12,7 @@
 <ul>
 	<li><a href="/">Home</a></li>
 	<li><a href="./">README</a></li>
-	<li><a href="user-manual.html">User Manual</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
 	<li><a href="LICENSE">LICENSE</a></li>
 	<li><a href="INSTALL.html">INSTALL</a></li>
 	<li><a href="about.html">About</a></li>
@@ -33,32 +33,76 @@ of newt with the following curl command.</p>
 <h2 id="install-from-source">Install from source</h2>
 <h2 id="requirements">Requirements</h2>
 <ul>
-<li>Golang &gt; 1.21</li>
-<li>Pandoc &gt; 3</li>
-<li>Postgres &gt; 15</li>
-<li>PostgREST &gt; 12</li>
-<li>GNU Make</li>
-<li>Git</li>
+<li>Go ≥ 1.22 (aped relies the improved HTTP package that supports a
+richer Del for describing routes)</li>
+<li>Pandoc ≥ 3.1 (to render Markdown content and some Go code)</li>
+<li>Postgres ≥ 16</li>
+<li>PostgREST ≥ 12</li>
+<li>Git compatible tool for retrieving the GitHub repository of Ape</li>
+<li>GNU Make ≥ 4.3</li>
+<li>GNU grep ≥ 3.7</li>
+<li>GNU cut ≥ 8.32</li>
 </ul>
-<h2 id="steps">Steps</h2>
+<h3 id="building-from-source-code">Building from source code</h3>
 <ol type="1">
-<li>Clone the Git repository for the project</li>
-<li>change directory into the cloned project</li>
-<li>Run <code>make</code>, <code>make test</code> and
-<code>make install</code></li>
+<li>Make sure you have the required development software installed</li>
+<li>Clone the Ape GitHub repository locally</li>
+<li>Use the Go tool to build, test and run the application</li>
 </ol>
-<p>Here’s what that looks like for me.</p>
-<pre><code>git clone https://github.com/caltechlibrary/newt src/github.com/caltechlibrary/newt
-cd src/github.com/caltechlibrary/newt
-make
-make test
-make install</code></pre>
-<p>By default it will install the programs in <code>$HOME/bin</code>.
-<code>$HOME/bin</code> needs to be included in your <code>PATH</code>.
-E.g.</p>
-<pre><code>export PATH=&quot;$HOME/bin:$PATH&quot;</code></pre>
-<p>Can be added to your <code>.profile</code>, <code>.bashrc</code> or
-<code>.zshrc</code> file depending on your system’s shell.</p>
+<h4 id="step-1">step 1</h4>
+<ol type="1">
+<li>Check if Go is installed and it is the right version. See <a
+href="https://golang.org" class="uri">https://golang.org</a> to download
+and install Go</li>
+<li>Check if Pandoc is installed and the right version. See <a
+href="https://pandoc.org" class="uri">https://pandoc.org</a> to download
+and install Pandoc</li>
+<li>Check if SQLite3 is installed and the right version. See <a
+href="https://sqlite.org" class="uri">https://sqlite.org</a> to download
+and install SQLite3</li>
+<li>Check if Git is installed and version. To install the Git command
+see, <a href="https://git-scm.com/"
+class="uri">https://git-scm.com/</a>. GitHub provides <a
+href="https://docs.github.com/en/github-cli">gh</a> and <a
+href="https://docs.github.com/en/desktop">GitHub Desktop</a> with
+similar capabilities. Ape install instructions assume the venerable
+<code>git</code> command.</li>
+<li>Check if your GNU or POSIX commands are available
+<ul>
+<li>These command often installed by POSIX operating system and its
+package manager</li>
+</ul></li>
+</ol>
+<pre class="shell"><code>go version
+pandoc --version
+sqlite3 --version
+git version
+make --version
+grep --version
+cut --version</code></pre>
+<h4 id="step-2">step 2</h4>
+<ol type="1">
+<li>Start in your home directory</li>
+<li>Clone Ape’s <a
+href="https://github.com/caltechlibrary/ape">repository</a>.</li>
+<li>Change into the Ape directory</li>
+</ol>
+<pre class="shell"><code>cd
+git clone \
+   https://github.com/caltechlibrary/ape \
+   src/github.com/caltechlibrary/ape
+cd src/github.com/caltechlibrary/ape</code></pre>
+<h4 id="step-3">step 3</h4>
+<p>For these three tasks we’re going to use the Go command. It assumed
+are still int eh directory where you completed step 2.</p>
+<ol type="1">
+<li>Build the ape application</li>
+<li>Test the ape application</li>
+<li>If the tests are successful then you can install Ape tools</li>
+</ol>
+<pre class="shell"><code>go build
+go test
+go install</code></pre>
 <h2 id="precompiled-binaries">Precompiled binaries</h2>
 <p>You can find pre-compiled binaries for some versions of Newt. They
 are available at <a
@@ -93,78 +137,16 @@ machines)</li>
 <li><code>newt-v0.0.2-Linux-aarch64.zip</code> (Linux on ARM 64)</li>
 </ul></li>
 </ul>
-<h2
-id="getting-recent-versions-of-pandoc-and-postgrest-on-m1m2-macs">Getting
-recent versions of Pandoc and PostgREST on M1/M2 Macs</h2>
-<p>Newt is intended to work along side Pandoc and PostgREST. I usually
-install these from source. I’ve had the best results on both Linux and
-macOS using GHCup to provide my Haskell compile and build environment.
-Below are quick recipes for building and installing PostgREST and
-Pandoc, these are not a replacement for their respective project
-documentation instruction. They reflect what I did to get
-Pandoc/PostgREST current releases installed on a Mac Mini with a M1
-processor. Your mileage may vary.</p>
-<p>The basic recipe is</p>
-<ol type="1">
-<li>Install Haskell with <a
-href="https://www.haskell.org/ghcup/">GHCup</a> (I accept the defaults
-and use the “recommended” versions set via <code>ghcup tui</code>)</li>
-<li>Make sure the GHCup environment is available,
-<code>source $HOME/.ghcup/env</code></li>
-<li>Make sure I am using the “recommended” of GHC, Cabal, Stack,
-etc.</li>
-<li>Clone the GitHub <a
-href="https://github.com/PostgREST/postgrest">PostgREST</a> and <a
-href="https://github.com/jgm/pandoc">Pandoc</a> repositories to your
-machine</li>
-<li>Change to the cloned repository directory</li>
-<li>Checkout the version you want to build</li>
-<li>Run the usual Haskell/Cabal build process</li>
-</ol>
-<p>Here is the steps I typed at the command line to install PostgREST on
-my M1 Mac Mini.</p>
-<pre><code>curl --proto &#39;=https&#39; --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
-source $HOME/.ghcup/env
-ghcup tui
-git clone git@github.com:PostgREST/postgrest
-cd postgrest
-git checkout v11.1.0
-cabal clean
-cabal update
-cabal build
-cabal install
-cd ..</code></pre>
-<p>Here are the steps I typed at the command line to install Pandoc on
-my M1 Mac Mini. The basic recipe is modified because of a potential link
-conflict in which libiconv to use I’ve encountered on macOS running on
-my M1 Mac Mini. I need the Mac Ports version for the Mac Ports installed
-of Git to work. This means I need to do all my Git commands before I
-removing libiconv. I then invoking Cabal and put libiconv back afterward
-Pandoc installation is complete. If you’re not using the libiconv
-installed as part of Mac Ports applications you can skip those
-steps.</p>
-<p>NOTE: I’ve skipped installing GHCup because I assume you’ve already
-installed it when you compiled.</p>
-<ol type="1">
-<li>Clone <a href="https://github.com/jgm/pandoc">Pandoc</a> repository
-from GitHub</li>
-<li>Change into the Pandoc directory</li>
-<li>Checkout the version of Pandoc you want to build (e.g. 3.1.4)</li>
-<li>Remove the Mac Ports libiconv library using Ports command</li>
-<li>Run the usual Haskell/Cabal build process</li>
-<li>Put the Mac Ports libiconv back using the Ports command</li>
-</ol>
-<pre><code>git clone git@github.com:jgm/pandoc
-cd pandoc
-git checkout 3.1.4
-sudo port uninstall libiconv
-cabal clean
-cabal update
-cabal install pandoc-cli
-sudo port install libiconv
-cd ..</code></pre>
-<p>Even though you are installing “pandoc-cli” it can function as the
-Pandoc web service by invoking pandoc server command option.</p>
+<h2 id="getting-help">Getting help</h2>
+<p><strong>The Newt Project is an experiment!!</strong>. The source code
+for the project is supplied “as is”. Newt is most likely broken. At a
+stretch it could be considered a working prototype. You should not use
+it for production systems. However if you’d like to ask a question or
+have something you’d like to contribute please feel free to file a
+GitHub issue, see <a
+href="https://github.com/caltechlibrary/newt/issues"
+class="uri">https://github.com/caltechlibrary/newt/issues</a>. Just keep
+in remains an <strong>experiment</strong> as of February 2024.</p>
 </section>
 
 <footer>

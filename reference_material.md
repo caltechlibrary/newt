@@ -6,14 +6,20 @@ These are links to prior art, related efforts and resources for considatiion in 
 ## Data Modeling
 
 - [Syntax for GitHub form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)
+- [A React component for building Web forms from JSON Schema](https://github.com/rjsf-team/react-jsonschema-form)
 - [JSON Forms](https://jsonforms.io/docs/)i
     - pretty heavy weight in the deployed results (i.e. renders to either React or Angular)
     - Uses JSON rather than YAML or TOML to describe forms which can be construed as less human friendly
 - [YAQL](https://yaql.readthedocs.io/en/latest/getting_started.html), a YAML like query langauge that maps to SQL
 - [pg_query](https://github.com/pganalyze/pg_query), a Ruby library to parse SQL and normalize into a data structure
 - [htmx](https://htmx.org/), a Web Component like markup implementing the wrapping layer between JSON API and HTML structured markup
+- [Yafowil, yet another form widget library](http://docs.yafowil.info/)
+    - [Describe YAFOWIL forms with YAML](https://yafowil.readthedocs.io/en/latest/yaml.html)
 - [MDN Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_Components), useful for make specialize input elements, like ORCID, DOI, ArXiv identifier entry
 - [MDN HTML5 input types](https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types)
+- [Generate webforms based on YAML schema with pykwalify](https://github.com/cxong/pykwalify-webform)
+- [Flask Open API 3](https://pypi.org/project/flask-openapi3/)
+
 
 ## SQL DB to REST JSON API
 

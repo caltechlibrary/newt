@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-yaml-syntax">Newt YAML syntax</h1>
+<p>Newt’s configuration and modeling is based on a YAML file. That YAML
+file has a specific syntax. The top level of that syntax are three
+properties.</p>
+<dl>
+<dt>application</dt>
+<dd>
+holds the run time configuration used by the Newt web service and
+metadata about the application you’re creating.
+</dd>
+<dt>models</dt>
+<dd>
+This holds the description of the data models in your application. Each
+model uses the <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms">GitHub
+YAML issue template syntax</a>
+</dd>
+<dt>routes</dt>
+<dd>
+This holds the routes for the data pipe line (e.g. JSON API and template
+engine sequence)
+</dd>
+</dl>
+<h2 id="the-application-property">the “application” property</h2>
+<p>The application property itself has four properties.</p>
+<dl>
+<dt>port</dt>
+<dd>
+(optional, default is This port number the Newt web services uses to
+listen for request on localhost
+</dd>
+<dt>htdocs</dt>
+<dd>
+(optional) Directory that holds your application’s static content
+</dd>
+<dt>metadata</dt>
+<dd>
+(optional) This holds metadata about your application using the <a
+href="https://citation-file-format.github.io/">CITATION.cff</a> YAML
+syntax under metadata.
+</dd>
+<dt>environment</dt>
+<dd>
+(optional) this is a list of operating system environment that will be
+available to routes. This is used to pass in secrets (e.g. credentials)
+need in the pipeline
+</dd>
+</dl>
+<h2 id="the-routes-property">the “routes” property</h2>
+<p>Routes hosts a list of request descriptions and their data
+pipelines</p>
+<h3 id="a-route-object">a route object</h3>
+<dl>
+<dt>name</dt>
+<dd>
+(required) This identifies the pipe line so that it can be re-used or
+included in other pipelines. It must conform to variable name rules<a
+href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>
+</dd>
+<dt>request</dt>
+<dd>
+(required) This is a string that express the paith to listen to for
+running the data pipeline
+</dd>
+<dt>pipeline</dt>
+<dd>
+(required) this is a list of data request used to form the pipeline
+needed for this request. the last element in the pipeline is returned as
+a response to the request
+</dd>
+<dt>description</dt>
+<dd>
+(optional) a description of the pipeline and what it is trying to
+accomplihs
+</dd>
+<dt>error</dt>
+<dd>
+(optional) this points to a static page that can be displayed when the
+pipeline fails (e.g. like a 404 page used by web servers)
+</dd>
+<dt>variables</dt>
+<dd>
+(optional) this is a key-value list of input types that may be used in
+route mapping. These are base on input types in models (see below).
+</dd>
+<dt>debug</dt>
+<dd>
+(optonal) if set to true the pipeline process will be logged to standard
+out
+</dd>
+</dl>
+<h2 id="the-models-property">the “models” property</h2>
+<p>Models holds a list of individual models used by our data pipelines.
+The models are used when generating the SQL code defining our models and
+data manage. It also is used to render templates that maybe used by a
+template engine in the data pipeline. It can be used to generate static
+HTML suitable for embedding in Markdown or HTML documents (e.g. web
+forms)</p>
+<h3 id="a-model-object">a model object</h3>
+<dl>
+<dt>id</dt>
+<dd>
+(required, newt specific) this is the name identifying the model. It
+must conform to variable name rules<a href="#fn2" class="footnote-ref"
+id="fnref2" role="doc-noteref"><sup>2</sup></a>
+</dd>
+</dl>
+<p>The following following properties are based on the GitHub YAML issue
+template syntax<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a> (abbr: GHYT)</p>
+<dl>
+<dt>name</dt>
+<dd>
+(required by GHYT) Must be unique to use with GitHub YAML issue
+templates<a href="#fn4" class="footnote-ref" id="fnref4"
+role="doc-noteref"><sup>4</sup></a>
+</dd>
+<dt>description</dt>
+<dd>
+(required) A human description of the model, It will appear in the web
+form and SQL commonents generated from the model
+</dd>
+<dt>body</dt>
+<dd>
+(required) A a list of input types. Each input type maps to columns in
+SQL, input element in web forms and or HTML elements in read only pages
+</dd>
+</dl>
+<h4 id="a-models-input-types">a model’s input types</h4>
+<p>This is based on GitHub YAML issue template (abbr: GHYT) input
+types<a href="#fn5" class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a>.</p>
+<dl>
+<dt>id</dt>
+<dd>
+(required) an identifier for the element. Must conform to variable name
+rules<a href="#fn6" class="footnote-ref" id="fnref6"
+role="doc-noteref"><sup>6</sup></a>. It is used to SQL as a column name
+and in web forms for the input property.
+</dd>
+<dt>type</dt>
+<dd>
+(required) Identifies the type of elements (input, textarea, markdown,
+checkbox, dropdown).
+</dd>
+<dt>attributes</dt>
+<dd>
+(optional) A key-value list that define properties of the element. These
+used in rendering the element in SQL or HTML
+</dd>
+<dt>validations</dt>
+<dd>
+(optional, encouraged) A set of key-value pairs setting constraints of
+the element content. E.g. required, regexp properties, validation rule
+provided with certain identifiers (e.g. DOI, ROR, ORCID).
+</dd>
+</dl>
+<h2 id="input-types">input types</h2>
+<p>Both the routes and models may continue input types. The types
+supported in Newt are based on the types found in GitHub YAML issue
+types<a href="#fn7" class="footnote-ref" id="fnref7"
+role="doc-noteref"><sup>7</sup></a>. They include</p>
+<dl>
+<dt>markdown</dt>
+<dd>
+(models only) markdown request displayed to the user but not submitted
+to the user but not submitted by forms.
+</dd>
+<dt>textarea</dt>
+<dd>
+(models only) A multi-line text field
+</dd>
+<dt>input</dt>
+<dd>
+A single line text field. This conforms to value input types in HTML 5
+and can be expressed using the CSS selector notation. E.g.
+<code>input[type=data]</code> would be a date type. This would result in
+a date column type in SQL, a date input type in HTML forms and in
+formatting other HTML elements for display.
+</dd>
+<dt>dropdown</dt>
+<dd>
+A dropdown menu. In SQL this could render as an enumerated type. In HTML
+it would render as a drop down list
+</dd>
+<dt>checkboxes</dt>
+<dd>
+A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio
+button) then the result is stored in a single column, if multiple
+checkes are allowed it is stored as a JSON Array column.
+</dd>
+</dl>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>variable numbers must start with a letter, may contain
+numbes but not spaces or punctation except the underscore<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>variable numbers must start with a letter, may contain
+numbes but not spaces or punctation except the underscore<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms</a>,<a
+href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms</a>,<a
+href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
+href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>variable numbers must start with a letter, may contain
+numbes but not spaces or punctation except the underscore<a
+href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
+href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

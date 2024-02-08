@@ -19,37 +19,67 @@ Install from source
 
 ## Requirements
 
-- Golang > 1.21
-- Pandoc > 3
-- Postgres > 15
-- PostgREST > 12
-- GNU Make
-- Git
+- Go ≥ 1.22 (aped relies the improved HTTP package that supports a richer Del for describing routes)
+- Pandoc ≥ 3.1 (to render Markdown content and some Go code)
+- Postgres ≥ 16
+- PostgREST ≥ 12
+- Git compatible tool for retrieving the GitHub repository of Ape
+- GNU Make ≥ 4.3
+- GNU grep ≥ 3.7
+- GNU cut  ≥ 8.32
 
-## Steps
+### Building from source code
 
-1. Clone the Git repository for the project
-2. change directory into the cloned project
-3. Run `make`, `make test` and `make install`
+1. Make sure you have the required development software installed
+2. Clone the Ape GitHub repository locally
+3. Use the Go tool to build, test and run the application
 
-Here's what that looks like for me.
+#### step 1
 
+1. Check if Go is installed and it is the right version. See <https://golang.org> to download and install Go
+2. Check if Pandoc is installed and the right version. See <https://pandoc.org> to download and install Pandoc
+3. Check if SQLite3 is installed and the right version. See <https://sqlite.org> to download and install SQLite3
+4. Check if Git is installed and version. To install the Git command see, <https://git-scm.com/>. GitHub provides [gh](https://docs.github.com/en/github-cli) and [GitHub Desktop](https://docs.github.com/en/desktop) with similar capabilities. Ape install instructions assume the venerable `git` command.
+5. Check if your GNU or POSIX commands are available
+   - These command often installed by POSIX operating system and its package manager
+
+~~~shell
+go version
+pandoc --version
+sqlite3 --version
+git version
+make --version
+grep --version
+cut --version
 ~~~
-git clone https://github.com/caltechlibrary/newt src/github.com/caltechlibrary/newt
-cd src/github.com/caltechlibrary/newt
-make
-make test
-make install
+
+#### step 2
+
+1. Start in your home directory
+2. Clone Ape's [repository](https://github.com/caltechlibrary/ape).
+3. Change into the Ape directory
+
+~~~shell
+cd
+git clone \
+   https://github.com/caltechlibrary/ape \
+   src/github.com/caltechlibrary/ape
+cd src/github.com/caltechlibrary/ape
 ~~~
 
-By default it will install the programs in `$HOME/bin`. `$HOME/bin` needs
-to be included in your `PATH`. E.g.
+#### step 3
 
-~~~
-export PATH="$HOME/bin:$PATH"
-~~~
+For these three tasks we're going to use the Go command. It assumed are still int eh directory where you completed step 2.
 
-Can be added to your `.profile`, `.bashrc` or `.zshrc` file depending on your system's shell.
+1. Build the ape application
+2. Test the ape application
+3. If the tests are successful then you can install Ape tools
+
+~~~shell
+go build
+go test
+go install
+~~~
 
 ## Precompiled binaries
 
@@ -66,58 +96,8 @@ The binaries are available in a Zip archive file for download. The name uses the
     - `newt-v0.0.2-Linux-armv7l.zip` (Raspberry Pi OS, 32bit)
     - `newt-v0.0.2-Linux-aarch64.zip` (Linux on ARM 64)
 
-## Getting recent versions of Pandoc and PostgREST on M1/M2 Macs
 
-Newt is intended to work along side Pandoc and PostgREST. I usually install these from source.  I've had the best results on both Linux and macOS using GHCup to provide my Haskell compile and build environment.  Below are quick recipes for building and installing PostgREST and Pandoc, these are not a replacement for their respective project documentation instruction. They reflect what I did to get Pandoc/PostgREST current releases installed on a Mac Mini with a M1 processor. Your mileage may vary.
+## Getting help
 
-The basic recipe is
+**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is most likely broken. At a stretch it could be considered a working prototype. You should not use it for production systems.  However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in remains an **experiment** as of February 2024.
 
-1. Install Haskell with [GHCup](https://www.haskell.org/ghcup/) (I accept the defaults and use the "recommended" versions set via `ghcup tui`)
-2. Make sure the GHCup environment is available, `source $HOME/.ghcup/env`
-3. Make sure I am using the "recommended" of GHC, Cabal, Stack, etc.
-4. Clone the GitHub [PostgREST](https://github.com/PostgREST/postgrest) and  [Pandoc](https://github.com/jgm/pandoc) repositories to your machine
-5. Change to the cloned repository directory
-6. Checkout the version you want to build
-7. Run the usual Haskell/Cabal build process
-
-Here is the steps I typed at the command line to install PostgREST on my M1 Mac Mini.
-
-~~~
-curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
-source $HOME/.ghcup/env
-ghcup tui
-git clone git@github.com:PostgREST/postgrest
-cd postgrest
-git checkout v11.1.0
-cabal clean
-cabal update
-cabal build
-cabal install
-cd ..
-~~~
-
-Here are the steps I typed at the command line to install Pandoc on my M1 Mac Mini. The basic recipe is modified because of a potential link conflict in which libiconv to use I've encountered on macOS running on my M1 Mac Mini.  I need the Mac Ports version for the Mac Ports installed of Git to work. This means I need to do all my Git commands before I removing libiconv. I then invoking Cabal and put libiconv back afterward Pandoc installation is complete. If you're not using the libiconv installed as part of Mac Ports applications you can skip those steps.
-
-NOTE: I've skipped installing GHCup because I assume you've already installed it when you compiled.
-
-1. Clone [Pandoc](https://github.com/jgm/pandoc) repository from GitHub
-2. Change into the Pandoc directory
-3. Checkout the version of Pandoc you want to build (e.g. 3.1.4)
-4. Remove the Mac Ports libiconv library using Ports command
-5. Run the usual Haskell/Cabal build process
-6. Put the Mac Ports libiconv back using the Ports command
-
-
-~~~
-git clone git@github.com:jgm/pandoc
-cd pandoc
-git checkout 3.1.4
-sudo port uninstall libiconv
-cabal clean
-cabal update
-cabal install pandoc-cli
-sudo port install libiconv
-cd ..
-~~~
-
-Even though you are installing “pandoc-cli” it can function as the Pandoc web service by invoking pandoc server command option.

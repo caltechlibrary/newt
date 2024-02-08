@@ -11,17 +11,15 @@ On Thursday 2024-01-25 Caltech Library's digital library development staff meeti
 
 ## Problem
 
-Newt's niche is as a rapid web application development platform for libraries, archives and museums. In the Newt 2023 prototype I implemented a small DSL on top of YAML to describe data models that are rendered as SQL. The SQL can be used to provide a JSON API via Postgres and PostgREST. The problem is the prototype's DSL is too narrowly focused to also describe a web form. If Newt is to be a rapid web application development tool then generating the HTML and JavaScript for a web form that maps to SQL needed to implement PostgREST JSON API is highly desirable.
+Newt's niche is as a rapid web application development platform for libraries, archives and museums. In the Newt 2023 prototype I implemented a small DSL on top of YAML to describe data models that are rendered as SQL. The SQL can be used to provide a JSON API via Postgres and PostgREST. The problem is the prototype's DSL is too narrowly focused to also describe a web form. If Newt is to be a rapid web application development tool then generating the HTML and SQL implementing a PostgREST JSON API is highly desirable.
 
 ## Proposed Solution
 
-If I adopt the syntax supported by GitHub YAML issue templates[^3] I gain the advantage of our staff already being familiar with the GitHub YAML DSL describing the issues web forms. The GitHub syntax appears sufficient to render both SQL models and HTML 5 forms. Adding the SQL support is a matter of mapping the DSL types used to describe HTML form elements to their respective SQL data types.
+If I adopt the syntax supported by GitHub YAML issue templates[^3] (abbr: GHYT). I gain the advantage of our staff already being familiar with the GHYT DSL describing the issue templates. The GitHub syntax appears sufficient to render both SQL models and HTML 5 forms. Adding the SQL support is a matter of mapping GHTY input types to both general purpose HTML and their respective SQL data types.
 
-Libraries, archives and museums work with structured metadata. The metadata attributes often conform to a known data type. This is particularly true of identifiers (e.g. orcid, doi, ror, arXiv). Using the existing GitHub YAML DSL syntax I could support a wider diversity of types through the value associated in the type attribute. 
+There is room for further enhancement without breaking GHYT.  Libraries, archives and museums work with structured metadata. The metadata attributes often conform to a known data type. This is particularly true of identifiers (e.g. ORCID, DOI, ROR, arXiv). Using the existing GitHub YAML issue template syntax I could support a wider diversity of types through the value associated in the type attribute of the input element. 
 
-The type attribute in the GitHub syntax controls both the rendered Markdown/HTML markup but also representation in SQL used to render the JSON API via Postgres+PostgREST.
-
-Newt's type DSL is implemented using a Go struct found in [type_dsl.go](type_dsl.go). The current[^4] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to Newt's type DSL. An additional tool can then be included with Newt to support rendering HTML or Markdown forms from same YAML model I use to generate the SQL for Postgres+PostgREST.
+This would require replacing original prototype DSL defined in a Go struct found in [type_dsl.go](type_dsl.go) with a new series of struct that map out GHYT. The current[^4] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to the rest of the Newt data router.  I can also improve the code generation ability with this simpler structure for mapping data and representations.
 
 ### Advantages of adopting a common syntax
 
@@ -29,12 +27,12 @@ GitHub's YAML syntax promises the following advantages
 
 - Standardize syntax for library staff who implement web forms
 - Leverage GitHub documentation approach with the Newt YAML DSL for modeling
-- A process that is prototype using GitHub issue templates and actions could be ported to a Newt base application eliminating the problem of SAAS vendor lock in
+- Supports a protyping a process in GitHub issue templates and GitHub action while leaving the door open to easily self host those processes in our machines
 
 ### Disadvantages to adopting a common syntax
 
-- GitHub's YAML issue syntax is in beta and not formalized
-- Newt project would need to tracking an informal specification changes 
+- GitHub's YAML issue syntax is in beta and is subject to change
+- Newt project will need to tracking any changes to remain compatible
 
 ## Footnotes
 
