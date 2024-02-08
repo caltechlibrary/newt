@@ -44,7 +44,7 @@ included a high number of columns.</p>
 href="https://github.com/caltechlibrary/cold">cold</a> taking the Newt
 approach knowing that many more custom applications like Acacia and cold
 are in our future.</p>
-<h3 id="requirements">Requirements</h3>
+<h3 id="project-outline">Project outline</h3>
 <p>cold is expected to maintain three types of objects. A list of
 Caltech people, a list of Caltech groups and a list of Caltech funders.
 It will need to render YAML lists for import into RDM as controlled
@@ -101,10 +101,88 @@ or pushed directly into an S3 bucket.</p>
 <p>This pipeline approach also means render one section of the feeds
 website becomes easily isolated by treating the build process as a
 webhook driven by a client script.</p>
-<blockquote>
-<p>Both use cases are theoretical at this time because the 2nd Newt
-prototype has not been implemented</p>
-</blockquote>
+<h3 id="project-outline-1">Project outline</h3>
+<p>The feeds aggregates CaltechAUTHORS, CaltechTHESIS and CaltechDATA
+content. Content is presently aggregated by group, people and recent.
+Feeds v1.5 simplified the earlier implementation be removing support for
+recent 25 sub directory structures enabled in large part because of IMSS
+content management system using the JavaScript widgets for content
+integration. There are a few static assets that also are made available
+through feeds.library.caltech.edu. These include the JavaScript Builder
+widget as well as the JavaScript library the offers easy integration for
+the IMSS content management system.</p>
+<p>The current approach needs to be improved by increasing observability
+in the data processing pipeline and in reducing the over all build times
+for producing the people and groups parts of the website.</p>
+<p>The existing implementation (v1.5) uses database collections
+representing each repository but holding a common data model. These
+dataset collection are Postgres based dataset collection. This has
+allowed performance improvements through the use of <a
+href="https://caltechlibrary.github.io/dataset/dsquery.1.html">dsquery</a>
+to produce aggregations as CSV files. These are read and processed to
+generate the JSON representations for each feed type supported person or
+group. in the people and gruops directory</p>
+<p>It is observed that while building the CSVs can be done in a
+reasonable time frame generating them as SQL tables improves performance
+considerably especially since they can then queried and filtered through
+a SQL WHERE clause to produce the individual JSON object files without
+the need to write them to disk.</p>
+<p>When Newt’s 2nd prototype is complete it provides an opportunity to
+leverage Newt’s data pipeline by creating all the JSON objects in the
+database then rendering the table results in one pass. This leaves could
+significantly reduce the site building time when concidering Pandoc can
+be run as a web service and it is already used to render the Markdown,
+HTML, HTML include, BibTeX formats. The database approach affords us the
+opportuntity to reduce the number of disk reads given the performance
+characteristics of Postgres and leave the site building process to just
+write content to the htdocs tree or purhaps directly to the S3
+bucket.</p>
+<p>It is desirable to produced a “combined” feed that aggregates content
+across our repository systems. If feeds output is staged in a dataset
+collection then them a combined repository view is possible is possible.
+It appears desirable that aggregation happens in the a single feeds
+dataset collection which also is well suited to the pipeline
+approach.</p>
+<p>Steps to revising the existing feeds v1.5.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Decide if this will be undertaken
+before feeds v2 or to solve the v1.5 bugs</label></li>
+<li><label><input type="checkbox" />Create a “feeds” dataset collection
+for holding repository aggregations.</label>
+<ul>
+<li>The dataset collection should use Postgres as the storage
+platform</li>
+</ul></li>
+<li><label><input type="checkbox" />Audit the URLs in feeds v1.5 and
+determine the pipe lines needed to reproduce each content
+type</label></li>
+<li><label><input type="checkbox" />Create the Newt data models for
+content type</label>
+<ul>
+<li>Test the models and make sure they can render each content type in
+the appropriate formats</li>
+</ul></li>
+<li><label><input type="checkbox" />Create the routes necessary to
+support the required pipe lines</label></li>
+<li><label><input type="checkbox" />Generate the SQL, enhance if
+necessary, and load into Postgres dataset collections</label></li>
+<li><label><input type="checkbox" />Decide if rendering will be to disk
+or to database for HTML, HTML Include, BibTeX and RSS</label></li>
+<li><label><input type="checkbox" />Write a script that will trigger
+each of the pipelines needed to render the content</label></li>
+<li><label><input type="checkbox" />Write a script that will send
+content to S3 bucket</label></li>
+<li><label><input type="checkbox" />Update builder widget and CL.js to
+use combined_authors.json for combined authors publictions and
+“combined.json” for aggregation across repositories</label></li>
+</ul>
+<h3 id="developer-experience-1">Developer experience</h3>
+<p>Development of feeds v2 is scheduled for Summer 2024. Feeds v1.5 is
+on going in the interrum. Newt prototype 2 needs to be available before
+this approach can be tested. A send to bucket service is needed as well
+as write to htdocs. It will be important to have the option to write to
+a local htdocs tree for debugging and development.</p>
+<p>Date is not schedule to try this approach before feeds v2.</p>
 </section>
 
 <footer>
