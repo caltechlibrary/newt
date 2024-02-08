@@ -41,3 +41,6 @@ These are links to prior art, related efforts and resources for considatiion in 
     - SQLite [JSON function enhancements (2022)](https://sqlite.org/src/doc/json-enhancements/doc/json-enhancements.md)
     - SQLite cli [docs](https://sqlite.org/cli.html), e.g. "Changing output formats" in section 5 covers `.mode json`
 
+## Data transformation and mashups
+
+- [Pipes](https://www.pipes.digital/docs) is a spiritual successor to [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
