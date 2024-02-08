@@ -1,6 +1,6 @@
 ---
-title: "newtmustache(1) user manual | 0.0.6 2d912b2"
-pubDate: 2024-01-26
+title: "newtmustache(1) user manual | 0.0.6 7ad1cce"
+pubDate: 2024-02-07
 author: "R. S. Doiel"
 ---
 

@@ -1,22 +1,22 @@
 ---
-title: "newtpg(1) user manual | 0.0.6 2d912b2"
-pubDate: 2024-01-26
+title: "newtgen(1) user manual | 0.0.6 7ad1cce"
+pubDate: 2024-02-07
 author: "R. S. Doiel"
 ---
 
 # NAME
 
-newtpg
+newtgen
 
 # SYNOPSIS
 
-newtpg [CONFIG_FILE]
+newtgen [CONFIG_FILE]
 
 # DESCRIPTION
 
-**newtpg** is a command line tool for generate SQL suitable to bootstrap a microservice implemented with PostgREST and Postgres.  It uses the same YAML file as the Newt web service using the namespace and models attributes to render table structure, views and funcitons to support basic CRUD and list operations in SQL.
+**newtgen** is a command line tool for generate SQL suitable to bootstrap a microservice implemented with PostgREST and Postgres.  It uses the same YAML file as the Newt web service using the namespace and models attributes to render table structure, views and funcitons to support basic CRUD and list operations in SQL.
 
-**newtpg**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtpg** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
+**newtgen**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtgen** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
 
 # OPTIONS
 
@@ -48,7 +48,7 @@ suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based project.
 
 # CONFIGURATION
 
-**newtpg** looks for two attributes in the Newt YAML file.
+**newtgen** looks for two attributes in the Newt YAML file.
 
 namespace
 : This indicates the Postgres schema associated with your application
@@ -148,7 +148,7 @@ ORCID
 : An ORCID identifier
  
 NOTE: The current names associated with types will likely change
-as the prototype **newtpg** evolves. It is planned for them to be
+as the prototype **newtgen** evolves. It is planned for them to be
 stable if and when we get to a v1 release (e.g. when we're out of the
 prototype phase).
 
