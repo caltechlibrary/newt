@@ -22,20 +22,20 @@
 
 <section>
 <h1 id="name">NAME</h1>
-<p>newtpg</p>
+<p>newtgen</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>newtpg [CONFIG_FILE]</p>
+<p>newtgen [CONFIG_FILE]</p>
 <h1 id="description">DESCRIPTION</h1>
-<p><strong>newtpg</strong> is a command line tool for generate SQL
+<p><strong>newtgen</strong> is a command line tool for generate SQL
 suitable to bootstrap a microservice implemented with PostgREST and
 Postgres. It uses the same YAML file as the Newt web service using the
 namespace and models attributes to render table structure, views and
 funcitons to support basic CRUD and list operations in SQL.</p>
-<p><strong>newtpg</strong>’s configuration uses a declaritive model
+<p><strong>newtgen</strong>’s configuration uses a declaritive model
 expressed in YAML. It can also allow environment variables read at start
 up to be part of the data for mapping JSON data source requests. This is
 particularly helpful for supplying access credentials. You do not
-express secrets in the <strong>newtpg</strong> YAML configuration file.
+express secrets in the <strong>newtgen</strong> YAML configuration file.
 This follows the best practice used when working with container services
 and Lambda like systems.</p>
 <h1 id="options">OPTIONS</h1>
@@ -79,7 +79,7 @@ Postgres+PostgREST
 </dd>
 </dl>
 <h1 id="configuration">CONFIGURATION</h1>
-<p><strong>newtpg</strong> looks for two attributes in the Newt YAML
+<p><strong>newtgen</strong> looks for two attributes in the Newt YAML
 file.</p>
 <dl>
 <dt>namespace</dt>
@@ -212,9 +212,9 @@ An ORCID identifier
 </dd>
 </dl>
 <p>NOTE: The current names associated with types will likely change as
-the prototype <strong>newtpg</strong> evolves. It is planned for them to
-be stable if and when we get to a v1 release (e.g. when we’re out of the
-prototype phase).</p>
+the prototype <strong>newtgen</strong> evolves. It is planned for them
+to be stable if and when we get to a v1 release (e.g. when we’re out of
+the prototype phase).</p>
 </section>
 
 <footer>
