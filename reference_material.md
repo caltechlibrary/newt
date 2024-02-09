@@ -7,7 +7,7 @@ These are links to prior art, related efforts and resources for considatiion in 
 
 - [Syntax for GitHub form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)
 - [A React component for building Web forms from JSON Schema](https://github.com/rjsf-team/react-jsonschema-form)
-- [JSON Forms](https://jsonforms.io/docs/)i
+- [JSON Forms](https://jsonforms.io/docs/)
     - pretty heavy weight in the deployed results (i.e. renders to either React or Angular)
     - Uses JSON rather than YAML or TOML to describe forms which can be construed as less human friendly
 - [YAQL](https://yaql.readthedocs.io/en/latest/getting_started.html), a YAML like query langauge that maps to SQL
