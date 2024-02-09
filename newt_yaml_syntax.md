@@ -13,7 +13,6 @@ models
 routes
 : This holds the routes for the data pipe line (e.g. JSON API and template engine sequence)
 
-
 ## the "application" property
 
 The application property itself has four properties.
@@ -36,17 +35,20 @@ Routes hosts a list of request descriptions and their data pipelines
 
 ### a route object
 
-name
+id
 : (required) This identifies the pipe line so that it can be re-used or included in other pipelines. It must conform to variable name rules[^1]
+
+type
+: (required) Current supported pipeline types are `json_api`, `static`, and `template_engine`. Template engines package the result of a `json_api` into a form that is acceptable to Pandoc running as a web service or `newtmustache`. If `static` is choosen then you specify the path relative to the htdocs root. E.g. `error.html` if the file `htdocs/error.html` is the one you want.
+
+description
+: (optional, encouraged) This is a discription of what you're trying to accomplish in the route. It may be used in comments or by documentation generators.
 
 request
 : (required) This is a string that express the paith to listen to for running the data pipeline
 
 pipeline
 : (required) this is a list of data request used to form the pipeline needed for this request. the last element in the pipeline is returned as a response to the request
-
-description
-: (optional) a description of the pipeline and what it is trying to accomplihs
 
 error
 : (optional) this points to a static page that can be displayed when the pipeline fails (e.g. like a 404 page used by web servers)
@@ -64,16 +66,21 @@ Models holds a list of individual models used by our data pipelines. The models 
 
 ### a model object
 
+The model object is based largely on GitHub YAML issue template syntax with a couple extra properties at are Newt specific.
+
 id
 : (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^1]
+
+routing
+: (required, newt specific) this holds a list of route ids associated with this model. It is use in code generation, e.g. to populate a web form's action and model
 
 The following following properties are based on the GitHub YAML issue template syntax[^2] (abbr: GHYT)
 
 name
-: (required by GHYT) Must be unique to use with GitHub YAML issue templates[^2]
+: (required by GHYT, optional in newt) Must be unique to use with GitHub YAML issue templates[^2]. In Newt it will be used in populating comments in generated SQL
 
 description
-: (required) A human description of the model, It will appear in the web form and SQL commonents  generated from the model
+: (required) A human description of the model, It will appear in the web form and SQL commonents generated from the model
 
 body
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
@@ -89,7 +96,7 @@ type
 : (required) Identifies the type of elements (input, textarea, markdown, checkbox, dropdown).
 
 attributes
-: (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML
+: (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML.
 
 validations
 : (optional, encouraged) A set of key-value pairs setting constraints of the element content. E.g. required, regexp properties, validation rule provided with certain identifiers (e.g. DOI, ROR, ORCID).
@@ -113,6 +120,183 @@ dropdown
 
 checkboxes
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checkes are allowed it is stored as a JSON Array column.
+
+
+## Example Newt YAML
+
+```yaml
+application:
+  port: 8011
+  htdocs: htdocs
+  metadata:
+    cff-version: 1.2.0
+    message: Demo of Newt YAML file
+    type: software
+    title: Newt a faster way to build metadata curation applications
+    abstract: |
+      This is a demonstation of a YAML that can generate a simple
+      application to manage people and groups
+    version: 0.0.0
+    status: concept
+    authors:
+      - family-names: Doiel
+        given-names: R. S.
+        orcid: "https://orcid.org/0000-0003-0900-6903"
+    keywords:
+      - demo
+      - newt
+      - rapid application development
+  environment:
+    - DB_USER
+    - DB_PASSWORD
+    - DB_HOST
+models:
+  - id: people
+    name: People Profiles
+    description: |
+      This models a curated set of profiles of colleagues
+    routing:
+      - create_person
+      - read_person
+      - update_person
+      - delete_person
+      - list_people
+    body:
+      - id: people_id
+        type: input
+        attributes:
+          label: A unique person id, no spaces, alpha numeric
+          placeholder: ex. jane-do-007
+        validations:
+          required: true
+      - id: display_name
+        type: input
+        attributes:
+          label: (optional) A person display name
+          placeholder: ex. J. Doe, journalist
+      - id: family_name
+        type: input
+        attributes:
+          label: (required) A person's family name or singular when only one name exists
+          placeholder: ex. Doe
+        validations:
+          required: true
+      - id: given_name
+        type: input
+        attributes:
+          label: (optional, encouraged) A person's given name
+          placeholder: ex. Jane
+      - id: orcid
+        type: input
+        attributes:
+          label: (optional) A person's ORCID identifier
+          placeholder: ex. 0000-0000-0000-0000
+        validations:
+          pattern: "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
+      - id: ror
+        type: input
+        attributes:
+          label: (optional) A person's ROR identifing their affiliation
+      - id: email
+        type: "input[type=email]"
+        attributes:
+          label: (optional) A person public email address
+      - id: website
+        type: "input[type=url]"
+        attributes:
+          label: (optional) A person's public website
+          placeholder: ex. https://jane.doe.example.org
+routes:
+  - id: create_person
+    description: Create new person profile
+    request: POST /person
+    pipeline:
+      - type: json_api
+        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
+        method: POST
+        content_type: application/json
+        description: This will generate a new user in the database
+        variables:
+          - people.people_id
+          - people.family_name
+          - people.given_name
+          - people.display_name
+          - people.orcid
+          - people.ror
+          - people.email
+          - people.website
+      - type: template_engine
+        url: http://localhost:3030
+        method: POST
+        content_type: application/json
+        description: |
+          This sends the results of creating a person to the template engine
+  - id: read_person
+    desciption: Update a person's profile
+    request: "GET /person/{{people.people_id}}"
+    pipeline:
+      - type: json_api
+        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/person/{{people.people_id}}"
+        method: POST
+        content_type: application/json
+        description: Retrieve a person's profile
+      - type: template_engine
+        url: http:localhost:3030
+        method: POST
+        content_type: application/json
+        template: templates/profile.tmpl
+        description: |
+          Render a person's profile
+  - id: update_person
+    description: Update person's profile
+    request: "PUT /person/{{people.people_id}}"
+    pipeline:
+        - type: json_api
+          url: "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
+          method: PUT
+          content_type: application/json
+          description: This will update a person record in the database
+          variables:
+            - people_id
+            - family_name
+            - given_name
+            - display_name
+            - orcid
+            - ror
+            - email
+            - website
+        - type: template_engine
+          url: http://localhost:3030
+          method: POST
+          content_type: application/json
+          description: |
+            This sends the results of updating a person to the template engine
+  - id: delete_person
+    description: Remove person's profile
+    request: "DELETE /person/{{people.people_id}}"
+    pipeline:
+      - type: json_api
+        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}"
+        method: DELETE
+        content_type: application/json
+        description: Remove the person for the database
+      - type: static
+        path: removed_person.html?people_id={{people.people_id}}
+  - id: list_people
+    description: List people profiles available
+    request: GET /people
+    pipeline:
+      - type: json_api
+        url: https://{{DB_HOST}}@{{DB_HOST}}:3000/people
+        method: GET
+        content_type: application/json
+        description: Retrieve a list of all people profiles available
+      - type: template_engine
+        url: http://localhost:3030
+        method: POST
+        content_type: applicatin/json
+        discription: format a browsable people list linking to individual profiles
+```
 
 
 [^1]: variable numbers must start with a letter, may contain numbes but not spaces or punctation except the underscore

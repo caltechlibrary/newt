@@ -1,0 +1,171 @@
+application:
+  port: 8011
+  htdocs: htdocs
+  metadata:
+    cff-version: 1.2.0
+    message: Demo of Newt YAML file
+    type: software
+    title: Newt a faster way to build metadata curation applications
+    abstract: |
+      This is a demonstation of a YAML that can generate a simple
+      application to manage people and groups
+    version: 0.0.0
+    status: concept
+    authors:
+      - family-names: Doiel
+        given-names: R. S.
+        orcid: "https://orcid.org/0000-0003-0900-6903"
+    keywords:
+      - demo
+      - newt
+      - rapid application development
+    environment:
+      - DB_USER
+      - DB_PASSWORD
+      - DB_HOST
+models:
+  - id: people
+    name: People Profiles
+    description: |
+      This models a curated set of profiles of colleagues
+    routing:
+      - create_person
+      - read_person
+      - update_person
+      - delete_person
+      - list_people
+    body:
+      - id: people_id
+        type: input
+        attributes:
+          label: A unique person id, no spaces, alpha numeric
+          placeholder: ex. jane-do-007
+        validations:
+          required: true
+      - id: display_name
+        type: input
+        attributes:
+          label: (optional) A person display name
+          placeholder: ex. J. Doe, journalist
+      - id: family_name
+        type: input
+        attributes:
+          label: (required) A person's family name or singular when only one name exists
+          placeholder: ex. Doe
+        validations:
+          required: true
+      - id: given_name
+        type: input
+        attributes:
+          label: (optional, encouraged) A person's given name
+          placeholder: ex. Jane
+      - id: orcid
+        type: input
+        attributes:
+          label: (optional) A person's ORCID identifier
+          placeholder: ex. 0000-0000-0000-0000
+        validations:
+          pattern: "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
+      - id: ror
+        type: input
+        attributes:
+          label: (optional) A person's ROR identifing their affiliation
+      - id: email
+        type: "input[type=email]"
+        attributes:
+          label: (optional) A person public email address
+      - id: website
+        type: "input[type=url]"
+        attributes:
+          label: (optional) A person's public website
+          placeholder: ex. https://jane.doe.example.org
+routes:
+  - id: create_person
+    description: Create new person profile
+    request: POST /person
+    pipeline:
+      - type: json_api
+        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
+        method: POST
+        content_type: application/json
+        description: This will generate a new user in the database
+        variables:
+          - people.people_id
+          - people.family_name
+          - people.given_name
+          - people.display_name
+          - people.orcid
+          - people.ror
+          - people.email
+          - people.website
+      - type: template_engine
+        url: http://localhost:3030
+        method: POST
+        content_type: application/json
+        description: |
+          This sends the results of creating a person to the template engine
+  - id: read_person
+    desciption: Update a person's profile
+    request: "GET /person/{{people.people_id}}"
+    pipeline:
+      - type: json_api
+        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/person/{{people.people_id}}"
+        method: POST
+        content_type: application/json
+        description: Retrieve a person's profile
+      - type: template_engine
+        url: http:localhost:3030
+        method: POST
+        content_type: application/json
+        template: templates/profile.tmpl
+        description: |
+          Render a person's profile
+  - id: update_person
+    description: Update person's profile
+    request: "PUT /person/{{people.people_id}}"
+    pipeline:
+        - type: json_api
+          url: "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
+          method: PUT
+          content_type: application/json
+          description: This will update a person record in the database
+          variables:
+            - people_id
+            - family_name
+            - given_name
+            - display_name
+            - orcid
+            - ror
+            - email
+            - website
+        - type: template_engine
+          url: http://localhost:3030
+          method: POST
+          content_type: application/json
+          description: |
+            This sends the results of updating a person to the template engine
+  - id: delete_person
+    description: Remove person's profile
+    request: "DELETE /person/{{people.people_id}}"
+    pipeline:
+      - type: json_api
+        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}"
+        method: DELETE
+        content_type: application/json
+        description: Remove the person for the database
+      - type: static
+        path: removed_person.html?people_id={{people.people_id}}
+  - id: list_people
+    description: List people profiles available
+    request: GET /people
+    pipeline:
+      - type: json_api
+        url: https://{{DB_HOST}}@{{DB_HOST}}:3000/people
+        method: GET
+        content_type: application/json
+        description: Retrieve a list of all people profiles available
+      - type: template_engine
+        url: http://localhost:3030
+        method: POST
+        content_type: applicatin/json
+        discription: format a browsable people list linking to individual profiles

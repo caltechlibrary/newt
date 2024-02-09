@@ -202,16 +202,34 @@ EOT
 
 # Generate birds.yaml
 cat <<EOT >birds3/birds.yaml
-port: 8003
+application:
+	port: 8003
+	description: Birds v3, implemented using Newt
+models:
+	- id: bird_sightings
+	  name: Bird Sightings
+	  description: This model's bird sightings
+	  related_routes:
+		- record_bird
+		- view_birds
+	  body:
+	    - id: bird
+		  type: input
+	    - id: place
+		  type: input
+		- id: date
+		  type: input[date]
 routes:
-  - req_path: /
+  - id: bird_sight
+    req_path: /
     req_method: GET
     api_content_type: application/json
     api_method: GET
     api_url: http://localhost:3000/bird_view
     pandoc_template: page.tmpl
     res_headers: { "content-type": "text/html" }
-  - var: { "bird": "String", "place": "String", "sighted": "Date" }
+  - id: record_bird
+    var: { "bird": "String", "place": "String", "sighted": "Date" }
     req_path: /
     req_method: POST
     api_content_type: application/json
@@ -219,7 +237,8 @@ routes:
     api_url: http://localhost:3000/rpc/record_bird
     pandoc_template: post_result.tmpl
     res_headers: { "content-type": "text/html" }
-  - req_path: /api/bird_views
+  - id: view_birds
+  	req_path: /api/bird_views
     req_method: GET
     api_content_type: application/json
     api_method: GET
