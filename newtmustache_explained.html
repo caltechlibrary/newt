@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newtmustache-exampled"><code>newtmustache</code> exampled</h1>
+<p>The Newt Mustache template engine came about due to three
+concerns.</p>
+<ul>
+<li>People don’t think about Pandoc as a web service</li>
+<li>Some people don’t like Pandoc templates or are unfamiliar with
+Pandoc</li>
+<li>Pandoc’s web server doesn’t handle Pandoc’s partial template
+support</li>
+</ul>
+<p>When building a web application using a template system it is very
+useful to minimize the number of templates you need to know and work
+with. One way this is done is to build smaller partial templates that
+handle specific content elements or types. E.g. a bibliographic citation
+used on a book receive site</p>
+<p>When you run Pandoc from the command line this is readily supported.
+Unfortunately Pandoc web service doesn’t support this as of version 3.1.
+The web service only knows about the full template you provide as part
+of the JSON blob. Another problem with the web service is that you must
+provide both the template and JSON DATA for each request you make to the
+web service. Internally Pandoc web service unpacks the template, parses
+it then applies the data object you provided. How might we simplify the
+process?</p>
+<p>Ideally a simple template engine is stateless once it has started up.
+This doesn’t mean it can’t take advantage of configuration when starting
+up. If a simple template engine knew that templates were found in a
+directory it could read all the templates in the directory at start up.
+It could resolve partial template issues and be ready for any request.
+If we leverage the URL to indicate the template desired to be used then
+the JSON received as the POST data doesn’t need to include a wrapping
+object like Pandoc web server does.</p>
+<p>I thought about writing a pre-processor for Pandoc web server but
+then decided I don’t have time. I checked the current status of
+languages supporting Mustache templates. The list had grown and also
+includes a nice Go package for working with Mustache templates. That was
+the seed for Newt’s own template engine.</p>
+<ul>
+<li>Mustache is a widely support template language with support include
+Go, Python, and JavaScript (languages used regularly at Caltech
+Library)</li>
+<li>Since a Go package provides Mustache template I only need to write a
+light weight web service to wrap it</li>
+<li>Since I am writing the service I can keep the requires to a minimum,
+i.e. port and template directory</li>
+</ul>
+<h2 id="newtmustache-startup-sequence"><code>newtmustache</code> startup
+sequence</h2>
+<ul>
+<li>read in the templates (e.g. read the contents of
+<code>templates</code> directory or the location specified by the
+command line option`</li>
+<li>parse the read templates, log errors and skip templates which do not
+parse succesfully</li>
+<li>create a URL path handler for each template found in the
+directory</li>
+<li>start up the web service listen on the default port or one supplied
+on the command line</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

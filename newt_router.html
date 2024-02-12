@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="overview-of-newt-data-router">Overview of <code>newt</code> data
+router</h1>
+<p>In the first prototype <code>newt</code> supported a two stage
+pipeline. It support either Postgres+PostgREST through Pandoc web
+service or JSON API like Solr through Pandoc web service round trip.
+With the second prototype Newt is generalizing this two stages
+associated with a route selector to general pipeline with steps
+indicated by a list of URLs, methods and content types. While the
+notation in YAML has changed conceptually it is similar just allowing
+for one or my steps in the pipeline. Let’s focus on the inidividual
+route setup<a href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>.</p>
+<p>It is easy to start with a specific example then show it would be
+notated.</p>
+<p>Let’s say we have a database of music albums and reviews. Each album
+includes a rating on interesting. Zero (uninstersting) to five star
+rating (most interesting). Previously we’ve modeled this in our Postgres
+database using a <code>view</code>. How do we create a page that lists
+albums in decending orders of interest? Since we’re building with Newt
+we can assume there is a template to list albums available. That
+template will be the “last stage” in our pipeline. We need to feed the
+view into that template. The <code>view</code> statement mapped to the
+PostgREST JSON API is our first stage.</p>
+<p>How do you representing a route with two stages?</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/rpc/album_view</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">15</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">         - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>             Take the results from PostgREST and run them through </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>             the newtmustache use the template &quot;ablub_list_view.tmpl&quot;</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3032/album_list_view.tmpl</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
+<p>What is being described? First we have routes defined in our
+application. One route is <code>interesting_album_view</code> and it is
+composed from a two stage pipeline. The first step is the
+<code>json_api</code> type (i.e. the content is fetched from PostgREST).
+The second stage is the template engine. Finally there is a
+<code>debug: true</code> prperty for this specific route. The
+<code>debug</code> attribute if true causes more verbose logging when
+the route is requested. This is helpful in debugging your pipeline.</p>
+<p>When <code>newt</code> starts up it reads the YAML file. In the
+second stage above the type is set to <code>newtmustache</code>.
+<code>newt</code> will package send the JSON obect object recieve from
+the previous (in the case PostgREST) JSON service to
+<code>newtmustache</code>. <code>newtmustache</code> understands the
+path <code>/album_list_view.tmpl</code> is a template name form the
+directory it read in at startup. It then take the JSON sent from
+PostgREST processing it through <code>/album_list_view.tmpl</code>
+returning a web page of results.</p>
+<p>It is important to know <code>newt</code> only knows about the JSON
+(or other content) received from the previous service and the URL,
+content type and timeout for the next service. It’s just a rely. No more
+or less. In the case above the template engine needs to understand the
+JSON it recieves and apply the template to it.</p>
+<p>Let’s say we decide to use Pandoc web service instead of
+<code>newtmustache</code>. How does this change the pipeline? In this
+case what comes out of PostgREST doesn’t include what Pandoc web server
+expects. Pandoc when running as a web server expect a JSON object that
+includes the template source to be used as well as the JSON object. One
+way would be to modify Pandoc server to use a setup similar to
+<code>newtmustache</code> but unless you want to hack Pandoc in Haskell
+you’re kinda out of luck. Another way would be to add a new stage in the
+pipeline that could read in all the Pandoc templates, resolve them and
+be ready to send them to Pandoc server.For the purposes of discussion
+let’s say this web service (a new middleware) runs on port 3020 and
+accepts the template name like <code>newtmustache</code>. That pipeline
+could look something like this.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/rpc/album_view</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">15</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">         - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>             Construct a Pandoc web server JSON POST object that includes the</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>             template source and the JSON object from PostgREST. </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost/3020/album_list_view.tmpl</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">         - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>             Take the results from The template packager and send them to Pandoc.</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3030</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
+<p>In this version we have a three stage pipeline. First stage gets some
+results from PostgREST. Second stage turns the results into something
+Pandoc web service will understand. The last stage is the Pandoc web
+service. Since debug is set true we can see each stage of the pipeline
+accessed.</p>
+<h2 id="changes-from-the-first-prototype-to-the-second.">Changes from
+the first prototype to the second.</h2>
+<ul>
+<li>routes include a pipeline rather than fixed stages</li>
+<li><code>newt</code> does less. It just routes data. It doesn’t know
+how to package things for Pandoc web service</li>
+<li><code>newtmustache</code> was created to allow the support of
+Mustache templates but also to simplify data packaging to avoid the
+object expected by Pandoc web service</li>
+<li>each pipeline stage has its own timeout setting</li>
+</ul>
+<p>While there isn’t a fixed limit to the number of stages in a pipeline
+you will want to keep the number limitted. While contacting a web
+service on localhost is generally very quick the time to round trip the
+communication still accoumulates. As a result it is recommend to stick
+to less than four stages and to explicitly set the timeout values based
+on your understanding of performance requirements. If a stage times out
+the response will be generate with an HTTP error and the pipeline will
+not complete execution.</p>
+<h2 id="misc">Misc</h2>
+<p>If a requested route is not defined in our table then it looks for a
+static file matching the description and if that fails returns a 404. If
+the request is otherwise invalid based on what the router knows it’ll
+return other HTTP status codes. For a request route to match it must
+match the resolved path, the HTTP method and included content type. If
+any of these don’t match then the route is not considered a match and
+will return an appropriate HTTP status and code.</p>
+<p>The Newt router will only support HTTP and run on localhost. This is
+the same approach taken by Pandoc server. It minimize configuration and
+also discourages use as a front end service (which is beyond the scope
+of this project).</p>
+<p>This prototype does not support file uploads. In theory you could do
+some clever things with browser side JavaScript and store the contents
+in Postgres but I don’t recommend that.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>See <a href="newt_yaml_sentax.html">Newt YAML syntax</a>
+for complete discription of the supported YAML.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

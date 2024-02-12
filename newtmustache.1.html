@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newt -- a new take on the webstack</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="name">NAME</h1>
+<p>newtmustache</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p>newtmustache <a href="#options">OPTIONS</a></p>
+<h1 id="description">DESCRIPTION</h1>
+<p><strong>newtmustache</strong> is a web service that provides a
+Mustache template rendering inspired by Pandoc server.</p>
+<p>Like Pandoc web server there is no configuration file. There are a
+few command line options, e.g. port, template directory and timeout.</p>
+<h1 id="template-engine-api">Template engine API</h1>
+<p><strong>newtmustache</strong> accepts POST of JSON content and maps
+them to a template name expressed in the request URL. If I had a
+template called <code>template/list_objects.tmpl</code> then the url
+would be formed like
+<code>http://localhost:3032/list_objects.tmpl</code>. The JSON encoded
+post would then be sent through the “list_objects.tmpl” template and
+returned to the browser. The JSON object POSTed does not need a wrapping
+object like required by Pandoc server. <strong>newtmustache</strong>
+reads in the templates found in the template directory at start up. It
+creates a map between the basename of the template and the URL handler
+built from the that name. As such the templates are fixed at startup and
+do not need to be passed along with your data object.</p>
+<p>This improves of Pandoc web servers in a few ways.</p>
+<ul>
+<li>Now wrapping object</li>
+<li>Template parse errors are known earlier own and are visible from the
+output log</li>
+<li>Parsing of the templates happens once at startup</li>
+<li>Partial templates can be supported because the startup phase of
+<strong>newtmustache</strong> handles resolving partials</li>
+</ul>
+<h1 id="options">OPTIONS</h1>
+<p>The following options are supported by
+<strong>newtmustache</strong>.</p>
+<dl>
+<dt>-h, -help</dt>
+<dd>
+display this help message
+</dd>
+<dt>-license</dt>
+<dd>
+display the software license
+</dd>
+<dt>-version</dt>
+<dd>
+display version information
+</dd>
+<dt>-port NUMBER</dt>
+<dd>
+(default is port is 3032) Set the port number to listen on
+</dd>
+<dt>-templates</dt>
+<dd>
+(default directory name is “templates”) Pick an alternative location for
+finding templates
+</dd>
+<dt>–timeout SECONDS</dt>
+<dd>
+Timeout in seconds, after which a template rendering is aborted.
+Default: 3.
+</dd>
+</dl>
+<h1 id="the-templates">The templates</h1>
+<p>Mustache templates are documented at <a
+href="https://mustache.github.io"
+class="uri">https://mustache.github.io</a>. The template engined used is
+based on Go package <a href="https://github.com/cbroglie/mustache"
+class="uri">https://github.com/cbroglie/mustache</a>.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>
