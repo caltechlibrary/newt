@@ -1,6 +1,6 @@
 ---
-title: "newt(1) user manual | 0.0.6 b1b6bb3"
-pubDate: 2024-02-08
+title: "newt(1) user manual | 0.0.6 8efaf63"
+pubDate: 2024-02-12
 author: "R. S. Doiel"
 ---
 
