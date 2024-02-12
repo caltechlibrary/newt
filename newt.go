@@ -208,9 +208,9 @@ func RunPostgresSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 }
 
 // RunMustache is a runner for a Mustache redner engine service based on the Pandoc server API.
-func RunMustache(in io.Reader, out io.Writer, eout io.Writer, port string, timeout int, verbose bool) int {
+func RunMustache(in io.Reader, out io.Writer, eout io.Writer, port string, timeout int, verbose bool, templates string) int {
 	exitCode := 0
-	err := MustacheServer(out, eout, port, timeout, verbose)
+	err := MustacheServer(out, eout, port, timeout, verbose, templates)
 	if err != nil {
 		fmt.Fprintf(eout, "error starting server: %s\n", err)
 		exitCode = 1

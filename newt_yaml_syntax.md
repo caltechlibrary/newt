@@ -35,29 +35,42 @@ Routes hosts a list of request descriptions and their data pipelines
 
 ### a route object
 
-id
+`id`
 : (required) This identifies the pipeline so that it can be re-used or included in other pipelines. It must conform to variable name rules[^1]
 
-type
-: (required) Current supported pipeline types are `json_api`, `static`, and `template_engine`. Template engines package the result of a `json_api` into a form that is acceptable to Pandoc running as a web service or `newtmustache`. If `static` is chosen then you specify the path relative to the htdocs root. E.g. `error.html` if the file you want to display is `htdocs/error.html`.
-
-description
+`description`
 : (optional, encouraged) This is a description of what you're trying to accomplish in the route. It may be used in comments or by documentation generators.
 
-request
+`request`
 : (required) This is a string that expresses the HTTP method and URL path to assign to a specific data pipeline
 
-pipeline
+`pipeline`
 : (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail or the last element in the pipeline are returned as a response to the request
 
-error
+`error`
 : (optional) this points to a static page that can be displayed when the pipeline fails (e.g. like a 404 page used by web servers)
 
-variables
+`variables`
 : (optional) this is a key-value list of input types that may be used in route mapping. These are base on input types in models (see below).
 
-debug
+`debug`
 : (optional) if set to true the `newt` service will log verbose results to standard out for this specific pipeline
+
+#### a pipeline object
+
+A pipeline is a list of web services containing a type, url, method and content types
+
+`service [METHOD] [url]`
+: (required) The HTTP method is included in the URL The url to be used to contact the web service, may contain embedded variable references in template notation.
+
+`description`
+: (optional, recommended) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentaiton.
+
+`content_type`
+: (optional) You can specify a mime content type for the data you are sending
+
+`timeout`
+: (optiona) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
 
 
 ## the "models" property

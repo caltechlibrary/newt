@@ -23,56 +23,55 @@ author: "R. S. Doiel"
 
 # SYNOPSIS
 
-{app_name}
+{app_name} [OPTIONS]
 
 # DESCRIPTION
 
-**{app_name}** is a microservice that provides a Mustache template rendering inspired by Pandoc server.
+**{app_name}** is a web service that provides a Mustache template rendering inspired by Pandoc server.
 
-There is no configuration file. There are command line options to specify port and timeout.
+Like Pandoc web server there is no configuration file. There are a few command line options, e.g.
+port, template directory and timeout.
 
-# API
+# Template engine API
 
-## Root endpoint
+**{app_name}** accepts POST of JSON content and maps them to a template name expressed in the 
+request URL. If I had a template called `+"`"+`template/list_objects.tmpl`+"`"+`
+then the url would be formed like `+"`"+`http://localhost:3032/list_objects.tmpl`+"`"+`. The JSON
+encoded post would then be sent through the "list_objects.tmpl" template and returned to the browser.
+The JSON object POSTed does not need a wrapping object like required by Pandoc server.  **{app_name}**
+reads in the templates found in the template directory at start up. It creates a map between the 
+basename of the template and the URL handler built from the that name. As such the templates are fixed
+at startup and do not need to be passed along with your data object.
 
-The root (/) endpoint accepts only POST method requests. Other methods will yield a appropriate http status code.
+This improves of Pandoc web servers in a few ways. 
 
-##  Request
+- Now wrapping object
+- Template parse errors are known earlier own and are visible from the output log
+- Parsing of the templates happens once at startup
+- Partial templates can be supported because the startup phase of **{app_name}** handles resolving partials
 
-The body of the POST request should be a JSON object, with the following fields.  Template is always required. It must
-also include at least one of either metadata or variables. If both are set then the maps are merged before processing
-with the template.
-
-template (string)
-: String contents of a document template, see Mustache <https://mustache.github.io/mustache.5.html>.
-
-data (JSON map)
-: String-valued metadata.
-
-content_type (optional, default is text/plain)
-: Set the rendered content type, default is text/plain. You probably want text/html for web pages.
-
-## Response
-
-It returns a response body and headers set by the default http writer provided in the http go package.
-If there request can't be fullfilled then an http status code and text will be returned.
 
 # OPTIONS
 
--help
-: display help
+The following options are supported by **{app_name}**.
+
+-h, -help
+: display this help message
 
 -license
-: display license
+: display the software license
 
 -version
-: display version
+: display version information
 
---port NUM
-: HTTP port on which to run the server.  Default: 3030.
+-port NUMBER
+: (default is port is 3032) Set the port number to listen on
+
+-templates
+: (default directory name is "templates") Pick an alternative location for finding templates
 
 --timeout SECONDS
-: Timeout in seconds, after which a conversion is killed.  Default: 2.
+: Timeout in seconds, after which a template rendering is aborted.  Default: 3.
 
 # The templates
 
@@ -100,10 +99,12 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "display version")
 	
 	// App option(s)
-	port, timeout, verbose := "3030", 2, false
+	port, timeout, verbose := "3032", 3, false
+	templates := "templates"
 	flag.StringVar(&port, "port", port, "port number to listen on")
 	flag.IntVar(&timeout, "timeout", timeout, "timeout for requests")
 	flag.BoolVar(&verbose, "verbose", verbose, "display template debugging and request information to standard out")
+	flag.StringVar(&templates, "templates", templates, "set the templates directory to scan")
 
 	// We're ready to process args
 	flag.Parse()
@@ -125,5 +126,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunMustache(in, out, eout, port, timeout, verbose))
+	os.Exit(newt.RunMustache(in, out, eout, port, timeout, verbose, templates))
 }

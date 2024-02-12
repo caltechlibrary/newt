@@ -84,7 +84,9 @@ func MustacheHandleRequest(w http.ResponseWriter, r *http.Request, verbose bool,
 }
 
 // MustacheServer provides a Pandoc server like experience for Mustache templates.
-func MustacheServer(out io.Writer, eout io.Writer, port string, timeout int, verbose bool) error {
+func MustacheServer(out io.Writer, eout io.Writer, port string, timeout int, verbose bool, templates string) error {
+	// FIXME: Need to read in and parse all the templates found in templates.
+	// As we parse the templates we can create a handler for that template.
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		MustacheHandleRequest(w, r, verbose, out)
 	})

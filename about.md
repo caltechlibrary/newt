@@ -3,11 +3,13 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "Newt"
-abstract: "Newt is an experimental microservice providing two stage data
-routing, form data validation, simple static file services. Newt can
-route data from a request to a JSON data source
-(e.g. Postgres+PostgREST) and then take the results and run them through
-Pandoc server."
+abstract: "Newt is an experimental web service providing data routing
+and a multistage pipeline. The pipeline can contain services that work
+with JSON data. Example object storage, form data validation, JSON
+transformation, even static file services. Newt can route data from a
+request to a JSON data source (e.g. Postgres+PostgREST or Solr) and then
+run those results through a pipeline that may include Newt’s Mustache
+template engine."
 authors:
   - family-names: Doiel
     given-names: R. S.
@@ -16,8 +18,10 @@ authors:
 repository-code: "git+https://github.com/caltechlibrary/newt"
 version: 0.0.6
 
-keywords: [ "web
-development", "microservice", "postgres", "postgrest", "pandoc" ]
+keywords: [ "web development", "web service", "service oriented
+architecture", "micro service
+architecture", "microservice", "postgres", "postgrest", "pandoc", "mustache", "json
+api" ]
 
 ---
 
@@ -32,10 +36,13 @@ About this software
 
 
 
-Newt is an experimental microservice providing two stage data routing,
-form data validation, simple static file services. Newt can route data
-from a request to a JSON data source (e.g. Postgres+PostgREST) and then
-take the results and run them through Pandoc server.
+Newt is an experimental web service providing data routing and a
+multistage pipeline. The pipeline can contain services that work with
+JSON data. Example object storage, form data validation, JSON
+transformation, even static file services. Newt can route data from a
+request to a JSON data source (e.g. Postgres+PostgREST or Solr) and then
+run those results through a pipeline that may include Newt’s Mustache
+template engine.
 
 
 - GitHub: <git+https://github.com/caltechlibrary/newt>
@@ -56,8 +63,8 @@ take the results and run them through Pandoc server.
 
 ### Software Requiremets
 
-- Postgres &gt;= 15
-- PostgREST &gt;= 12
-- Pandoc &gt;= 3
-- Golang &gt; 1.21
+- Postgres ≥ 16
+- PostgREST ≥ 12
+- Pandoc ≥ 3.1
+- Golang ≥ 1.22
 - A front end web server supporting reverse proxy (e.g. Apache2, NginX)
