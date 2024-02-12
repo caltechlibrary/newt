@@ -5,7 +5,7 @@ The Newt Project is an experiment in rapid web application development for libra
 
 [^1]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
-Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST gives you an out of the box, web friendly, data management platform in the form of a JSON API. Light weight template engines like Pandoc running as a web service can transform you JSON API output into a web page. Throw in a full text search engine like Solr and you can check off the core features of many LAS software systems. What is missing is the layer to orchestrate the data flowing through a pipe.
+Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST gives you an out of the box, web friendly, data management platform in the form of a JSON API. Light weight template engines like like Newt's Mustache template engine can transform you JSON API output into a web page. Throw in a full text search engine like Solr and you can check off the core features of many LAS software systems. What is missing is the layer to orchestrate the data flowing through a pipe.
 
 The Newt Project is trying to encourage the following characteristics.
 
