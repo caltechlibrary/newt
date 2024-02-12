@@ -2,7 +2,7 @@
 Installation
 ------------
 
-newt is an experimental web service for working with Pandoc+PostgREST and Pandoc. It also provides a simple static file web service. At this time you must install it from source code. It is probably broken and certainly will contain many bugs. It's a prototype!
+newt is an experimental web service for working with Pandoc+PostgREST. It also provides a simple static file web service, template engine and code generator. At this time you must install it from source code. It is probably broken and certainly will contain many bugs. It's a prototype!
 
 Quick install with curl
 -----------------------
@@ -19,11 +19,11 @@ Install from source
 
 ## Requirements
 
-- Go ≥ 1.22 (aped relies the improved HTTP package that supports a richer Del for describing routes)
+- Go ≥ 1.22
 - Pandoc ≥ 3.1 (to render Markdown content and some Go code)
 - Postgres ≥ 16
 - PostgREST ≥ 12
-- Git compatible tool for retrieving the GitHub repository of Ape
+- Git compatible tool for retrieving the GitHub repository of Newt
 - GNU Make ≥ 4.3
 - GNU grep ≥ 3.7
 - GNU cut  ≥ 8.32
@@ -31,7 +31,7 @@ Install from source
 ### Building from source code
 
 1. Make sure you have the required development software installed
-2. Clone the Ape GitHub repository locally
+2. Clone the Newt GitHub repository locally
 3. Use the Go tool to build, test and run the application
 
 #### step 1
@@ -39,7 +39,7 @@ Install from source
 1. Check if Go is installed and it is the right version. See <https://golang.org> to download and install Go
 2. Check if Pandoc is installed and the right version. See <https://pandoc.org> to download and install Pandoc
 3. Check if SQLite3 is installed and the right version. See <https://sqlite.org> to download and install SQLite3
-4. Check if Git is installed and version. To install the Git command see, <https://git-scm.com/>. GitHub provides [gh](https://docs.github.com/en/github-cli) and [GitHub Desktop](https://docs.github.com/en/desktop) with similar capabilities. Ape install instructions assume the venerable `git` command.
+4. Check if Git is installed and version. To install the Git command see, <https://git-scm.com/>. GitHub provides [GA](https://docs.github.com/en/github-cli) and [GitHub Desktop](https://docs.github.com/en/desktop) with similar capabilities. Newt install instructions assume the venerable `git` command.
 5. Check if your GNU or POSIX commands are available
    - These command often installed by POSIX operating system and its package manager
 
@@ -56,24 +56,24 @@ cut --version
 #### step 2
 
 1. Start in your home directory
-2. Clone Ape's [repository](https://github.com/caltechlibrary/ape).
-3. Change into the Ape directory
+2. Clone Newt's [repository](https://github.com/caltechlibrary/newt).
+3. Change into the Newt directory
 
 ~~~shell
 cd
 git clone \
-   https://github.com/caltechlibrary/ape \
-   src/github.com/caltechlibrary/ape
-cd src/github.com/caltechlibrary/ape
+   https://github.com/caltechlibrary/newt \
+   src/github.com/caltechlibrary/newt
+cd src/github.com/caltechlibrary/newt
 ~~~
 
 #### step 3
 
 For these three tasks we're going to use the Go command. It assumed are still int eh directory where you completed step 2.
 
-1. Build the ape application
-2. Test the ape application
-3. If the tests are successful then you can install Ape tools
+1. Build the newt application
+2. Test the newt application
+3. If the tests are successful then you can install Newt tools
 
 ~~~shell
 go build
@@ -83,9 +83,9 @@ go install
 
 ## Precompiled binaries
 
-You can find pre-compiled binaries for some versions of Newt. They are available at <https://github.com/caltechlibrary/newt/releases>.
+You can find prep-compiled binaries for some versions of Newt. They are available at <https://github.com/caltechlibrary/newt/releases>.
 
-The binaries are available in a Zip archive file for download. The name uses the form `newt-<VERSION_NO>-<OS_TYPE>-<CPU_TYPE>.zip`. VERSION_NO will be a semver associated with the release (e.g. "v0.0.2"), the OS_TYPE will be either "Linux" (including Raspbery Pi OS), "Windows" and "macOS". The CPU_TYPE will vary based on how the CPU type is reported on the POSIX system (e.g. what is returned by `uname -m`) or in the case of Windows either "x86_64" for Intel CPU types or "arm64" for ARM CPU (e.g. those in selected Surface tablets or Microsoft's ARM Development Kit 2023).
+The binaries are available in a Zip archive file for download. The name uses the form `newt-<VERSION_NO>-<OS_TYPE>-<CPU_TYPE>.zip`. VERSION_NO will be a semver associated with the release (e.g. "v0.0.2"), the OS_TYPE will be either "Linux" (including Raspberry Pi OS), "Windows" and "macOS". The CPU_TYPE will vary based on how the CPU type is reported on the POSIX system (e.g. what is returned by `uname -m`) or in the case of Windows either "x86_64" for Intel CPU types or "arm64" for ARM CPU (e.g. those in selected Surface tablets or Microsoft's ARM Development Kit 2023).
 
 - macOS example
     - `newt-v0.0.2-macOS-arm64.zip` (M1, M2 CPU) or `newt-v0.0.2-macOS-x86_64.zip` (older Intel based Macs)

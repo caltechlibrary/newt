@@ -22,10 +22,11 @@
 
 <section>
 <h2 id="installation">Installation</h2>
-<p>newt is an experimental web service for working with Pandoc+PostgREST
-and Pandoc. It also provides a simple static file web service. At this
-time you must install it from source code. It is probably broken and
-certainly will contain many bugs. It’s a prototype!</p>
+<p>newt is an experimental web service for working with
+Pandoc+PostgREST. It also provides a simple static file web service,
+template engine and code generator. At this time you must install it
+from source code. It is probably broken and certainly will contain many
+bugs. It’s a prototype!</p>
 <h2 id="quick-install-with-curl">Quick install with curl</h2>
 <p>If you are running macOS or Linux you can install released versions
 of newt with the following curl command.</p>
@@ -33,12 +34,12 @@ of newt with the following curl command.</p>
 <h2 id="install-from-source">Install from source</h2>
 <h2 id="requirements">Requirements</h2>
 <ul>
-<li>Go ≥ 1.22 (aped relies the improved HTTP package that supports a
-richer Del for describing routes)</li>
+<li>Go ≥ 1.22</li>
 <li>Pandoc ≥ 3.1 (to render Markdown content and some Go code)</li>
 <li>Postgres ≥ 16</li>
 <li>PostgREST ≥ 12</li>
-<li>Git compatible tool for retrieving the GitHub repository of Ape</li>
+<li>Git compatible tool for retrieving the GitHub repository of
+Newt</li>
 <li>GNU Make ≥ 4.3</li>
 <li>GNU grep ≥ 3.7</li>
 <li>GNU cut ≥ 8.32</li>
@@ -46,7 +47,7 @@ richer Del for describing routes)</li>
 <h3 id="building-from-source-code">Building from source code</h3>
 <ol type="1">
 <li>Make sure you have the required development software installed</li>
-<li>Clone the Ape GitHub repository locally</li>
+<li>Clone the Newt GitHub repository locally</li>
 <li>Use the Go tool to build, test and run the application</li>
 </ol>
 <h4 id="step-1">step 1</h4>
@@ -63,9 +64,9 @@ and install SQLite3</li>
 <li>Check if Git is installed and version. To install the Git command
 see, <a href="https://git-scm.com/"
 class="uri">https://git-scm.com/</a>. GitHub provides <a
-href="https://docs.github.com/en/github-cli">gh</a> and <a
+href="https://docs.github.com/en/github-cli">GA</a> and <a
 href="https://docs.github.com/en/desktop">GitHub Desktop</a> with
-similar capabilities. Ape install instructions assume the venerable
+similar capabilities. Newt install instructions assume the venerable
 <code>git</code> command.</li>
 <li>Check if your GNU or POSIX commands are available
 <ul>
@@ -83,28 +84,28 @@ cut --version</code></pre>
 <h4 id="step-2">step 2</h4>
 <ol type="1">
 <li>Start in your home directory</li>
-<li>Clone Ape’s <a
-href="https://github.com/caltechlibrary/ape">repository</a>.</li>
-<li>Change into the Ape directory</li>
+<li>Clone Newt’s <a
+href="https://github.com/caltechlibrary/newt">repository</a>.</li>
+<li>Change into the Newt directory</li>
 </ol>
 <pre class="shell"><code>cd
 git clone \
-   https://github.com/caltechlibrary/ape \
-   src/github.com/caltechlibrary/ape
-cd src/github.com/caltechlibrary/ape</code></pre>
+   https://github.com/caltechlibrary/newt \
+   src/github.com/caltechlibrary/newt
+cd src/github.com/caltechlibrary/newt</code></pre>
 <h4 id="step-3">step 3</h4>
 <p>For these three tasks we’re going to use the Go command. It assumed
 are still int eh directory where you completed step 2.</p>
 <ol type="1">
-<li>Build the ape application</li>
-<li>Test the ape application</li>
-<li>If the tests are successful then you can install Ape tools</li>
+<li>Build the newt application</li>
+<li>Test the newt application</li>
+<li>If the tests are successful then you can install Newt tools</li>
 </ol>
 <pre class="shell"><code>go build
 go test
 go install</code></pre>
 <h2 id="precompiled-binaries">Precompiled binaries</h2>
-<p>You can find pre-compiled binaries for some versions of Newt. They
+<p>You can find prep-compiled binaries for some versions of Newt. They
 are available at <a
 href="https://github.com/caltechlibrary/newt/releases"
 class="uri">https://github.com/caltechlibrary/newt/releases</a>.</p>
@@ -112,9 +113,9 @@ class="uri">https://github.com/caltechlibrary/newt/releases</a>.</p>
 name uses the form
 <code>newt-&lt;VERSION_NO&gt;-&lt;OS_TYPE&gt;-&lt;CPU_TYPE&gt;.zip</code>.
 VERSION_NO will be a semver associated with the release (e.g. “v0.0.2”),
-the OS_TYPE will be either “Linux” (including Raspbery Pi OS), “Windows”
-and “macOS”. The CPU_TYPE will vary based on how the CPU type is
-reported on the POSIX system (e.g. what is returned by
+the OS_TYPE will be either “Linux” (including Raspberry Pi OS),
+“Windows” and “macOS”. The CPU_TYPE will vary based on how the CPU type
+is reported on the POSIX system (e.g. what is returned by
 <code>uname -m</code>) or in the case of Windows either “x86_64” for
 Intel CPU types or “arm64” for ARM CPU (e.g. those in selected Surface
 tablets or Microsoft’s ARM Development Kit 2023).</p>

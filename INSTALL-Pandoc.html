@@ -32,7 +32,7 @@ potential link conflict in which libiconv if you’ve also installed Mac
 Ports to get reliable development tools like Git. Pandoc needs to link
 against the macOS supplied libiconv but Mac Ports also provides this and
 the Git that comes with Mac Ports relies on the Mac Ports libiconv. The
-trick then is to do all the Git commands before before temporaily
+trick then is to do all the Git commands before before temporarily
 uninstalling the libiconv that comes with Mac Ports. You can then
 invoking Cabal and put libiconv back afterward Pandoc installation is
 complete. If you’re not using the libiconv installed as part of Mac

@@ -2,7 +2,7 @@
 # Installing Pandoc from source
 
 I've had the best results compiling Pandoc on macOS using GHCup to provide my Haskell build environment.  This doesn't replace the recommendations at the [Pandoc Website](https://pandoc.org). It's the my notes about how I got things up on my Mac Mini with an M1 process while using Mac Ports. The basic recipe is modified because of a potential link conflict in which libiconv if you've also installed Mac Ports to get reliable development tools like Git. Pandoc needs to link against the macOS supplied libiconv but Mac Ports also provides this and the Git that comes with Mac Ports relies on the Mac Ports libiconv. The trick then is to do all the Git commands before 
-before temporaily uninstalling the libiconv that comes with Mac Ports. You can then invoking Cabal and put libiconv back afterward Pandoc installation is complete. If you're not using the libiconv installed as part of Mac Ports applications you can skip those steps.
+before temporarily uninstalling the libiconv that comes with Mac Ports. You can then invoking Cabal and put libiconv back afterward Pandoc installation is complete. If you're not using the libiconv installed as part of Mac Ports applications you can skip those steps.
 
 The basic recipe
 

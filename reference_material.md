@@ -1,7 +1,7 @@
 
 # Reference Material
 
-These are links to prior art, related efforts and resources for considatiion in how Newt evolves as a prototype.
+These are links to prior art, related efforts and resources for consideration in how Newt evolves as a prototype.
 
 ## Data Modeling
 
@@ -10,7 +10,7 @@ These are links to prior art, related efforts and resources for considatiion in 
 - [JSON Forms](https://jsonforms.io/docs/)
     - pretty heavy weight in the deployed results (i.e. renders to either React or Angular)
     - Uses JSON rather than YAML or TOML to describe forms which can be construed as less human friendly
-- [YAQL](https://yaql.readthedocs.io/en/latest/getting_started.html), a YAML like query langauge that maps to SQL
+- [YAQL](https://yaql.readthedocs.io/en/latest/getting_started.html), a YAML like query language that maps to SQL
 - [pg_query](https://github.com/pganalyze/pg_query), a Ruby library to parse SQL and normalize into a data structure
 - [htmx](https://htmx.org/), a Web Component like markup implementing the wrapping layer between JSON API and HTML structured markup
 - [Yafowil, yet another form widget library](http://docs.yafowil.info/)

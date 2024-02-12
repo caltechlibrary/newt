@@ -1,7 +1,7 @@
 
 ## Getting recent versions of PostgREST on M1/M2 Macs
 
-Newt is intended to work along side Postgres and PostgREST. I usually install PostgREST from source.  I've had the best results on both Linux and macOS using GHCup to provide my Haskell build environment.  Below is a quick recipe for building PostgREST. It is not intended to replace the PostgREST project documentation instruction. It is offerred here for convience. This recipe reflects what I did to get PostgREST current releases installed on a Mac Mini with a M1 processor. Your mileage may vary.
+Newt is intended to work along side Postgres and PostgREST. I usually install PostgREST from source.  I've had the best results on both Linux and macOS using GHCup to provide my Haskell build environment.  Below is a quick recipe for building PostgREST. It is not intended to replace the PostgREST project documentation or installation instructions. It is offered here for convenience. This recipe reflects what I did to get PostgREST current releases installed on a Mac Mini with a M1 processor running macOS Sonoma. Your mileage may vary considerably.
 
 The basic recipe is
 

@@ -2,20 +2,20 @@
 # Newt YAML syntax
 
 Newt's configuration and modeling is based on a YAML file. That YAML file has a
-specific syntax.  The top level of that syntax are three properties.
+specific syntax.  The top level of syntax is formed from three properties.
 
 application
 : holds the run time configuration used by the Newt web service and metadata about the application you're creating.
 
 models
-: This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms)
+: This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
 
 routes
-: This holds the routes for the data pipe line (e.g. JSON API and template engine sequence)
+: This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 ## the "application" property
 
-The application property itself has four properties.
+The application property itself has four properties. All are optional.
 
 port
 : (optional, default is This port number the Newt web services uses to listen for request on localhost
@@ -36,19 +36,19 @@ Routes hosts a list of request descriptions and their data pipelines
 ### a route object
 
 id
-: (required) This identifies the pipe line so that it can be re-used or included in other pipelines. It must conform to variable name rules[^1]
+: (required) This identifies the pipeline so that it can be re-used or included in other pipelines. It must conform to variable name rules[^1]
 
 type
-: (required) Current supported pipeline types are `json_api`, `static`, and `template_engine`. Template engines package the result of a `json_api` into a form that is acceptable to Pandoc running as a web service or `newtmustache`. If `static` is choosen then you specify the path relative to the htdocs root. E.g. `error.html` if the file `htdocs/error.html` is the one you want.
+: (required) Current supported pipeline types are `json_api`, `static`, and `template_engine`. Template engines package the result of a `json_api` into a form that is acceptable to Pandoc running as a web service or `newtmustache`. If `static` is chosen then you specify the path relative to the htdocs root. E.g. `error.html` if the file you want to display is `htdocs/error.html`.
 
 description
-: (optional, encouraged) This is a discription of what you're trying to accomplish in the route. It may be used in comments or by documentation generators.
+: (optional, encouraged) This is a description of what you're trying to accomplish in the route. It may be used in comments or by documentation generators.
 
 request
-: (required) This is a string that express the paith to listen to for running the data pipeline
+: (required) This is a string that expresses the HTTP method and URL path to assign to a specific data pipeline
 
 pipeline
-: (required) this is a list of data request used to form the pipeline needed for this request. the last element in the pipeline is returned as a response to the request
+: (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail or the last element in the pipeline are returned as a response to the request
 
 error
 : (optional) this points to a static page that can be displayed when the pipeline fails (e.g. like a 404 page used by web servers)
@@ -57,12 +57,12 @@ variables
 : (optional) this is a key-value list of input types that may be used in route mapping. These are base on input types in models (see below).
 
 debug
-: (optonal) if set to true the pipeline process will be logged to standard out
+: (optional) if set to true the `newt` service will log verbose results to standard out for this specific pipeline
 
 
 ## the "models" property
 
-Models holds a list of individual models used by our data pipelines. The models are used when generating the SQL code defining our models and data manage. It also is used to render templates that maybe used by a template engine in the data pipeline. It can be used to generate static HTML suitable for embedding in Markdown or HTML documents (e.g. web forms)
+Models holds a list of individual models used by our data pipelines. The models are used when generating the SQL code defining our schema and data management. It also is used to render templates that maybe used by a template engine in the data pipeline. It can be used to generate static HTML suitable for embedding in Markdown or HTML documents (e.g. web forms). The input elements can be used to form a URL require to other web services in our pipeline.
 
 ### a model object
 
@@ -74,20 +74,20 @@ id
 routing
 : (required, newt specific) this holds a list of route ids associated with this model. It is use in code generation, e.g. to populate a web form's action and model
 
-The following following properties are based on the GitHub YAML issue template syntax[^2] (abbr: GHYT)
+The following properties are based on the GitHub YAML issue template syntax[^2] (abbr: GHYTS)
 
 name
-: (required by GHYT, optional in newt) Must be unique to use with GitHub YAML issue templates[^2]. In Newt it will be used in populating comments in generated SQL
+: (required by GHYTS, optional in newt) Must be unique to use with GitHub YAML issue templates[^2]. In Newt it will be used in populating comments in generated SQL
 
 description
-: (required) A human description of the model, It will appear in the web form and SQL commonents generated from the model
+: (required) A human description of the model, It will appear in the web form and SQL components generated from the model
 
 body
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
 
 #### a model's input types
 
-This is based on GitHub YAML issue template (abbr: GHYT) input types[^3]. 
+This is based on GitHub YAML issue template (abbr: GHYTS) input types[^3]. 
 
 id
 : (required) an identifier for the element. Must conform to variable name rules[^1]. It is used to SQL as a column name and in web forms for the input property.
@@ -104,7 +104,7 @@ validations
 
 ## input types
 
-Both the routes and models may continue input types. The types supported in Newt are based on the types found in GitHub YAML issue types[^3]. They include
+Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^3]. They include
 
 markdown
 : (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
@@ -119,7 +119,7 @@ dropdown
 : A dropdown menu. In SQL this could render as an enumerated type. In HTML it would render as a drop down list
 
 checkboxes
-: A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checkes are allowed it is stored as a JSON Array column.
+: A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
 
 ## Example Newt YAML
@@ -299,7 +299,7 @@ routes:
 ```
 
 
-[^1]: variable numbers must start with a letter, may contain numbes but not spaces or punctation except the underscore
+[^1]: variable numbers must start with a letter, may contain numbers but not spaces or punctuation except the underscore
 
 [^2]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>, 
 

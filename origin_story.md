@@ -5,20 +5,20 @@
 
 Newt came from a small epiphany. I was writing yet another flask app and the de ja vu was intense. It got me thinking about how often I write the same code over and over except for minor variations. Why in the world was I doing this?  That caused me to step back, take stock and see if there was a simpler way.
 
-Modern applications like Invenio RDM are created by aggregating many web services. This is a feature of service oriented architecture also known as micro service architecture. Invenio RDM is much cleaner than the venerable EPrints 3 repository system but it remains highly complex. Was this really needed? Was it an artifact of Zenodo? Zenodo is huge. Huge numbers of concurrent interactions (bots and humans) along with a massive amount of data and objects to manage it suggests complexity if only from scale.  At its core RDM does two things really well. Metadata management and object storage. These are non-trivial at Zenodo scale and RDM does a really good job at managing them. But having migrated from EPrints to RDM recently I've come to question why do we built software systems so complex? My library is unlikely to need an application that scales as large as Zenodo. Our needs are far more modest.
+Modern applications like Invenio RDM are created by aggregating many web services. This is a feature of service oriented architecture also known as micro service architecture. Invenio RDM is much cleaner than the venerable EPrints 3 repository system but it remains highly complex. Was this really needed? Was it an artifact of Zenodo? Zenodo is huge. Huge numbers of concurrent interactions (bots and humans) along with a massive amount of data and objects to manage. It is a complex system because of its scale. At its core RDM does two things really well. Metadata management and object storage. These are non-trivial at Zenodo scale and RDM does a really good job at managing them. But having migrated from EPrints to RDM recently I've come to question why do we built software systems so complex? My library is unlikely to need an application that scales as large as Zenodo. **Our needs are far more modest**.
 
 I reviewed the other custom metadata management applications I've built, collaborated on or maintained over the last several decades. I feel like they all could be simplified. **It's time to see how much software we can create without writing new software.**
 
-At Caltech Library we build allot of flask apps. Flask compare to many frameworks is a nice balance of flexibility and simple concepts. But looking at our applications I also see that the should be writing less. The middleware I've needs to be scaled back. It should be taking on less responsibility and be more narrowly focus. All the application use a database for content storage (e.g. SQLite3, MySQL and Postgres).  My code spends allot of time modeling data, transforming it on the way to or from the database as well as enforcing access rules. If I use an ORM I'm also doing data modeling in my application. That's shouldn't be part of the middleware at all. This problem is not unique to my code or the code we write as a group in Caltech Library. I saw the same problem when I worked at USC. I see the same problem when using platforms like Drupal and WordPress.
+At Caltech Library we build allot of flask apps. Flask compared to many frameworks is a nice balance of flexibility and simple concepts. Looking at my applications I see that I should be writing much less. My middleware needs to be scaled back. It should be taking on less responsibility and be more narrowly focus. All my web applications use a database for content storage (e.g. SQLite3, MySQL or Postgres).  My code spends allot of time modeling data, transforming it on the way to or from the database as well as enforcing access rules. While I often use an ORM I'm still modeling data in my application. That's shouldn't be part of the middleware at all. This problem is not unique to my code or the code we write as a group in Caltech Library. I saw the same problem writing software at USC for a quarter century (as a student worker and later as staff). I see the same problem when using platforms like Drupal and WordPress.
 
-How do we trim down our middleware. Looking at EPrints, RDM, and our custom applications where at Caltech I see several areas that middleware is covering that can be rethought or re-aligned.
+How do we trim down our middleware? Looking at EPrints, RDM, and our custom applications where at Caltech I see several areas that middleware is covering that can be rethought or re-aligned.
 
 1. Data modeling 
 2. Data validation
 3. Data management
 4. User management and permissions regiments
 5. Data retrieval 
-6. Data transformation for use by the web browser
+6. Final data transformation for use by the web browser
 
 I realized that all these features often overlap with other software in the systems we build on.  For historical or evolutionary reasons we've been putting those features into middleware. I believe these features often are made redundant depending on the how we use the other systems we build on. 
 
@@ -26,12 +26,12 @@ So here's my propositions
 
 - data modeling (e.g. scheme design) should only happen in the database
 - managing data should only happen in the database
-- the database needs to be accessible via URL and return JSON content instead of a DB connector used to send SQL down the wire
+- database needs to be accessible via URL and return JSON content so that SQL stays out of the middleware completely (the ORM is a symptom not a solution)
 - user access and permissions should be pushed to the outer layer of a web application (e.g. Apache 2 integrated with Shibboleth)
-- if the database produces JSON we still need to turn that into HTML before sending to the browser, this should be done with a simple, stateless template engine
-- we need a means of routing data round systems, e.g. taking our JSON API results and sending through the template engine
+- if the database supplies JSON responses we still need to turn that into HTML; use a a simple, stateless template engine
+- use a single piece of software for routing data to our JSON API through the template engine
 
-It is the last bit that our middleware should focus on not the rest. Can data routing become an "off the shelf" component used to build a web application? That is the itch that Newt is trying to scratch.
+Our middleware should be focus that last stage. Everything use should be provided by "off the shelf" components. The middleware focus is in the final composition from the parts. It can use configuration to do that.
 
 Proposed components for testing a the simple data router concept
 
@@ -44,60 +44,69 @@ The data router needs to be configurable such that any given URL supported in yo
 
 Flask (like many other frameworks) suggest a excellent path foreword.  Flasks lets you assign a "route" to a function. A "route" is expressed with a path like string. It may include replaceable elements that the function can then use to do it's job (e.g. a record id passed in as part of the URL's path).  If you can identify a path using a simple description string and you pair that with a data pipeline sequence then now have a data router. The code you write is configuration for the path and how it should proceed through a pipeline sequence. 
 
-Example 1: contact the JSON API for the search engine, take the results and run them through the template service. 
+Use case 1: contact the JSON API for the search engine, take the results and run them through the template service. 
 
-Example 2: contact the database via JSON API, perform an action, take the results and run them through the template engine.
+Use case 2: contact the database via JSON API, perform an action, take the results and run them through the template engine.
 
-Example 3: contact the search engine, get JSON results, run them through the template engine.
+Use case 3: contact the search engine, get JSON results, run them through the template engine.
 
-I was able to illustrate this approach in the initial Newt prototype I showed at SoCal Code4Lib in [July 2023](presentation/). The biggest challenge wasn't implemeting the router it was inventing a YAML syntax. My YAML syntax was overly complicated. 
+I was able to illustrate this approach in the initial Newt prototype I showed at SoCal Code4Lib in [July 2023](presentation/). The biggest challenge wasn't implementing the router it was inventing a YAML syntax. My initial YAML syntax was overly complicated and ugly. 
 
 ## The 2nd prototype
 
 A couple things fell out of that demonstration and subsequent talks with other developer colleagues.
 
-- Postgres with PostgREST providing JSON APIs is very cool (expected, because yes it is very cool)
-- People were not interested in data routing and pipelines (unexpected)
+- Postgres with PostgREST providing JSON APIs is very cool (I expected this response because it is very cool)
+- People were not interested in data routing and pipelines (unexpected, routes seemed cool to me so I assumed it was cool to others)
 
-These then were followed by some different flavors of questions and comments. 
+This was expressed in the from of questions and comments.
 
-- Do all my data modeling in SQL?  ...
-    - But I don't like SQL! 
-    - But I don't know enough SQL!
+- Do all my data modeling in SQL ... ?
+    - I don't like SQL! 
+    - I don't know enough SQL!
     - I don't feel comfortable writing SQL!
     - Writing SQL isn't fun!
-- I don't need a pipeline the browser can assemble the page! ...
+- I don't need a pipeline! The browser can assemble the page! ...
     - React/Angular/(replace with your favor JS framework) means I don't need templates.
     - Who cares about HTML, JavaScript can deliver everything!![^1]
-    - But aren't templates the old thing people used to use?
+    - But aren't templates the old thing people used to use? Why use them now?
 
-[^1]: Example: SquareSpace and Wix deliver webpages as JavaScript.  I think this is to hide easy what they really are providing.
+[^1]: Example: SquareSpace and Wix deliver web pages as JavaScript.  I think this is to hide what they are really selling.
 
-> NOTE: the exclamations are my editorial not additions only. Everyone I encountered was very supportive and kind
+> NOTE: the exclamations and summation are my editorial. Everyone I encountered was very supportive and encouraging.
 
 After taking this all in and having a long think 2024 arrived. These are my current conclusions.
 
-1. When people saw Postgres combined with PostgREST and my controversial suggestion to use SQL to model your data the discussion shifted from frameworks to data modeling and what JSON would results. Granted people weren't looking forward to writing or learning more SQL. That's something I've noticed through most of my career. The people who like SQL tended to leave development behind and get paid more running Oracle deployments.
+1. When people saw Postgres combined with PostgREST and my controversial suggestion to use SQL to model your data the discussion shifted from frameworks to data modeling and what JSON would result. Granted people weren't looking forward to writing or learning more SQL. That's something I've noticed throughout most of my career. People who like SQL tended to become database administrators or database developers and get paid more when management by the Oracle cool-aide.
 
 2. Shifting the discussion to where you model your data is the important bit. The fact remains that the database engine does a much better job of managing performance and your data then any middleware code you're likely to write regardless of framework or programming language.  I like writing in Go. It is a reasonably efficient language. If the database is setup up correctly running SQL queries will beat my processing data outside the database most days of the week. Arriving at SQL to manage data is generally a win.
 
-3. Data routing shouldn't be either surprising or exciting. In fact it should be boring. It should just be there available to use.  It's like the street I drive down. Structural engineers may get excited about streets and bridges but most people who use them and don't think about them. Date routing should be like streets. Almost taken for granted and usually available when you need them.
+3. Data routing shouldn't be either surprising or exciting. **Data routing should be boring.** It should be boring in the same way people take streets, sidewalks and bridges for granted. They are just there for you to use. Structural engineers and Urban planners may get excited about streets, sidewalks and bridges but that's because they help create them. The rest of us get excited when they are not available. Data routing through web services is just like that.
 
-4. The SQL conundrum is a problem. While database engines like Postgres can suppoert writing functions and procedeures in non-SQL langauges you still need to know and type at least some SQL. I think in part that is why we're still in the complex middleware quagmire. Avoiding messing about with SQL is a feature. On the plus side if your database hands you JSON and you can hand back JSON your middleware doesn't need to know about SQL and you can avoid the cognative overhead embedding SQL into your non-SQL program.
+4. The SQL conundrum is a problem. While database engines like Postgres can support writing functions and procedures in non-SQL languages you still need to know and type at least some SQL. I think in part that is why we're still in the complex middleware quagmire. Avoiding messing about with SQL is a feature. On the plus side if your database hands you JSON and you can hand back JSON your middleware doesn't need to know about SQL and you can avoid the cognitive overhead embedding SQL into your non-SQL program.
 
 ## Addressing the SQL conundrum
 
-> SQL is a problem because embedding SQL causes a cognative shift.[^2]
-
+> SQL is a problem because embedding SQL causes a cognitive shift.[^2]
+> SQL is a problem because it is significantly different from general purpose programming languages
 
 [^2]: The price of that shift is similar to when you inline CSS or JavaScript in HTML.
 
-I see several possible solutions to the SQL problem. Separate your SQL out and avoid embedding it. This has the advantage of highlighting the ability to write SQL to test your SQL results (e.g. for queries and views you can write the results into a in-memory table then check them with simple SQL SELECT statements). 
+In most computer languages we are telling the computer how to do something. This is true even with object oriented languages, e.g. take this object and apply it's method. SQL takes a different approach. The SQL engine is going to do the heavy lifting. Instead we use SQL to express the result we want. In other words the "what" question versus the "how" instructions. When we embed SQL in a procedural or object oriented language we force these two together in close proximity. Newt's approach to take advantage of distance. By using SQL code generation we don't focus on the what at the same time we're focusing on the how. 
 
-Of course you can also try to learn SQL. This is not as bad as some programming language because SQL is itself made of smaller domain specific languages. Three are important to pickup incrementally over time[^3]. SQL is made of several domain specific languages. Here's the ones you are likely need to need in the order you will need them for development purposes.
+I feel comfortable with SQL. I've learned it informally[^3]. I've personally found it challenging when embedding in a general purpose language like Python. This is true even when I've used an ORM. It's a constant tug of war between thinking about Python (the how) then thinking about the SQL (the what I asked for). Typically I've wound up assembling the SQL statements and running them directly in the database to gain insight into unexpected behavior. If the SQL is conditionally constructed then it become harder to figure out exactly when was sent to the SQL engine.
 
-[^3]: I would go so far as saying attempting to learn a SQL dialect all at once is a bad idea.
+[^3]: SQL is built up from smaller domain specific languages. I've only learned each when I needed it.
 
+The result of that experience has convinced me that keeping the SQL separate as SQL is helpful. I can work directly with the database and understand what I'm asking for (e.g. INSERT, SELECT, UPDATE, DELETE). When you do need to embed it using an SQL view can often simplify a complex SQL statement lowering the cognitive overhead.
+
+Two general approaches appear promising to me. Separate your SQL out and don't embedding it. Use a combo like Postgres plus PostgREST to get a JSON API web service. Your middleware doesn't need to include any SQL at all then. It just calls URLs can procedurally processes results. If you can generate the SQL you need in the database because you know you will need to support CRUD-L then that saves time writing SQL to do that.
+
+I'm not advocating avoiding learning SQL. But I am advocating learning as much as you need when you need it. I am also advocating your middleware should be ignorant completely of SQL. Working with human readable generated SQL can afford you the opportunity to learn SQL incrementally. It gives you the opportunity to learn to trust the database[^4] as a partner rather than simply as a place to store things. 
+
+[^4]: I would go so far as saying attempting to learn a SQL dialect all at once is a bad idea.
+
+I have come to think about SQL's domain specific languages as service descriptions.
 
 DDL, data definition language
 : This language describes the data structure of the objects you're going to work with, e.g. table rows and columns. CREATE and ALTER are part of SQL DDL.
@@ -108,29 +117,34 @@ DQL, data query language
 DML, data modification language
 : This is the language you used to create, update and delete objects. e.g. modify rows or columns in a table. INSERT, UPDATE and DELETE are part of the SQL DML.
 
-If you can get comfortable these three domain languages you'll know enough SQL to shift your data modeling focus to the database.
+Thinking of these as services lets me step back and simplify my interactions with our data. The nice thing about this approach is that orchestrating services can be thought of completely procedurally. This how Newt approaches SQL code generation. It can express the services it needs (e.g. create a record, read back some records, update or delete records) because it knows about the model being used. `newtgen` renders models as human readable SQL files (complete with comments). This gives us a change to both test the SQL but also to pick learn it as we explore the generated code.
 
-**Do you still want to avoid SQL?** For those who wish never to touch SQL I offer an alternative. Code generation.
+If your application only requires the basic CRUD-L[^5] then you might be able to skip the SQL completely.
 
-Most applications written to manage metadata have operations falling under the acronym CRUD-L. Create, Read, Upload, Delete and List. That's a good thing.  With a the knowledge of a data model you can calculate the SQL needed for those operations. No AI needed :wink:.
+[^5]: Data operations often fall under the acronym CRUD-L. Create, Read, Upload, Delete and List. That's a good thing. With a the knowledge of a data model you can calculate the SQL needed for those operations. No AI needed :wink:.
 
-Taking a SQL code generation approach, unlike an ORM, let's you avoid dealing with SQL aside from the command to load it in the database[^4]. It has the benefit too of leaving the SQL as an artifact should you need it or change your oppionion of SQL. Code generation lets you avoid thinking about it or even typing it. It doesn't hide it either.
+Taking SQL code generation approach like an ORM let's you postpone thinking about SQL while you're coding in your general purpose language. Code generation, unlike an ORM, let's you avoid the constant cognitive shifts. When you're ready to deal with SQL you focus your time in the database[^6]. Less frequent cognitive shifts makes the task more pleasant.
 
-[^4]: Loading a file of SQL commands, say  "myfile.sql" targetting "mydatabase", is trivial with `psql`. Example: `psql mydatabase <myfile.sql`.
+[^6]: Loading a file of SQL commands, say  "myfile.sql" targeting "mydatabase", is trivial with `psql`. Example: `psql mydatabase <myfile.sql`.
 
-Picking Postgres and PostgREST as a target in Newt's data pipeline was deliberate. Setup can be calculated from a configuration file. It relatively easily to load generated SQL or script the setup. It is also possible with other SQL engines but the Postgres+PostgREST really fit the bill nicely.
+It was stumbling on the Postgres+PostgREST combo that remembered data pipelines.  Newt became obvious when I realized that the setup of Postgres+PostgREST could be calculated from a configuration file.  I quickly realized that the combo of Postgres+PostgREST meant any JSON data source code be a first stage in a pipeline. Of course other SQL engines can perform a similar role[^7] but the Postgres+PostgREST really fit the bill nicely for the systems I'm working with.
+
+[^7]: MySQL can be coupled with MySQL REST Service (MRS) to achieve a similar results a Postgres+PostgREST
 
 ## A recent insight
 
-A colleague of mine recently demonstrated an innovative use of GitHub issue templates to trigger GitHub workflows for our library's staff. What impressed me about the demonstration (besides my colleague's cool application) was the YAML used to express what an issue was. After some thinking I realized my original YAML for Newt could be suplanted by GitHub YAML issue template syntax. This would simplify documenting and teaching Newt configuration.
+A colleague of mine recently demonstrated an innovative use of GitHub issue templates to trigger GitHub workflows for our library's staff. What impressed me about the demonstration (besides my colleague's cool application) was the YAML used to express what an issue was. After some thinking I realized my original YAML for Newt could be supplanted by GitHub YAML issue template syntax. This would simplify documenting and teaching Newt configuration.
 
-GitHub YAML issue templates (abbr: GHYT) describes the data model of an type type. It does this in large part by pointing out elements you'd expected in an HTML web form. HTML input elements already suggest a mapping to SQL data types.  E.g. a plain `input` element is a string -> varchar. `textarea` maps to a `text` data type. An HTML5 data element expressed `input[type=date]` maps to a SQL date type. This isn't accidental. HTML web forms we designed to make it easier to get data into a database. If a table row is analogous to an object and an input element is analogous to a column I have a clear mapping for generating SQL without resorting to the developer knowing SQL data types. If we take an additional step forward and require JSON column support in our SQL database (MySQL, Postgres and SQLite have for the last decade) and we require the form to use JSON encoding then even elements like checkbox or select lists can be easily to send over the wire.
+GitHub YAML issue templates syntax (abbr: GHYTS) describes the data model used by GitHub issues. It does this by describing the elements you'd expected in an HTML web form. My realization was I could cut the weight of my original YAML syntax considerable by letting a description of HTML input elements infer a mapping to Postgres SQL types.  E.g. a plain `input` element is a `string` -> `varchar`. A `textarea` maps to a `text` data type. An HTML5 data element expressed `input[type=date]` maps to a SQL date type. This isn't accidental. HTML web forms were designed to make it easier to get data into a database. If a table row is analogous to an object and an input element is analogous to a column I have a clear mapping for generating SQL without resorting to the developer knowing SQL data types. If we take an additional step forward and require JSON column support in our SQL database (MySQL, Postgres and SQLite have for the last decade) and we require the form to use JSON encoding then even elements like checkbox or select lists become easily to send over the wire and can have simpler expressions in SQL.
 
-By extrapolation web components can be expressed as JSON objects. This allows Newt to be enriched with data types specific to libraries, archives and museums. A cororlary is the objects stored as a JSON column can be expressed as web components. Since composing a web component take effort it makes sense for Newt to include the common cases used in libraries, archives and museums.
+By extrapolation web components can be expressed as JSON objects. This allows Newt to be enriched with data types specific to libraries, archives and museums. A corollary is the objects stored as a JSON column can be expressed as web components. Write a web component take effort. The duplication of effort can be reduced if Newt to includes the common cases used in libraries, archives and museums.
 
 ## What's next?
 
-The second prototype for Newt is focusing and developing an improved YAML syntax. The plan is to used [CITATION.cff](https://citation-file-format.github.io/) for application metadata while using GHYT for models and GHYT input types to describe route variables.  These changes also come with renewed focus on code generation targeting SQL for Postgres+PostgREST, Mustache templates for `newtmustache` web service and HTML elements for web forms and display.
+The second prototype for Newt is focusing and developing an improved YAML syntax. The plan is to used [CITATION.cff](https://citation-file-format.github.io/) for application metadata while using GHYTS for models and GHYTS input types to describe route variables.  These changes also come with renewed focus on code generation targeting SQL for Postgres+PostgREST, Mustache templates for `newtmustache` web service and HTML elements for web forms and display.
 
-The simpler YAML reusing existing YAML domain syntaxes along with code generation should ease or remove burden of writing middleware.
+The simpler YAML reusing existing YAML domain syntax along with code generation should ease or remove burden of writing middleware.
+
+A future prototype may include web components used to represent common types of data, e.g. author lists, common identifiers (e.g. DOI, arXiv, ORCID, ROR). This could simply the templates generated by Newt while also encouraging an ecosystem of share web objects among the LAS community.
+
 
