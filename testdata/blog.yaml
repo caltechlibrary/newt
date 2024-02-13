@@ -1,4 +1,61 @@
-port: 4040
-route_file: testdata/blog_routes.csv
-htdocs: testdata/htdocs
-env: [ "DB_USER", "DB_PASSWORD" ]
+#
+# This YAML describes the public view of a blog build using Newt.
+application:
+  port: 4040
+  htdocs: testdata/htdocs
+  environment:
+    - DB_USER
+    - DB_PASSWORD
+routes:
+  - id: retrieve_all_posts
+    description: This route returns the full blog content
+    pipeline:
+      - description: |
+          Retrieve the blog posts order by descending date
+        service: GET http://localhost:3000/rpc/view_all_posts
+        content_type: application/json
+      - description: render the posts using the list_posts.tmpl
+        service: POST http://localhost:3032/list_posts.tmpl
+        content_type: application/json
+  - id: retrieve_year posts
+    description: This route retrieves all the posts in a specific year
+    pipeline:
+      - description: Retrieve the posts for a specific year
+        service: GET http://localhost:3000/rpc/year_posts/${year}
+        content_type: application/json
+      - description: Turn the JSON list into a web page.
+        service: POST http://localhost:3032/list_posts.tmpl
+        content_type: application/json
+  - id: retrieve_month_posts
+    description: This route retrieves all the posts in a specific year/month
+    pipeline:
+      - description: Retrieve the posts in the DB for year/month
+        service: GET http://localhost:3000/rpc/month_posts/${year}/${month}
+        content_type: application/json
+      - description: Transform monthly list into web page
+        service: POST http://localhost:3032/list_posts.tmpl
+        content_type: application/json
+  - id: retrieve_day_posts
+    description: Retrieve all the posts on a specific day
+    pipeline:
+      - description: Retrieve the posts happending on year/month/day
+        service: GET http://localhost:3000/rpc/day_posts/${year}/${month}
+        content_type: application/json
+  - id: retrieve_recent_posts
+    description: This route retrieves the recent 10 posts.
+    pipeline:
+      - description: Use the recent_post view to retrieve the recent posts in descending date order
+        service: GET http://localhost:3000/rpc/recent_posts
+        content_type: application/json
+      - description: Take the JSON for recent posts and turn it into a web page
+        service: GET http://localhost:3032/list_posts.tmpl
+        content_type: application/json
+  - id: retrieve_a_post
+    description: Retrieve a specific host and display it
+    pipeline:
+      - description: retrieve the requested post from the blog path
+        service: GET http://localhost:3000/${yr}/${mo}/${title-slug}
+        content_type: application/json
+      - description: Turn the JSON into a web page
+        service: GET http://localhost:3032/blog_post.tmpl
+        content_type: application

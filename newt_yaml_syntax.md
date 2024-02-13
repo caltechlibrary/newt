@@ -29,6 +29,11 @@ metadata
 environment
 : (optional) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
+There is a fifth special attribute in application that can be used in place of `.metadata`. If you maitnain a CITATION.cff file you can point to it to avoid maintaining it in two places. When `newt` is started up it will copy the contents into the `.metadata` property.
+
+citation
+: (optional) This points at an file (e.g. CITATION.cff). It is used to populate the metadata property at startup
+
 ## the "routes" property
 
 Routes hosts a list of request descriptions and their data pipelines
@@ -85,7 +90,7 @@ id
 : (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^1]
 
 routing
-: (required, newt specific) this holds a list of route ids associated with this model. It is use in code generation, e.g. to populate a web form's action and model
+: (optional, newt specific) this holds a list of route ids associated with this model. It is use in code generation, e.g. to populate a web form's action and model
 
 The following properties are based on the GitHub YAML issue template syntax[^2] (abbr: GHYTS)
 
@@ -224,91 +229,54 @@ routes:
     description: Create new person profile
     request: POST /person
     pipeline:
-      - type: json_api
-        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
-        method: POST
+      - description: This will generate a new user in the database
+        service: POST "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
         content_type: application/json
-        description: This will generate a new user in the database
-        variables:
-          - people.people_id
-          - people.family_name
-          - people.given_name
-          - people.display_name
-          - people.orcid
-          - people.ror
-          - people.email
-          - people.website
-      - type: template_engine
-        url: http://localhost:3030
-        method: POST
-        content_type: application/json
-        description: |
+      - description: |
           This sends the results of creating a person to the template engine
+        service: POST http://localhost:3032/people_update_result.tmpl
+        content_type: application/json
   - id: read_person
     desciption: Update a person's profile
     request: "GET /person/{{people.people_id}}"
     pipeline:
-      - type: json_api
-        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/person/{{people.people_id}}"
-        method: POST
+      - description: Retrieve a person's profile
+        service: POST "https://{{DB_USER}}@{{DB_HOST}}:3000/person/{{people.people_id}}"
         content_type: application/json
-        description: Retrieve a person's profile
-      - type: template_engine
-        url: http:localhost:3030
-        method: POST
-        content_type: application/json
-        template: templates/profile.tmpl
-        description: |
+      - description: |
           Render a person's profile
+        service: POST http:localhost:3032/profile.tmpl
+        content_type: application/json
   - id: update_person
     description: Update person's profile
     request: "PUT /person/{{people.people_id}}"
     pipeline:
-        - type: json_api
-          url: "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
-          method: PUT
-          content_type: application/json
-          description: This will update a person record in the database
-          variables:
-            - people_id
-            - family_name
-            - given_name
-            - display_name
-            - orcid
-            - ror
-            - email
-            - website
-        - type: template_engine
-          url: http://localhost:3030
-          method: POST
-          content_type: application/json
-          description: |
-            This sends the results of updating a person to the template engine
+      - description: This will update a person record in the database
+        service: PUT "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
+        content_type: application/json
+      - description: |
+          This sends the results of updating a person to the template engine
+        service: POST http://localhost:3032/people_update_result.tmpl
+        content_type: application/json
   - id: delete_person
     description: Remove person's profile
     request: "DELETE /person/{{people.people_id}}"
     pipeline:
-      - type: json_api
-        url: "https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}"
-        method: DELETE
+      - description: Remove the person for the database
+        service: DELETE "https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}"
         content_type: application/json
-        description: Remove the person for the database
-      - type: static
-        path: removed_person.html?people_id={{people.people_id}}
+      - description: Displace the result of what happed in the removal
+        service: POST http://localhost:3032/removed_person.tmpl
   - id: list_people
     description: List people profiles available
     request: GET /people
     pipeline:
-      - type: json_api
-        url: https://{{DB_HOST}}@{{DB_HOST}}:3000/people
-        method: GET
+      - description: Retrieve a list of all people profiles available
+        service: GET https://{{DB_HOST}}@{{DB_HOST}}:3000/people
         content_type: application/json
-        description: Retrieve a list of all people profiles available
-      - type: template_engine
-        url: http://localhost:3030
-        method: POST
+      - discription: format a browsable people list linking to individual profiles
+        service: POST http://localhost:3030/list_people.tmpl
         content_type: applicatin/json
-        discription: format a browsable people list linking to individual profiles
 ```
 
 

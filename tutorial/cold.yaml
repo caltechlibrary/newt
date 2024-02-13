@@ -1,75 +1,204 @@
 #
 # cold.yaml defines the controlled object list and datum application
 # from the perspective of Newt, a data route and form validator that
-# relies on Postgres+PostgREST and Pandoc server for completing the microservice
-# trio that is cold.
+# relies on Postgres+PostgREST and template server for completing the 
+# a web service trio that forms cold.
 # 
 # @author: R. S. Doiel <rsdoiel@caltech.edu>
 #
-namespace: cold
+application:
+  port: 8011
+  citation: CITATION.cff
+  environemnt:
+    - DB_USER
+    - DB_PASSWORD
+    - DB_HOST
 models:
-- model: cold.cl_person
-  var:
-    cl_people_id: String*
-    family_name: String
-    given_name: String
-    orcid: ORCID
-    author_id: String
-    directory_id: String
-    caltech: Boolean
-    status: Boolean
-    direcotry_person_type: String
-    division: String
-    updated: Date 2006-01-02
-    ror: ROR
-- model: cold.cl_group
-  var:
-    cl_group_id: String*
-    name: String
-# FIXME: This should be an array of string but currently in CSV is a semi-colon delimited list
-    alternative: String
-    updated: Timestamp
-# Date group was added to Group List
-    date: Date 2006-01-02
-    email: EMail
-    website: URL
-    description: Text
-    start: String
+  - id: cl_person
+    name: Caltech Person
+    description: This models a Caltech Person
+    body:
+      - id: cl_people_id
+        description: cl_people_id is an internal Caltech Library id
+        type: input
+        validation:
+          primary_key: true
+          required: true
+      - id: family_name: String
+        description: This is the person's family name. If they only have one name then it goes here.
+        type: input
+        validation:
+          required: true
+      - id: given_name
+        description: This is a persons given name, it is optional
+        type: input
+      - id: orcid
+        description: A person's ORCID if known
+        type: input
+        validation:
+          regexp: [0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]
+      - id: author_id
+        description: This is a legacy id from the days of CaltechAUTHORS running on Eprints
+        type: input
+      - id: directory_id
+        description: This is the "userid" as listed in the Caltech directory metadata
+        type: input[type=email]
+      - id: relationships
+        description: This is a set of statuses establishing their relationship in Caltech People
+        type: checkboxes
+        label: Check the checkboxes that apply to the person
+        options:
+          - label: Caltech
+          - label: Alumni
+          - label: Facutly
+          - label: Researcher
+          - label: Postdoc
+          - label: Include in Feeds
+      - id: direcotry_person_type
+        description: The person type harvested from the Caltech Directory
+        type: input
+      - id: division
+        description: The Caltech Division the person is affaliated with
+        type: dropdown
+        label: Pick the division the person is currently affiliated
+        multiple: true
+        options:
+          - Biology and Biological Engineering
+          - Chemestry and Chemical Engineering
+          - Engineering and Applied Science
+          - Geological and Planetary Sciences
+          - Humanities and Social Sciences
+          - Physics, Mathematics and Astronomy
+       - id: updated
+         description: Date profile was updated
+         type: input[type=date]
+         validations:
+# NOTE: timestamps happen server side via SQL automation, they don't appear in web forms but can appear to display templates
+           timestamp:
+             - create
+             - update
+       - id: ror
+         description: A ROR for Caltech or Caltech Group
+         type: input
+         validation:
+           udutils: ROR
+  - id: cl_group
+    description: Models a Caltech Group, Organization or Lab
+    name: Caltech Group
+    body:
+      - id: cl_group_id
+        description: An internal Caltech Library group identifier
+        type: input
+        validations:
+          required: true
+      - id: name
+        description: This group's name. Avoid ampersands.
+        type: input
+        validations:
+          required: true
+      - id: alternatives
+        description: A list of alternative names, one per line
+        type: textarea
+      - id: email
+        description: A public email address for group
+        type: input[type=email]
+      - id: website
+        description: Group's public website
+        type: input[type=url]
+      - id: description
+        description: The description of the group or organization
+        type: textarea
+      - id: start
+        description: Approximate start date, e.g. YYYY, YYYY/MM, YYYY/MM/DD, circa ...
+        type: input
+        placeholder: ex. 1924, 2023-03, 2023-03-10, circa 2001
 # approx_starts indicates if the "start" is an approximate (true) or exact (false)
-    approx_start: Boolean
-# activity is a string value holding either "active" or "inactive"  
-    activity: String
-    end: String
-# approx_end indicates if the "start" is an approximate (true) or exact (false)
-    approx_end: Boolean
-    pi: String
-    parent: String
-# prefix holds the DOI prefix associated with the group
-    prefix: String
-    grid: String
-    isni: ISNI
-    ringold: String
-    viaf: String
-    ror: ROR
+      - id: approx_start
+        type: checkboxes
+        options:
+          - label: Approximate Date
+      - id: end
+        description: Approximate end date, e.g. YYYY, YYYY/MM, YYYY/MM/DD, cira ...
+        type: input
+        placeholder: ex. 1924, 2023-03, 2023-03-10, circa 2001
+      - id: approx_end
+        type: checkboxes
+        options:
+          - label: Approximage Date
+      - id: active
+        description: Active statatus
+        type: checkboxes
+        options:
+         - label: Check if active
+      - id: doi_prefix
+        description: DOI prefix used by group
+        type: input
+        validations:
+          idutils: doi
+      - id: grid
+        description: Grid ID for group (Deminensions API)
+        type: input
+        validatoins:
+          idutils: grid
+      - id: isni
+        description: ISNI (Name identifier)
+        type: input
+        validations:
+          idutils: isni
+      - id: ringold
+        dscription: Ringold Identifier
+        type: input
+        validations:
+          idutils: ringold
+      - id: viaf
+        description: VIAF identifier
+        validations:
+          idutils: viaf
+      - id: ROR
+        description: ROR identifier used by group
+        type: input
+        validations:
+          idutils: ror
+       - id: added
+         description: Date group was added to COLD
+         type: input[type=date]
+         valdations:
+# NOTE: timestamps happen server side via SQL automation, they don't appear in web forms but can appear to display templates
+           timestamp:
+             - created
+       - id: updated
+         description: Date group profile was updated
+         type: input[type=date]
+         validations:
+# NOTE: timestamps happen server side via SQL automation, they don't appear in web forms but can appear to display templates
+           timestamp:
+             - create
+             - update
 #
 # Controlled vocabulary models, these are mostly key/value pairs
 #
-- model: cold.cl_vocabulary
-  var:
-    voc_id: Integer*
-    namespace: String
-    key: String
-    value: String
-- model: cold.cl_vocabulary_description
-  var:
-    namespace: String*
-    description: Text
+  - id: cl_vocabulary
+    description: This models controlled vocabulary items
+    body:
+      - id: voc_id
+        description: The identifier for the vocabularyfile
+        type: input
+      - id: namespace
+        description: An identifier for the namespace assocaited with voc_id
+        type: input
+      - id: key
+        description: A vocabulary items key
+        type: input
+      - id: value
+        description: A vocabulary items value
+      - id: description
+        description: A vocabulary item description
+        input: textarea
+
 #
+#FIXME: Convert these routes into Newt 2nd Prototype YAML syntax
 #
-# cold service web configuration 
-#
-port: 8000
-htdocs: htdocs
+
 #
 # cold routes, static content routes are noted only in comments. Dynamic
 # ones are notated for orchestration by Newt
