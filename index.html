@@ -160,7 +160,7 @@ their own right</li>
 <h2 id="this-missing-bits">This missing bits</h2>
 <p>With the only the above list can already build capable applications
 that run inside the web browser. The cost, JavaScript is required to
-render everything. Relying on JavaScript to assemble out content in the
+render everything. Relying on JavaScript to assemble our content in the
 web browser is a horrible idea<a href="#fn6" class="footnote-ref"
 id="fnref6" role="doc-noteref"><sup>6</sup></a>. A better approach is
 for the web browser to make a minimum number of requests to a single web
@@ -189,18 +189,19 @@ when generate a SQL statement to interact with the database. Those
 functions that did it all are complex by necessity. When we narrowly
 focus a function and allow other layers of the system to handle most of
 the complexity our functions can be simpler. That was the motivation and
-many libraries and frameworks the proliferated in the languages used to
-write middleware. What was missing was an adjustment of our assumptions.
-Middleware doesn’t need to do allot of those things any more. What if a
-web service specialized in being the glue? We configured the web service
-and delegate away the responsibility of our middleware.</p>
+many software libraries and frameworks that proliferated among the many
+languages used to write middleware. What was missing was an adjustment
+of our assumptions. Middleware doesn’t need to do allot of those things
+any more. What if a web service specialized in being the glue is there a
+path to simplification? Can we configured the web service and delegate
+away the responsibility of our middleware?</p>
 <p>Here’s the new baseline I think we should consider. Web services talk
 to other web services all the time. This isn’t new or exotic it has
 become a traditional web development practice. Let’s take advantage of
 that. What if we align access control with our front end web server or
 in the database that can express itself as a JSON API? What if we could
 treat the response from one web service as the input of another creating
-pipe lines for web data? What if putting together pipelines was as easy
+pipelines for web data? What if putting together pipelines was as easy
 as hosting static web content? I think the answer is “yes we can” to all
 these propositions.</p>
 <p>Newt provides a simple web service that takes a YAML file and pairs
@@ -299,10 +300,10 @@ this mean?</p>
 <p>In principle a Newt based application can scale as wide as needed as
 long as each element in the pipeline(s) can also scale.</p>
 <p>In our example Postgres can be configured as a
-<abbr title="high availability">HA</abbre> cluster. PostgREST, Pandoc
-server, Newt’s mustache engine all are stateless and be run in parallel.
-You can scale as large us Postgres can be scaled by adding more
-instances of the stateless services.</p>
+<abbr title="high availability">HA</abbr> cluster. PostgREST, Pandoc
+server, Newt’s mustache engine all are stateless and can be run in
+parallel. You can scale as large us Postgres can be scaled by adding
+more instances of the stateless services.</p>
 <p>While my intention with Newt is targeting the small it should scale
 up to meet high volume demands.</p>
 <h3 id="anatomy-of-a-newt-based-web-application">Anatomy of a Newt based
@@ -318,8 +319,7 @@ added. A typical disk layout of a Newt project could look like this-</p>
 by your web application</li>
 <li><code>*.sql</code> these are the SQL files used by your application
 to define your models and behaviors in Postgres</li>
-<li><code>*.tmpl</code> template files for either Pandoc or Mustache
-template engines</li>
+<li><code>templates</code> a template holding your template pages</li>
 <li><code>newt.yaml</code> would hold the a Newt configuration file
 (this is an example name for the configuration file, you can name it
 whatever you like)</li>
@@ -329,7 +329,7 @@ metadata</li>
 </ul>
 <blockquote>
 <p>Newt, a type of salamander, doesn’t seek attention. It does its own
-thing. You only notice a salamander if you look carefully.</p>
+thing. You only notice it if you look carefully.</p>
 </blockquote>
 <h2 id="about-the-newt-source-repository">About the Newt source
 repository</h2>

@@ -75,17 +75,17 @@ A big key to simplification is realizing that the middleware no longer needs to 
 
 ## This missing bits
 
-With the only the above list can already build capable applications that run inside the web browser. The cost,  JavaScript is required to render everything. Relying on JavaScript to assemble out content in the web browser is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a single web service and get back useful results without having to process more than HTML and CSS. 
+With the only the above list can already build capable applications that run inside the web browser. The cost,  JavaScript is required to render everything. Relying on JavaScript to assemble our content in the web browser is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a single web service and get back useful results without having to process more than HTML and CSS. 
 
 Taking the better approach in the past has required the writing of more middleware. I think we can avoid that or at least avoid complex middleware.
 
 For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" describes the URL path and HTTP method used to make a web request (e.g. your web browser requesting to view an HTML page). The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^6]. The collection of routes and their functions compose the API your browser uses to navigate through your application. 
 
-There is no requirement for the functions to be simple or complex. It depends on the task they are solving. Historically before single sign-on systems became common the function handling the request was responsible for the whole transaction. It needed to hand access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database's security. This was especially true when generate a SQL statement to interact with the database. Those functions that did it all are complex by necessity.  When we narrowly focus a function and allow other layers of the system to handle most of the complexity our functions can be simpler.  That was the motivation and many libraries and frameworks the proliferated in the languages used to write middleware. What was missing was an adjustment of our assumptions. Middleware doesn't need to do allot of those things any more. What if a web service specialized in being the glue? We configured the web service and delegate away the responsibility of our middleware.
+There is no requirement for the functions to be simple or complex. It depends on the task they are solving. Historically before single sign-on systems became common the function handling the request was responsible for the whole transaction. It needed to hand access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database's security. This was especially true when generate a SQL statement to interact with the database. Those functions that did it all are complex by necessity.  When we narrowly focus a function and allow other layers of the system to handle most of the complexity our functions can be simpler.  That was the motivation and many software libraries and frameworks that proliferated among the many languages used to write middleware. What was missing was an adjustment of our assumptions. Middleware doesn't need to do allot of those things any more. What if a web service specialized in being the glue is there a path to simplification? Can we configured the web service and delegate away the responsibility of our middleware?
 
 [^6]: That functionality is traditionally called a "handler" or "route handler".
 
-Here's the new baseline I think we should consider. Web services talk to other web services all the time. This isn't new or exotic it has become a traditional web development practice. Let's take advantage of that. What if we align access control with our front end web server or in the database that can express itself as a JSON API? What if we could treat the response from one web service as the input of another creating pipe lines for web data? What if putting together pipelines was as easy as hosting static web content? I think the answer is "yes we can" to all these propositions.
+Here's the new baseline I think we should consider. Web services talk to other web services all the time. This isn't new or exotic it has become a traditional web development practice. Let's take advantage of that. What if we align access control with our front end web server or in the database that can express itself as a JSON API? What if we could treat the response from one web service as the input of another creating pipelines for web data? What if putting together pipelines was as easy as hosting static web content? I think the answer is "yes we can" to all these propositions.
 
 Newt provides a simple web service that takes a YAML file and pairs the requests it receives with a data pipeline. The last stage of the pipeline executed is returned to the web browser. If there is a failure in the pipeline then an appropriate error is returned to the requesting web browser. Additionally Newt's web service can provide basic data validation by using its knowledge of the data models expressed as YAML.  Newt's code generator uses the same YAML to generate the SQL, templates and HTML needed to form a basic human user interface. There isn't much middleware left to write using this approach. If you do write middleware it can be narrowly focused to a specific stage of your pipelines and hopefully much simpler than the code you used to write.
 
@@ -129,7 +129,7 @@ If you need to integrate a Newt application with an external service (e.g. Cross
 
 In principle a Newt based application can scale as wide as needed as long as each element in the pipeline(s) can also scale.
 
-In our example Postgres can be configured as a <abbr title="high availability">HA</abbre> cluster. PostgREST, Pandoc server, Newt's mustache engine all are stateless and be run in parallel. You can scale as large us Postgres can be scaled by adding more instances of the stateless services.
+In our example Postgres can be configured as a <abbr title="high availability">HA</abbr> cluster. PostgREST, Pandoc server, Newt's mustache engine all are stateless and can be run in parallel. You can scale as large us Postgres can be scaled by adding more instances of the stateless services.
 
 While my intention with Newt is targeting the small it should scale up to meet high volume demands.
 
@@ -140,11 +140,11 @@ Newt application development is friendly to version control systems (e.g. Git). 
 - `/` project folder
   - `htdocs` this directory holds your static content needed by your web application
   - `*.sql` these are the SQL files used by your application to define your models and behaviors in Postgres
-  - `*.tmpl` template files for either Pandoc or Mustache template engines
+  - `templates` a template holding your template pages
   - `newt.yaml` would hold the a Newt configuration file (this is an example name for the configuration file, you can name it whatever you like)
   - `CITATION.cff` and `codemeta.json` for project metadata
 
-> Newt, a type of salamander, doesn't seek attention. It does its own thing. You only notice a salamander if you look carefully.
+> Newt, a type of salamander, doesn't seek attention. It does its own thing. You only notice it if you look carefully.
 
 ## About the Newt source repository
 
