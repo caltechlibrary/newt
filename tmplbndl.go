@@ -110,7 +110,7 @@ func (b *Bundle) Handler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("DEBUG obj now -> %+v\n", obj)
 	}
 	// Add our resolved template source
-	obj["template"] = b.Src
+	obj["template"] = fmt.Sprintf("%s", b.Src)
 	// Add our `.text` value from the request body
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -163,7 +163,6 @@ func (b *Bundle) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(src)
-	fmt.Fprintf(w, "%s", src)
 }
 
 // PatternKeys parses a pattern and returns a list of keys found.
@@ -220,19 +219,8 @@ func NewLogger(handlerToWrap http.Handler) *Logger {
 
 func (tb *TemplateBundler) ListenAndServe() error {
 	mux := http.NewServeMux()
-	mux.HandleFunc(`GET /hello/{name...}`, func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("DEBUG I'm in /hello/{name...}, %q %q", r.Method, r.URL.Path)
-		name := r.PathValue("name")
-		log.Printf("DEBUG Retreived the name element -> %q", name)
-		io.WriteString(w, fmt.Sprintf("\n\nHello %q! wink wink, say no more.\n\n", name))
-	})
-	mux.HandleFunc(`/hello`, func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("DEBUG I'm in /hello, %q %q", r.Method, r.URL.Path)
-		io.WriteString(w, "\n\nHello World!\n\n")
-	})
 	for _, bndl := range tb.Templates {
 		mux.HandleFunc(bndl.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("%s %s DEBUG I am in the mux handler", r.Method, r.URL.Path)
 			if bndl.Debug {
 				log.Printf("DEBUG mux.HandleFunc(%q, bndl.Handler)", bndl.Pattern)
 				log.Printf("DEBUG .vars -> %+v", bndl.Vars)

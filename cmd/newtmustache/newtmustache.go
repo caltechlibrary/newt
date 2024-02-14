@@ -7,7 +7,7 @@ import (
 	"path"
 
 	// Caltech Library Packages
-	"github.com/rsdoiel/newt"
+	"github.com/caltechlibrary/newt"
 )
 
 var (

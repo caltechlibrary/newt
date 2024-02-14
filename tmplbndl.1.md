@@ -1,5 +1,5 @@
 ---
-title: "tmplbndl(1) user manual | 0.0.6 3b0b6fd"
+title: "tmplbndl(1) user manual | 0.0.6 dd7a886"
 pubDate: 2024-02-13
 author: "R. S. Doiel"
 ---

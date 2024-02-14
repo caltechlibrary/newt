@@ -1,0 +1,57 @@
+port: 3029
+templates:
+  - request: POST /hello
+    template: hello.md.tmpl
+    options:
+      from: markdown
+      to: markdown
+      standalone: false
+    debug: true
+  - request: POST /hello/{name}
+    template: hello.md.tmpl
+    options:
+      from: markdown
+      to: markdown
+    debug: true
+  - request: "POST /custom_page"
+    template: page.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This is the custom template with this title
+    debug: true
+  - request: "POST /custom_page_with_title/{title}"
+    template: page.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This title is overwritten by the one in the request
+    debug: true
+  - request: "POST /custom_page_include"
+    template: page.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: false
+    debug: true
+  - request: "POST /default_html5"
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: A Page using the default template
+    debug: true
+  - request: "POST /default_html5_with_title/{title}"
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This title is replaced by the title in the URL
+  - request: "POST /default_html5_include"
+    options:
+      from: markdown
+      to: html5
+      standalone: false
+    debug: true
