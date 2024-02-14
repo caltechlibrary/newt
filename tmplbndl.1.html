@@ -37,9 +37,9 @@ web service to process.</p>
 <p>In the first Newt prototype Pandoc web service integrated into
 <code>newt</code>. In the second Newt prototype the <code>newt</code>
 web service is more generalized and has adopted a pipeline approach.
-There is no assumptions tie to a particular template engine. This means
-the output from Solr or Postgres+PostgREST needs to be transformed into
-a new JSON Object to be able to use Pandoc web service.
+There are no assumptions tieing it to a particular template engine. This
+means the output from Solr or Postgres+PostgREST needs to be transformed
+into a new JSON Object to be able to use Pandoc web service.
 <code>tmplbndl</code>’s job is to sit in the pipeline between a JSON
 data source and Pandoc web service.</p>
 <p><code>tmplbndl</code> is a web service configured from a YAML file.
@@ -58,11 +58,11 @@ source</li>
 <ol type="1">
 <li><code>tmplbndl</code> receives a request in the form of a HTTP
 method and URL</li>
-<li>It checks it mappings for a matching request, if not found a 404 is
-returned</li>
-<li>Takes the matched request, and builds an object setting the values
-of <code>.text</code> and <code>.template</code> accordingly. If there
-are embeded variables in the pattern then those are mapped into the
+<li>It checks it handlers for a match. If none are found a 404 is
+returned.</li>
+<li>With a matched request, it builds an object setting the values of
+<code>.text</code> and <code>.template</code> accordingly. If there are
+embeded variables in the pattern then those are mapped into the
 resulting object as well.</li>
 </ol>
 <h3 id="features">Features</h3>
