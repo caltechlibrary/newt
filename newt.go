@@ -142,8 +142,8 @@ func Load(configFName string) (*Config, error) {
 	return cfg, nil
 }
 
-// RunPostgreSQL is a runner for generating SQL from a Newt YAML file.
-func RunPostgreSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, pgSetupSQL bool, pgModelsSQL bool, pgModelsTestSQL bool) int {
+// RunPostgresSQL is a runner for generating SQL from a Newt YAML file.
+func RunPostgresSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, pgSetupSQL bool, pgModelsSQL bool, pgModelsTestSQL bool) int {
 	configFName := ""
 	if len(args) > 0 {
 		configFName = args[0]

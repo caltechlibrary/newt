@@ -215,5 +215,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunPostgreSQL(in, out, eout, args, pgSetupSQL, pgModelsSQL, pgModelsTestSQL))
+	os.Exit(newt.RunPostgresSQL(in, out, eout, args, pgSetupSQL, pgModelsSQL, pgModelsTestSQL))
 }

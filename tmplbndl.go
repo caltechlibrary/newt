@@ -258,7 +258,7 @@ func (tb *TemplateBundler) ListenAndServe() error {
 	return nil
 }
 
-// RunTemplateBundler is a runner for tmplbnd a service that perpares a JSON object
+// RunTemplateBundler is a runner for tmplbndl a service that perpares a JSON object
 // for submission to a service like the Pandoc web service.
 func RunTemplateBundler(in io.Reader, out io.Writer, eout io.Writer, args []string, port int) int {
 	const (
