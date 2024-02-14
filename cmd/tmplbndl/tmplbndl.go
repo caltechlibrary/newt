@@ -29,7 +29,7 @@ author: "R. S. Doiel"
 
 `+"`"+`tmplbndl`+"`"+` is web service that takes a JSON object and bundles it for use with a Pandoc's web service. It requires a configuration file that maps requests to a template and any other options. When the `+"`"+`tmplbndl`+"`"+` web service is running it accepts a request object, processes and returns a HTTP response. If an error is encounter than the response is an HTTP error response. If no error is encounterd then a JSON object is assembled suitable for Pandoc web service to process.
 
-In the first Newt prototype Pandoc web service integrated into `+"`"+`newt`+"`"+`. In the second Newt prototype the `+"`"+`newt`+"`"+` web service is more generalized and has adopted a pipeline approach. There is no assumptions tie to a particular template engine. This means the output from Solr or Postgres+PostgREST needs to be transformed into a new JSON Object to be able to use Pandoc web service. `+"`"+`tmplbndl`+"`"+`'s job is to sit in the pipeline between a JSON data source and Pandoc web service.
+In the first Newt prototype Pandoc web service integrated into `+"`"+`newt`+"`"+`. In the second Newt prototype the `+"`"+`newt`+"`"+` web service is more generalized and has adopted a pipeline approach. There are no assumptions tieing it to a particular template engine. This means the output from Solr or Postgres+PostgREST needs to be transformed into a new JSON Object to be able to use Pandoc web service. `+"`"+`tmplbndl`+"`"+`'s job is to sit in the pipeline between a JSON data source and Pandoc web service.
 
 `+"`"+`tmplbndl`+"`"+` is a web service configured from a YAML file. It has a syntax specific to its purposes. While `+"`"+`tmplbndl`+"`"+` is focused on producing a JSON object for requests to Pandoc web server it also services as an example for other types of bundlers.
 
@@ -43,8 +43,8 @@ Basic idea.
 When the web service is active 
 
 1. `+"`"+`tmplbndl`+"`"+` receives a request in the form of a HTTP method and URL
-2. It checks it mappings for a matching request, if not found a 404 is returned
-3. Takes the matched request, and builds an object setting the values of `+"`"+`.text`+"`"+` and `+"`"+`.template`+"`"+` accordingly. If there are embeded variables in the pattern then those are mapped into the resulting object as well.
+2. It checks it handlers for a match. If none are found a 404 is returned.
+3. With a matched request, it builds an object setting the values of `+"`"+`.text`+"`"+` and `+"`"+`.template`+"`"+` accordingly. If there are embeded variables in the pattern then those are mapped into the resulting object as well.
 
 ### Features
 
