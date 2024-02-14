@@ -6,6 +6,7 @@
   - [Newt Router](newt.1.md)
   - [Newt Generator](newtgen.1.md)
   - [Newt Template Engine](newtmustache.1.md)
+  - [Templete Bundler](tmplbndl.1.md)
 - Presentations, background and examples
   - [Newt Mustache Explained](newtmustache_explained.md), Feb 12, 2024
   - [Data routing and the pipeline](newt_router.md), Feb 12, 2024
