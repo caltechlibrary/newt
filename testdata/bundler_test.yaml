@@ -1,0 +1,39 @@
+port: 3029
+templates:
+  - request: "POST /custom_page"
+    template: page.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This is the custom template with this title
+  - request: "POST /custom_page_with_title/{title}"
+    template: page.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This title is overwritten by the one in the request
+  - request: "POST /custom_page_include"
+    template: page.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: false
+  - request: "POST /default_html5"
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: A Page using the default template
+  - request: "POST /default_html5_with_title/{title}"
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This title is replaced by the title in the URL
+  - request: "POST /default_html5_include"
+    options:
+      from: markdown
+      to: html5
+      standalone: false

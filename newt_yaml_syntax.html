@@ -46,7 +46,8 @@ engine sequence)
 </dl>
 <h2 id="the-application-property">the “application” property</h2>
 <p>The application property itself has four properties. All are
-optional.</p>
+optional. They also can be specified on the command line of
+<code>newt</code> and <code>newtgen</code></p>
 <dl>
 <dt>port</dt>
 <dd>
@@ -71,7 +72,7 @@ need in the pipeline
 </dd>
 </dl>
 <p>There is a fifth special attribute in application that can be used in
-place of <code>.metadata</code>. If you maitnain a CITATION.cff file you
+place of <code>.metadata</code>. If you maintain a CITATION.cff file you
 can point to it to avoid maintaining it in two places. When
 <code>newt</code> is started up it will copy the contents into the
 <code>.metadata</code> property.</p>
@@ -100,10 +101,23 @@ role="doc-noteref"><sup>1</sup></a>
 accomplish in the route. It may be used in comments or by documentation
 generators.
 </dd>
-<dt><code>request</code></dt>
+<dt><code>request [METHOD ][PATH]</code></dt>
 <dd>
 (required) This is a string that expresses the HTTP method and URL path
-to assign to a specific data pipeline
+to assign to a specific data pipeline. If METHOD is not provided it will
+match the request handler will catch all HTTP methods. You can express
+embedded variables in the PATH element using single curl braces. E.g.
+<code>GET /items/{item_id}</code> would make <code>item_id</code>
+available in building your service paths in the pipeline. The pattern
+takes up a whole path segment so <code>/blog/{year}-{month}-{day}</code>
+would not work but <code>/blog/{year}/{month}/{day}</code> would capture
+the individual elements. For the details on how Go 1.22 and above
+request handlers and patterns form see See <a
+href="https://tip.golang.org/doc/go1.22#enhanced_routing_patterns"
+class="uri">https://tip.golang.org/doc/go1.22#enhanced_routing_patterns</a>
+and <a href="https://pkg.go.dev/net/http#hdr-Patterns"
+class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a> for
+explanations.
 </dd>
 <dt><code>pipeline</code></dt>
 <dd>
@@ -116,11 +130,6 @@ are returned as a response to the request
 (optional) this points to a static page that can be displayed when the
 pipeline fails (e.g. like a 404 page used by web servers)
 </dd>
-<dt><code>variables</code></dt>
-<dd>
-(optional) this is a key-value list of input types that may be used in
-route mapping. These are base on input types in models (see below).
-</dd>
 <dt><code>debug</code></dt>
 <dd>
 (optional) if set to true the <code>newt</code> service will log verbose
@@ -128,20 +137,25 @@ results to standard out for this specific pipeline
 </dd>
 </dl>
 <h4 id="a-pipeline-object">a pipeline object</h4>
-<p>A pipeline is a list of web services containing a type, url, method
+<p>A pipeline is a list of web services containing a type, URL, method
 and content types</p>
 <dl>
-<dt><code>service [METHOD] [url]</code></dt>
+<dt><code>service [METHOD] [URL]</code></dt>
 <dd>
-(required) The HTTP method is included in the URL The url to be used to
-contact the web service, may contain embedded variable references in
-template notation.
+(required) The HTTP method is included in the URL The URL to be used to
+contact the web service, may contain embedded variable references drawn
+from the request path as well as those passed in through
+<code>.application.environment</code>. All the elements extracted from
+the elements derived from the request path are passed through strings.
+These are then used to construct a simple key-value object of variable
+names and objects which are then passed through the Mustache template
+representing the target service URL.
 </dd>
 <dt><code>description</code></dt>
 <dd>
 (optional, recommended) This is a description of what this stage of the
 pipe does. It is used when debug is true in the log output and in
-program documentaiton.
+program documentation.
 </dd>
 <dt><code>content_type</code></dt>
 <dd>
@@ -150,7 +164,7 @@ sending
 </dd>
 <dt><code>timeout</code></dt>
 <dd>
-(optiona) Set the timeout in seconds for receiving a response from the
+(optional) Set the timeout in seconds for receiving a response from the
 web server. Remember the time spent at each stage is the cumulative time
 your browser is waiting for a response. For this reason you may want to
 set the timeout to a small number.

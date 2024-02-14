@@ -15,7 +15,7 @@ routes
 
 ## the "application" property
 
-The application property itself has four properties. All are optional.
+The application property itself has four properties. All are optional. They also can be specified on the command line of `newt` and `newtgen`
 
 port
 : (optional, default is This port number the Newt web services uses to listen for request on localhost
@@ -29,7 +29,7 @@ metadata
 environment
 : (optional) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
-There is a fifth special attribute in application that can be used in place of `.metadata`. If you maitnain a CITATION.cff file you can point to it to avoid maintaining it in two places. When `newt` is started up it will copy the contents into the `.metadata` property.
+There is a fifth special attribute in application that can be used in place of `.metadata`. If you maintain a CITATION.cff file you can point to it to avoid maintaining it in two places. When `newt` is started up it will copy the contents into the `.metadata` property.
 
 citation
 : (optional) This points at an file (e.g. CITATION.cff). It is used to populate the metadata property at startup
@@ -46,8 +46,8 @@ Routes hosts a list of request descriptions and their data pipelines
 `description`
 : (optional, encouraged) This is a description of what you're trying to accomplish in the route. It may be used in comments or by documentation generators.
 
-`request`
-: (required) This is a string that expresses the HTTP method and URL path to assign to a specific data pipeline
+`request [METHOD ][PATH]`
+: (required) This is a string that expresses the HTTP method and URL path to assign to a specific data pipeline. If METHOD is not provided it will match the request handler will catch all HTTP methods. You can express embedded variables in the PATH element using single curl braces. E.g. `GET /items/{item_id}` would make `item_id` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `/blog/{year}-{month}-{day}` would not work but `/blog/{year}/{month}/{day}` would capture the individual elements. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
 
 `pipeline`
 : (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail or the last element in the pipeline are returned as a response to the request
@@ -55,27 +55,24 @@ Routes hosts a list of request descriptions and their data pipelines
 `error`
 : (optional) this points to a static page that can be displayed when the pipeline fails (e.g. like a 404 page used by web servers)
 
-`variables`
-: (optional) this is a key-value list of input types that may be used in route mapping. These are base on input types in models (see below).
-
 `debug`
 : (optional) if set to true the `newt` service will log verbose results to standard out for this specific pipeline
 
 #### a pipeline object
 
-A pipeline is a list of web services containing a type, url, method and content types
+A pipeline is a list of web services containing a type, URL, method and content types
 
-`service [METHOD] [url]`
-: (required) The HTTP method is included in the URL The url to be used to contact the web service, may contain embedded variable references in template notation.
+`service [METHOD] [URL]`
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
 
 `description`
-: (optional, recommended) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentaiton.
+: (optional, recommended) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
 
 `content_type`
 : (optional) You can specify a mime content type for the data you are sending
 
 `timeout`
-: (optiona) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
+: (optional) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
 
 
 ## the "models" property

@@ -4,10 +4,10 @@ import (
 	"testing"
 )
 
-// TestCheckboxInputElement check that we can render a set of checkboxes with the
+// TestCheckboxesInputElement check that we can render a set of checkboxes with the
 // possible behaviors indicated by the GHYT syntax for input elements of type "checkboxes"
-func TestCheckboxInputElement(t *testing.T) {
-	t.Errorf("TestCheckboxInputElement() not implemented")
+func TestCheckboxesInputElement(t *testing.T) {
+	t.Errorf("TestCheckboxesInputElement() not implemented")
 }
 
 // TestDropdownInputElement check that we can render a dropdown element with the
