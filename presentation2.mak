@@ -8,14 +8,14 @@ presentation_dir: .FORCE
 	mkdir -p presentation2
 
 html: .FORCE
-	pandoc -s -t $(WEB_FORMAT) newt-presentation2.md -o presentation2/index.html
+	pandoc -V lang=en -s -t $(WEB_FORMAT) newt-presentation2.md -o presentation2/index.html
 	git add presentation2/index.html
 
 pdf: .FORCE
-	pandoc -s -t beamer newt-presentation2.md -o presentation2/newt-presentation.pdf
+	pandoc -V lang=en -s -t beamer newt-presentation2.md -o presentation2/newt-presentation.pdf
 
 pptx: .FORCE
-	pandoc -s newt-presentation2.md -o presentation2/newt-presentation.pptx
+	pandoc -V lang=en -s newt-presentation2.md -o presentation2/newt-presentation.pptx
 
 clean: .FORCE
 	if [ -f presentation2/index.html ]; then rm presentation2/*.html; fi

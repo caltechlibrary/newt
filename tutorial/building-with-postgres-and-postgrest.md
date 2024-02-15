@@ -3,6 +3,7 @@ title: "Building with PostgreSQL and PostgREST"
 pubDate: 2023-06-01
 updated: 2023-06-24
 author: "R. S. Doiel"
+lang: en
 ---
 
 # Building with PostgreSQL and PostgREST

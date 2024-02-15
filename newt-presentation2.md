@@ -156,8 +156,8 @@ Lines    Files
 # Next steps for Newt Project?
 
 1. Consider allowing the Newt data router to access non-localhost resources
-2. Continue build public facing applications this Spring through Winter (2024)
-3. Documentation and tutorials
+2. Build public facing applications, Spring to Winter 2024
+3. Improve documentation and add tutorials
 
 # Newt's someday, maybe ...
 
@@ -177,6 +177,8 @@ Lines    Files
   - Install Haskell GHCup <https://www.haskell.org/ghcup/>
   - [Quick recipe, Compile PostgREST (M1)](https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-PostgREST-M1.html)
   - [Quick recipe, Compiling Pandoc (M1)](https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-Pandoc-M1.html)
+- [Mustache templates](https://mustache.github.io) and programming language implementations
+  - [Go Mustache package used by Newt Project](https://github.com/cbroglie/mustache), also provides a mustache cli
 
 # Thank you!
 
