@@ -11,7 +11,7 @@
   - [Newt Mustache](newtmustache.1.md), light weight template engine
   - [Pandoc Bundler](pdbundler.1.md), turn your JSON into Pandoc web service friendly JSON
 - Presentations, background and examples
-  - [Newt Prototype 2 Presentation](presentation2/), (covers the second prototype)
+  - [Newt Prototype 2 Presentation](presentation2/), (see draft)
   - [Newt Mustache Explained](newtmustache_explained.md), Feb 12, 2024
   - [Data routing and the pipeline](newt_router.md), Feb 12, 2024
   - [Origin Story](origin_story.md), Feb 7, 2024
