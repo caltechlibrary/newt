@@ -1,5 +1,5 @@
 ---
-title: "newtmustache(1) user manual | 0.0.6 ff94302"
+title: "newtmustache(1) user manual | 0.0.6 e7c094e"
 pubDate: 2024-02-14
 author: "R. S. Doiel"
 ---
@@ -30,6 +30,9 @@ The request expression is based on the Go 1.22 patterns used in it's `http` pack
 <https://pkg.go.dev/net/http@master#hdr-Patterns>. The only modification is if not method is included
 a POST instead of a GET will be assumed.
 
+Like Pandoc web service `newtmustache` does not normally log requests. It's a quick transaction.
+If you want to debug your templates use the verbose option or turn on debug for specific requests.
+
 # OPTIONS
 
 The following options are supported by **newtmustache**.
@@ -46,8 +49,11 @@ The following options are supported by **newtmustache**.
 -port NUMBER
 : (default is port is 3032) Set the port number to listen on
 
---timeout SECONDS
+-timeout SECONDS
 : Timeout in seconds, after which a template rendering is aborted.  Default: 3.
+
+-verbose
+: If set provide verbose debugging output for requests
 
 # The templates
 
@@ -82,6 +88,8 @@ template
 options
 : (object, optional) These are additional attributes that can be merged into the JSON processed by the Mustache template. These are merge before any variables taken from the URL path pattern are merge.
 
+debug
+: (bool, optional) If set to true then provide verbose log output for this request route
 
 # EXAMPLES
 

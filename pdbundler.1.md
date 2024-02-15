@@ -1,5 +1,5 @@
 ---
-title: "pdbundler(1) user manual | 0.0.6 ff94302"
+title: "pdbundler(1) user manual | 0.0.6 e7c094e"
 pubDate: 2024-02-14
 author: "R. S. Doiel"
 ---

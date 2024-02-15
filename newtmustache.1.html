@@ -45,6 +45,10 @@ href="https://pkg.go.dev/net/http@master#hdr-Patterns"
 class="uri">https://pkg.go.dev/net/http@master#hdr-Patterns</a>. The
 only modification is if not method is included a POST instead of a GET
 will be assumed.</p>
+<p>Like Pandoc web service <code>newtmustache</code> does not normally
+log requests. It’s a quick transaction. If you want to debug your
+templates use the verbose option or turn on debug for specific
+requests.</p>
 <h1 id="options">OPTIONS</h1>
 <p>The following options are supported by
 <strong>newtmustache</strong>.</p>
@@ -65,10 +69,14 @@ display version information
 <dd>
 (default is port is 3032) Set the port number to listen on
 </dd>
-<dt>–timeout SECONDS</dt>
+<dt>-timeout SECONDS</dt>
 <dd>
 Timeout in seconds, after which a template rendering is aborted.
 Default: 3.
+</dd>
+<dt>-verbose</dt>
+<dd>
+If set provide verbose debugging output for requests
 </dd>
 </dl>
 <h1 id="the-templates">The templates</h1>
@@ -122,6 +130,11 @@ signature.
 (object, optional) These are additional attributes that can be merged
 into the JSON processed by the Mustache template. These are merge before
 any variables taken from the URL path pattern are merge.
+</dd>
+<dt>debug</dt>
+<dd>
+(bool, optional) If set to true then provide verbose log output for this
+request route
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>
