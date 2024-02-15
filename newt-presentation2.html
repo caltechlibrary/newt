@@ -21,265 +21,71 @@
 </nav>
 
 <section>
-<h1 id="goal-of-the-second-prototype">Goal of the second prototype</h1>
-<p>Is Newt’s toolbox and “off the shelf” software enough to simplify our
-applications?</p>
-<h1 id="first-combine-the-right-abstractions">First, combine the right
+<h1 id="goal-second-prototype">Goal: Second Prototype</h1>
+<p>Is Newt and “off the shelf” enough?</p>
+<h1 id="choose-wisely-pick-your-abstractions">Choose wisely: pick your
 abstractions</h1>
 <ul>
-<li>Off the shelf web services</li>
-<li>Aligning our expectations</li>
-<li>Composing application using data pipelines</li>
+<li>Simple = (No code) + (Less code)</li>
+<li>Compose application using data pipelines</li>
+<li>Align with our service deliverables</li>
 </ul>
 <h1 id="off-the-shelf">Off the shelf</h1>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a>o =&gt; JSON data source</li>
-<li>Newt Mustache a simple template engine =&gt; Transform JSON into web
-pages</li>
-<li>Newt new implementation of a data router ties it all together</li>
-<li>YAML used to express routes, pipelines and data models</li>
+<li>Newt Mustache, a simple template engine =&gt; Transform JSON into
+web pages</li>
+<li>Newt data router, ties it all together</li>
+<li>YAML can express routes, pipelines and data models</li>
 </ul>
-<h1 id="assembling-our-with-yaml">Assembling our with YAML</h1>
+<h1 id="assembling-it-with-yaml">Assembling it with YAML</h1>
 <ul>
 <li>Newt’s Second Prototype has a new YAML syntax
 <ul>
-<li>CITATION.cff for application metadata</li>
-<li>GitHub YAML issue template syntax used to model data</li>
+<li>GitHub YAML issue template syntax</li>
 </ul></li>
-<li>Newt generates SQL and templates from this YAML</li>
-<li>Introducing Newt Mustache, a light weight template engine
+<li>Code generator
 <ul>
-<li>Mapping your templates in the pipeline</li>
+<li>“look Mom, no AI!”</li>
+</ul></li>
+<li>Newt Mustache
+<ul>
+<li>“YAML your templates in your pipeline”</li>
 </ul></li>
 </ul>
 <h1 id="demo-time">Demo time</h1>
-<p>Let’s take a look at the demo …</p>
-<h1 id="so-what-did-we-see">So what did we see?</h1>
-<ol type="1">
-<li>static site derived from CSV data file
+<p>A second prototype Newt application</p>
+<h1 id="what-did-we-see">What did we see?</h1>
 <ul>
-<li>CSV file holds our sighting list</li>
-<li>Mustache templates can render our content</li>
-</ul></li>
-<li>dynamic, SQL and browser JavaScript
-<ul>
-<li>(YAML and code generation)</li>
-<li>(bird sighting list held in SQL database)</li>
-<li>(JavaScript browser side assembles web site)</li>
-</ul></li>
-<li>dynamic, SQL and no browser JavaScript
-<ul>
-<li>(bird sighting list held in SQL database)</li>
-<li>(Mustache templates transform content)</li>
-<li>(Data routing provides the website)</li>
-</ul></li>
-</ol>
-<p>What were the trade-offs?</p>
-<h1 id="a-static-bird-static-site-mustache-templates"><a
-href="https://github.com/caltechlibrary/newt/tree/main/demos/birds1">A
-static bird</a>, static site, Mustache templates</h1>
-<p>CSV file, Mustache, 2 directories, 4 files, <strong>?? total line
-count</strong>, static site</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Lines</th>
-<th style="text-align: left;">Files</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">README.md</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">?</td>
-<td style="text-align: left;">birds.csv &lt;– this is the seed data used
-in all the implementations</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">?</td>
-<td style="text-align: left;">page.tmpl</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">htdocs/index.html</td>
-</tr>
-</tbody>
-</table>
-<h1
-id="a-dynamic-site-requiring-browser-side-js-dynamic-site-browser-javascript"><a
-href="https://github.com/caltechlibrary/newt/tree/main/demos/birds2">A
-dynamic site requiring browser side JS</a>, dynamic site, browser
-JavaScript</h1>
-<p>SQL (Postgres + PostgREST), Browser JavaScript, 2 directories, 9
-files, <strong>??? total line count</strong>, dynamic site</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Lines</th>
-<th style="text-align: left;">Files</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">README.md</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">?</td>
-<td style="text-align: left;">birds.csv &lt;– from birds1, loaded into
-SQL database</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">birds.yaml &lt;— use to generate the
-models only</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">setup.sql &lt;– code generation,
-newtgen</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">models.sql &lt;– code generation,
-newtgen</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">models_test.sql &lt;– generated code,
-newtgen</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">?</td>
-<td style="text-align: left;">postgrest.conf &lt;– generated code,
-newtgen</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">htdocs/index.html &lt;– hand coded</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">htdocs/sightings.js &lt;– hand coded</td>
-</tr>
-</tbody>
-</table>
-<h1 id="birds-version-3-dynamic-site-no-browser-javascript"><a
-href="https://github.com/caltechlibrary/newt/tree/main/demos/birds3">birds
-version 3</a>, dynamic site, no browser JavaScript</h1>
-<p>SQL (Postgres + PostgREST), Newt Mustache, Newt, 1 directory, 9
-files, <strong>225 total line count</strong>, dynamic site</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Lines</th>
-<th style="text-align: left;">Files</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">43</td>
-<td style="text-align: left;">README.md</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">?</td>
-<td style="text-align: left;">birds.csv &lt;– from birds1, loaded into
-SQL database</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">birds.yaml &lt;— Newt models and
-routing</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">34</td>
-<td style="text-align: left;">setup.sql &lt;– code generation,
-newtgen</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">60</td>
-<td style="text-align: left;">models.sql &lt;– code generation,
-newtgen</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">15</td>
-<td style="text-align: left;">models_test.sql &lt;– code generation,
-newtgen</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">postgrest.conf &lt;– code generation,
-newtgen</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">??</td>
-<td style="text-align: left;">birds_tmpl.yaml &lt;– hand coded, maps our
-templates to request in Newt Mustache</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">36</td>
-<td style="text-align: left;">page.tmpl</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">7</td>
-<td style="text-align: left;">post_result.tmpl</td>
-</tr>
-</tbody>
-</table>
-<h1 id="insights-from-experiment">Insights from experiment</h1>
-<ul>
-<li><p>A few “Off the shelf” web services can make application
-construction easier</p></li>
-<li><p>A few “Off the shelf” can also shrink what we maintain</p></li>
-<li><p>SQL turns some people off, so let’s use a code generator</p></li>
-<li><p>Modify SQL, even when you know it, is often easier than typing it
-into an empty file</p></li>
-<li><p>Mustache templates are simple to learn, see the <a
-href="https://mustache.github.io">Mustache Web site</a></p></li>
-<li><p>Mustache templates are easy to debug either from Newt Mustache or
-the Mustache cli</p></li>
-<li><p>Newt really caters to the newly vintage of HTML5 and progressive
-enhancement</p></li>
-<li><p>I encountered an unexpected result …</p></li>
+<li>Code generation</li>
+<li>Data pipelines and a bunch-o-services</li>
+<li>Minimal browser expectations</li>
 </ul>
-<h1 id="an-unexpected-result">An unexpected result</h1>
+<h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp;
+2</h1>
 <ul>
-<li>Running more web services has it’s own cognitive price, are you OK
-with that?</li>
-<li>Containers to run many web services just adds to complexity</li>
-<li>Thinking about an echo system of applications that can use the same
-web services is promising
+<li><p>“Off the shelf” is simpler</p></li>
+<li><p>SQL turns people off, use a code generator</p></li>
+<li><p>Mustache templates, simple but not too simple</p></li>
+<li><p>Vintage: HTML5 and progressive enhancement</p></li>
+<li><p>Unexpected encounters …</p></li>
+</ul>
+<h1 id="unexpected-encounters">Unexpected encounters</h1>
 <ul>
-<li>Can we safely aggregate our Newt YAML files?</li>
-</ul></li>
-<li>The web services need to provide a “developer” model for
-debugging</li>
-<li>Writing tests with <a href="https://curl.se/">curl</a> gets tedious,
-newtgen needs to generate this code</li>
-<li>Newt can be used as a large static site generator, ex. feeds v2</li>
+<li>Web services’ cognitive price</li>
+<li>Containers add to complexity</li>
+<li>Web services need a “developer” mode for debugging</li>
+<li>Newt, <strong>a static site generator platform</strong></li>
 </ul>
 <h1 id="newt-has-weaknesses">Newt has weaknesses</h1>
 <ul>
 <li>Newt is <strong>an experimental working prototype</strong> (February
 2024)</li>
-<li>You really want to minimize your pipelines to one to three
-stages</li>
-<li>An app with too many routes is hard to maintain, avoid doing
-that</li>
-<li>While Newt uses YAML, you need to learn the YAML syntax for three
-Newt tools
-<ul>
-<li>Newt data router and code generator share one syntax</li>
-<li>Can Newt Mustache and pdbundler share one syntax?</li>
-<li>Can the code generator produce the Newt Mustache YAML?</li>
-</ul></li>
-<li>Newt doesn’t support file uploads
-<ul>
-<li>That would be nice to broaden Newt’s application domain</li>
-</ul></li>
+<li>Pipeline delays accumulate</li>
+<li>Many routes are hard to maintain</li>
+<li>Three YAML syntax is too many</li>
+<li>Newt is missing file upload support</li>
 </ul>
 <h1 id="newt-stack-has-strengths">Newt stack has strengths</h1>
 <blockquote>
@@ -296,23 +102,19 @@ Newt tools
 PostgREST (2014)</li>
 </ul></li>
 </ul>
-<h1 id="next-steps-for-newt-project">Next steps for Newt Project?</h1>
-<ol type="1">
-<li>Consider allowing the Newt data router to access non-localhost
-resources</li>
-<li>Build public facing applications, Spring to Winter 2024</li>
-<li>Improve documentation and add tutorials</li>
-</ol>
-<h1 id="newts-someday-maybe">Newt’s someday, maybe …</h1>
+<h1 id="questions-guiding-next-steps">Questions guiding next steps</h1>
 <ul>
-<li>Integrating S3 protocol support would allow file uploads to be
-addressed</li>
-<li>Explore light weight options to use SQLite 3 databases</li>
-<li>Explore a web service that would enable non-linear conditional
-pipelines</li>
-<li>Visually programming to generate all the Newt YAML files</li>
-<li>A Newt community to share YAML, SQL, templates and web
-components</li>
+<li>Should the data router support non-localhost URLs?</li>
+<li>What tools should come from the Newt Project?</li>
+<li>How do we move Newt beyond a Caltech Library experiment?</li>
+</ul>
+<h1 id="my-wish-list">My wish list …</h1>
+<ul>
+<li>S3 protocol support</li>
+<li>SQLite 3 database support</li>
+<li>Non-linear conditional pipelines</li>
+<li>Visually programming for Newt YAML files</li>
+<li>Web components for LAS metadata types</li>
 </ul>
 <h1 id="related-resources">Related resources</h1>
 <ul>
@@ -329,23 +131,10 @@ href="https://postgrest.org" class="uri">https://postgrest.org</a>
 href="https://postgrest.org/en/stable/ecosystem.html"
 class="uri">https://postgrest.org/en/stable/ecosystem.html</a></li>
 </ul></li>
-<li>Compiling Pandoc or PostgREST requires Haskell
-<ul>
-<li>Install Haskell GHCup <a href="https://www.haskell.org/ghcup/"
-class="uri">https://www.haskell.org/ghcup/</a></li>
-<li><a
-href="https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-PostgREST-M1.html">Quick
-recipe, Compile PostgREST (M1)</a></li>
-<li><a
-href="https://rsdoiel.github.io/blog/2023/07/05/quick-recipe-compiling-Pandoc-M1.html">Quick
-recipe, Compiling Pandoc (M1)</a></li>
-</ul></li>
-<li><a href="https://mustache.github.io">Mustache templates</a> and
-programming language implementations
-<ul>
-<li><a href="https://github.com/cbroglie/mustache">Go Mustache package
-used by Newt Project</a>, also provides a mustache cli</li>
-</ul></li>
+<li><a href="https://mustache.github.io">Mustache</a> programming
+languages support</li>
+<li><a href="https://github.com/cbroglie/mustache">Go Mustache
+package</a>, provides a mustache cli</li>
 </ul>
 <h1 id="thank-you">Thank you!</h1>
 <ul>

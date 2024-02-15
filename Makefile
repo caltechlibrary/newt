@@ -76,14 +76,14 @@ installer.sh: .FORCE
 	@chmod 775 installer.sh
 	@git add -f installer.sh
 
-presentation: .FORCE
-	make -f presentation1.mak
-	make -f presentation2.mak
+presentations: .FORCE
+	- make -f presentation1.mak
+	- make -f presentation2.mak
 
 clean-website:
 	make -f website.mak clean
 
-website: clean-website presentation .FORCE
+website: clean-website presentations .FORCE
 	make -f website.mak
 
 
@@ -127,7 +127,8 @@ clean:
 	-if [ -d testout ]; then rm -fR testout; fi
 	-for MAN_PAGE in $(MAN_PAGES); do if [ -f man/man1/$$MAN_PAGE.1 ]; then rm man/man1/$$MAN_PAGE.1; fi;done
 	-make -f website.mak clean
-	-make -f presentation.mak clean
+	-make -f presentation1.mak clean
+	-make -f presentation2.mak clean
 
 
 status:
