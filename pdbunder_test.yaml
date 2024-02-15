@@ -14,7 +14,7 @@ templates:
       to: markdown
     debug: true
   - request: "POST /custom_page"
-    template: page.tmpl
+    template: testdata/pdoc.html.tmpl
     options:
       from: markdown
       to: html5
@@ -22,7 +22,7 @@ templates:
       title: This is the custom template with this title
     debug: true
   - request: "POST /custom_page_with_title/{title}"
-    template: page.tmpl
+    template: testdata/pdoc.html.tmpl
     options:
       from: markdown
       to: html5
@@ -30,7 +30,7 @@ templates:
       title: This title is overwritten by the one in the request
     debug: true
   - request: "POST /custom_page_include"
-    template: page.tmpl
+    template: testdata/pdoc.html.tmpl
     options:
       from: markdown
       to: html5

@@ -5,7 +5,7 @@ The Newt Project is an experiment in rapid web application development for libra
 
 [^1]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
-Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST gives you an out of the box, web friendly, data management platform in the form of a JSON API. Light weight template engines like like Newt's Mustache template engine can transform you JSON API output into a web page. Throw in a full text search engine like Solr and you can check off the core features of many LAS software systems. What is missing is the layer to orchestrate the data flowing through a pipe.
+Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST gives you an out of the box. Postgres+PostgREST provides web friendly data management platform in the form of a JSON API. Light weight template engines like Pandoc web service or Newt's own Mustache template engine can transform your JSON API output into a web page. Throw in a full text search engine like Solr and you can check off the core features of many LAS software systems. What is missing is the layer to orchestrate the data flowing through a pipe.
 
 The Newt Project is trying to encourage the following characteristics.
 
@@ -15,11 +15,12 @@ The Newt Project is trying to encourage the following characteristics.
 - data transformation (if needed) happens in simple stateless template engines
 - leverage code generation when appropriate
 
-The Newt Project is exploring this by providing three tools to fill in the gaps.
+The Newt Project is provides tools to fill in the gaps.
 
 - `newt` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
 - `newtgen` is a code generator that can take a set of data models described in YAML and generate SQL, HTML and templates based on those models
 - `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
+- `pdbundler` will take a JSON object and wrap it in Pandoc web service friendly JSON
 
 The Newt web service and data pipeline concept is being tested using
 
@@ -27,13 +28,13 @@ The Newt web service and data pipeline concept is being tested using
 - [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
 - [Solr](https://solr.apache.org), full text search that provides a JSON API
 
-Newt can tie these together through YAML expressing
+The Newt web service can tie these together through YAML expressing
 
 - application definition (run time information and application metadata)
 - routes (web requests differentiated by a HTTP method, headers and URL path)
 - models (describe the data as would be input into a web form)
 
-## What type of applications are supported by Newt?
+## What type of applications are supported by Newt Project?
 
 Most LAS applications are focused on managing and curating some sort of metadata record. This is the primary target of Newt. This might be as simple as a controlled vocabulary or as complex as an archival or repository metadata record.
 
@@ -45,21 +46,19 @@ Over the last several decades web applications became very complex. This complex
 
 Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. By 1993 the web as an application platform was born[^2] and with it a good platform for providing useful organizational software.
 
-
 By the mid 1990s the Open Source databases, MySQL and Postgres, were the popular choice for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^3]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^4]. Yahoo Pipes inspired Newt's data pipelines.  Specialization has continued ever since. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases[^5]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example was the in-house bespoke content systems gave way to systems like [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
-
 
 [^2]: Web applications proceeded to eat all the venerable green screen systems they could find. Eventually they and their corporate sponsors invented the surveillance economy we have today. Sometimes "good ideas" have terrible consequences. Making it easier to produce custom web applications should always be done keeping in mind the necessity for humane and inclusive use. Newt can be both part of a solution but also be used to exacerbate human problems.
 
 [^3]: HTTP being the protocol the communicates with. Essentially at the time RDBMS spoke a dialect of SQL as the unifying language. The web of the time understood HTML and to a certain degree XML. By 2000 people were looking for something simpler than XML to move structured data about. [JSON](https://en.wikipedia.org/wiki/JSON) quickly became the answer.
 
-[^4]: The basic concept was to make it easy to work with "data feeds" and combined them into a useful human friendly web pages. It even included a visual programming language to make it friendly to the non-programmer crowd. 
+[^4]: The basic concept was to make it easy to work with "data feeds" and combined them into a useful human friendly web pages. It even included a visual programming language to make it friendly to the non-programmer crowd.
 
 [^5]: If a use case is solved reliably enough it becomes "off the shelf" software.
 
 > fast forward to 2024, context set
 
-Much of the back end of web applications can largely be assemble from off the shelf software. Middleware however remains complex. I believe this to be a by product of inertia in software development practices and the assumption that what is good for "Google Scale" is good for everyone. 
+Much of the back end of web applications can largely be assemble from off the shelf software. Middleware however remains complex. I believe this to be a by product of inertia in software development practices and the assumption that what is good for "Google Scale" is good for everyone.
 
 I think a radical simplification is due.  Most software doesn't need to scale that large. Even in the research and LAS communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software.
 
@@ -69,17 +68,17 @@ A big key to simplification is realizing that the middleware no longer needs to 
 
 - (data management) Postgres combined with PostgREST gives you an out of the box JSON API for managing data
 - (full text search) Solr gives you a powerful, friendly, JSON API for search and discovery
-- (content transformation) Pandoc running as a web service provides a simple but powerful template engine
+- (content transformation) `pdbundler` in a pipeline with Pandoc web service provides a simple but powerful template engine
 - (hosting, access control) Apache 2 or NginX when combined with a single sign on system (e.g. Shibboleth) provides access control
 - (rich client) Web browsers now provide a rich software platform in their own right
 
 ## This missing bits
 
-With the only the above list can already build capable applications that run inside the web browser. The cost,  JavaScript is required to render everything. Relying on JavaScript to assemble our content in the web browser is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a single web service and get back useful results without having to process more than HTML and CSS. 
+With the only the above list can already build capable applications that run inside the web browser. The cost,  JavaScript is required to render everything. Relying on JavaScript to assemble our content in the web browser is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a single web service and get back useful results without having to process more than HTML and CSS.
 
 Taking the better approach in the past has required the writing of more middleware. I think we can avoid that or at least avoid complex middleware.
 
-For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" describes the URL path and HTTP method used to make a web request (e.g. your web browser requesting to view an HTML page). The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^6]. The collection of routes and their functions compose the API your browser uses to navigate through your application. 
+For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" describes the URL path and HTTP method used to make a web request (e.g. your web browser requesting to view an HTML page). The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^6]. The collection of routes and their functions compose the API your browser uses to navigate through your application.
 
 There is no requirement for the functions to be simple or complex. It depends on the task they are solving. Historically before single sign-on systems became common the function handling the request was responsible for the whole transaction. It needed to hand access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database's security. This was especially true when generate a SQL statement to interact with the database. Those functions that did it all are complex by necessity.  When we narrowly focus a function and allow other layers of the system to handle most of the complexity our functions can be simpler.  That was the motivation and many software libraries and frameworks that proliferated among the many languages used to write middleware. What was missing was an adjustment of our assumptions. Middleware doesn't need to do allot of those things any more. What if a web service specialized in being the glue is there a path to simplification? Can we configured the web service and delegate away the responsibility of our middleware?
 
@@ -103,7 +102,7 @@ NOTE: See the [user manual](user_manual.md) for details
 
 The Newt suite of tools use a common YAML file.
 
-1. `newtgen` can render SQL suitable for bootstrapping your Postgres+PostgREST database, templates and HTML 
+1. `newtgen` can render SQL suitable for bootstrapping your Postgres+PostgREST database, templates and HTML
 2. `newtmustache` provides a simple, stateless, Mustache template engine
 3. `newt` provides data routing between other web services that fill specific functions or roles.
 
@@ -162,6 +161,6 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 - [user manual](user_manual.md)
 - [INSTALL](INSTALL.md)
-- [About](about.md) 
+- [About](about.md)
 
 

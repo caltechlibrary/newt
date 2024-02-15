@@ -1,0 +1,19 @@
+port: 3032
+templates:
+  - request: GET /hello/{name}
+    template: testdata/simple.mustache
+  - request: GET /hello
+    template: testdata/simple.mustache
+    options:
+      name: Universe
+  - request: GET /hi/{name}
+    template: testdata/hithere.html
+    partials:
+      - testdata/name.mustache
+    debug: true
+  - request: GET /hi
+    template: testdata/hithere.html
+    partials:
+      - testdata/name.mustache
+    options:
+      name: Universe

@@ -1,0 +1,21 @@
+
+# Notes on recording the presentation
+
+# Content fixes
+
+# Service setup
+
+1. Run presentation on localhost:8000 via ws
+2. Run birds 1 
+	- `ws -url http://localhost:8001 htdocs`
+3. Run birds 2
+	- `ws -url http://localhost:8002 htdocs` 
+	- `psql -f setup.sql`
+	- `postgrest postgrest.conf`
+4. Run birds 3
+	- re-use postgrest from birds 2 as is
+	- `pandoc server`
+	- `../../bin/newt birds.yaml`
+5. Show code examples via GitHub site
+	- open `https://github.com/caltechlibrary/newt/tree/main/demos`
+	- click on "symbol" for to show side panel directory tree

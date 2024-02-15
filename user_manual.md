@@ -1,18 +1,22 @@
 
 # Newt User Manual
 
-- [Newt YAML Syntax](newt_yaml_syntax.md)
-- Newt toolbox
-  - [Newt Router](newt.1.md)
-  - [Newt Generator](newtgen.1.md)
-  - [Newt Template Engine](newtmustache.1.md)
-  - [Templete Bundler](tmplbndl.1.md)
+- Newt Project YAML syntax
+    - [Newt YAML Syntax](newt_yaml_syntax.md)
+        - used by [Newt Data Router](newt.1.md) and [Newt Generator](newtgen.1.md)
+    - [Newt Mustache YAML](newtmustache.1.md)
+    - [Pandoc Bundler YAML](pdbunder.1.md)
+- What in the Newt Project toolbox?
+  - [Newt Data Router](newt.1.md) and [Newt Generator](newtgen.1.md)
+  - [Newt Mustache](newtmustache.1.md), light weight template engine
+  - [Pandoc Bundler](pdbundler.1.md), turn your JSON into Pandoc web service friendly JSON
 - Presentations, background and examples
+  - [Newt Prototype 2 Presentation](presentation2/), (covers the second prototype)
   - [Newt Mustache Explained](newtmustache_explained.md), Feb 12, 2024
   - [Data routing and the pipeline](newt_router.md), Feb 12, 2024
   - [Origin Story](origin_story.md), Feb 7, 2024
   - [Improving Newt's YAML DSL](improving_the_type_dsl.md), January 26, 2024
-  - [Newt Presentation](presentation/), Code4Lib Meetup at UCLA, July 14, 2023
+  - [Newt Presentation](presentation/), Code4Lib Meetup at UCLA, July 14, 2023 (covers first prototype)
   - [Reference Material](reference_material.md), January 26, 2024, links to prior art and documentation
 - Installation
   - [Installing Newt](INSTALL.md)

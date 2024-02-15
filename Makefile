@@ -77,7 +77,8 @@ installer.sh: .FORCE
 	@git add -f installer.sh
 
 presentation: .FORCE
-	make -f presentation.mak
+	make -f presentation1.mak
+	make -f presentation2.mak
 
 clean-website:
 	make -f website.mak clean

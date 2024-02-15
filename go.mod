@@ -3,7 +3,6 @@ module github.com/caltechlibrary/newt
 go 1.22.0
 
 require (
-	github.com/caltechlibrary/wsfn v0.0.11
 	github.com/cbroglie/mustache v1.4.0
 	github.com/rsdoiel/newt v0.0.0-20230606001900-97a1f3c0b475
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20210228213109-c3a9aa474629
@@ -13,6 +12,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/caltechlibrary/wsfn v0.0.11 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.26 // indirect

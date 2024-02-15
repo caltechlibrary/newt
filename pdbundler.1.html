@@ -22,58 +22,57 @@
 
 <section>
 <h1 id="name">NAME</h1>
-<p><code>tmplbndl</code></p>
+<p><code>pdbundler</code></p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p><code>tmplbnld [OPTIONS] YAML_CONFIG_FILE</code></p>
+<p><code>pdbundler [OPTIONS] YAML_CONFIG_FILE</code></p>
 <h1 id="description">DESCRIPTION</h1>
-<p><code>tmplbndl</code> is web service that takes a JSON object and
+<p><code>pdbundler</code> is web service that takes a JSON object and
 bundles it for use with a Pandoc’s web service. It requires a
-configuration file that maps requests to a template and any other
-options. When the <code>tmplbndl</code> web service is running it
-accepts a request object, processes and returns a HTTP response. If an
-error is encounter than the response is an HTTP error response. If no
-error is encounterd then a JSON object is assembled suitable for Pandoc
-web service to process.</p>
-<p>In the first Newt prototype Pandoc web service integrated into
-<code>newt</code>. In the second Newt prototype the <code>newt</code>
-web service is more generalized and has adopted a pipeline approach.
-There are no assumptions tieing it to a particular template engine. This
-means the output from Solr or Postgres+PostgREST needs to be transformed
-into a new JSON Object to be able to use Pandoc web service.
-<code>tmplbndl</code>’s job is to sit in the pipeline between a JSON
-data source and Pandoc web service.</p>
-<p><code>tmplbndl</code> is a web service configured from a YAML file.
-It has a syntax specific to its purposes. While <code>tmplbndl</code> is
-focused on producing a JSON object for requests to Pandoc web server it
-also services as an example for other types of bundlers.</p>
-<p>Basic idea.</p>
+configuration file that maps requests to a template and options. When
+the <code>pdbundler</code> web service is running it accepts JSON and
+returns JSON suitable to POST to Pandoc web service. If an error is
+encounter than the response is an HTTP error response.</p>
+<p>In the first prototype the Pandoc web service was integrated into the
+Newt data router. In the second prototype the Newt data router supports
+a generalized data pipeline. The Newt data router makes no assumptions
+tieing it to a template engine. This means the output from Solr or
+Postgres+PostgREST needs to be transformed into a new JSON expression to
+be usabled by Pandoc web service. <code>pdbundler</code> provides this
+support. It should run in the pipeline between your JSON data source and
+just before Pandoc web service.</p>
+<p><code>pdbundler</code> is a web service configured from a YAML file.
+It has a syntax specific to its purposes. <code>pdbundler</code> is an
+example of a narrowly focuses web service or micro service.</p>
+<p>Initialization process.</p>
 <ol type="1">
-<li>At start up <code>tmplbndl</code> reads a YAML file</li>
-<li>It builds request handlers mapping URL requests with a template’s
+<li><code>pdbundler</code> read the YAML configuration file</li>
+<li>Builds request handlers mapping URL requests with a template’s
 source</li>
-<li>It maps any varaibles described in the request pattern</li>
-<li>It starts up is web service</li>
+<li>Start up an http service on local host listening on the specified
+port for requests.</li>
 </ol>
 <p>When the web service is active</p>
-<ol type="1">
-<li><code>tmplbndl</code> receives a request in the form of a HTTP
+<ul>
+<li><code>pdbundler</code> receives a request in the form of a HTTP
 method and URL</li>
 <li>It checks it handlers for a match. If none are found a 404 is
 returned.</li>
 <li>With a matched request, it builds an object setting the values of
-<code>.text</code> and <code>.template</code> accordingly. If there are
-embeded variables in the pattern then those are mapped into the
-resulting object as well.</li>
-</ol>
+<code>.text</code> and <code>.template</code> accordingly<a href="#fn1"
+class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>.</li>
+</ul>
 <h3 id="features">Features</h3>
 <ul>
 <li>templates are read in at startup and are retained in memory bound to
 the request path</li>
-<li>the object composed from the request may also include options
-supported in Pandoc expected request object</li>
+<li>the template descriptions can include Pandoc configuration objects
+to send to Pandoc web service</li>
+<li>configuration options can be set through variables in the URL Path
+of the request associated with the template</li>
 </ul>
-<p>This makes the full power of the Pandoc web service available to you
-Newt application pipeline.</p>
+<p>These features are intended to expose the capabilities of Pandoc web
+service.</p>
 <h1 id="options">OPTIONS</h1>
 <dl>
 <dt>-help</dt>
@@ -107,13 +106,17 @@ Run service on designated port
 <h3 id="a-template-description">a template description</h3>
 <p>An individual template description has four properties.</p>
 <dl>
-<dt>request</dt>
+<dt><code>request: [METHOD] PATTERN</code></dt>
 <dd>
-(string, required) This is the METHOD and PATH that
-<code>tmplbndl</code> will listen for to map this template. You should
-normally use a POST method to send content to be bundled. Go 1.22 HTTP
-handler patterns can be used and can be used to override the settings in
-<code>.options</code>.
+(required) This binds a request to a template. METHOD is usually either
+a GET or a POST. If METHOD is not defined then a POST is assumed.
+PATTERN is usually the path to associated with a template name. The
+PATTERN supports the syntax described in Go 1.22 <code>http</code>
+package, see <a href="https://pkg.go.dev/net/http@master#hdr-Patterns"
+class="uri">https://pkg.go.dev/net/http@master#hdr-Patterns</a>.
+Variables expressed in PATTERN are merged into the resulting JSON
+object. They overwrite what is set in the <code>.options</code>
+settings..
 </dd>
 <dt>template</dt>
 <dd>
@@ -124,20 +127,20 @@ to its internal templates
 </dd>
 <dt>options</dt>
 <dd>
-(object, optional) These will become root object properties in the
-returned JSON. This is where you would specify the Pandoc object
-properties for controlling the the transform of the text submitted<a
-href="#fn1" class="footnote-ref" id="fnref1"
-role="doc-noteref"><sup>1</sup></a>. NOTE: the <code>.text</code>
-property is replaced by the text received by <code>tmplbndl</code> and
+(object, optional) Are used to form the root object properties in the
+returned JSON. This is where you would specify the Pandoc web service
+processing options. The options control the transformation of the text
+submitted<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a>. NOTE: the <code>.text</code>
+property is replaced by the text received by <code>pdbundler</code> and
 <code>.template</code> will be replaced with the resolved source read in
-at <code>tmplbndl</code> startup.
+at <code>pdbundler</code> startup.
 </dd>
 </dl>
 <h2 id="example-yaml-configuration">Example YAML configuration</h2>
-<p>This example shows fix different template options. The first three
-applies a custom <code>page.tmpl</code> in different ways. In the last
-three the default Pandoc template is setup.</p>
+<p>This example shows six different template options. The first three
+apply one custom <code>page.tmpl</code> in different ways. In the last
+three do the same bu assume the default Pandoc template.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">3029</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
@@ -182,11 +185,18 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>The Pandoc web service is documented in it’s man page,
-see <a
-href="https://github.com/jgm/pandoc/blob/main/doc/pandoc-server.html"
-class="uri">https://github.com/jgm/pandoc/blob/main/doc/pandoc-server.md</a>
-for the current version<a href="#fnref1" class="footnote-back"
+<li id="fn1"><p>See <a
+href="https://pandoc.org/MANUAL.html#running-pandoc-as-a-web-server"
+class="uri">https://pandoc.org/MANUAL.html#running-pandoc-as-a-web-server</a>
+for basic information about Pandoc web service. Explore the website to
+get familiar with Pandoc and its web service.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>On <a
+href="https://pandoc.org/MANUAL.html#running-pandoc-as-a-web-server"
+class="uri">https://pandoc.org/MANUAL.html#running-pandoc-as-a-web-server</a>
+there is a link, “pandoc-server”, to the current release manual page.
+This covers the details of using Pandoc web service including the POST
+JSON object setup.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

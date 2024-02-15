@@ -9,16 +9,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
 	"os"
-	"path"
 	"strconv"
 	"strings"
-
-	// Caltech Library Packages
-	"github.com/caltechlibrary/wsfn"
 
 	// 3rd Party
 	"gopkg.in/yaml.v3"
@@ -49,17 +42,17 @@ type Config struct {
 	Routes []map[string]interface{} `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
-// ParseConfig will read []byte of YAML or JSON, 
+// parseConfig will read []byte of YAML or JSON, 
 // populate the provided *Config object and return an error.
 //
 //```
 // src, _ := os.ReadFile("newt.yaml")
 // cfg := new(Config)
-// if err := ParseConfig(src, cfg); err != nil {
+// if err := parseConfig(src, cfg); err != nil {
 //     // ... handle error
 // }
 //```
-func Parse(src []byte, cfg *Config) error {
+func parseConfig(src []byte, cfg *Config) error {
 	if bytes.HasPrefix(src, []byte("{")) {
 		if err := json.Unmarshal(src, &cfg); err != nil {
 			return err
@@ -81,14 +74,14 @@ func Parse(src []byte, cfg *Config) error {
 //     // ... handle error
 // }
 //```
-func Load(configFName string) (*Config, error) {
+func NewtLoad(configFName string) (*Config, error) {
 	cfg := new(Config)
 	if configFName != "" {
 		src, err := os.ReadFile(configFName)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read %q, %s", configFName, err)
 		}
-		if err := Parse(src, cfg); err != nil {
+		if err := parseConfig(src, cfg); err != nil {
 			return nil, fmt.Errorf("failed to read %q, %s", configFName, err)
 		}
 	}
@@ -140,142 +133,6 @@ func Load(configFName string) (*Config, error) {
 		}
 	}
 	return cfg, nil
-}
-
-// RunPostgresSQL is a runner for generating SQL from a Newt YAML file.
-func RunPostgresSQL(in io.Reader, out io.Writer, eout io.Writer, args []string, pgSetupSQL bool, pgModelsSQL bool, pgModelsTestSQL bool) int {
-	configFName := ""
-	if len(args) > 0 {
-		configFName = args[0]
-	}
-	cfg, err := Load(configFName)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return 1
-	}
-	if cfg.Models == nil {
-		fmt.Fprintln(eout, "-- No modules defined.")
-		return 1
-	}
-	// For each module we generate a table create statement,
-	// default view.
-	if configFName == "" {
-		configFName = "standard input"
-	}
-	exitCode := 0
-	if pgSetupSQL {
-		src, err := PgSetupSQL(configFName, cfg.Namespace, "")
-		if err != nil {
-			fmt.Fprintf(eout, "-- could not create setup for %q based on %q, %s\n", cfg.Namespace, configFName, err)
-			exitCode = 1
-		} else {
-			fmt.Fprintf(out, "%s\n", src)
-		}
-	}
-	if pgModelsSQL {
-		modelNames := []string{}
-		for i, model := range cfg.Models {
-			src, err := PgModelSQL(configFName, model)
-			if err != nil {
-				fmt.Fprintf(eout, "-- could not create model %q (%d), %s\n", model.Name, i, err)
-				exitCode = 1
-			} else {
-				fmt.Fprintf(out, "%s\n", src)
-			}
-			modelNames = append(modelNames, model.Name)
-		}
-
-		src, err := PgModelPermissions(configFName, cfg.Namespace, modelNames)
-		if err != nil {
-			fmt.Fprintf(eout, "-- could not permissions for models in %q, %s\n", configFName, err)
-			exitCode = 1
-		} else {
-			fmt.Fprintf(out, "%s\n", src)
-		}
-	}
-	if pgModelsTestSQL {
-		for name, model := range cfg.Models {
-			src, err := PgModelTestSQL(configFName, model)
-			if err != nil {
-				fmt.Fprintf(eout, "-- could not create model test %q, %s\n", name, err)
-				exitCode = 1
-			} else {
-				fmt.Fprintf(out, "%s\n", src)
-			}
-		}
-	}
-	return exitCode
-}
-
-// RunMustache is a runner for a Mustache redner engine service based on the Pandoc server API.
-func RunMustache(in io.Reader, out io.Writer, eout io.Writer, port string, timeout int, verbose bool, templates string) int {
-	exitCode := 0
-	err := MustacheServer(out, eout, port, timeout, verbose, templates)
-	if err != nil {
-		fmt.Fprintf(eout, "error starting server: %s\n", err)
-		exitCode = 1
-	}
-	return exitCode
-}
-
-// Run is a runner for Newt URL router and static file server
-func Run(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool) int {
-	configFName := ""
-	if len(args) > 0 {
-		configFName = args[0]
-	}
-	cfg, err := Load(configFName)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return 1
-	}
-	// Finally make sure we have cfg.Htdocs or cfg.Routes 
-	// set to run service.
-	if cfg.Routes == nil && cfg.Htdocs == "" {
-		if cfg.FName != "" {
-			fmt.Fprintf(eout, "routes and htdocs are not set.")
-			return 1
-		} 
-		fmt.Fprintf(eout, "NEWT_ROUTES and NEWT_HTDOCS are undefined.")
-		return 1
-	}
-
-	router := new(Router)
-	if cfg != nil {
-		if err := router.Configure(cfg); err != nil {
-			fmt.Fprintf(eout, "error configuring router from %q, %s\n", cfg.FName, err)
-			return 1
-		}
-	}
-	if err != nil {
-		fmt.Fprintf(eout, "error reading routes from %q, %s\n", cfg.FName, err)
-		return 1
-	}
-	if dryRun {
-		fmt.Fprintf(out, "configuration and routes successfully processed\n")
-		return 0
-	}
-
-	appName := path.Base(os.Args[0])
-	mux := http.NewServeMux()
-	switch {
-	case cfg.Htdocs != "" && cfg.Routes != nil:
-		log.Printf("%s using %s for static content and %s for router", appName, cfg.Htdocs, cfg.Routes)
-		mux.Handle("/", wsfn.RequestLogger(router.Newt(http.FileServer(http.Dir(cfg.Htdocs)))))
-	case cfg.Htdocs == "" && cfg.Routes != nil:
-		log.Printf("%s using %s for router only", appName, cfg.Routes)
-		mux.Handle("/", wsfn.RequestLogger(router.Newt(http.NotFoundHandler())))
-	case cfg.Htdocs != "" && cfg.Routes == nil:
-		log.Printf("%s using %s for static content only", appName, cfg.Htdocs)
-		mux.Handle("/", wsfn.RequestLogger(http.FileServer(http.Dir(cfg.Htdocs))))
-	default:
-		log.Printf("Not configured, aborting")
-		return 1
-	}
-
-	log.Printf("%s listening on port %s", appName, cfg.Port)
-	http.ListenAndServe(":"+cfg.Port, mux)
-	return 0
 }
 
 

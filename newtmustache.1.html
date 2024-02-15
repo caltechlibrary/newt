@@ -24,34 +24,27 @@
 <h1 id="name">NAME</h1>
 <p>newtmustache</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>newtmustache <a href="#options">OPTIONS</a></p>
+<p>newtmustache <a href="#options">OPTIONS</a> YAML_CONFIG_FILE</p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>newtmustache</strong> is a web service that provides a
 Mustache template rendering inspired by Pandoc server.</p>
-<p>Like Pandoc web server there is no configuration file. There are a
-few command line options, e.g. port, template directory and timeout.</p>
-<h1 id="template-engine-api">Template engine API</h1>
-<p><strong>newtmustache</strong> accepts POST of JSON content and maps
-them to a template name expressed in the request URL. If I had a
-template called <code>template/list_objects.tmpl</code> then the url
-would be formed like
-<code>http://localhost:3032/list_objects.tmpl</code>. The JSON encoded
-post would then be sent through the “list_objects.tmpl” template and
-returned to the browser. The JSON object POSTed does not need a wrapping
-object like required by Pandoc server. <strong>newtmustache</strong>
-reads in the templates found in the template directory at start up. It
-creates a map between the basename of the template and the URL handler
-built from the that name. As such the templates are fixed at startup and
-do not need to be passed along with your data object.</p>
-<p>This improves of Pandoc web servers in a few ways.</p>
-<ul>
-<li>Now wrapping object</li>
-<li>Template parse errors are known earlier own and are visible from the
-output log</li>
-<li>Parsing of the templates happens once at startup</li>
-<li>Partial templates can be supported because the startup phase of
-<strong>newtmustache</strong> handles resolving partials</li>
-</ul>
+<p>Unlike Pandoc web server, <code>newtmustache</code> expects a
+YAML_CONFIG_FILE. The format is described below. That file specifics the
+request to template mapping along with any ancillary informtation to
+merge into the submitted object for the template to process. In
+additional to options expressed in the configuration the pattern
+describing the request can also be merged into the JSON objects the
+template will process.</p>
+<p><code>newtmustache</code> expects a JSON object to process. This
+means you should normally use a POST in defining your request pattern to
+be match. If no method is specified then a POST method will be
+assumed.</p>
+<p>The request expression is based on the Go 1.22 patterns used in it’s
+<code>http</code> package. <a
+href="https://pkg.go.dev/net/http@master#hdr-Patterns"
+class="uri">https://pkg.go.dev/net/http@master#hdr-Patterns</a>. The
+only modification is if not method is included a POST instead of a GET
+will be assumed.</p>
 <h1 id="options">OPTIONS</h1>
 <p>The following options are supported by
 <strong>newtmustache</strong>.</p>
@@ -72,11 +65,6 @@ display version information
 <dd>
 (default is port is 3032) Set the port number to listen on
 </dd>
-<dt>-templates</dt>
-<dd>
-(default directory name is “templates”) Pick an alternative location for
-finding templates
-</dd>
 <dt>–timeout SECONDS</dt>
 <dd>
 Timeout in seconds, after which a template rendering is aborted.
@@ -89,6 +77,77 @@ href="https://mustache.github.io"
 class="uri">https://mustache.github.io</a>. The template engined used is
 based on Go package <a href="https://github.com/cbroglie/mustache"
 class="uri">https://github.com/cbroglie/mustache</a>.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Newt Mustache only runs on localhost at the designated port (default
+is 3032).</li>
+<li>Templates are read in at startup and are retained in memory bound to
+the request path.</li>
+<li>No addition reads are performed once the web service starts
+listening.</li>
+<li>Patterns expressed in the request definitions are available in the
+object passed to the template</li>
+</ul>
+<h1 id="yaml_config_file">YAML_CONFIG_FILE</h1>
+<dl>
+<dt>port</dt>
+<dd>
+(integer, defaults to 3032) the port number the service should listen on
+</dd>
+<dt>templates</dt>
+<dd>
+(list of template paths and options)
+</dd>
+</dl>
+<h2 id="a-template-description">a template description</h2>
+<p>An individual template description has four properties.</p>
+<dl>
+<dt>request</dt>
+<dd>
+(string, required) This is the METHOD and PATH that
+<code>newtmustache</code> will listen for to map this template. If no
+HTTP method is indicated a POST will be assumed to be the target. Go
+1.22 HTTP handler patterns’s variables maybe used to overwrite
+attributes in the submitted JSON Object. They are applied after those in
+<code>.options</code> have been applied.
+</dd>
+<dt>template</dt>
+<dd>
+(string, required) This is the path to the primary Mustache template for
+this request. The source is read and associated with this request
+signature.
+</dd>
+<dt>options</dt>
+<dd>
+(object, optional) These are additional attributes that can be merged
+into the JSON processed by the Mustache template. These are merge before
+any variables taken from the URL path pattern are merge.
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<h2 id="yaml-configuration">YAML configuration</h2>
+<p>This example shows fix different template options. The first three
+applies a custom <code>page.tmpl</code> in different ways. In the last
+two the default Mustache template is setup.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">3032</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /custom_page&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> page.tmpl</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> This is the custom template with this title</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /custom_page_with_title/{title}&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> page.tmpl</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> This title is overwritten by the one in the request</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /custom_page_include&quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> page.tmpl</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /default_html5&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> A Page using the default template</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /default_html5_with_title/{title}&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> This title is replaced by the title in the URL</span></span></code></pre></div>
 </section>
 
 <footer>

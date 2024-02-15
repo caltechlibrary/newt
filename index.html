@@ -32,12 +32,13 @@ application.</p>
 <p>Taking this approach minimizes the software you need to write in
 favor of configuration. This is because “off the shelf” software is
 available to do the heavy lifting. Example, Postgres+PostgREST gives you
-an out of the box, web friendly, data management platform in the form of
-a JSON API. Light weight template engines like like Newt’s Mustache
-template engine can transform you JSON API output into a web page. Throw
-in a full text search engine like Solr and you can check off the core
-features of many LAS software systems. What is missing is the layer to
-orchestrate the data flowing through a pipe.</p>
+an out of the box. Postgres+PostgREST provides web friendly data
+management platform in the form of a JSON API. Light weight template
+engines like Pandoc web service or Newt’s own Mustache template engine
+can transform your JSON API output into a web page. Throw in a full text
+search engine like Solr and you can check off the core features of many
+LAS software systems. What is missing is the layer to orchestrate the
+data flowing through a pipe.</p>
 <p>The Newt Project is trying to encourage the following
 characteristics.</p>
 <ul>
@@ -49,8 +50,7 @@ management system</li>
 engines</li>
 <li>leverage code generation when appropriate</li>
 </ul>
-<p>The Newt Project is exploring this by providing three tools to fill
-in the gaps.</p>
+<p>The Newt Project is provides tools to fill in the gaps.</p>
 <ul>
 <li><code>newt</code> is a stateless web service (a.k.a. micro service)
 that routes a web request through a data pipeline built from other web
@@ -61,6 +61,8 @@ those models</li>
 <li><code>newtmustache</code> is a simple stateless template engine
 inspired by Pandoc server that supports the Mustache template
 language</li>
+<li><code>pdbundler</code> will take a JSON object and wrap it in Pandoc
+web service friendly JSON</li>
 </ul>
 <p>The Newt web service and data pipeline concept is being tested
 using</p>
@@ -72,7 +74,8 @@ Postgres into a JSON API</li>
 <li><a href="https://solr.apache.org">Solr</a>, full text search that
 provides a JSON API</li>
 </ul>
-<p>Newt can tie these together through YAML expressing</p>
+<p>The Newt web service can tie these together through YAML
+expressing</p>
 <ul>
 <li>application definition (run time information and application
 metadata)</li>
@@ -80,8 +83,8 @@ metadata)</li>
 URL path)</li>
 <li>models (describe the data as would be input into a web form)</li>
 </ul>
-<h2 id="what-type-of-applications-are-supported-by-newt">What type of
-applications are supported by Newt?</h2>
+<h2 id="what-type-of-applications-are-supported-by-newt-project">What
+type of applications are supported by Newt Project?</h2>
 <p>Most LAS applications are focused on managing and curating some sort
 of metadata record. This is the primary target of Newt. This might be as
 simple as a controlled vocabulary or as complex as an archival or
@@ -150,8 +153,8 @@ rest can become turn key.</p>
 of the box JSON API for managing data</li>
 <li>(full text search) Solr gives you a powerful, friendly, JSON API for
 search and discovery</li>
-<li>(content transformation) Pandoc running as a web service provides a
-simple but powerful template engine</li>
+<li>(content transformation) <code>pdbundler</code> in a pipeline with
+Pandoc web service provides a simple but powerful template engine</li>
 <li>(hosting, access control) Apache 2 or NginX when combined with a
 single sign on system (e.g. Shibboleth) provides access control</li>
 <li>(rich client) Web browsers now provide a rich software platform in

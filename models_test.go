@@ -75,7 +75,7 @@ models:
     name: String
 `)
    cfg := new(Config)
-   if err := Parse(src, cfg); err != nil {
+   if err := parseConfig(src, cfg); err != nil {
 	   t.Error(err)
 	   t.FailNow()
    }
@@ -289,7 +289,7 @@ routes:
   # get_doi_prefix is implemented as a SQL function on cl_doi_prefix model
   api_url: http://localhost:3000/rpc/get_doi_prefix?doi_prefix=${doi_prefix}
 `)
-	if err := Parse(src, cfg); err != nil {
+	if err := parseConfig(src, cfg); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

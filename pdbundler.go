@@ -10,8 +10,6 @@ import (
 	"os"
 	"io"
 	"strings"
-	"text/scanner"
-	"time"
 
 	// 3rd party packages
 	"gopkg.in/yaml.v3"
@@ -20,11 +18,11 @@ import (
 // TemplateBundler models the application `tmplbndl`
 type TemplateBundler struct {
 	Port string `json:"port,omitempty" yaml:"port"`
-	Templates []*Bundle `json:"templates,omitempty" yaml:"templates"`
+	Templates []*TemplateBundle `json:"templates,omitempty" yaml:"templates"`
 }
 
-// Bundle hold the request to template mapping for `tmplbndl`
-type Bundle struct {
+// TemplateBundle hold the request to template mapping for `tmplbndl`
+type TemplateBundle struct {
 	// Pattern holds a request pattern, e.g. `POST /blog_post`
 	// A request is associated with a template to be bundled into
 	// an JSON object. The pattern conforms to Go 1.22 or later's
@@ -75,7 +73,7 @@ func NewTemplateBundler(fName string) (*TemplateBundler, error) {
 // you're going to use one of Pandoc default templates. If a name is
 // provided then it reads the file saving the results in `.Src`
 // An error is returned in a problem is encountered.
-func (b *Bundle) ResolveTemplate() error {
+func (b *TemplateBundle) ResolveTemplate() error {
 	if b.Template != "" {
  		src, err := os.ReadFile(b.Template)
 		if err != nil {
@@ -87,7 +85,7 @@ func (b *Bundle) ResolveTemplate() error {
 }
 
 // Handler provides a HandleFunc for use with an http.ServeMux struct.
-func (b *Bundle) Handler(w http.ResponseWriter, r *http.Request) {
+func (b *TemplateBundle) Handler(w http.ResponseWriter, r *http.Request) {
 	if b.Debug {
 		log.Printf("DEBUG .Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
@@ -165,25 +163,9 @@ func (b *Bundle) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(src)
 }
 
-// PatternKeys parses a pattern and returns a list of keys found.
-// NOTE: this could be improved to make sure that delimiters are paired and that
-// the pattern's names do not contain spaces.
-func PatternKeys(p string) []string {
-	var s scanner.Scanner
-	s.Init(strings.NewReader(p))
-	vars := []string{}
-	for tok := s.Scan(); tok != scanner.EOF; tok = s.Scan() {
-		if tok == '{' {
-			s.Scan()
-			vName := s.TokenText()
-			vars = append(vars, vName)
-		}
-	}
-	return vars
-}
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (b *Bundle) ResolvePath() error {
+func (b *TemplateBundle) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
 	if strings.Contains(b.Pattern, "{") {
 		if ! strings.Contains(b.Pattern, "}") {
@@ -197,24 +179,6 @@ func (b *Bundle) ResolvePath() error {
 		log.Printf("DEBUG vars -> %+v\n", b.Vars)
 	}
 	return nil
-}
-
-type Logger struct {
-	handler http.Handler
-}
-
-//ServeHTTP handles the request by passing it to the real
-//handler and logging the request details
-func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    start := time.Now()
-	log.Printf("%s %s %v Before calling the .handler", r.Method, r.URL.Path, time.Since(start))
-	l.handler.ServeHTTP(w, r)
-    log.Printf("%s %s %v After calling the .handler", r.Method, r.URL.Path, time.Since(start))
-}
-
-//NewLogger constructs a new Logger middleware handler
-func NewLogger(handlerToWrap http.Handler) *Logger {
-    return &Logger{handlerToWrap}
 }
 
 func (tb *TemplateBundler) ListenAndServe() error {
@@ -246,58 +210,3 @@ func (tb *TemplateBundler) ListenAndServe() error {
 	return nil
 }
 
-// RunTemplateBundler is a runner for tmplbndl a service that perpares a JSON object
-// for submission to a service like the Pandoc web service.
-func RunTemplateBundler(in io.Reader, out io.Writer, eout io.Writer, args []string, port int) int {
-	const (
-		// These constants are used for exit code. FIXME: look up the POSIX recommendation on exit
-		// codes and adopt those.
-		OK = iota
-		CONFIG
-		RESOLVE
-		HANDLER
-		WEBSERVICE
-
-		// Default port number for tmplbnld
-		PORT = ":3029"
-	)
-	// Configure the template bundler webservice
-	fName := ""
-	if len(args) > 0 {
-		fName = args[0]
-	}
-	tb, err := NewTemplateBundler(fName)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
-	}
-	if port != 0 {
-		tb.Port = fmt.Sprintf("%d", port)
-	}
-	if tb.Port == "" {
-		tb.Port = PORT
-	}
-	// Prefix the port number with a colon
-	if ! strings.HasPrefix(tb.Port, ":") {
-		tb.Port = fmt.Sprintf(":%s", tb.Port)
-	}
-
-	// Create mux for http service
-	// Resolve partial templates and build handlers
-	for _, bndl := range tb.Templates {
-		if err := bndl.ResolveTemplate(); err != nil {
-			fmt.Fprintf(eout, "%s failed to resolve, %s\n", bndl.Template, err)
-			return RESOLVE
-		}
-		if err := bndl.ResolvePath(); err != nil {
-			fmt.Fprintf(eout, "failed to build handler for %q, %s\n", bndl.Pattern, err)
-			return HANDLER
-		}
-	}
-	// Launch web service
-	if err := tb.ListenAndServe(); err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return WEBSERVICE
-	}
-	return OK
-}
