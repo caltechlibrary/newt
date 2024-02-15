@@ -2,16 +2,16 @@
 # Newt User Manual
 
 - Newt Project YAML syntax
-    - [Newt YAML Syntax](newt_yaml_syntax.md)
-        - used by [Newt Data Router](newt.1.md) and [Newt Generator](newtgen.1.md)
-    - [Newt Mustache YAML](newtmustache.1.md)
-    - [Pandoc Bundler YAML](pdbunder.1.md)
-- What in the Newt Project toolbox?
+  - [Newt YAML Syntax](newt_yaml_syntax.md)
+    - used by [Newt Data Router](newt.1.md) and [Newt Generator](newtgen.1.md)
+  - [Newt Mustache YAML](newtmustache.1.md)
+  - [Pandoc Bundler YAML](pdbunder.1.md)
+- What is in the Newt Project toolbox?
   - [Newt Data Router](newt.1.md) and [Newt Generator](newtgen.1.md)
   - [Newt Mustache](newtmustache.1.md), light weight template engine
   - [Pandoc Bundler](pdbundler.1.md), turn your JSON into Pandoc web service friendly JSON
-- Presentations, background and examples
-  - [Newt Prototype 2 Presentation](presentation2/), (see draft)
+- Presentations, articles and examples
+  - [Newt Prototype 2 Presentation](presentation2/), (draft, Feb 15, 2024)
   - [Newt Mustache Explained](newtmustache_explained.md), Feb 12, 2024
   - [Data routing and the pipeline](newt_router.md), Feb 12, 2024
   - [Origin Story](origin_story.md), Feb 7, 2024
