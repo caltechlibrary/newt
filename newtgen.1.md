@@ -1,5 +1,5 @@
 ---
-title: "newtgen(1) user manual | 0.0.6 c2d3323"
+title: "newtgen(1) user manual | 0.0.6 6419ff9"
 pubDate: 2024-02-15
 author: "R. S. Doiel"
 ---

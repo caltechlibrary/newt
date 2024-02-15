@@ -26,24 +26,22 @@ Is Newt and "off the shelf" enough?
 # Choose wisely: pick your abstractions
 
 - Simple = (No code) + (Less code)
-- Compose application using data pipelines
-- Align with our service deliverables
+- Compose applications, use data pipelines
+- Align service and deliverables
 
 # Off the shelf
 
-- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)o =>  JSON data source
-- Newt Mustache, a simple template engine => Transform JSON into web pages
-- Newt data router, ties it all together
+- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) =>  JSON data source
+- Newt Mustache => Transform JSON into web pages
+- Newt Data Router, ties it all together
 - YAML can express routes, pipelines and data models
 
 # Assembling it with YAML
 
 - Newt's Second Prototype has a new YAML syntax
   - GitHub YAML issue template syntax
-- Code generator
-  - "look Mom, no AI!"
-- Newt Mustache
-  - "YAML your templates in your pipeline"
+- Code generator, "look Mom, no AI!"
+- Newt Mustache, "YAML your templates in your pipeline"
 
 # Demo time
 
@@ -60,8 +58,6 @@ A second prototype Newt application
 - "Off the shelf" is simpler
 - SQL turns people off, use a code generator
 - Mustache templates, simple but not too simple
-- Vintage: HTML5 and progressive enhancement
-
 - Unexpected encounters ...
 
 # Unexpected encounters
@@ -76,10 +72,10 @@ A second prototype Newt application
 - Newt is **an experimental working prototype** (February 2024)
 - Pipeline delays accumulate
 - Many routes are hard to maintain
-- Three YAML syntax is too many
+- Three YAML syntaxes is too many
 - Newt is missing file upload support
 
-# Newt stack has strengths
+# Newt has strengths
 
 > A very mature foundation
 
@@ -105,11 +101,10 @@ A second prototype Newt application
 # Related resources
 
 - Newt <https://github.com/caltechlibrary/newt>
-- Go 1.22 and it's pattern language for HTTP handlers, see <https://pkg.go.dev/net/http#hdr-Patterns>
 - Postgres <https://postgres.org> + PostgREST <https://postgrest.org>
-  - PostgREST Community Tutorials <https://postgrest.org/en/stable/ecosystem.html>
 - [Mustache](https://mustache.github.io) programming languages support
 - [Go Mustache package](https://github.com/cbroglie/mustache), provides a mustache cli
+- Go 1.22, pattern language in HTTP handlers, see <https://pkg.go.dev/net/http#hdr-Patterns>
 
 # Thank you!
 
