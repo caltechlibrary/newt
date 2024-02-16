@@ -8,11 +8,13 @@ package newt
 import (
 	"fmt"
 	"io"
+	"os"
+	"path"
 	"strings"
 )
 
-// RunGenerator is a runner for generating SQL and templates from our Newt YAML file.
-func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string, pgSetupSQL bool, pgModelsSQL bool, pgModelsTestSQL bool) int {
+// RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
+func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string, pgSetupSQL bool, pgModelsSQL bool, pgModelsTestSQL bool) int {
 	const (
 		// These constants are used for exit code. FIXME: look up the POSIX recommendation on exit
 		// codes and adopt those.
@@ -84,6 +86,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		mb.Port = fmt.Sprintf(":%s", mb.Port)
 	}
 
+    fmt.Printf("starting %s\n", path.Base(os.Args[0]))
 	// Create mux for http service
 	// Resolve partial templates and build handlers
 	for _, bndl := range mb.Templates {
@@ -100,74 +103,8 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		}
 	}
 	// Launch web service
+    fmt.Printf("listening on port %s\n", mb.Port)
 	if err := mb.ListenAndServe(); err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return WEBSERVICE
-	}
-	return OK
-}
-
-// RunPandocBundler is a runner for pdbundler a service that perpares a JSON object
-// for submission to a service like the Pandoc web service.
-func RunPandocBundler(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
-	const (
-		// These constants are used for exit code. FIXME: look up the POSIX recommendation on exit
-		// codes and adopt those.
-		OK = iota
-		CONFIG
-		RESOLVE
-		HANDLER
-		WEBSERVICE
-
-		// Default port number for tmplbnld
-		PORT = ":8030"
-	)
-	// Configure the template bundler webservice
-	fName := ""
-	if len(args) > 0 {
-		fName = args[0]
-	}
-	// Load the standard New YAML configuration file and confirm
-	// it comforms.
-	cfg, err := LoadConfig(fName)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
-	}
-	// Now instatiate out application with the file and the cfg object
-	pb, err := NewPandocBundler(fName, cfg)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
-	}
-	if port != 0 {
-		pb.Port = fmt.Sprintf("%d", port)
-	}
-	if pb.Port == "" {
-		pb.Port = PORT
-	}
-	// Prefix the port number with a colon
-	if ! strings.HasPrefix(pb.Port, ":") {
-		pb.Port = fmt.Sprintf(":%s", pb.Port)
-	}
-
-	// Create mux for http service
-	// Resolve partial templates and build handlers
-	for _, bndl := range pb.Templates {
-		if verbose {
-			bndl.Debug = true
-		}
-		if err := bndl.ResolveTemplate(); err != nil {
-			fmt.Fprintf(eout, "%s failed to resolve, %s\n", bndl.Template, err)
-			return RESOLVE
-		}
-		if err := bndl.ResolvePath(); err != nil {
-			fmt.Fprintf(eout, "failed to build handler for %q, %s\n", bndl.Pattern, err)
-			return HANDLER
-		}
-	}
-	// Launch web service
-	if err := pb.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return WEBSERVICE
 	}
@@ -198,7 +135,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		return CONFIG
 	}
 	// Finally Instantiate the router from fName and Config object
-	router, err := NewRouter(fName, cfg)
+	router, err := NewNewtRouter(fName, cfg)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG

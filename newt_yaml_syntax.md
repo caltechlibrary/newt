@@ -15,7 +15,7 @@ routes
 : (optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 templates
-: (optional: newtmustache, pdbundler)
+: (optional: newtmustache)
 
 ## the "application" property
 
@@ -25,7 +25,7 @@ namespace
 : (optional: newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
 
 port
-: (optional: newtrouter, newtmustache, pdbundler) default is This port number the Newt web services uses to listen for request on localhost
+: (optional: newtrouter, newtmustache) default is This port number the Newt web services uses to listen for request on localhost
 
 htdocs
 : (optional: newtrouter only) Directory that holds your application's static content
@@ -58,9 +58,6 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 
 `pipeline`
 : (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail will abort the pipeline returning an HTTP error status. If done fail then the result of the last stage it returned to the requesting browser.
-
-`error`
-: (optional) this points to a static page that can be displayed when the pipeline fails (e.g. like a 404 page used by web servers)
 
 `debug`
 : (optional) if set to true the `newt` service will log verbose results to standard out for this specific pipeline
@@ -286,24 +283,26 @@ routes:
 
 ## templates property
 
-This property is used by Newt Mustache and pdbundler. It is ignore by Newt router and code generator.
+This property is used by Newt Mustache. It is ignore by Newt router and code generator.
 
 templates
-: (optional: newtmustache, pdbundler) this holds a list of template objects
+: (optional: newtmustache) this holds a list of template objects
 
 ### template object model
+
+The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
 
 `request [METHOD ][PATH]`
 : (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
 
 `template`
-: (required: newtmustache, optional: pdbundler) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
+: (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
 `partials`
 : (optional, newtmustache only) A list of paths to partial Mustache templates used by `.template`.
 
 `options`
-: (optional: pdbundler) This are the default options you want to supply Pandoc web service, e.g. "to", "from", "standalone", "title"
+: (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template
 
 `debug`
 : (optional) this turns on debugging output for this template
@@ -332,68 +331,4 @@ templates:
     options:
       name: Universe
 ```
-
-Example of pdbundler YAML:
-
-```yaml
-application:
-    port: 3029
-templates:
-  - request: POST /hello
-    template: hello.md.tmpl
-    options:
-      from: markdown
-      to: markdown
-      standalone: false
-    debug: true
-  - request: POST /hello/{name}
-    template: hello.md.tmpl
-    options:
-      from: markdown
-      to: markdown
-    debug: true
-  - request: "POST /custom_page"
-    template: testdata/pdoc.html.tmpl
-    options:
-      from: markdown
-      to: html5
-      standalone: true
-      title: This is the custom template with this title
-    debug: true
-  - request: "POST /custom_page_with_title/{title}"
-    template: testdata/pdoc.html.tmpl
-    options:
-      from: markdown
-      to: html5
-      standalone: true
-      title: This title is overwritten by the one in the request
-    debug: true
-  - request: "POST /custom_page_include"
-    template: testdata/pdoc.html.tmpl
-    options:
-      from: markdown
-      to: html5
-      standalone: false
-    debug: true
-  - request: "POST /default_html5"
-    options:
-      from: markdown
-      to: html5
-      standalone: true
-      title: A Page using the default template
-    debug: true
-  - request: "POST /default_html5_with_title/{title}"
-    options:
-      from: markdown
-      to: html5
-      standalone: true
-      title: This title is replaced by the title in the URL
-  - request: "POST /default_html5_include"
-    options:
-      from: markdown
-      to: html5
-      standalone: false
-    debug: true
-```
-
 

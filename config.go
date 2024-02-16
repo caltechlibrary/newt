@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	// 3rd Party
@@ -24,15 +25,11 @@ type Config struct {
 
 	// Models holds a list of data models. It is used by
 	// both the data router and code generator. 
-	Models []*Form `json:"models,omitempty" yaml:"models,omitempty"`
+	Models []*NewtModel `json:"models,omitempty" yaml:"models,omitempty"`
 
 	// Routes holds an array of maps of route definitions used by
 	// the data router and code generator
-	Routes []*Route `json:"routes,omitempty" yaml:"routes,omitempty"`
-
-	// Templates holds an array of template definitions used by
-	// either Newt Mustache and pdbundler. Template is an interface.
-	Templates []*Template `json:"templates,omitempty" yaml:"templates"`
+	Routes []*NewtRoute `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
 // Application holds the information for the runtime of the application
@@ -43,7 +40,7 @@ type Application struct {
 	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`
 
 	// Port is the name of the localhost port Newt will listen on.
-	Port string `json:"port,omitempty" yaml:"port,omitempty"`
+	Port int `json:"port,omitempty" yaml:"port,omitempty"`
 
 	// Htdocs holds any static files you want to make available through
 	// Newt router.
@@ -118,14 +115,18 @@ func LoadConfig(configFName string) (*Config, error) {
 			}
 		}
 	}
-	if cfg.Application.Port == "" {
-		cfg.Application.Port = os.Getenv("NEWT_PORT")
+	if cfg.Application.Port == 0 {
+		val := os.Getenv("NEWT_PORT")
+		if val != "" {
+			port, err := strconv.Atoi(val)
+			if err != nil {
+				return nil, fmt.Errorf("NEWT_PORT holds an port number, %s", err)
+			}
+			cfg.Application.Port = port
+		}
 	}
 	if cfg.Application.Htdocs == "" {
 		cfg.Application.Htdocs = os.Getenv("NEWT_HTDOCS")
-	}
-	if !strings.HasPrefix(cfg.Application.Port, ":") {
-		cfg.Application.Port = ":" + cfg.Application.Port
 	}
 
 	//

@@ -47,46 +47,12 @@ When the Newt router starts up it reads the YAML file and sets up to run each pi
 
 This is where having the descriptions in the route definition is handy. It is easy to forgot which services are running on which ports. Both are URLs running as "localhost". In this specific case our PostgREST service is available on port 3000 and our Newt Mustache template engine is available on 3032. While the description element is optional it is what keep port mapping a little more transparent.  This is an area Newt could improve in the future but the reason for using a URL is that Newt doesn't need to know what each stage actually is. It just knows I contact this one service and take the output and send it to the next service and all stages of the pipeline are complete or there is an error reported in the pipeline. The result has handed back to the web browser.
 
-## Another step further
-
-Let's say we decide to use Pandoc web service instead of `newtmustache`. How does this change the pipeline?  In this case what comes out of PostgREST doesn't include what Pandoc web server expects. Pandoc when running as a web server expect a JSON object that includes the template source to be used as well as the JSON object. One way would be to modify Pandoc server to use a setup similar to `newtmustache` but unless you want to hack Pandoc in Haskell you're kinda out of luck.  Another way would be to add a new stage in the pipeline. That new stage would be responsible for wrapping the JSON output and setting it up for Pandoc web service.  This service could read in all the Pandoc templates at startup. It could map each template to a specific URL path. It could also include settings for each template that configure the response from Pandoc web service. This Pandoc JSON bundler would run in front of Pandoc web server and let us approach Pandoc web service much like we can use Newt's Mustache template engine. This results in a three stage pipeline.
-
-1. PostgREST, JSON data
-2. pdbundler, transform JSON data into a Pandoc web service request
-3. Pandoc web service, render the JSON content
-
-```yaml
-routes:
-    - id: interesting_album_view
-      request: GET /interesting_albums_list
-      pipeline:
-         - description: Contact PostgREST and get back the intersting album list
-           service: GET http://localhost:3000/rpc/album_view
-           content_type: application/json
-           timeout: 15
-         - description: |
-             Construct a Pandoc web server JSON POST object that includes the
-             template source and the JSON object from PostgREST. 
-           service: POST http://localhost/3020/album_list_view.tmpl
-           content_type: application/json
-           timeout: 5
-         - description: |
-             Take the results from The template packager and send them to Pandoc.
-           service: POST http://localhost:3030
-           content_type: application/json
-           timeout: 10
-      debug: true
-```
-
-In this version we have a three stage pipeline. First stage gets some results from PostgREST. Second stage turns the results into
-something Pandoc web service will understand.  The last stage is the Pandoc web service. Since debug is set true we can see each
-stage of the pipeline as it is accessed.
 
 ## Changes from the first prototype to the second.
 
 - routes include a pipeline rather than fixed stages
 - `newt` has been replaced by `newtrouter`. It does less. It just routes data. It doesn't know how to package things.
-- `newtmustache` was created to take advantage of the popular Mustache template language. It improves on Pandoc web services in that it support partial templates. It does this be having a small amount of configuration. 
+- `newtmustache` has replaced Pandoc web service as the Newt template engine of choice. Mustache is a popular templating language and well supported in numerious programming languages. It provided easier to debug issue than working with Pandoc server. `newtmustache` does require of configuration. 
 - each pipeline stage has its own timeout setting
 
 While there isn't a fixed limit to the number of stages in a pipeline you will want to keep the number limited. While contacting a web service on localhost is generally very quick the time to round trip the communication still accumulates. As a result it is recommend to stick to less than four stages and to explicitly set the timeout values based on your understanding of performance requirements.  If a stage times out the a response will be returned as an HTTP error.

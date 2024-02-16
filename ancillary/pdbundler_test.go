@@ -7,7 +7,8 @@ import (
 )
 
 func TestTemplateBundler(t *testing.T) {
-	src := `port: 3029
+	src := `application:
+  port: 3029
 templates:
   - request: "POST /custom_page"
     template: page.tmpl
@@ -57,20 +58,24 @@ templates:
 	fmt.Fprintf(fp, "%s", src)
 	fp.Close()
 
-	tb, err := NewTemplateBundler(yamlName)
+	cfg, err := LoadConfig(yamlName)
+	if err != nil {
+		t.Errorf("Configuration failed to parse, %s", err)
+	}
+	pb, err := NewPandocBundler(yamlName, cfg)
 	if err != nil {
 		t.Errorf("%s", err)
 		t.FailNow()
 	}
-	expectedPort := ":3029"
-	if expectedPort != tb.Port {
-		t.Errorf("expected %q, got %q", expectedPort, tb.Port)
+	expectedPort := ":8030"
+	if expectedPort != pb.Port {
+		t.Errorf("expected %q, got %q", expectedPort, pb.Port)
 		t.FailNow()
 	}
 
-	tb.Port = ":8029"
-	if tb == nil {
-		t.Errorf("tb template bundler should not be nil")
+	pb.Port = ":3029"
+	if pb == nil {
+		t.Errorf("pb Pandoc Template Bundler should not be nil")
 		t.FailNow()
 	}
 }

@@ -106,55 +106,6 @@ knows I contact this one service and take the output and send it to the
 next service and all stages of the pipeline are complete or there is an
 error reported in the pipeline. The result has handed back to the web
 browser.</p>
-<h2 id="another-step-further">Another step further</h2>
-<p>Let’s say we decide to use Pandoc web service instead of
-<code>newtmustache</code>. How does this change the pipeline? In this
-case what comes out of PostgREST doesn’t include what Pandoc web server
-expects. Pandoc when running as a web server expect a JSON object that
-includes the template source to be used as well as the JSON object. One
-way would be to modify Pandoc server to use a setup similar to
-<code>newtmustache</code> but unless you want to hack Pandoc in Haskell
-you’re kinda out of luck. Another way would be to add a new stage in the
-pipeline. That new stage would be responsible for wrapping the JSON
-output and setting it up for Pandoc web service. This service could read
-in all the Pandoc templates at startup. It could map each template to a
-specific URL path. It could also include settings for each template that
-configure the response from Pandoc web service. This Pandoc JSON bundler
-would run in front of Pandoc web server and let us approach Pandoc web
-service much like we can use Newt’s Mustache template engine. This
-results in a three stage pipeline.</p>
-<ol type="1">
-<li>PostgREST, JSON data</li>
-<li>pdbundler, transform JSON data into a Pandoc web service
-request</li>
-<li>Pandoc web service, render the JSON content</li>
-</ol>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">routes</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /interesting_albums_list</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">pipeline</span><span class="kw">:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/rpc/album_view</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">15</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">         - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>             Construct a Pandoc web server JSON POST object that includes the</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>             template source and the JSON object from PostgREST. </span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost/3020/album_list_view.tmpl</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">         - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>             Take the results from The template packager and send them to Pandoc.</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3030</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
-<p>In this version we have a three stage pipeline. First stage gets some
-results from PostgREST. Second stage turns the results into something
-Pandoc web service will understand. The last stage is the Pandoc web
-service. Since debug is set true we can see each stage of the pipeline
-as it is accessed.</p>
 <h2 id="changes-from-the-first-prototype-to-the-second.">Changes from
 the first prototype to the second.</h2>
 <ul>
@@ -162,10 +113,11 @@ the first prototype to the second.</h2>
 <li><code>newt</code> has been replaced by <code>newtrouter</code>. It
 does less. It just routes data. It doesn’t know how to package
 things.</li>
-<li><code>newtmustache</code> was created to take advantage of the
-popular Mustache template language. It improves on Pandoc web services
-in that it support partial templates. It does this be having a small
-amount of configuration.</li>
+<li><code>newtmustache</code> has replaced Pandoc web service as the
+Newt template engine of choice. Mustache is a popular templating
+language and well supported in numerious programming languages. It
+provided easier to debug issue than working with Pandoc server.
+<code>newtmustache</code> does require of configuration.</li>
 <li>each pipeline stage has its own timeout setting</li>
 </ul>
 <p>While there isn’t a fixed limit to the number of stages in a pipeline

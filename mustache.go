@@ -70,8 +70,8 @@ func NewNewtMustache(fName string, cfg *Config) (*NewtMustache, error) {
 	if err != nil {
 		return nil, err
 	}
-	if nm.Port == "" && cfg.Application.Port != "" {
-		nm.Port = cfg.Application.Port
+	if nm.Port == "" && cfg.Application.Port != 0 {
+		nm.Port = fmt.Sprintf(":%d", cfg.Application.Port)
 	}
 	// Prefix the port number with a colon
 	if ! strings.HasPrefix(nm.Port, ":") {
@@ -81,18 +81,18 @@ func NewNewtMustache(fName string, cfg *Config) (*NewtMustache, error) {
 }
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (b *MustacheBundle) ResolvePath() error {
+func (mb *MustacheBundle) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
-	if strings.Contains(b.Pattern, "{") {
-		if ! strings.Contains(b.Pattern, "}") {
-			return fmt.Errorf("%q is malformed", b.Pattern)
+	if strings.Contains(mb.Pattern, "{") {
+		if ! strings.Contains(mb.Pattern, "}") {
+			return fmt.Errorf("%q is malformed", mb.Pattern)
 		}
 		// Record our list of var names so handler can override the object being constructed from a path.
-		b.Vars = PatternKeys(b.Pattern)
+		mb.Vars = PatternKeys(mb.Pattern)
 	}
-	if b.Debug {
-		log.Printf("DEBUG assigning b.Pattern -> %q\n", b.Pattern)
-		log.Printf("DEBUG vars -> %+v\n", b.Vars)
+	if mb.Debug {
+		log.Printf("assigning mb.Pattern -> %q\n", mb.Pattern)
+		log.Printf("vars -> %+v\n", mb.Vars)
 	}
 	return nil
 }
@@ -100,17 +100,17 @@ func (b *MustacheBundle) ResolvePath() error {
 
 // ResolvesTemplate is responsible for reading and parse the template and partials associated with a mapped request.
 // If an error is encountered a error value is returned.
-func (b *MustacheBundle) ResolveTemplate() error {
-	if b.Template != "" {
-		if len(b.Partials) > 0 {
-			if b.Debug {
-				log.Printf("DEBUG handling primary and partial templates")
+func (mb *MustacheBundle) ResolveTemplate() error {
+	if mb.Template != "" {
+		if len(mb.Partials) > 0 {
+			if mb.Debug {
+				log.Printf("handling primary and partial templates")
 			}
 			sp := mustache.StaticProvider{}
 			sp.Partials = map[string]string{}
-			for _, fName := range b.Partials {
-				if b.Debug {
-					log.Printf("DEBUG attempting to read %q", fName)
+			for _, fName := range mb.Partials {
+				if mb.Debug {
+					log.Printf("attempting to read %q", fName)
 				}
 				src, err := os.ReadFile(fName)
 				if err != nil {
@@ -119,10 +119,10 @@ func (b *MustacheBundle) ResolveTemplate() error {
 				name := strings.TrimSuffix(path.Base(fName), path.Ext(fName))
 				sp.Partials[name] = fmt.Sprintf("%s", src)
 			}
-			if b.Debug {
-				log.Printf("DEBUG attempting to parse template with partials %q", b.Template)
+			if mb.Debug {
+				log.Printf("attempting to parse template with partials %q", mb.Template)
 			}
-			src, err := os.ReadFile(b.Template)
+			src, err := os.ReadFile(mb.Template)
 			if err != nil {
 				return err
 			}
@@ -131,22 +131,22 @@ func (b *MustacheBundle) ResolveTemplate() error {
 			if err != nil {
 				return err
 			}
-			b.Tmpl = tmpl
-			if b.Debug {
-				log.Printf("DEBUG templates and partials parsed successfully")
+			mb.Tmpl = tmpl
+			if mb.Debug {
+				log.Printf("templates and partials parsed successfully")
 			}
 			return nil
 		}
-		if b.Debug {
-			log.Printf("DEBUG attempting to parse single template %q", b.Template)
+		if mb.Debug {
+			log.Printf("attempting to parse single template %q", mb.Template)
 		}
-		tmpl, err := mustache.ParseFile(b.Template)
+		tmpl, err := mustache.ParseFile(mb.Template)
 		if err != nil {
 			return err
 		}
-		b.Tmpl = tmpl
-		if b.Debug {
-			log.Printf("DEBUG templates parsed successfully")
+		mb.Tmpl = tmpl
+		if mb.Debug {
+			log.Printf("templates parsed successfully")
 		}
 		return nil
 	}
@@ -154,15 +154,15 @@ func (b *MustacheBundle) ResolveTemplate() error {
 }
 
 // Handler decodes a the request body and then processes that as a Mustache template.
-func (b *MustacheBundle) Handler(w http.ResponseWriter, r *http.Request) {
-	if b.Debug {
-		log.Printf("DEBUG .Handler(w, %s %s)", r.Method, r.URL.Path)
+func (mb *MustacheBundle) Handler(w http.ResponseWriter, r *http.Request) {
+	if mb.Debug {
+		log.Printf(".Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
 	// FIXME: Think about what it means if a GET, HEAD, PUT, DELETE are to be handled. 
 	obj := map[string]interface{}{}
 	src, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		if b.Debug {
+		if mb.Debug {
 			log.Printf("failed to read request body, %s\n", err)
 		}
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -173,21 +173,21 @@ func (b *MustacheBundle) Handler(w http.ResponseWriter, r *http.Request) {
 		dec := json.NewDecoder(bytes.NewBuffer(src))
 		dec.UseNumber()
 		if err := dec.Decode(&obj); err != nil  && err != io.EOF {
-			if b.Debug {
+			if mb.Debug {
 				log.Printf("failed to decode JSON Response body, %s", err)
 			}
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
-		if b.Debug {
-			log.Printf("DEBUG obj populated from request body, %+v", obj)
+		if mb.Debug {
+			log.Printf("obj populated from request body, %+v", obj)
 		}
 	}
 	params := r.URL.Query()
 	if len(params) > 0 {
 		// Let's check if data came in as query paramters and add it to our object.
-		if b.Debug {
-			log.Printf("DEBUG URL Query parameters -> %+v", params)
+		if mb.Debug {
+			log.Printf("URL Query parameters -> %+v", params)
 		}
 		for k, v := range params {
 			if k != "" {
@@ -197,66 +197,66 @@ func (b *MustacheBundle) Handler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		if b.Debug {
-			log.Printf("DEBUG obj after processing query parameters, %+v", obj)
+		if mb.Debug {
+			log.Printf("obj after processing query parameters, %+v", obj)
 		}
 	}
 	// Merge (without overwriting our POST content) in our options into obj
-	if b.Options != nil {
-		if b.Debug {
-			log.Printf("DEBUG options -> %+v\n", b.Options)
+	if mb.Options != nil {
+		if mb.Debug {
+			log.Printf("options -> %+v\n", mb.Options)
 		}
-		for k, v := range b.Options {
+		for k, v := range mb.Options {
 			// Options take presidence over POST or GET QUERY parameters.
 			obj[k] = v
 		}
-		if b.Debug {
-			log.Printf("DEBUG obj after processing options -> %+v", obj)
+		if mb.Debug {
+			log.Printf("obj after processing options -> %+v", obj)
 		}
 	}
 	// Merge in path values into obj
-	if len(b.Vars) > 0 {
-		if b.Debug {
-			log.Printf("DEBUG varnames -> %+v\n", b.Vars)
+	if len(mb.Vars) > 0 {
+		if mb.Debug {
+			log.Printf("varnames -> %+v\n", mb.Vars)
 		}
-		for _, varname := range b.Vars {
+		for _, varname := range mb.Vars {
 			val := r.PathValue(varname)
 			if val != "" {
-				// val presidence over b.Options
+				// val presidence over mb.Options
 				obj[varname] = val
 			}
 		}
-		if b.Debug {
-			log.Printf("DEBUG obj after processing varnames -> %+v", obj)
+		if mb.Debug {
+			log.Printf("obj after processing varnames -> %+v", obj)
 		}
 	}
 	if obj == nil {
-		if b.Debug {
+		if mb.Debug {
 			log.Printf("no data attribute defined for template processing")
 		}
 		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
 	// Handle case where some how the service was started before setting up template processing
-	if b.Tmpl == nil {
+	if mb.Tmpl == nil {
 		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
-	if b.Debug {
-		log.Printf("DEBUG b.Tmpl -> %+v", b.Tmpl)
+	if mb.Debug {
+		log.Printf("mb.Tmpl -> %+v", mb.Tmpl)
 	}
-	b.Tmpl.FRender(w, obj)
+	mb.Tmpl.FRender(w, obj)
 }
 
 func (nm *NewtMustache) ListenAndServe() error {
 	mux := http.NewServeMux()
-	for _, b := range nm.Templates {
-		mux.HandleFunc(b.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			if b.Debug {
-				log.Printf("DEBUG mux.HandleFunc(%q, b.Handler)", b.Pattern)
-				log.Printf("DEBUG .vars -> %+v", b.Vars)
+	for _, mb := range nm.Templates {
+		mux.HandleFunc(mb.Pattern, func(w http.ResponseWriter, r *http.Request) {
+			if mb.Debug {
+				log.Printf("mux.HandleFunc(%q, mb.Handler)", mb.Pattern)
+				log.Printf(".vars -> %+v", mb.Vars)
 			}
-			b.Handler(w, r)
+			mb.Handler(w, r)
 		})
 	}
 	// Now create my http server

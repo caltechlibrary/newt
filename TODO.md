@@ -17,14 +17,14 @@
     - [ ] Make sure `api_content_type:` defaults to "application/json"
 - [x] Present at Code4Lib meetup, July 14, 2023
 - [x] Demo for DLD staff
-- [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Pandoc template to has redirect handler
+- [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Mustache template to has redirect handler
 - [ ] Create a data model structure YAML syntax (and processor) to do the following
     - [ ] generate PostgREST setup SQL
     - [x] generate SQL table create statement
     - [ ] generate a default view
     - [ ] generate a default create, update, delete, functions for table
     - [ ] generate HTML web forms for the SQL table models described in the YAML file
-    - [ ] generate Pandoc template web for using the create/update functions 
+    - [ ] generate Mustache template web for using the create/update functions 
 - [ ] Finish Newt prototype
     - [ ] Newt router handling for OPTIONS
     - [ ] Newt router handling for HEAD
@@ -67,7 +67,7 @@
     - [ ] Think about a dsn that could read to the tabel level, or think about the API end points provided by web form building platforms (e.g. Google's forms, WuFoo, etc)
 - [ ] Flesh out support for S3 object store as well as JSON API data sources
     - [ ] decide how it will be expressed in YAML
-    - [ ] decide if it only operates on FILE uploads or if it can work for other content that might get processed via Pandoc
+    - [ ] decide if it only operates on FILE uploads or if it can work for other content that might get processed via Mustache
     - [ ] Figure out what package I want to use to integrate with S3 Object store
         - [ ] Review Minio and see if I can just use it for S3 object store integration
         - [ ] Review s5cmd and its dependencies to see how s5 does S3 integration
@@ -78,5 +78,5 @@
     - [ ] better yet, find one that is already implemented and point to it!
 - [ ] Think about moving the `type_dsl.go` to its own package
 - [ ] Newt should delegate file uploads to an S3 like service, Minio is written in Go and I think supports a file streaming model
-- [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Pandoc templates
+- [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Mustache templates
 - [x] Review Stonebooks' DbOS project at https://dbos-project.github.io/ and see what Ideas might be useful for integration into Newt

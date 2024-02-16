@@ -58,37 +58,33 @@ brower’s web form for doing data entry. in YAML that can be used to
 generate Postgres SQL as well as simple HTML 5 web forms. Of course Newt
 just provides a tool, you don’t have to use it and you’re welcome to
 write SQL and your web forms from scratch.</p>
-<p>The second question, why run Pandoc server to render things? Pandoc
-is good at transforming structured text. JSON is structured text and
-Pandoc can easily turn that into HTML. It is also ready to go in the
-spirit of using “off the shelf” micro services. In the data science and
-library circles I travel I’ve seen a huge adoption of Pandoc for static
-site generation. That lead me to pick PAndoc as a rendering engine for
-my Newt<a
-href="Using%20Pandoc%20for%20the%20render%20engine%20could%20change%20in%20the%20future%20as%20long%20as%20a%20common%20way%20to%20package%20the%20results%20from%20template,%20options%20and%20data%20source%20response%20is%20as%20simple%20as%20it%20is%20with%20Pandoc%20server.">4</a>
-prototype. If another template language and engine comes on the scene,
-Newt can be adapted to us it instead<a
-href="The%20group%20behind%20PostgREST%20is%20also%20developing%20an%20Postgres%20embedable%20Mustache%20engine,%20that%20may%20make%20sense%20too.">5</a>.
-If you really don’t like Pandoc templates Newt now provides a similar
-engine that supports Mustache templates, <code>newtmustache</code>.</p>
+<p>Second question, “Why Pandoc?”. At the time of the first prototype it
+made sense. It was there, it was “off the shelf” and I figured out how
+to create a POST to it that let me turn my JSON into a web page. When
+trying to generalize the Newt data router it proved very problematic. So
+the experimental outcome was while it helped me bootstrap Newt it wasn’t
+worth keeping it in the mix. Mustache templates was my othere choice but
+there wasn’t a riable “off the shelf” service I wanted to work with.
+Fortunately there was a good implementation of Mustache templates for
+the Go programming language. I wrote a pipeline friendly template engine
+for Newt. You send it a JSON object and based on configuration those
+objects are transformed by your Mustache template. The nice thing about
+this is the template engine reads in the templates at startup and also
+makes them available via URL paths. This makes it easier to know what’s
+happening in your YAML file should you need to change things up.</p>
 <p>The third question, “Why YAML for configuration?”. Personally I’m
-enthusiastic about YAML. It is sort of boring. But I think that is is
+ambivilant about YAML. It is sort of boring. But I think that is is
 strength. YAML has become umbiquious for describing configuration and
 simple data structures. It easily converts to JSON. It’s declarative.
 Newt uses YAML largely because it’s well known and is specifically known
 by my colleagues at Caltech Library. Why invent a new language when I
 can use one that is already known?</p>
 <p>Final question is “How do I handle file uploads?”. The short answer
-is Newt doesn’t. Eventually I plan to support for S3 protocol storage
-systems (e.g. Minio, S3) but I haven’t had time to implement this and do
-not need it for the application I am building with Newt. A longer answer
-is yes, it is possible but you need to know Postgres really well.
-Technically Postgres+PostgreSQL can handle file uploads because you can
-store files or large objects in Postgres. Personally I don’t want to
-store files in my data base management system. I’d rather store them in
-an object store like S3. I don’t recomment Newt for applications that
-require handling file uploads unless you want to write your own micro
-service to implement it.</p>
+is Newt doesn’t. In theory you could write a service to handle it and
+use it in a router pipeline but Newt doesn’t provide one. Long answer:
+Technically if you clever you could transform and encode the data
+browser side to make it easy to store in Postgres via PostgREST. I don’t
+recommend that. It is more trouble than it is worth.</p>
 <p>Newt’s configuration langauge is YAML. YAML was picked because it is
 widely use in 2023/2024. I don’t need to explain it to my colleagues or
 peers they already use it. Newt implements a “domain specific language”

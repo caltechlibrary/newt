@@ -27,11 +27,9 @@ template supported explained</h1>
 <p>The Newt Mustache template engine came about due to three
 concerns.</p>
 <ul>
-<li>People don’t think about Pandoc as a web service</li>
-<li>Some people don’t like Pandoc templates or are unfamiliar with
-Pandoc</li>
-<li>Pandoc’s web server doesn’t handle Pandoc’s partial template
-support</li>
+<li>Pandoc server usage is hard to debug</li>
+<li>Many people don’t know or like Pandoc’s template language</li>
+<li>Pandoc server does NOT support partial templates</li>
 </ul>
 <p>When building a web application using a template system it is very
 useful to minimize the number of templates you need to know and work
@@ -39,29 +37,20 @@ with. One way this is done is to build smaller partial templates that
 handle specific content elements or types. E.g. a bibliographic citation
 used on a book review website.</p>
 <p>When you run Pandoc from the command line this is readily supported.
-Unfortunately Pandoc 3.1 web service doesn’t support this. The web
-service only knows about the full template you provide as part of the
-JSON POST. Another problem with the web service is that you must provide
-both the template and JSON DATA for each request you make to the web
-service. Where does that template source come from? Typically it is read
-from disk unless you’re using the default templates Pandoc provides.
-Internally Pandoc web service unpacks the template, parses it then
-applies the data object you provided. How might we simplify the
-process?</p>
-<p>Ideally a simple template engine is stateless once it has started up.
-This doesn’t mean it can’t take advantage of configuration when starting
-up. If a simple template engine knew where the template was on disk it
-could read it and keep the template in memory. It could potentially
-resolve partial templates too. Combine this with mapping the template to
-a specific URL request we can eliminate the need for a wrapping object
-like the one required to use Pandoc web service.</p>
-<p>Newt Project provides a web service, <a
-href="pdbunder.1.html">pdbundler</a> let’s you prep JSON object for use
-with Pandoc web service. It solves some of the challenges of working
-with Pandoc web service.</p>
-<p><a href="newtmustache.1.html">Newt Mustache</a> takes that a step
-further and integrates a Mustache template engine which will include
-partial template support resolved at startup.</p>
+Unfortunately Pandoc 3.1 server doesn’t support this. The server only
+knows about the full template you provide as part of the JSON POST.
+Mistakenly misconfigure the JSON you post to Pandoc and it will happly
+give you nothing back. Not an error message, not a peep. Technically
+it’s giving back what you requested but it’s a pain to fiddle with JSON
+to get enough of a response to diagnose the problem. That was a show
+stopper for Newt’s second prototype. Time to switch horses. Pandoc
+server inspired Newt’s Mustache template service. Newt’s template
+service is configured from YAML file. Settings are clearer. You can also
+turn on debugging for a specific template you have concerns about. Like
+Pandoc server Newt’ Mustache template engine is stateless. You can run
+as many as you like as long as you have an available port.</p>
+<p><a href="newtmustache.1.html">Newt Mustache</a> designd for use in
+Newt’s data pipeline.</p>
 <p>Why Mustache templates?</p>
 <ul>
 <li>Mustache is a widely support template language with support include
@@ -70,8 +59,8 @@ Library)</li>
 <li>Since a Go package provides Mustache template I only need to write a
 light weight web service to wrap it</li>
 <li>Since I am writing the service I can keep the requires to a minimum,
-i.e. <a href="newtmustache.1.html#newt_config_file">A simple YAML
-configuration file</a>.</li>
+i.e. <a href="newtmustache.1.html#newt_config_file">Use Newt’s YAML file
+syntax</a>.</li>
 </ul>
 <p>See <a href="newtmustache.1.html">newtmustache</a> manual page for
 details.</p>

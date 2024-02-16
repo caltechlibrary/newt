@@ -5,10 +5,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
-	"io"
+	"path"
 	"strings"
 
 	// 3rd party packages
@@ -18,30 +19,31 @@ import (
 // PandocBundler models the application `pdbundler`
 type PandocBundler struct {
 	Port string `json:"port,omitempty" yaml:"port"`
-	Templates []*PandocBundle `json:"templates,omitempty" yaml:"templates"`
+	Templates []*PandocTemplate `json:"templates,omitempty" yaml:"templates"`
 }
 
-// PandocBundle hold the request to template mapping for `pdbundler`
-type PandocBundle struct {
+// PandocTemplate hold the request to template mapping for `pdbundler`
+type PandocTemplate struct {
 	// Pattern holds a request pattern, e.g. `POST /blog_post`
 	// A request is associated with a template to be bundled into
 	// an JSON object. The pattern conforms to Go 1.22 or later's
 	// HTTP handler function pattern, see <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns>
 	Pattern string `json:"request,required" yaml:"request"`
+
 	// Template holds a path to the primary template file for this route. Path can be relative
 	// to the current working directory.
 	Template string `json:"template,required" yaml:"template"`
-	// Partials holds a list of path to partial templates used by the primary template. `tmplbndl` will
-	// attempt to replace references in the primary template with the content of the partials. Recursive
-	// partials are not supported. The goal is to facilate including sub templates.
-	Partials []string `json:"partials,omitempty" yaml:"partials"`
+
 	// Options hold the JSON object that will be resolve by `tmplbndl`. The values `.text` and `.template`
 	// will be replaced by the contents specified in Bundles and received in the request.
 	Options map[string]interface{} `json:"options,omitempty" yaml:"options"`
+
 	// Debug logs more verbosely if true
 	Debug bool `json:"debug,omitempty" yaml:"debug"`
+
 	// Src holds the resolved template content
 	Src []byte
+
 	// Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
 	// the output object.
 	Vars []string
@@ -50,68 +52,68 @@ type PandocBundle struct {
 // NewPandocBundler create a new PandocBundler struct. If a filename
 // is provided it reads the file and sets things up accordingly.
 func NewPandocBundler(fName string, cfg *Config) (*PandocBundler, error) {
-	tb := &PandocBundler{}
+	pb := &PandocBundler{}
 	if fName == "" {
-		return tb, fmt.Errorf("missing configuration file")
+		return pb, fmt.Errorf("missing configuration file")
 	}
 	src, err := os.ReadFile(fName)
 	if err != nil {
 		return nil, err
 	}
-	err = yaml.Unmarshal(src, &tb)
+	err = yaml.Unmarshal(src, &pb)
 	if err != nil {
 		return nil, err
 	}
-	if tb.Port == "" && cfg.Application != nil &&  cfg.Application.Port != ""{
-		tb.Port = cfg.Application.Port	
+	if pb.Port == "" && cfg.Application != nil &&  cfg.Application.Port != 0 {
+		pb.Port = fmt.Sprintf(":%d", cfg.Application.Port)
 	}
 	// Prefix the port number with a colon
-	if ! strings.HasPrefix(tb.Port, ":") {
-		tb.Port = fmt.Sprintf(":%s", tb.Port)
+	if ! strings.HasPrefix(pb.Port, ":") {
+		pb.Port = fmt.Sprintf(":%s", pb.Port)
 	}
-	return tb, nil
+	return pb, nil
 }
 
 // ResolvesTemplate. If not template name is available it is assumed
 // you're going to use one of Pandoc default templates. If a name is
 // provided then it reads the file saving the results in `.Src`
 // An error is returned in a problem is encountered.
-func (b *PandocBundle) ResolveTemplate() error {
-	if b.Template != "" {
- 		src, err := os.ReadFile(b.Template)
+func (pt *PandocTemplate) ResolveTemplate() error {
+	if pt.Template != "" {
+ 		src, err := os.ReadFile(pt.Template)
 		if err != nil {
 			return err
 		}
-		b.Src = src
+		pt.Src = src
 	}
 	return nil
 }
 
 // Handler provides a HandleFunc for use with an http.ServeMux struct.
-func (b *PandocBundle) Handler(w http.ResponseWriter, r *http.Request) {
-	if b.Debug {
+func (pt *PandocTemplate) Handler(w http.ResponseWriter, r *http.Request) {
+	if pt.Debug {
 		log.Printf("DEBUG .Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
 	obj := map[string]interface{}{}
 	// Copy in our options
-	if b.Options != nil {
-		for k, v := range b.Options {
+	if pt.Options != nil {
+		for k, v := range pt.Options {
 			obj[k] = v
 		}
 	}
 	// Merge in path values into options
-	for _, varname := range b.Vars {
+	for _, varname := range pt.Vars {
 		val := r.PathValue(varname)
 		if val != "" {
 			obj[varname] = val
 		}
 	}
-	if b.Debug {
-		log.Printf("DEBUG varnames -> %+v\n", b.Vars)
+	if pt.Debug {
+		log.Printf("DEBUG varnames -> %+v\n", pt.Vars)
 		log.Printf("DEBUG obj now -> %+v\n", obj)
 	}
 	// Add our resolved template source
-	obj["template"] = fmt.Sprintf("%s", b.Src)
+	obj["template"] = fmt.Sprintf("%s", pt.Src)
 	// Add our `.text` value from the request body
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -132,7 +134,8 @@ func (b *PandocBundle) Handler(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte(fmt.Sprintf("%s, %s", http.StatusText(http.StatusBadRequest), err)))
 				return
 			}
-			obj["text"] = m
+			src, _ := yaml.Marshal(m)
+			obj["text"] = fmt.Sprintf("%s", src)
 		case bytes.HasPrefix(body, []byte("[")):
 			// Handle case of JSON array
 			a := []interface{}{}
@@ -142,7 +145,8 @@ func (b *PandocBundle) Handler(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte(fmt.Sprintf("%s, %s", http.StatusText(http.StatusBadRequest), err)))
 				return
 			}
-			obj["text"] = a
+			src, _ := yaml.Marshal(a)
+			obj["text"] = fmt.Sprintf("%s", src)
 		default:
 			// If we a text format then we just attach to `.text` in obj. Otherwise we need to encode it.
 			contentType := http.DetectContentType(body)
@@ -168,25 +172,25 @@ func (b *PandocBundle) Handler(w http.ResponseWriter, r *http.Request) {
 
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (b *PandocBundle) ResolvePath() error {
+func (pt *PandocTemplate) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
-	if strings.Contains(b.Pattern, "{") {
-		if ! strings.Contains(b.Pattern, "}") {
-			return fmt.Errorf("%q is malformed", b.Pattern)
+	if strings.Contains(pt.Pattern, "{") {
+		if ! strings.Contains(pt.Pattern, "}") {
+			return fmt.Errorf("%q is malformed", pt.Pattern)
 		}
 		// Record our list of var names so handler can override the object being constructed from a path.
-		b.Vars = PatternKeys(b.Pattern)
+		pt.Vars = PatternKeys(pt.Pattern)
 	}
-	if b.Debug {
-		log.Printf("DEBUG assigning b.Pattern -> %q\n", b.Pattern)
-		log.Printf("DEBUG vars -> %+v\n", b.Vars)
+	if pt.Debug {
+		log.Printf("DEBUG assigning pt.Pattern -> %q\n", pt.Pattern)
+		log.Printf("DEBUG vars -> %+v\n", pt.Vars)
 	}
 	return nil
 }
 
-func (tb *PandocBundler) ListenAndServe() error {
+func (pb *PandocBundler) ListenAndServe() error {
 	mux := http.NewServeMux()
-	for _, bndl := range tb.Templates {
+	for _, bndl := range pb.Templates {
 		mux.HandleFunc(bndl.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			if bndl.Debug {
 				log.Printf("DEBUG mux.HandleFunc(%q, bndl.Handler)", bndl.Pattern)
@@ -195,18 +199,11 @@ func (tb *PandocBundler) ListenAndServe() error {
 			bndl.Handler(w, r)
 		})
 	}
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			fmt.Fprintf(w, "\nSomething fell through -> %q %q\n", r.Method, r.URL.Path)
-			//http.NotFound(w, r)
-			return
-		}
-		fmt.Fprintf(w, "Welcome to the home page!")
-	})
 	// Now create my http server
 	svr := new(http.Server)
-	svr.Addr = tb.Port
+	svr.Addr = pb.Port
 	svr.Handler = mux
+	log.Printf("%s listening on %s", path.Base(os.Args[0]), svr.Addr)
 	if err := svr.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}

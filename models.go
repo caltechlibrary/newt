@@ -9,14 +9,14 @@ import (
 	//"gopkg.in/yaml.v3"
 )
 
-// Form implements a structure that can accomodate the GitHub YAML issue template syntax.
+// NewtModel implements a structure that can accomodate the GitHub YAML issue template syntax.
 // See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>
 //
-// The Form structure is used by Newt to describe data models. It will be used in code generation and in validating
+// The NewtModel structure is used by Newt to describe data models. It will be used in code generation and in validating
 // POST and PUT requests to the data router.
 // 
 // Code generation will need to render to SQL, HTML, Mustache and Pandoc templates.
-type Form struct {
+type NewtModel struct {
 	// This is a Newt specifc set of attributes to place in the form element of HTML. I.e. it could
 	// be form "class", "method", "action", "encoding". It is not defined in the GitHub YAML issue template syntax
 	// (optional)
@@ -66,12 +66,12 @@ type Form struct {
 }
 
 // ToHTMLForm, render as an HTML web form
-func (f *Form) ToHTMLForm() string {
+func (f *NewtModel) ToHTMLForm() string {
 	return "ToHTMLForm() not implemented"
 }
 
 // ToHTML, render as an HTML display block
-func (f *Form) ToHTML() string {
+func (f *NewtModel) ToHTML() string {
 	return "ToHTML() not implemented"
 }
 
@@ -80,7 +80,7 @@ func (f *Form) ToHTML() string {
 // suffix for the variable reference supplied. (e.g. "${", "}" or "$", "$" would 
 // the variable values used in Pandoc templates while "{{", "}}" would conform to
 // Mustache)
-func (f *Form) ToHTMLFormTemplate(prefix string, suffix string) string {
+func (f *NewtModel) ToHTMLFormTemplate(prefix string, suffix string) string {
 	return "ToHTMLFormTemplate(prefix, suffix) not implemented"
 }
 

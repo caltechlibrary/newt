@@ -215,5 +215,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunGenerator(in, out, eout, args, pgSetupSQL, pgModelsSQL, pgModelsTestSQL))
+	os.Exit(newt.RunNewtGenerator(in, out, eout, args, pgSetupSQL, pgModelsSQL, pgModelsTestSQL))
 }

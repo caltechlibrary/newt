@@ -96,15 +96,15 @@ This currently is done in a Python orchestrated and Shell.</p>
 <p>Newt offers an escape hatch through its pipeline approach. Each level
 of aggregation can be thought of as a SQL VIEW. This can be generated in
 JSON directly by Postgres+PostgREST. The results can be stored in feeds
-database table. Similarly the JSON can be sent through a template
-engine, either Pandoc or Newt’s Mustache engine, to render other formats
-(e.g. HTML, HTML include, BibTeX, RSS, CSV). This pushes selecting and
-sorting problems into the database which is better suited than hand
-coded Python scripts to aggregate content. The resulting JSON can be
-take straight from Postgres+PostgREST. HTML, HTML include, BibTeX, RSS
-and CSV can be either written to disk in batch or pushed directly into
-an S3 bucket. Skipping the render to disk stage would significantly
-speed up the process but obscure the rendering process more.</p>
+database table. Similarly the JSON can be sent through a template engine
+to render various formats (e.g. HTML, HTML include, BibTeX, RSS, CSV).
+This pushes selecting and sorting problems into the database which is
+better suited than hand coded Python scripts to aggregate content. The
+resulting JSON can be take straight from Postgres+PostgREST. HTML, HTML
+include, BibTeX, RSS and CSV can be either written to disk in batch or
+pushed directly into an S3 bucket. Skipping the render to disk stage
+would significantly speed up the process but obscure the rendering
+process more.</p>
 <h3 id="project-outline-1">Project outline</h3>
 <p>The feeds aggregates CaltechAUTHORS, CaltechTHESIS and CaltechDATA
 content. Content is presently aggregated by group, people and recent.
@@ -133,13 +133,11 @@ performance in Postgres.</p>
 <p>When Newt’s 2nd prototype becomes available it provides an
 opportunity to leverage Newt’s data pipeline by creating all the JSON
 objects in the database then rendering the table results in one pass.
-This leaves could significantly reduce the site building time when
-considering Pandoc can be run as a web service and it is already used to
-render the Markdown, HTML, HTML include, BibTeX formats. The database
-approach affords us the opportunity to reduce the number of disk reads
-given the performance characteristics of Postgres and leave the site
-building process to just write content to the htdocs tree or perhaps
-directly to the S3 bucket.</p>
+Also be switching from Pandoc on the commandline to Newt’s Mustache
+template engine also offers an opportuntity to significantly reduce the
+site building time. Ideally you only write files at the end of the
+pipeline rather then writing some reading some and writing some
+more.</p>
 <p>It is desirable to produced a “combined” feed that aggregates content
 across our repository systems. If feeds output is staged in a dataset
 collection then them a combined repository view is possible is possible.

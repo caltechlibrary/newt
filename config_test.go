@@ -1,7 +1,6 @@
 package newt
 
 import (
-	"os"
 	"path"
 	"testing"
 )
@@ -12,6 +11,7 @@ func TestLoadConfig(t *testing.T) {
 	configFiles := []string{
 		path.Join("testdata", "blog.yaml"),
 		path.Join("testdata", "bundler_test.yaml"),
+		path.Join(".", "pdbundler_test.yaml"),
 	}
 	for _, fName := range configFiles {
 		cfg, err := LoadConfig(fName)

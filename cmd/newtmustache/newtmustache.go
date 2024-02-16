@@ -152,7 +152,7 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "display version")
 	
 	// App option(s)
-	port, timeout, verbose := 3032, 3, false
+	port, timeout, verbose := 8040, 3, false
 	flag.IntVar(&port, "port", port, fmt.Sprintf("set the port %s will listen on", appName))
 	flag.IntVar(&timeout, "timeout", timeout, "timeout for requests")
 	flag.BoolVar(&verbose, "verbose", verbose, "display template debugging and request information")

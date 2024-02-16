@@ -7,7 +7,6 @@
   - [Newt Router](newtrouter.1.md), manages your requests and data pipelines
   - [Newt Generator](newtgenerator.1.md), bootstraps your SQL and Mustache templates
   - [Newt Mustache](newtmustache.1.md), a light weight template engine
-  - [Pandoc Bundler](pdbundler.1.md), turn your JSON into Pandoc web service friendly JSON
 - Presentations, articles and examples
   - [Newt Prototype 2 Presentation](presentation2/), (draft, Feb 15, 2024)
   - [Newt Mustache Explained](newtmustache_explained.md), Feb 12, 2024

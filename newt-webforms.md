@@ -1,5 +1,5 @@
 
-# Newt as router, form validator
+# Newt as data router
 
 Often middleware is written to handle URL request based on the path element of the URL. Sometimes this is referred to as a "route" or "end point". Newt also supports the concept of [routes](newt-router.md) but carries it further with the concept of a request route being mapped to a JSON data source and continuing processing via Pandoc running in server mode. In custom middleware a common first order of business in a route function is to validate inputs.  Newt also includes this. It does this via annotations in the YAML configuration in the routes, var attribute. A small Model [DSL](https://en.wikipedia.org/wiki/Domain-specific_language "Domain Specific Language") is used to define a varaibles type. The [type definition](model-dsl.md "Model DSL") is what Newt uses to validate the inputs.
 

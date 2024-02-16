@@ -15,7 +15,7 @@ func TestDryRunRouter(t *testing.T) {
 	eout := os.Stderr
 	args := []string{}
 	args = append(args, path.Join("testdata", "blog.yaml"))
-	exitCode := Run(in, out, eout, args, true)
+	exitCode := RunNewtRouter(in, out, eout, args, true)
 	if exitCode != 0 {
 		t.Errorf("expected exit code zero, got %d\n", exitCode)
 	}
