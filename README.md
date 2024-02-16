@@ -1,13 +1,13 @@
 
 # Newt Project
 
-The Newt Project is an experiment in rapid web application development for libraries, archives and museums (abbr: <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture forming data pipelines[^1]. The pipelines compose the web application. It comes with several programs used to implement the architecture.
+The Newt Project is an experiment in rapid web application development for libraries, archives and museums (abbr: <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture formed data pipelines[^1]. The pipelines compose the web application. Newt comes with several to facilitate implementing this architecture.
 
 [^1]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
-Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST provides data management and a JSON API out of the box. Solr can provide full text search in the form of a JSON API, again out of the box. Pair these with a light weight template engine like Newt Mustache and you can check off most of the core features needed to implement many LAS software systems. There is a missing layer. You need to tie those services together. Newt provides a data ruter to do just that. It orchestrates your web application through the application of routes and data pipelines.
+Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST provides data management and a JSON API out of the box. MySQL plus MRS does the same. Solr, Elasticsearch and Opensearch all provide full text search in the form of a JSON API. Again these are all out of the box. Pair these with some data routing and a light weight template engine and you can check off most of the core features used to implement LAS software systems.  Newt provides the missing parts -- data router, template engine even a code generator. A YAML file is used to tie all this capability together. 
 
-The Newt Project is trying to encourage the following characteristics.
+The Newt is trying to encourage the following characteristics.
 
 - preference for "off the shelf" over writing new code
 - data modeling and management placed squarely in your database management system
@@ -15,10 +15,10 @@ The Newt Project is trying to encourage the following characteristics.
 - data transformation (if needed) happens in stateless template engines
 - code generation where appropriate
 
-The Newt provides tools to fill in the gaps.
+Newt provides tools to fill in the gaps.
 
 - `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
-- `newtgenerator` is a code generator that can take a set of data models described in YAML and generate SQL, HTML and templates based on those models
+- `newtgenerator` is a code generator that can takes a set of data models described in YAML and generates SQL and Mustache templates
 - `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
 
 The Newt web service and data pipeline concept is being tested using
@@ -26,7 +26,7 @@ The Newt web service and data pipeline concept is being tested using
 - [Postgres](https://postgres.org), data management and modeling
 - [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
 
-The Newt web service can tie these together through YAML expressing
+The Newt YAML ties this together expresses
 
 - application (run time information and application metadata)
 - models (describe the data as would be input into a web form)
@@ -45,9 +45,9 @@ Over the last several decades web applications became very complex. This complex
 
 Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. By 1993 the web as an application platform was born[^2] and with it a good platform for providing useful organizational software.
 
-By the mid 1990s the Open Source databases MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^3]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^4]. Yahoo Pipes inspired Newt's data pipelines.  Specialization has continued ever since. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases[^5]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example was the in-house bespoke content systems gave way to systems like [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
+By the mid 1990s the Open Source databases MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^3]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^4]. Yahoo Pipes inspired Newt's data pipelines.  Specialization has continued ever since. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases[^5]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example was the bespoke content management systems gave way to systems like [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
 
-[^2]: Web applications proceeded to eat all the venerable green screen systems they could find. Eventually they and their corporate sponsors invented the surveillance economy we have today. Sometimes "good ideas" have terrible consequences. Making it easier to produce custom web applications should always be done keeping in mind the necessity for humane and inclusive use. Newt can be both part of a solution but also be used to exacerbate human problems.
+[^2]: Web applications proceeded to eat all the venerable green screen systems they could find. Eventually they and their corporate sponsors invented the surveillance economy we have today. Sometimes "good ideas" have terrible consequences. Making it easier to produce custom web applications should always be done keeping in mind the necessity for humane and inclusive use. Newt can be both part of a solution but also be used to exacerbate human problems. Develop with consideration for others.
 
 [^3]: HTTP being the protocol the communicates with. Essentially at the time RDBMS spoke a dialect of SQL as the unifying language. The web of the time understood HTML and to a certain degree XML. By 2000 people were looking for something simpler than XML to move structured data about. [JSON](https://en.wikipedia.org/wiki/JSON) quickly became the answer.
 
@@ -61,29 +61,30 @@ Much of the back end of web applications can largely be assemble from off the sh
 
 I think a radical simplification is due.  Most software doesn't need to scale that large. Even in the research and LAS communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software.
 
-A big key to simplification is realizing that the middleware no longer needs to be responsible for managing data models, access control and users or data transformation. If you can describe your data model, routes and their data pipelines the rest can become much more turn key.
+A big key to simplification is narrowing the focus of our middleware. It is not necessary for each middleware to implement data modeling, access control, user management, or data transformation. Like the Unix philosophy, simple middleware doing a specific task. Let your data base model your data and manage it. Let a full text search engine provide search, Let your front end web server with integrated single sign-on control access. Ideally assembling the back end would be turnkey. Newt attempts to make that possible for metadata curation applications.
 
 ## Off the shelf deliverables
 
+Even without Newt we have allot to work with. Here's a shortlist of ones I use.
+
 - (data management) Postgres combined with PostgREST gives you an out of the box JSON API for managing data
 - (full text search) Solr gives you a powerful, friendly, JSON API for search and discovery
-- (content transformation) `newtmustache` in a pipeline transforms your JSON data using the Mustache template language
 - (access control) Apache 2 or NginX when combined with a single sign on system (e.g. Shibboleth) provides access control
 - (rich client) Web browsers now provide a rich software platform in their own right
 
 ## The missing bits
 
-With only the above list we can build capable applications relying on the sophisticated features of our web browsers. There is a cost. JavaScript is required to render everything. Relying on JavaScript in the browser to assemble our content is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a web service and get back useful results without having to process more than HTML and CSS.
+With the above list we can build capable applications relying on the sophisticated features of our web browsers. There is a cost. JavaScript is required to render everything. Relying on JavaScript in the browser to assemble our content from JSON or XML API is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a web service and get back useful results without having to process more than HTML and CSS.
 
-Taking the better approach in the past has required the writing of complex middleware. I think we can avoid that or at least avoid writing complex middleware.
+Taking the better approach in the past has required the writing of complex middleware. Newt's few tools help us avoid writing middleware.
 
 For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" is described by an HTTP method and URL path. The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^7]. The collection of routes and their functions compose the API your browser uses to navigate through your application.
 
-Historically before single sign-on systems became common the function handling the request was responsible for the whole transaction. A single function would need to handle access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database or operating system. Enertia has ensure many web applications built as middleware still do this. Even succesful projects like Drupal and Wordpress do this.
+Historically before single sign-on systems became common the function handling a web request was responsible for the whole transaction. A single function would need to handle access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database or operating system. Inertia has ensure many web applications built as middleware still do this. Even successful projects like Drupal and WordPress do this.
 
-If we narrowly focus a function and allow other layers of the system to handle most of the complexity our functions can be simpler. Easier to write. Easier to reason about.  While that was the motivation for many software libraries and frameworks in practice we just got more complexity. Each programming language developed its own rotating pantheon of favorites. Maybe the solution isn't the programming language and framework but something else.
+If we narrowly focus a function and allow other layers of the system to handle most of the complexity our functions can be simpler. Easier to write. Easier to reason about.  While that was the motivation for many software libraries and frameworks in practice they just wound up empowering more complexity. We could do more so we did. Maybe the solution isn't a programming language and framework but it is something else.
 
-Are we missing an opportunity to change our base assumptions? Middleware doesn't need to do allot to be useful. That was the whole point when the term "micro service" was coined. The key is to be able to **easily** chain middleware together. Like stacking a bunch of bricks. Unix accomplishes that with pipes. That web already has this concept to but it is less obvious. Can be build towards the small and simple?
+Are we missing an opportunity to change our base assumptions? Middleware doesn't need to do allot to be useful. That was a the promise when the term "micro service" was coined. The key is to make it easier to chain our middleware together. Unix accomplishes that with pipes. That web already has this concept of this but it is less obvious.  Can we make this easy then build towards the small and simple?
 
 ### A new baseline
 
@@ -135,7 +136,7 @@ Limiting Newt web service applications to localhost keeps them simple. Doing the
 
 ### What about "scaling"?
 
-`newtrouter` is just a router. Aside from reading configuration at start up it doesn't maintain state. `newtmustache` functions the same way, read in the configuration and just run. By assigning different ports you can also run many instances of them. This makes it possible to run them in parallel, behind load balancers or even through proxying spread them across many machines. The instances don't share data or coordinate. They start up wait for a request and providing an answer. 
+`newtrouter` is just a router. Aside from reading configuration at start up it doesn't maintain state. `newtmustache` functions the same way, read in the configuration and just run. By assigning different ports you can also run many instances of them. This makes it possible to run them in parallel, behind load balancer or even through proxying spread them across many machines. The instances don't share data or coordinate. They start up wait for a request and providing an answer. 
 
 So what does this all mean? In principle a Newt based applications can scale big as it pipeline services allow. 
 

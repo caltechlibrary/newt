@@ -25,24 +25,23 @@
 <p>The Newt Project is an experiment in rapid web application
 development for libraries, archives and museums (abbr:
 <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).
-Newt uses a service oriented architecture forming data pipelines<a
+Newt uses a service oriented architecture formed data pipelines<a
 href="#fn1" class="footnote-ref" id="fnref1"
 role="doc-noteref"><sup>1</sup></a>. The pipelines compose the web
-application. It comes with several programs used to implement the
+application. Newt comes with several to facilitate implementing this
 architecture.</p>
 <p>Taking this approach minimizes the software you need to write in
 favor of configuration. This is because “off the shelf” software is
 available to do the heavy lifting. Example, Postgres+PostgREST provides
-data management and a JSON API out of the box. Solr can provide full
-text search in the form of a JSON API, again out of the box. Pair these
-with a light weight template engine like Newt Mustache and you can check
-off most of the core features needed to implement many LAS software
-systems. There is a missing layer. You need to tie those services
-together. Newt provides a data ruter to do just that. It orchestrates
-your web application through the application of routes and data
-pipelines.</p>
-<p>The Newt Project is trying to encourage the following
-characteristics.</p>
+data management and a JSON API out of the box. MySQL plus MRS does the
+same. Solr, Elasticsearch and Opensearch all provide full text search in
+the form of a JSON API. Again these are all out of the box. Pair these
+with some data routing and a light weight template engine and you can
+check off most of the core features used to implement LAS software
+systems. Newt provides the missing parts – data router, template engine
+even a code generator. A YAML file is used to tie all this capability
+together.</p>
+<p>The Newt is trying to encourage the following characteristics.</p>
 <ul>
 <li>preference for “off the shelf” over writing new code</li>
 <li>data modeling and management placed squarely in your database
@@ -52,14 +51,14 @@ management system</li>
 engines</li>
 <li>code generation where appropriate</li>
 </ul>
-<p>The Newt provides tools to fill in the gaps.</p>
+<p>Newt provides tools to fill in the gaps.</p>
 <ul>
 <li><code>newtrouter</code> is a stateless web service (a.k.a. micro
 service) that routes a web request through a data pipeline built from
 other web services</li>
-<li><code>newtgenerator</code> is a code generator that can take a set
-of data models described in YAML and generate SQL, HTML and templates
-based on those models</li>
+<li><code>newtgenerator</code> is a code generator that can takes a set
+of data models described in YAML and generates SQL and Mustache
+templates</li>
 <li><code>newtmustache</code> is a simple stateless template engine
 inspired by Pandoc server that supports the Mustache template
 language</li>
@@ -72,8 +71,7 @@ modeling</li>
 <li><a href="https://postgrest.org">PostgREST</a>, a service that turns
 Postgres into a JSON API</li>
 </ul>
-<p>The Newt web service can tie these together through YAML
-expressing</p>
+<p>The Newt YAML ties this together expresses</p>
 <ul>
 <li>application (run time information and application metadata)</li>
 <li>models (describe the data as would be input into a web form)</li>
@@ -120,7 +118,7 @@ systems have become less bespoke. Eventual bespoke systems gave way to
 common use cases<a href="#fn5" class="footnote-ref" id="fnref5"
 role="doc-noteref"><sup>5</sup></a>. A good example of a common use case
 is Apache’s <a href="https://solr.apache.org">Solr</a> search engine.
-Another example was the in-house bespoke content systems gave way to
+Another example was the bespoke content management systems gave way to
 systems like <a href="https://drupal.org">Drupal</a> and <a
 href="https://wordpress.org">WordPress</a>.</p>
 <blockquote>
@@ -139,36 +137,40 @@ of thousands of simultaneous users. If you accept that premise then we
 can focus our efforts around orchestrating off the shelf components and
 put our remaining development efforts into improving the human
 experience of using our software.</p>
-<p>A big key to simplification is realizing that the middleware no
-longer needs to be responsible for managing data models, access control
-and users or data transformation. If you can describe your data model,
-routes and their data pipelines the rest can become much more turn
-key.</p>
+<p>A big key to simplification is narrowing the focus of our middleware.
+It is not necessary for each middleware to implement data modeling,
+access control, user management, or data transformation. Like the Unix
+philosophy, simple middleware doing a specific task. Let your data base
+model your data and manage it. Let a full text search engine provide
+search, Let your front end web server with integrated single sign-on
+control access. Ideally assembling the back end would be turnkey. Newt
+attempts to make that possible for metadata curation applications.</p>
 <h2 id="off-the-shelf-deliverables">Off the shelf deliverables</h2>
+<p>Even without Newt we have allot to work with. Here’s a shortlist of
+ones I use.</p>
 <ul>
 <li>(data management) Postgres combined with PostgREST gives you an out
 of the box JSON API for managing data</li>
 <li>(full text search) Solr gives you a powerful, friendly, JSON API for
 search and discovery</li>
-<li>(content transformation) <code>newtmustache</code> in a pipeline
-transforms your JSON data using the Mustache template language</li>
 <li>(access control) Apache 2 or NginX when combined with a single sign
 on system (e.g. Shibboleth) provides access control</li>
 <li>(rich client) Web browsers now provide a rich software platform in
 their own right</li>
 </ul>
 <h2 id="the-missing-bits">The missing bits</h2>
-<p>With only the above list we can build capable applications relying on
-the sophisticated features of our web browsers. There is a cost.
-JavaScript is required to render everything. Relying on JavaScript in
-the browser to assemble our content is a horrible idea<a href="#fn6"
-class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. A
-better approach is for the web browser to make a minimum number of
-requests to a web service and get back useful results without having to
-process more than HTML and CSS.</p>
+<p>With the above list we can build capable applications relying on the
+sophisticated features of our web browsers. There is a cost. JavaScript
+is required to render everything. Relying on JavaScript in the browser
+to assemble our content from JSON or XML API is a horrible idea<a
+href="#fn6" class="footnote-ref" id="fnref6"
+role="doc-noteref"><sup>6</sup></a>. A better approach is for the web
+browser to make a minimum number of requests to a web service and get
+back useful results without having to process more than HTML and
+CSS.</p>
 <p>Taking the better approach in the past has required the writing of
-complex middleware. I think we can avoid that or at least avoid writing
-complex middleware.</p>
+complex middleware. Newt’s few tools help us avoid writing
+middleware.</p>
 <p>For over a decade web frameworks developed for programming languages
 like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a
 concept of “routes”. A “route” is described by an HTTP method and URL
@@ -178,27 +180,26 @@ class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.
 The collection of routes and their functions compose the API your
 browser uses to navigate through your application.</p>
 <p>Historically before single sign-on systems became common the function
-handling the request was responsible for the whole transaction. A single
-function would need to handle access control, data validation, data
-formatting, storing or retrieving data from the database. You had to
-make sure the request from the public didn’t lead to a compromise of
-your database or operating system. Enertia has ensure many web
-applications built as middleware still do this. Even succesful projects
-like Drupal and Wordpress do this.</p>
+handling a web request was responsible for the whole transaction. A
+single function would need to handle access control, data validation,
+data formatting, storing or retrieving data from the database. You had
+to make sure the request from the public didn’t lead to a compromise of
+your database or operating system. Inertia has ensure many web
+applications built as middleware still do this. Even successful projects
+like Drupal and WordPress do this.</p>
 <p>If we narrowly focus a function and allow other layers of the system
 to handle most of the complexity our functions can be simpler. Easier to
 write. Easier to reason about. While that was the motivation for many
-software libraries and frameworks in practice we just got more
-complexity. Each programming language developed its own rotating
-pantheon of favorites. Maybe the solution isn’t the programming language
-and framework but something else.</p>
+software libraries and frameworks in practice they just wound up
+empowering more complexity. We could do more so we did. Maybe the
+solution isn’t a programming language and framework but it is something
+else.</p>
 <p>Are we missing an opportunity to change our base assumptions?
-Middleware doesn’t need to do allot to be useful. That was the whole
-point when the term “micro service” was coined. The key is to be able to
-<strong>easily</strong> chain middleware together. Like stacking a bunch
-of bricks. Unix accomplishes that with pipes. That web already has this
-concept to but it is less obvious. Can be build towards the small and
-simple?</p>
+Middleware doesn’t need to do allot to be useful. That was a the promise
+when the term “micro service” was coined. The key is to make it easier
+to chain our middleware together. Unix accomplishes that with pipes.
+That web already has this concept of this but it is less obvious. Can we
+make this easy then build towards the small and simple?</p>
 <h3 id="a-new-baseline">A new baseline</h3>
 <p>Web services talk to other web services all the time. This isn’t new.
 It isn’t exotic it. Library, archive and museums systems do this all the
@@ -306,7 +307,7 @@ configuration at start up it doesn’t maintain state.
 <code>newtmustache</code> functions the same way, read in the
 configuration and just run. By assigning different ports you can also
 run many instances of them. This makes it possible to run them in
-parallel, behind load balancers or even through proxying spread them
+parallel, behind load balancer or even through proxying spread them
 across many machines. The instances don’t share data or coordinate. They
 start up wait for a request and providing an answer.</p>
 <p>So what does this all mean? In principle a Newt based applications
@@ -384,8 +385,9 @@ corporate sponsors invented the surveillance economy we have today.
 Sometimes “good ideas” have terrible consequences. Making it easier to
 produce custom web applications should always be done keeping in mind
 the necessity for humane and inclusive use. Newt can be both part of a
-solution but also be used to exacerbate human problems.<a href="#fnref2"
-class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+solution but also be used to exacerbate human problems. Develop with
+consideration for others.<a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>HTTP being the protocol the communicates with.
 Essentially at the time RDBMS spoke a dialect of SQL as the unifying
 language. The web of the time understood HTML and to a certain degree
