@@ -3,9 +3,6 @@
 
 - Newt Project YAML syntax
   - [Newt YAML Syntax](newt_yaml_syntax.md)
-    - used by [Newt Router](newtrouter.1.md) and [Newt Generator](newtgen.1.md)
-  - [Newt Mustache YAML](newtmustache.1.md)
-  - [Pandoc Bundler YAML](pdbunder.1.md)
 - What is in the Newt Project toolbox?
   - [Newt Router](newtrouter.1.md), manages your requests and data pipelines
   - [Newt Generator](newtgenerator.1.md), bootstraps your SQL and Mustache templates
