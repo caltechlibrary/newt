@@ -3,7 +3,7 @@
 
 - Newt Project YAML syntax
   - [Newt YAML Syntax](newt_yaml_syntax.md)
-- What is in the Newt Project toolbox?
+- What is in the Newt toolbox?
   - [Newt Router](newtrouter.1.md), manages your requests and data pipelines
   - [Newt Generator](newtgenerator.1.md), bootstraps your SQL and Mustache templates
   - [Newt Mustache](newtmustache.1.md), a light weight template engine
