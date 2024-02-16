@@ -1,4 +1,5 @@
-port: 3032
+application:
+  port: 3032
 templates:
   - request: GET /hello/{name}
     template: testdata/simple.mustache

@@ -1,4 +1,5 @@
-port: 3029
+application:
+  port: 3029
 templates:
   - request: POST /hello
     template: hello.md.tmpl

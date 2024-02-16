@@ -6,13 +6,13 @@ Newt programs are configured in YAML files. Newt programs may focus on some prop
 These are the top level properties in YAML files.
 
 application
-: (optional: newtrouter, newtgenerator and mustache) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
+: (optional: newtrouter, newtgenerator, newtmustache) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
 
 models
-: (optional: newtrouter and newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
+: (optional: newtrouter, newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
 
 routes
-: (optional: newtrouter and newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
+: (optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 templates
 : (optional: newtmustache, pdbundler)
@@ -85,21 +85,23 @@ Models holds a list of individual models used by our data pipelines. The models 
 
 ### a model object
 
-The model object is based largely on GitHub YAML issue template syntax with a couple extra properties at are Newt specific.
+The model object is based largely on GitHub YAML issue template syntax with a couple extra properties that are Newt enhancements.
 
 id
 : (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^1]
 
+<!--
 routing
 : (optional, newt specific) this holds a list of route ids associated with this model. It is use in code generation, e.g. to populate a web form's action and model
+-->
 
 The following properties are based on the GitHub YAML issue template syntax[^2] (abbr: GHYTS)
 
 name
-: (required by GHYTS, optional in newt) Must be unique to use with GitHub YAML issue templates[^2]. In Newt it will be used in populating comments in generated SQL
+: (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^2]. In Newt it will be used in populating comments in generated SQL
 
 description
-: (required) A human description of the model, It will appear in the web form and SQL components generated from the model
+: (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
 
 body
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
@@ -140,6 +142,7 @@ dropdown
 checkboxes
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
+Newt may add additional types in the future.
 
 ## Example Newt YAML for router and code generator
 
@@ -174,12 +177,6 @@ models:
     name: People Profiles
     description: |
       This models a curated set of profiles of colleagues
-    routing:
-      - create_person
-      - read_person
-      - update_person
-      - delete_person
-      - list_people
     body:
       - id: people_id
         type: input
