@@ -1,5 +1,5 @@
 ---
-title: "pdbundler(1) user manual | 0.0.6 f65586f"
+title: "pdbundler(1) user manual | 0.0.6 6e25841"
 pubDate: 2024-02-15
 author: "R. S. Doiel"
 ---
@@ -54,7 +54,7 @@ These features are intended to expose the capabilities of Pandoc web service.
 -port
 : Run service on designated port
 
-## Template bundler's YAML
+## Pandoc Bundler's YAML
 
 port
 : (integer, defaults to 3029) the port number the service should listen on

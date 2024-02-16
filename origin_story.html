@@ -95,7 +95,7 @@ through the template engine</li>
 be provided by “off the shelf” components. The middleware focus is in
 the final composition from the parts. It can use configuration to do
 that.</p>
-<p>Proposed components for testing a the simple data router concept</p>
+<p>Proposed components for testing a the simple router concept</p>
 <ul>
 <li>Postgres database</li>
 <li>PostgREST to turns Postgres into a JSON API managed from
@@ -104,18 +104,17 @@ Postgres</li>
 engine)</li>
 <li>Solr for full text search leveraging its JSON API support</li>
 </ul>
-<p>The data router needs to be configurable such that any given URL
-supported in your application can pass content between the database or
-search engine and through a template engine handing back the
-results.</p>
+<p>The router needs to be configurable such that any given URL supported
+in your application can pass content between the database or search
+engine and through a template engine handing back the results.</p>
 <p>Flask (like many other frameworks) suggest a excellent path foreword.
 Flasks lets you assign a “route” to a function. A “route” is expressed
 with a path like string. It may include replaceable elements that the
 function can then use to do it’s job (e.g. a record id passed in as part
 of the URL’s path). If you can identify a path using a simple
 description string and you pair that with a data pipeline sequence then
-now have a data router. The code you write is configuration for the path
-and how it should proceed through a pipeline sequence.</p>
+now have a router. The code you write is configuration for the path and
+how it should proceed through a pipeline sequence.</p>
 <p>Use case 1: contact the JSON API for the search engine, take the
 results and run them through the template service.</p>
 <p>Use case 2: contact the database via JSON API, perform an action,

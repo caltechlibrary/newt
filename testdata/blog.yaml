@@ -1,5 +1,6 @@
 #
-# This YAML describes the public view of a blog build using Newt.
+# This YAML describes the public view of a blog built using Newt.
+#
 application:
   port: 4040
   htdocs: testdata/htdocs

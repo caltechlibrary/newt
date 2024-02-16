@@ -2,504 +2,245 @@ package newt
 
 import (
 	"fmt"
+	"sort"
 	"strings"
-	"time"
+
+	// 3rd Party Packages
+	//"gopkg.in/yaml.v3"
 )
 
-var (
-	// SQLTypes is a map of dsl types to SQL types.
-	SQLTypes = map[string]string{
-		"String":   "VARCHAR(256) DEFAULT ''",
-		"Text":     "TEXT DEFAULT ''",
-		"Integer":  "INTEGER DEFAULT 0",
-		"Real":     "REAL DEFAULT 0.0",
-		"Boolean":  "BOOLEAN",
-		"Date":     "DATE",
-		"Year":     "INTEGER DEFAULT 0",
-		"Month":    "INTEGER DEFAULT 0",
-		"Day":      "INTEGER DEFAULT 0",
-		"Basename": "VARCHAR(256) DEFAULT ''",
-		"Extname":  "VARCHAR(6) DEFAULT ''",
-		"ISBN10":   "VARCHAR(10) DEFAULT ''",
-		"ISBN13":   "VARCHAR(13) DEFAULT ''",
-		"ISBN":     "VARCHAR(13) DEFAULT ''",
-		"ISSN":     "VARCHAR(9) DEFAULT ''",
-		"DOI":      "VARCHAR(256) DEFAULT ''",
-		"ISNI":     "VARCHAR(16) DEFAULT ''",
-		"ORCID":    "VARCHAR(19) DEFAULT ''",
-		"ArXiv":    "VARCHAR(10) DEFAULT ''",
-		"Markdown": "TEXT DEFAULT ''",
-		"ROR":      "VARCHAR(25)",
-		// FIXME: find out the actual max length of URL if exists
-		"URL":      "VARCHAR(1028)",
-		// FIXME: find out the actual max length of an email address if exists
-		"EMail":    "VARCHAR(256)",
-		"Timestamp": "TIMESTAMP",
-	}
+// Form implements a structure that can accomodate the GitHub YAML issue template syntax.
+// See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>
+//
+// The Form structure is used by Newt to describe data models. It will be used in code generation and in validating
+// POST and PUT requests to the data router.
+// 
+// Code generation will need to render to SQL, HTML, Mustache and Pandoc templates.
+type Form struct {
+	// This is a Newt specifc set of attributes to place in the form element of HTML. I.e. it could
+	// be form "class", "method", "action", "encoding". It is not defined in the GitHub YAML issue template syntax
+	// (optional)
+	Attributes map[string]interface{} `json:"attributes,omitempty" yaml:"attributes"`
 
-	// SQLFuncTypes is a map of dsl types to SQL function and procedural
-	// parameters and return values.
-	SQLFuncTypes = map[string]string{
-		"String":   "VARCHAR(256)",
-		"Text":     "TEXT",
-		"Integer":  "INTEGER",
-		"Real":     "REAL",
-		"Boolean":  "BOOLEAN",
-		"Date":     "DATE",
-		"Year":     "INTEGER",
-		"Month":    "INTEGER",
-		"Day":      "INTEGER",
-		"Basename": "VARCHAR(256)",
-		"Extname":  "VARCHAR(6)",
-		"ISBN10":   "VARCHAR(10)",
-		"ISBN13":   "VARCHAR(13)",
-		"ISBN":     "VARCHAR(13)",
-		"ISSN":     "VARCHAR(9)",
-		"DOI":      "VARCHAR(256)",
-		"ISNI":     "VARCHAR(16)",
-		"ORCID":    "VARCHAR(19)",
-		"ArXiv":    "VARCHAR(10)",
-		"Markdown": "TEXT",
-		"ROR":      "VARCHAR(25)",
-		// FIXME: find out the actual max length of URL if exists
-		"URL":      "VARCHAR(1028)",
-		// FIXME: find out the actual max length of an email address if exists
-		"EMail":    "VARCHAR(256)",
-		"Timestamp": "TIMESTAMP",
-	}
-)
+	// Name, A name for the issue form template. Must be unique from all other templates, including Markdown templates.
+	//
+	// For Newt this should conform to the variable naming conventions, starts with an alphabetical character, may be
+	// alpha number without spaces or punctuation other than '_'.
+	// (required)
+	Name string `json:"name,required" yaml:"name"`
 
-func commentSection(configFName string, modelName string) []byte {
-	now := time.Now()
-	parts := []string{
-		"--",
-	}
-	if modelName != "" {
-		parts = append(parts, fmt.Sprintf("-- Model: %s", modelName))
-	}
-	if configFName != "" {
-		parts = append(parts, fmt.Sprintf("-- Based on %s, %s", configFName, now.Format("2006-01-02")))
-	}
-	if len(parts) > 2 {
-		parts = append(parts, "--")
-	}
-	parts = append(parts, "")
-	return []byte(strings.Join(parts, "\n"))
+	// Description, A description for the issue form template, which appears in the template chooser interface.
+	// (required)
+	Description string `json:"description,required" yaml:"description"`
+
+	// Body, Definition of the input types in the form.
+	// (required)
+	Body []*Element `json:"body,required" yaml:"body"`
+
+	// Title, A default title that will be pre-populated in the issue submission form.
+	// (optional)
+	Title string `json:"title,omitempty" yaml:"title"`
+
+	//
+	// The following are included in the struct for compatibilty with GitHub YAML issue template syntax.
+	// They are ignored by Newt as they are not relevant to the general case of rendering an web application.
+	//
+
+	// Assignees, People who will be automatically assigned to issues created with this template.
+	// (ignored)
+	Assignees []string `json:"assignees,omitempty" yaml:"assignees"`
+
+	// Labels, Labels that will automatically be added to issues created with this template. If a label does not
+	// already exist in the repository, it will not be automatically added to the issue.
+	// (ignored)
+	Labels []string `json:"labels,omitempty" yaml:"labels"`
+
+	// Projects, Projects that any issues created with this template will automatically be added to. The format
+	// of this key is PROJECT-OWNER/PROJECT-NUMBER.
+	//
+	// Note: The person opening the issue must have write permissions for the specified projects. If you don't
+	// expect people using this template to have write access, consider enabling your project's auto-add workflow.
+	// For more information, see "Adding items automatically." 
+	// (ignored)
+	Projects []string `json:"projects,omitempty" yaml:"projects"`
 }
 
-// dslToBaseType will parse a DataType string and return the
-// base type (e.g. String) and a boolean indiciting if it is the
-// primary key.
-func dslToBaseType(s string) (string, bool) {
-	parts := strings.Split(strings.TrimSpace(s), " ")
-	if len(parts) == 0 {
-		return "", false
-	}
-	tName := strings.TrimSuffix(parts[0], "*")
-	return tName, (parts[0] != tName)
+// ToHTMLForm, render as an HTML web form
+func (f *Form) ToHTMLForm() string {
+	return "ToHTMLForm() not implemented"
 }
 
-// dslToSQLType converts a string describing a type into a SQL
-// type definition.
-func dslToSQLType(s string, useSimpleType bool) (string, error) {
-	parts := strings.Split(strings.TrimSpace(s), " ")
-	if len(parts) == 0 {
-		return "", fmt.Errorf("missing type definition")
-	}
-	// NOTE: I'm trying out a suffix of asterix for indicating that the
-	// type is going to be used as a primary key in a SQL table.
-	tName := strings.TrimSuffix(parts[0], "*")
-	isPrimaryKey := (tName != parts[0])
-	if sqlType, ok := SQLTypes[tName]; ok {
-		if useSimpleType {
-			parts := strings.SplitN(sqlType, " ", 2)
-			if len(parts) > 0 {
-				sqlType = parts[0]
-			}
-		}
-		if isPrimaryKey && ! useSimpleType {
-			if strings.HasPrefix(sqlType, "INTEGER ") {
-				return fmt.Sprintf("SERIAL PRIMARY KEY"), nil
-			}
-			return fmt.Sprintf("%s PRIMARY KEY", sqlType), nil
-		} else {
-			return sqlType, nil
-		}
-	}
-	return "", fmt.Errorf("Cannot map type %q to SQL", parts[0])
+// ToHTML, render as an HTML display block
+func (f *Form) ToHTML() string {
+	return "ToHTML() not implemented"
 }
 
-// dslToSQLFuncType converts a string describing a type into a SQL
-// type definition.
-func dslToSQLFuncType(s string) (string, error) {
-	parts := strings.Split(strings.TrimSpace(s), " ")
-	if len(parts) == 0 {
-		return "", fmt.Errorf("missing type definition")
-	}
-	// NOTE: I'm trying out a suffix of asterix for indicating that the
-	// type is going to be used as a primary key in a SQL table.
-	tName := strings.TrimSuffix(parts[0], "*")
-	if sqlType, ok := SQLFuncTypes[tName]; ok {
-		return sqlType, nil
-	}
-	return "", fmt.Errorf("Cannot map function parameter %q to SQL", parts[0])
+// ToHTMLFormTempalte, render an an HTML web form template. Note this can produce
+// wither either Mustache or Pandoc template formats depending on the prefix and
+// suffix for the variable reference supplied. (e.g. "${", "}" or "$", "$" would 
+// the variable values used in Pandoc templates while "{{", "}}" would conform to
+// Mustache)
+func (f *Form) ToHTMLFormTemplate(prefix string, suffix string) string {
+	return "ToHTMLFormTemplate(prefix, suffix) not implemented"
 }
 
-// getNamespaceFlatName takes a ModelDSL.Name and returns
-// a namespace and flattened name strings
-func getNamespaceFlatName(modelName string) (string, string) {
-	if strings.Contains(modelName, ".") {
-		parts := strings.SplitN(modelName, ".", 2)
-		if len(parts) == 2 {
-			return parts[0], parts[1]
-		}
-	}
-	return modelName, modelName
-}
-// createStatement generates a SQL CREATE statement from a model.
-func createStatement(model *ModelDSL) ([]byte, error) {
-	parts := []string{}
-	prefix := fmt.Sprintf(`
-DROP TABLE IF EXISTS %s CASCADE;
-CREATE TABLE %s (
-    `, model.Name, model.Name)
-	suffix := "\n);\n\n"
-	for k, v := range model.Var {
-		t, err := dslToSQLType(v, false)
-		if err != nil {
-			return nil, fmt.Errorf("erorr in defining %q, %s", k, err)
-		}
-		parts = append(parts, fmt.Sprintf("%s %s", k, t))
-	}
-	return []byte(fmt.Sprintf("%s%s%s", prefix, strings.Join(parts, ",\n    "), suffix)), nil
-}
+// Element implementes the GitHub YAML issue template syntax for an input element.
+// The input element YAML is described at <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
+//
+// While the syntax most closely express how to setup an HTML representation it is equally
+// suitable to expressing, through inference, SQL column type definitions. E.g. a bare `input` type is a `varchar`,
+// a `textarea` is a `text` column type, an `input[type=date]` is a date column type.
+type Element struct {
+	// Type, The type of element that you want to input. It is required. Valid values are
+	// checkboxes, dropdown, input, markdown and text area.
+	//
+	// The "input" type can be very expressive using CSS selector syntax. E.g. `input[type=URL]` would
+	// create an input for URLs and validate using HTML basic intrinsic containts. You can also express
+	// many other HTML form elements using the input notation. E.g. A button can be expressed as
+	// `input[type=button]` where the attribute `value` becomes the inner HTML of `<button></button>`.
+	// See MDN developer docs for input, <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input>
+	Type string `json:"type,required" yaml:"type"`
 
-// createListView generates a SQL view statement from a model.
-func createListView(model *ModelDSL) ([]byte, error) {
-	namespace, flatName := getNamespaceFlatName(model.Name)
-	parts := []string{}
-	prefix := fmt.Sprintf(`--
--- LIST VIEW: %s 
--- FIXME: You probably want to customized this statement 
--- (e.g. add WHERE CLAUSE, ORDER BY, GROUP BY).
---
-CREATE OR REPLACE VIEW %s.%s_view AS
-    SELECT `, model.Name, namespace, flatName)
-	suffix := fmt.Sprintf("\n    FROM %s;\n\n", model.Name)
-	//FIXME: need to code up table attributes.
-	for k, _ := range model.Var {
-		parts = append(parts, k)
-	}
-	return []byte(fmt.Sprintf("%s%s%s", prefix, strings.Join(parts, ", "), suffix)), nil
+	// Id for the element, except when type is set to markdown. Can only use alpha-numeric characters,
+	//  -, and _. Must be unique in the form definition. If provided, the id is the canonical identifier
+	//  for the field in URL query parameter prefills.
+	Id string `json:"id,omitempty" yaml:"id"`
+
+	// Attributes, a set of key-value pairs that define the properties of the element.
+	// This is a required element as it holds the "value" attribute when expressing
+	// HTML content. Other commonly use attributes
+	Attributes map[string]interface{} `json:"attributes,omitempty" yaml:"attributes"`
+
+	// Validations, A set of key-value pairs that set constraints on the element.
+	// Optional, key-value pair example expressed in HTML include
+	// `required="true"` and "pattern" followed by a JavaScript RegExp would be
+	// another example of validations.
+	//
+	// See MDN documentation for Intrinsic and basic contraints on input types,
+	// <https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation>
+	//
+	// See MDN documentation for pattern attribute,
+	// <https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/pattern>
+	//
+	// See MDN documentation for RegExp,
+	// <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet>
+	Validations map[string]interface{} `json:"validations,omitempty" yaml:"validations"`
 }
 
-// sqlPrimaryKeyAndColumns reads a model and renders the primary key/definition pair
-// and column name/definition pairs as SQL types based the model provided.
-func sqlPrimaryKeyAndColumns(model *ModelDSL) (string, string, []string, []string, error) {
-	colDefs := []string{}
-	colNames := []string{}
-	primaryKey, primaryKeyDef := "", ""
-	for varName, tVal := range model.Var {
-		sqlType, err := dslToSQLFuncType(tVal)
-		if err != nil {
-			return "", "", nil, nil, fmt.Errorf("failed to generate sql type for the variable %q in model %q, %s", varName, model.Name, err)
-		}
-		if strings.HasSuffix(tVal, "*") {
-			primaryKey = varName
-			primaryKeyDef = sqlType
-			varName = strings.TrimSuffix(varName, "*")
-		} 
-		colNames = append(colNames, varName)
-		colDefs = append(colDefs, fmt.Sprintf("%s %s", varName, sqlType))
-	}
-	return primaryKey, primaryKeyDef, colNames, colDefs, nil
+func (e *Element) toHTMLCheckboxesInput() string {
+	return "toHTMLCheckboxesInput() not implement"
 }
 
-// createGetRecord generates a SQL function for retrieving record
-// by primary key.
-func createGetRecord(model *ModelDSL) ([]byte, error) {
-	namespace, flatName := getNamespaceFlatName(model.Name)
-	fnName := "get_" + flatName
-	primaryKey, primaryKeyDef, colNames, colDefs, err := sqlPrimaryKeyAndColumns(model) 
-	if err != nil {
-		return nil, fmt.Errorf("failed generate function %q, %s", fnName, err)
-	}
-	txt := fmt.Sprintf(`--
--- {func_name} provides a 'get record' for model %s
---
-DROP FUNCTION IF EXISTS {namespace}.{func_name}(_{primary_key} {primary_key_def});
-CREATE FUNCTION {namespace}.{func_name}(_{primary_key} {primary_key_def})
-RETURNS TABLE ({sql_col_defs}) AS $$
-	SELECT {col_names} FROM {model_name} WHERE {primary_key} = _{primary_key} LIMIT 1
-$$ LANGUAGE SQL;
-
-`, model.Name)
-	src := []byte(
-		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
-			txt, "{func_name}", fnName),
-			"{namespace}", namespace),
-			"{primary_key_def}", primaryKeyDef),
-			"{sql_col_defs}", strings.Join(colDefs, ", ")),
-			"{col_names}", strings.Join(colNames, ", ")),
-			"{model_name}", model.Name),
-			"{primary_key}", primaryKey))
-	return []byte(src), nil
+func (e *Element) toHTMLDropdownInput() string {
+	return "toHTMLDropdownInput() not implemented"
 }
 
-// createAddRecord generates a SQL function for create record
-// return created record with primary key.
-func createAddRecord(model *ModelDSL) ([]byte, error) {
-	namespace, flatName := getNamespaceFlatName(model.Name)
-	fnName := "add_" + flatName
-	primaryKey, primaryKeyDef, colNames, colDefs, err := sqlPrimaryKeyAndColumns(model)
-	if err != nil {
-		return nil, fmt.Errorf("failed generate function %q, %s", fnName, err)
-	}
+func (e *Element) toHTMLMarkdownInput() string {
 
-	txt := fmt.Sprintf(`--
--- {func_name} provides an 'add record' for model %s
--- It returns the row inserted including the primary key
-DROP FUNCTION IF EXISTS {namespace}.{func_name}({sql_col_defs});
-CREATE FUNCTION {namespace}.{func_name}({sql_col_defs})
-RETURNS {primary_key_def} AS $$
-    INSERT INTO {model_name} 
-               ({col_names}) 
-        VALUES ({col_names})
-    RETURNING {primary_key}
-$$ LANGUAGE SQL;
-
-`, model.Name)
-	src := []byte(
-		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
-			txt, "{func_name}", fnName),
-			"{namespace}", namespace),
-			"{primary_key_def}", primaryKeyDef),
-			"{sql_col_defs}", strings.Join(colDefs, ", ")),
-			"{col_names}", strings.Join(colNames, ", ")),
-			"{model_name}", model.Name),
-			"{primary_key}", primaryKey))
-	return []byte(src), nil
+	return "toHTMLMarkdownInput() not implemented"
 }
 
-
-// createUpdateRecord generates a SQL function for updating record
-// returning the updated row.
-func createUpdateRecord(model *ModelDSL) ([]byte, error) {
-	namespace, flatName := getNamespaceFlatName(model.Name)
-	fnName := "update_" + flatName
-	primaryKey, primaryKeyDef, colNames, colDefs, err := sqlPrimaryKeyAndColumns(model)
-	if err != nil {
-		return nil, fmt.Errorf("failed generate function %q, %s", fnName, err)
+// ToHTMLInput renders the HTML markup for an input element. 
+// then it'll replace the input's value attribute with markup for
+// a template langauge(e.g. Pandoc or Mustache).
+//
+// Example rendering of rendering HTML
+//
+// ```
+// e := new(Element)
+// e.Id = "project_url"
+// e.Type = "url"
+// e.Attributes = map[string]string {
+//     "value": "https://example.org"
+// }
+// src := e.Element.ToHTMLInput("", "")
+// ```
+//
+// This would ouput something like
+//
+// ```
+// <input type="url" value="https://example.org">
+// ```
+//
+// Now rendering as a pandoc template
+//
+// ```
+// src = e.Element.ToHTMLInput("${", "}")
+// ```
+//
+// This would ouput something like
+//
+// ```
+// <input type="url" value="${project_url}">
+// ```
+func (e *Element) ToHTMLInput(prefix string, suffix string) string {
+	renderAsTemplate := !(prefix == "" && suffix == "")
+	// Are we rendering standard HTML or a template?
+	inputType := strings.ToLower(e.Type)
+	switch inputType {
+	case "checkboxes":
+		return e.toHTMLCheckboxesInput()
+	case "dropdown":
+		return e.toHTMLDropdownInput()
+	case "markdown":
+		return e.toHTMLMarkdownInput()
 	}
-	fieldsAndValues := []string{}
-    paramDefs := []string{}
-	for i, _ := range colNames {
-		varName := colNames[i]
-		varType := strings.TrimPrefix(colDefs[i], varName + " ")
-		if varName != primaryKey {
-			fieldsAndValues = append(fieldsAndValues, fmt.Sprintf("%s = _%s", varName, varName))
-			paramDefs = append(paramDefs, fmt.Sprintf("_%s %s", varName, varType))
+	inputType = strings.TrimSpace(strings.TrimPrefix(inputType, "input"))
+	if strings.HasPrefix(inputType, "[") {
+		inputType = strings.TrimPrefix(
+			strings.TrimSpace(
+				strings.TrimSuffix(strings.TrimPrefix(
+					strings.ReplaceAll(inputType, " ", ""),
+					"["), "]")), "type=")
+	}
+	// Do we need to generate a label element?
+	block := []string{}
+	label, ok := e.Attributes["label"]
+	if ok {
+		block = append(block, fmt.Sprintf("<label for=%q>%s</label>", e.Id, label))
+	}
+	// Assemble our HTML input element
+	attr := []string{}
+	if inputType != "" {
+		attr = append(attr, fmt.Sprintf("type=%q", inputType))
+	}
+	if e.Id != "" {
+		attr = append(attr, fmt.Sprintf("id=%q", e.Id))
+	}
+	for k, v := range e.Validations {
+		switch k {
+			case "required":
+				if v.(bool) {
+					attr = append(attr, "required")
+				}
+			case "pattern":
+				if v.(string) != "" {
+					attr = append(attr, fmt.Sprintf("pattern=%q", v.(string)))
+				}
 		}
 	}
-
-	txt := fmt.Sprintf(`--
--- {func_name} provides an 'update record' for model %s
--- It returns the updated row primary key
-DROP FUNCTION IF EXISTS {namespace}.{func_name}(_{primary_key} {primary_key_def}, {param_defs});
-CREATE FUNCTION {namespace}.{func_name}(_{primary_key} {primary_key_def}, {param_defs})
-RETURNS {primary_key_def} AS $$
-    UPDATE {model_name} SET {fields_and_values}
-    WHERE {primary_key} = _{primary_key}
-    RETURNING {primary_key}
-$$ LANGUAGE SQL;
-
-`, model.Name)
-	src := []byte(
-		strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(
-			txt, "{func_name}", fnName),
-			"{namespace}", namespace),
-			"{primary_key_def}", primaryKeyDef),
-			"{param_defs}", strings.Join(paramDefs, ", ")),
-			"{fields_and_values}", strings.Join(fieldsAndValues, ", ")),
-			"{model_name}", model.Name),
-			"{primary_key}", primaryKey))
-	return []byte(src), nil
-}
-
-// testListView tests a previously defined SQL view statement for a model.
-func testListView(model *ModelDSL) ([]byte, error) {
-	namespace, flatName := getNamespaceFlatName(model.Name)
-	parts := []string{}
-	stmt := fmt.Sprintf(`--
-\c %s
--- Test SELECT STATEMENT: %s
---
--- SELECT * FROM %s.%s ORDER BY RANDOM() LIMIT 10;
-
--- Test LIST VIEW: %s 
---
-SELECT %%s FROM %s.%s_view;
-
-`, namespace, model.Name, namespace, flatName, model.Name, namespace, flatName)
-	//FIXME: need to code up table attributes.
-	for k, _ := range model.Var {
-		parts = append(parts, k)
-	}
-	return []byte(fmt.Sprintf(stmt, strings.Join(parts, ", "))), nil
-}
-
-
-// PgSetupSQL generate Postgres+PostgREST setup SQL for roles in a
-// given namespace
-func PgSetupSQL(configFName string, namespace string, password string) ([]byte, error) {
-	now := time.Now()
-	txt := fmt.Sprintf(`--
--- Setup new empty database and schema for {namespace} based on {configFName}, %s
---
-DROP DATABASE IF EXISTS {namespace};
-CREATE DATABASE {namespace};
-\c {namespace}
-DROP SCHEMA IF EXISTS {namespace} CASCADE;
-CREATE SCHEMA {namespace};
-
---
--- Create role "{namespace}_anonymous"
---
-DROP ROLE IF EXISTS {namespace}_anonymous;
-CREATE ROLE {namespace}_anonymous NOLOGIN;
-
---
--- Create role "{namespace}"
---
-DROP ROLE IF EXISTS {namespace};
--- WARNING: This "CREATE ROLE" statement sets a password!!!!
--- Don't make this publically available!!!!
-CREATE ROLE {namespace} NOINHERIT LOGIN PASSWORD '{password_goes_here}';
-GRANT {namespace}_anonymous TO {namespace};
-
-`, now.Format("2006-01-02"))
-	if namespace == "" {
-		return nil, fmt.Errorf("No namespace found in %s", configFName)
-	}
-	if password == "" {
-		password = "<PASSWORD_GOES_HERE>"
-	}
-	return []byte(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(txt, "{configFName}", configFName), "{namespace}", namespace), "{password_goes_here}", password)), nil
-}
-
-// PgModelSQL generate Postgres SQL from a model given a configuration name
-// and model.
-func PgModelSQL(configFName string, model *ModelDSL) ([]byte, error) {
-	if model == nil {
-		return nil, fmt.Errorf("No model found in %s", configFName)
-	}
-	namespace := model.Name
-	if strings.Contains(namespace, ".") {
-		parts := strings.SplitN(namespace, ".", 2)
-		if len(parts) > 0 {
-			namespace = parts[0]
+	// I want to enforce an order of the keys to make testing easier.
+	keys := []string{}
+	for k, _ := range e.Attributes {
+		if (k != "label") && (k != "description")  {
+			keys = append(keys, k)
 		}
 	}
-	now := time.Now()
-	src := []byte(fmt.Sprintf(`--
--- Define Models for %s in %s, %s
---
-\c %s
-SET search_path TO %s, public;
-
-`, model.Name, configFName, now.Format("2006-01-02"), namespace, namespace))
-	src = append(src, commentSection(configFName, model.Name)...)
-	s, err := createStatement(model)
-	if err != nil {
-		return nil, err
+	sort.Strings(keys)
+	for _, k := range keys {
+		val := e.Attributes[k].(string)
+		// Possible special handling
+		if renderAsTemplate && k == "value" {
+			// Substitue "value" value with variable reference in a the template language
+			val = fmt.Sprintf("%s%s%s", prefix, e.Id, suffix)
+		}
+		attr = append(attr, fmt.Sprintf("%s=%q", k, val))
 	}
-	src = append(src, s...)
-
-	// Create list view, PostgREST path `/{model_name}_view`
-	s, err = createListView(model)
-	if err != nil {
-		return nil, err
+	if len(attr) > 0 {
+		block = append(block, fmt.Sprintf(`<input %s>`, strings.Join(attr, " ")))
+	} else {
+	  	block = append(block, "<input>")
 	}
-	src = append(src, s...)
-
-	// Create a get record function, `PostgREST path `/rpc/get_{model_name}`
-	s, err = createGetRecord(model)
-	if err != nil {
-		return nil, err
-	}
-	src = append(src, s...)
-
-	// Create an add record function. PostgREST path `/rpc/add_{model_name}`
-	s, err = createAddRecord(model)
-	if err != nil {
-		return nil, err
-	}
-	src = append(src, s...)
-
-	// Create an update record function. PostgREST path `/rpc/update_{model_name}`
-	s, err = createUpdateRecord(model)
-	if err != nil {
-		return nil, err
-	}
-	src = append(src, s...)
-	return src, nil
+	return strings.Join(block, "")
 }
 
-// PgModelTestSQL generate Postgres SQL from a model given a
-// configuration name and model.
-func PgModelTestSQL(configFName string, model *ModelDSL) ([]byte, error) {
-	if model == nil {
-		return nil, fmt.Errorf("No model found in %s", configFName)
-	}
-	src := []byte{}
-	src = append(src, commentSection(configFName, model.Name)...)
-	s, err := testListView(model)
-	if err != nil {
-		return nil, err
-	}
-	src = append(src, s...)
-	//FIXME: Need to figure out a function/procedure to return a single
-	// record (row) given a primary key value.
-	return src, nil
-}
-
-// PgModelPermissions generates a SQL GRANT statements for
-// a Schema's anonymous and authenticated roles.
-func PgModelPermissions(configFName, namespace string, modelNames []string) ([]byte, error) {
-	anonRole := namespace + "_anonymous"
-	authRole := namespace
-	src := []byte(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(`--
--- PostgREST access and controls.
---
--- GRANT or REVOKE role permissions here to match our models.
---
-
--- Give access to the Schema to PostgREST for each role.
-GRANT USAGE ON SCHEMA {namespace} TO {anon_role};
-GRANT USAGE ON SCHEMA {namespace} TO {auth_role};
-
-`, "{namespace}", namespace), "{anon_role}", anonRole), "{auth_role}", authRole))
-
-	txt := `--
--- Permissions for model {model_name}
---
-
--- Access for our anonymous role {anon_role}
-GRANT SELECT ON {model_name} TO {anon_role};
-GRANT SELECT ON {namespace}.{flat_name}_view TO {anon_role};
-GRANT EXECUTE ON FUNCTION {namespace}.get_{flat_name} TO {anon_role};
-
--- Access for our authenticated role {auth_role}
-GRANT SELECT, INSERT, UPDATE, DELETE ON {model_name} TO {auth_role};
-GRANT SELECT ON {namespace}.{flat_name}_view TO {auth_role};
-GRANT EXECUTE ON FUNCTION {namespace}.get_{flat_name} TO {auth_role};
-GRANT EXECUTE ON FUNCTION {namespace}.add_{flat_name} TO {auth_role};
-GRANT EXECUTE ON FUNCTION {namespace}.update_{flat_name} TO {auth_role};
-
-`
-	for _, modelName := range modelNames {
-		_, flatName := getNamespaceFlatName(modelName)
-		src = append(src, []byte(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(txt, "{namespace}", namespace), "{anon_role}", anonRole), "{model_name}", modelName), "{auth_role}", authRole), "{flat_name}", flatName))...)
-	}
-	return src, nil
-}

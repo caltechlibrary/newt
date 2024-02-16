@@ -19,7 +19,7 @@ If I adopt GitHub YAML issue template syntax[^3] (abbr: GHYTS) I gain the advant
 
 There is room for further enhancement without breaking GHYTS.  Libraries, archives and museums work with structured metadata. The metadata attributes often conform to a known data type. This is particularly true of identifiers (e.g. ORCID, DOI, ROR, arXiv). Using the existing GitHub YAML issue template syntax I could support a wider diversity of types through the value associated in the type attribute of the input element. 
 
-This would require replacing original prototype DSL defined in a Go struct found in [type_dsl.go](type_dsl.go) with a new series of struct that map out GHYTS. The current[^4] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to the rest of the Newt data router.  I can also improve the code generation ability with this simpler structure for mapping data and representations.
+This would require replacing original prototype DSL defined in a Go struct found in [type_dsl.go](type_dsl.go) with a new series of struct that map out GHYTS. The current[^4] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to the rest of the Newt router.  I can also improve the code generation ability with this simpler structure for mapping data and representations.
 
 ### Advantages of adopting a common syntax
 

@@ -22,41 +22,52 @@
 
 <section>
 <h1 id="newt-yaml-syntax">Newt YAML syntax</h1>
-<p>Newt’s configuration and modeling is based on a YAML file. That YAML
-file has a specific syntax. The top level of syntax is formed from three
-properties.</p>
+<p>Newt programs are configured in YAML files. Newt programs may focus
+on some properties and ignore others. The interpretation is specific to
+the program.</p>
+<p>These are the top level properties in YAML files.</p>
 <dl>
 <dt>application</dt>
 <dd>
-holds the run time configuration used by the Newt web service and
-metadata about the application you’re creating.
+(optional: newtrouter, newtgenerator and mustache) holds the run time
+configuration used by the Newt web service and metadata about the
+application you’re creating.
 </dd>
 <dt>models</dt>
 <dd>
-This holds the description of the data models in your application. Each
-model uses the <a
+(optional: newtrouter and newtgenerator) This holds the description of
+the data models in your application. Each model uses the <a
 href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms">GitHub
 YAML issue template syntax</a> (abbr: GHYTS)
 </dd>
 <dt>routes</dt>
 <dd>
-This holds the routes for the data pipeline (e.g. JSON API and template
-engine sequence)
+(optional: newtrouter and newtgenerator) This holds the routes for the
+data pipeline (e.g. JSON API and template engine sequence)
+</dd>
+<dt>templates</dt>
+<dd>
+(optional: newtmustache, pdbundler)
 </dd>
 </dl>
 <h2 id="the-application-property">the “application” property</h2>
-<p>The application property itself has four properties. All are
-optional. They also can be specified on the command line of
-<code>newt</code> and <code>newtgen</code></p>
+<p>The application properties are optional. Some maybe set via command
+line. The the Newt application manual pages.</p>
 <dl>
+<dt>namespace</dt>
+<dd>
+(optional: newtgenerator) uses this in the SQL generated for setting up
+Postgres+PostgREST
+</dd>
 <dt>port</dt>
 <dd>
-(optional, default is This port number the Newt web services uses to
-listen for request on localhost
+(optional: newtrouter, newtmustache, pdbundler) default is This port
+number the Newt web services uses to listen for request on localhost
 </dd>
 <dt>htdocs</dt>
 <dd>
-(optional) Directory that holds your application’s static content
+(optional: newtrouter only) Directory that holds your application’s
+static content
 </dd>
 <dt>metadata</dt>
 <dd>
@@ -66,16 +77,16 @@ syntax under metadata.
 </dd>
 <dt>environment</dt>
 <dd>
-(optional) this is a list of operating system environment that will be
-available to routes. This is used to pass in secrets (e.g. credentials)
-need in the pipeline
+(optional: newtrouter, newtmustache) this is a list of operating system
+environment that will be available to routes. This is used to pass in
+secrets (e.g. credentials) need in the pipeline
 </dd>
 </dl>
-<p>There is a fifth special attribute in application that can be used in
-place of <code>.metadata</code>. If you maintain a CITATION.cff file you
-can point to it to avoid maintaining it in two places. When
-<code>newt</code> is started up it will copy the contents into the
-<code>.metadata</code> property.</p>
+<p>The fifth attribute in application is special. It can be used in
+instead of <code>metadata</code>. If you maintain a CITATION.cff file
+you can point to it to avoid maintaining it in two places. When the Newt
+router or code generated is started up it will copy the contents into
+the <code>metadata</code> property.</p>
 <dl>
 <dt>citation</dt>
 <dd>
@@ -84,35 +95,36 @@ populate the metadata property at startup
 </dd>
 </dl>
 <h2 id="the-routes-property">the “routes” property</h2>
-<p>Routes hosts a list of request descriptions and their data
-pipelines</p>
+<p>Routes hosts a list of request descriptions and their data pipelines.
+This property is only used by Newt router and Newt code generator.</p>
 <h3 id="a-route-object">a route object</h3>
 <dl>
 <dt><code>id</code></dt>
 <dd>
-(required) This identifies the pipeline so that it can be re-used or
-included in other pipelines. It must conform to variable name rules<a
-href="#fn1" class="footnote-ref" id="fnref1"
-role="doc-noteref"><sup>1</sup></a>
+(required) This identifies the pipeline. It maybe used in code
+generation. It must conform to variable name rules<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
 </dd>
 <dt><code>description</code></dt>
 <dd>
-(optional, encouraged) This is a description of what you’re trying to
-accomplish in the route. It may be used in comments or by documentation
-generators.
+(optional, encouraged) This is a human readable description of what
+you’re trying to accomplish in this specific route. It may be used in
+comments or by documentation generators.
 </dd>
 <dt><code>request [METHOD ][PATH]</code></dt>
 <dd>
 (required) This is a string that expresses the HTTP method and URL path
-to assign to a specific data pipeline. If METHOD is not provided it will
-match the request handler will catch all HTTP methods. You can express
-embedded variables in the PATH element using single curl braces. E.g.
+to used to trigger running the data pipeline. If METHOD is not provided
+it will match using just the path. This is probably NOT what you want.
+You can express embedded variables in the PATH element. This is done by
+using single curl braces around a variable name. E.g.
 <code>GET /items/{item_id}</code> would make <code>item_id</code>
 available in building your service paths in the pipeline. The pattern
 takes up a whole path segment so <code>/blog/{year}-{month}-{day}</code>
 would not work but <code>/blog/{year}/{month}/{day}</code> would capture
-the individual elements. For the details on how Go 1.22 and above
-request handlers and patterns form see See <a
+the individual elements. The Newt router sits closely on top of the Go
+1.22 HTTP package route handling. For the details on how Go 1.22 and
+above request handlers and patterns form see See <a
 href="https://tip.golang.org/doc/go1.22#enhanced_routing_patterns"
 class="uri">https://tip.golang.org/doc/go1.22#enhanced_routing_patterns</a>
 and <a href="https://pkg.go.dev/net/http#hdr-Patterns"
@@ -122,8 +134,9 @@ explanations.
 <dt><code>pipeline</code></dt>
 <dd>
 (required) this is a list of URLs to one or more web services visible on
-localhost. The first stage to fail or the last element in the pipeline
-are returned as a response to the request
+localhost. The first stage to fail will abort the pipeline returning an
+HTTP error status. If done fail then the result of the last stage it
+returned to the requesting browser.
 </dd>
 <dt><code>error</code></dt>
 <dd>
@@ -140,7 +153,7 @@ results to standard out for this specific pipeline
 <p>A pipeline is a list of web services containing a type, URL, method
 and content types</p>
 <dl>
-<dt><code>service [METHOD] [URL]</code></dt>
+<dt><code>service [METHOD ][URL]</code></dt>
 <dd>
 (required) The HTTP method is included in the URL The URL to be used to
 contact the web service, may contain embedded variable references drawn
@@ -153,14 +166,9 @@ representing the target service URL.
 </dd>
 <dt><code>description</code></dt>
 <dd>
-(optional, recommended) This is a description of what this stage of the
+(optional, encouraged) This is a description of what this stage of the
 pipe does. It is used when debug is true in the log output and in
 program documentation.
-</dd>
-<dt><code>content_type</code></dt>
-<dd>
-(optional) You can specify a mime content type for the data you are
-sending
 </dd>
 <dt><code>timeout</code></dt>
 <dd>
@@ -172,12 +180,9 @@ set the timeout to a small number.
 </dl>
 <h2 id="the-models-property">the “models” property</h2>
 <p>Models holds a list of individual models used by our data pipelines.
-The models are used when generating the SQL code defining our schema and
-data management. It also is used to render templates that maybe used by
-a template engine in the data pipeline. It can be used to generate
-static HTML suitable for embedding in Markdown or HTML documents
-(e.g. web forms). The input elements can be used to form a URL require
-to other web services in our pipeline.</p>
+The models are by Newt code generator and the Newt router. Models
+defines a superset of the GitHub YAML issue template syntax (abbr:
+GHYTS).</p>
 <h3 id="a-model-object">a model object</h3>
 <p>The model object is based largely on GitHub YAML issue template
 syntax with a couple extra properties at are Newt specific.</p>
@@ -281,7 +286,8 @@ button) then the result is stored in a single column, if multiple checks
 are allowed it is stored as a JSON Array column.
 </dd>
 </dl>
-<h2 id="example-newt-yaml">Example Newt YAML</h2>
+<h2 id="example-newt-yaml-for-router-and-code-generator">Example Newt
+YAML for router and code generator</h2>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">application</span><span class="kw">:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8011</span></span>
@@ -417,6 +423,126 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="
 <span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">discription</span><span class="kw">:</span><span class="at"> format a browsable people list linking to individual profiles</span></span>
 <span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3030/list_people.tmpl</span></span>
 <span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> applicatin/json</span></span></code></pre></div>
+<h2 id="templates-property">templates property</h2>
+<p>This property is used by Newt Mustache and pdbundler. It is ignore by
+Newt router and code generator.</p>
+<dl>
+<dt>templates</dt>
+<dd>
+(optional: newtmustache, pdbundler) this holds a list of template
+objects
+</dd>
+</dl>
+<h3 id="template-object-model">template object model</h3>
+<dl>
+<dt><code>request [METHOD ][PATH]</code></dt>
+<dd>
+(required) This holds the request HTTP method and path. If the HTTP
+method is missing a POST is assumed
+</dd>
+<dt><code>template</code></dt>
+<dd>
+(required: newtmustache, optional: pdbundler) This is the path to the
+template associated with request. NOTE: Pandoc web service does not
+support partial templates. Mustache does support partial templates
+</dd>
+<dt><code>partials</code></dt>
+<dd>
+(optional, newtmustache only) A list of paths to partial Mustache
+templates used by <code>.template</code>.
+</dd>
+<dt><code>options</code></dt>
+<dd>
+(optional: pdbundler) This are the default options you want to supply
+Pandoc web service, e.g. “to”, “from”, “standalone”, “title”
+</dd>
+<dt><code>debug</code></dt>
+<dd>
+(optional) this turns on debugging output for this template
+</dd>
+</dl>
+<p>Example of newtmustache YAML:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">application</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">3032</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hello/{name}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hello</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hi/{name}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hi</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span></code></pre></div>
+<p>Example of pdbundler YAML:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">application</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">3029</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /hello</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hello.md.tmpl</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">standalone</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /hello/{name}</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hello.md.tmpl</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /custom_page&quot;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/pdoc.html.tmpl</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> html5</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">standalone</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> This is the custom template with this title</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /custom_page_with_title/{title}&quot;</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/pdoc.html.tmpl</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> html5</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">standalone</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> This title is overwritten by the one in the request</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /custom_page_include&quot;</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/pdoc.html.tmpl</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> html5</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">standalone</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /default_html5&quot;</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> html5</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">standalone</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> A Page using the default template</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /default_html5_with_title/{title}&quot;</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> html5</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">standalone</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">title</span><span class="kw">:</span><span class="at"> This title is replaced by the title in the URL</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;POST /default_html5_include&quot;</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">from</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">to</span><span class="kw">:</span><span class="at"> html5</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">standalone</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />

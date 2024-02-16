@@ -67,7 +67,7 @@ These features are intended to expose the capabilities of Pandoc web service.
 -port
 : Run service on designated port
 
-## Template bundler's YAML
+## Pandoc Bundler's YAML
 
 port
 : (integer, defaults to 3029) the port number the service should listen on
@@ -184,5 +184,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunTemplateBundler(in, out, eout, args, port, timeout, verbose))
+	os.Exit(newt.RunPandocBundler(in, out, eout, args, port, timeout, verbose))
 }

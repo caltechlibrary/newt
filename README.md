@@ -1,42 +1,41 @@
 
 # Newt Project
 
-The Newt Project is an experiment in rapid web application development for libraries, archives and museums (abbr: <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture forming data pipelines[^1]. The pipelines compose the web application.
+The Newt Project is an experiment in rapid web application development for libraries, archives and museums (abbr: <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture forming data pipelines[^1]. The pipelines compose the web application. It comes with several programs used to implement the architecture.
 
 [^1]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
-Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST gives you an out of the box. Postgres+PostgREST provides web friendly data management platform in the form of a JSON API. Light weight template engines like Pandoc web service or Newt's own Mustache template engine can transform your JSON API output into a web page. Throw in a full text search engine like Solr and you can check off the core features of many LAS software systems. What is missing is the layer to orchestrate the data flowing through a pipe.
+Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST provides data management and a JSON API out of the box. Solr can provide full text search in the form of a JSON API, again out of the box. Pair these with a light weight template engine like Newt Mustache and you can check off most of the core features needed to implement many LAS software systems. There is a missing layer. You need to tie those services together. Newt provides a data ruter to do just that. It orchestrates your web application through the application of routes and data pipelines.
 
 The Newt Project is trying to encourage the following characteristics.
 
 - preference for "off the shelf" over writing new code
 - data modeling and management placed squarely in your database management system
 - data sources accessed as JSON API
-- data transformation (if needed) happens in simple stateless template engines
-- leverage code generation when appropriate
+- data transformation (if needed) happens in stateless template engines
+- code generation where appropriate
 
-The Newt Project is provides tools to fill in the gaps.
+The Newt provides tools to fill in the gaps.
 
-- `newt` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
-- `newtgen` is a code generator that can take a set of data models described in YAML and generate SQL, HTML and templates based on those models
+- `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
+- `newtgenerator` is a code generator that can take a set of data models described in YAML and generate SQL, HTML and templates based on those models
 - `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
-- `pdbundler` will take a JSON object and wrap it in Pandoc web service friendly JSON
 
 The Newt web service and data pipeline concept is being tested using
 
 - [Postgres](https://postgres.org), data management and modeling
 - [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
-- [Solr](https://solr.apache.org), full text search that provides a JSON API
 
 The Newt web service can tie these together through YAML expressing
 
-- application definition (run time information and application metadata)
-- routes (web requests differentiated by a HTTP method, headers and URL path)
+- application (run time information and application metadata)
 - models (describe the data as would be input into a web form)
+- routes (web requests differentiated by a HTTP method and URL path)
+- templates (Mustache template service)
 
-## What type of applications are supported by Newt Project?
+## What type of applications are supported by Newt?
 
-Most LAS applications are focused on managing and curating some sort of metadata record. This is the primary target of Newt. This might be as simple as a controlled vocabulary or as complex as an archival or repository metadata record.
+Most LAS applications are focused on managing and curating some sort of metadata records. This is the primary target of Newt. This might be as simple as a controlled vocabulary or as complex as an archival or repository metadata record.
 
 ## Motivation
 
@@ -46,7 +45,7 @@ Over the last several decades web applications became very complex. This complex
 
 Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. By 1993 the web as an application platform was born[^2] and with it a good platform for providing useful organizational software.
 
-By the mid 1990s the Open Source databases, MySQL and Postgres, were the popular choice for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^3]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^4]. Yahoo Pipes inspired Newt's data pipelines.  Specialization has continued ever since. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases[^5]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example was the in-house bespoke content systems gave way to systems like [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
+By the mid 1990s the Open Source databases MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^3]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^4]. Yahoo Pipes inspired Newt's data pipelines.  Specialization has continued ever since. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases[^5]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example was the in-house bespoke content systems gave way to systems like [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
 
 [^2]: Web applications proceeded to eat all the venerable green screen systems they could find. Eventually they and their corporate sponsors invented the surveillance economy we have today. Sometimes "good ideas" have terrible consequences. Making it easier to produce custom web applications should always be done keeping in mind the necessity for humane and inclusive use. Newt can be both part of a solution but also be used to exacerbate human problems.
 
@@ -62,39 +61,53 @@ Much of the back end of web applications can largely be assemble from off the sh
 
 I think a radical simplification is due.  Most software doesn't need to scale that large. Even in the research and LAS communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software.
 
-A big key to simplification is realizing that the middleware no longer needs to be responsible for managing data models, access control and users or data transformation. There is no requirement for being bespoke. If you can configure the data routes and your data models the rest can become turn key.
+A big key to simplification is realizing that the middleware no longer needs to be responsible for managing data models, access control and users or data transformation. If you can describe your data model, routes and their data pipelines the rest can become much more turn key.
 
 ## Off the shelf deliverables
 
 - (data management) Postgres combined with PostgREST gives you an out of the box JSON API for managing data
 - (full text search) Solr gives you a powerful, friendly, JSON API for search and discovery
-- (content transformation) `pdbundler` in a pipeline with Pandoc web service provides a simple but powerful template engine
-- (hosting, access control) Apache 2 or NginX when combined with a single sign on system (e.g. Shibboleth) provides access control
+- (content transformation) `newtmustache` in a pipeline transforms your JSON data using the Mustache template language
+- (access control) Apache 2 or NginX when combined with a single sign on system (e.g. Shibboleth) provides access control
 - (rich client) Web browsers now provide a rich software platform in their own right
 
-## This missing bits
+## The missing bits
 
-With the only the above list can already build capable applications that run inside the web browser. The cost,  JavaScript is required to render everything. Relying on JavaScript to assemble our content in the web browser is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a single web service and get back useful results without having to process more than HTML and CSS.
+With only the above list we can build capable applications relying on the sophisticated features of our web browsers. There is a cost. JavaScript is required to render everything. Relying on JavaScript in the browser to assemble our content is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a web service and get back useful results without having to process more than HTML and CSS.
 
-Taking the better approach in the past has required the writing of more middleware. I think we can avoid that or at least avoid complex middleware.
+Taking the better approach in the past has required the writing of complex middleware. I think we can avoid that or at least avoid writing complex middleware.
 
-For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" describes the URL path and HTTP method used to make a web request (e.g. your web browser requesting to view an HTML page). The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^6]. The collection of routes and their functions compose the API your browser uses to navigate through your application.
+For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" is described by an HTTP method and URL path. The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^7]. The collection of routes and their functions compose the API your browser uses to navigate through your application.
 
-There is no requirement for the functions to be simple or complex. It depends on the task they are solving. Historically before single sign-on systems became common the function handling the request was responsible for the whole transaction. It needed to hand access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database's security. This was especially true when generate a SQL statement to interact with the database. Those functions that did it all are complex by necessity.  When we narrowly focus a function and allow other layers of the system to handle most of the complexity our functions can be simpler.  That was the motivation and many software libraries and frameworks that proliferated among the many languages used to write middleware. What was missing was an adjustment of our assumptions. Middleware doesn't need to do allot of those things any more. What if a web service specialized in being the glue is there a path to simplification? Can we configured the web service and delegate away the responsibility of our middleware?
+Historically before single sign-on systems became common the function handling the request was responsible for the whole transaction. A single function would need to handle access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database or operating system. Enertia has ensure many web applications built as middleware still do this. Even succesful projects like Drupal and Wordpress do this.
 
-[^6]: That functionality is traditionally called a "handler" or "route handler".
+If we narrowly focus a function and allow other layers of the system to handle most of the complexity our functions can be simpler. Easier to write. Easier to reason about.  While that was the motivation for many software libraries and frameworks in practice we just got more complexity. Each programming language developed its own rotating pantheon of favorites. Maybe the solution isn't the programming language and framework but something else.
 
-Here's the new baseline I think we should consider. Web services talk to other web services all the time. This isn't new or exotic it has become a traditional web development practice. Let's take advantage of that. What if we align access control with our front end web server or in the database that can express itself as a JSON API? What if we could treat the response from one web service as the input of another creating pipelines for web data? What if putting together pipelines was as easy as hosting static web content? I think the answer is "yes we can" to all these propositions.
+Are we missing an opportunity to change our base assumptions? Middleware doesn't need to do allot to be useful. That was the whole point when the term "micro service" was coined. The key is to be able to **easily** chain middleware together. Like stacking a bunch of bricks. Unix accomplishes that with pipes. That web already has this concept to but it is less obvious. Can be build towards the small and simple?
 
-Newt provides a simple web service that takes a YAML file and pairs the requests it receives with a data pipeline. The last stage of the pipeline executed is returned to the web browser. If there is a failure in the pipeline then an appropriate error is returned to the requesting web browser. Newt's code generator uses the same YAML to generate the SQL, templates and HTML needed to form a basic human user interface. There isn't much middleware left to write using this approach. If you do write middleware it can be narrowly focused to a specific stage of your pipelines and hopefully much simpler than the code you used to write.
+### A new baseline
+
+Web services talk to other web services all the time. This isn't new. It isn't exotic it. Library, archive and museums systems do this all the time between organizations. Can we make it easier for doing this locally? In the little application your organization needs if you can build it. The approach is called "service oriented architecture". More recently was called "micro service architecture". Whatever you call it we're already using it at large (e.g. looking up a DOI via CrossRef). What does it take to do that in the small?
+
+- Can we align access control with our front end web server?
+- Can we insist our database management system provides flexible JSON API?
+- Can we treat the output of one web services as the input for the next?
+- Can we aggregate these into a data pipelines?
+- Will that be enough to define a web application?
+
+In 2024 you can answer is "yes we can" to all these propositions.
+
+Newt provides a small set of web services and a code generator. These are driven from YAML files. The Newt code generator lets you bootstrap your application by generating SQL for Postgres+PostgREST. It can also generate templates for web pages. The Newt router takes that YAML file and pairs the requests with data pipelines defined in YAML. The last stage of the pipeline executed is returned to the web browser. Newt's code generator and router share the same YAML file keeping implementation and orchestration in sync. There isn't much middleware left to write using this approach. If you do write middleware you can make it simple and laser focused to a specific stage of your data pipeline. 
 
 [^6]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
+[^7]: In programmer's jargon we call that a "handler" or "route handler".
+
 ## What comes with the Newt Project?
 
-- [newt](newt.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a data router and as a static file server. It is responsible for vetting requests against the models described in the YAML file. The same models used to generate the SQL for the database and the templates for user with a template engine.
-- [newtgen](newtgen.1.md) is a command line program that reads the Newt YAML file and generates SQL and templates used to build your application.  The generated SQL currently targets Postgres+PostgREST.
-- [newtmustache](newmustache.1.md) implements a simple lightweight template engine supporting [Mustache](https://mustache.github.io/) templates. Mustache template language is support by a wide variety of programming languages. It is provided as an alternative to using Pandoc as a template engine.
+- [newtrouter](newtrouter.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a router and as a static file server. It does this by routing your request through a YAML defined pipeline and returning the results. Typically this will be a JSON data source and running that output through a template engine like Newt Mustache.
+- [newtgenerator](newtgenerator.1.md) is a command line program that reads the Newt YAML file and generates SQL and templates used to build your application.  Currently the generator target SQL for use with Postgres+PostgREST. The template language being targeted is Mustache.
+- [newtmustache](newmustache.1.md) implements a simple lightweight template engine supporting [Mustache](https://mustache.github.io/) templates. Mustache template language is well support by a wide variety of programming languages include Python, PHP, and JavaScript.
 
 NOTE: See the [user manual](user_manual.md) for details
 
@@ -102,35 +115,29 @@ NOTE: See the [user manual](user_manual.md) for details
 
 The Newt suite of tools use a common YAML file.
 
-1. `newtgen` can render SQL suitable for bootstrapping your Postgres+PostgREST database, templates and HTML
-2. `newtmustache` provides a simple, stateless, Mustache template engine
-3. `newt` provides data routing between other web services that fill specific functions or roles.
+- `newtgenerator` can render SQL suitable for bootstrapping your Postgres+PostgREST database as well as Mustache templates
+- `newtmustache` provides a simple, stateless, Mustache template engine
+- `newtrouter` provides data routing between other web services that fill specific functions or roles.
 
-Your back end is constructed from "off the shelf" parts. Newt provides the routing. It allows our customization efforts to focus on data modeling in the database then HTML, CSS and JavaScript that will run in your web browser.
+Your back end is constructed from "off the shelf" parts. Newt provides the routing. It allows our customization efforts to focus on data modeling in the database and with a template engine it renders content that you view in your web browser.
 
 ## Where is development time spent?
 
-The developer writes YAML to generate the back end data management. The YAML is used  generate the SQL, HTML and templates needed for the application. Other services are combined by `newt` to manage the data pipelines which form the application's basic functionality. The developer can then focus on either refining the data models running in the database or in web browser content handling.
+The developer writes YAML to generate the back end data management. The YAML is used generate the SQL and Mustache templates needed for your application. The developer is free to enhance the SQL, Mustache templates as needed. That shifts your focus to data modeling in the database or making your application more human friendly browser side.
 
 ## What about security, integration with single sign-on or other websites or services?
 
-The `newt` program is a simple web service providing data routing based on its YAML configuration. It's a team player. In a production setting it should be used behind a front end web server like Apache 2 or NginX. That latter can be configured to support single sign-on systems like Shibboleth[^7]. The front end web service controls access and handles securing the connection with the web browser. The front end web service proxies to the Newt web service. Newt web services runs the data pipeline on localhost. The data pipelines are off the shelf services like Postgres+PostgREST, Solr and Pandoc server. Having a clear division of responsibilities helps in securing your web application. Since Newt only knows how to talk to services on localhost you can keep it contained and prevent it from being used for nefarious actions off system. Similarly if you decide to use Newt's template engine, `newtmustache`, it also is restricted to localhost.
+The `newtrouter` is a simple web service providing data routing based on its YAML configuration. It's a team player. In a production setting it should be used behind a front end web server like Apache 2 or NginX. That latter can be configured to support single sign-on systems like Shibboleth[^8]. The front end web service controls access and handles securing the connection with the web browser. The front end web service proxies to the Newt router. Newt router receives requests and runs the data pipelines on localhost. The data pipelines can be composed of off the shelf software like Postgres+PostgREST, Solr and template engine to turn your JSON into a web page. Having a clear division of responsibilities helps in securing your web application. Since Newt router only knows how to talk to services on localhost you can keep it contained and prevent it from being used for nefarious actions off system. Like Newt router Newt Mustache is constrained to localhost for similar reasons.
 
-Limiting Newt web service applications to localhost keeps them simple. Only doing the minimum limits the attack surface for those who want to do mischief.  Neither `newt` or `newtmustache` write to disk or require secrets. They only communicate via localhost using HTTP protocol.
+Limiting Newt web service applications to localhost keeps them simple. Doing the minimum limits the attack surface for those who want to do mischief.  Neither `newtrouter` or `newtmustache` write to disk or require secrets. They only communicate via localhost using HTTP protocol.
 
-If you need to integrate a Newt application with an external service (e.g. CrossRef, ORCID or ROR) this can be done browser side or via a proxy mapped to localhost on your server.
-
-[^7]: Shibboleth is a common single sign-on platform in research libraries, universities and colleges.
+[^8]: Shibboleth is a common single sign-on platform in research libraries, universities and colleges.
 
 ### What about "scaling"?
 
-`newt` is just a data router. Aside from its configuration read at start up it doesn't maintain state. `newtmustache` doesn't maintain state and the only configuration is the port number it runs on. Both can safely run with many instances in parallel as needed on one or more machines. The instances don't share data or coordinate. They start up wait for a request and providing an answer. So what does this mean?
+`newtrouter` is just a router. Aside from reading configuration at start up it doesn't maintain state. `newtmustache` functions the same way, read in the configuration and just run. By assigning different ports you can also run many instances of them. This makes it possible to run them in parallel, behind load balancers or even through proxying spread them across many machines. The instances don't share data or coordinate. They start up wait for a request and providing an answer. 
 
-In principle a Newt based application can scale as wide as needed as long as each element in the pipeline(s) can also scale.
-
-In our example Postgres can be configured as a <abbr title="high availability">HA</abbr> cluster. PostgREST, Pandoc server, Newt's mustache engine all are stateless and can be run in parallel. You can scale as large us Postgres can be scaled by adding more instances of the stateless services.
-
-While my intention with Newt is targeting the small it should scale up to meet high volume demands.
+So what does this all mean? In principle a Newt based applications can scale big as it pipeline services allow. 
 
 ### Anatomy of a Newt based web application
 
@@ -140,8 +147,9 @@ Newt application development is friendly to version control systems (e.g. Git). 
   - `htdocs` this directory holds your static content needed by your web application
   - `*.sql` these are the SQL files used by your application to define your models and behaviors in Postgres
   - `templates` a template holding your template pages
-  - `newt.yaml` would hold the a Newt configuration file (this is an example name for the configuration file, you can name it whatever you like)
-  - `CITATION.cff` and `codemeta.json` for project metadata
+  - `app.yaml` would hold the a Newt router and code generator configuration file
+  - `tmpl.yaml` holding the configuration for `newtmustache`
+  - `CITATION.cff` or `codemeta.json` for project metadata
 
 > Newt, a type of salamander, doesn't seek attention. It does its own thing. You only notice it if you look carefully.
 
@@ -159,7 +167,7 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 ## Documentation
 
-- [user manual](user_manual.md)
+- [User Manual](user_manual.md)
 - [INSTALL](INSTALL.md)
 - [About](about.md)
 

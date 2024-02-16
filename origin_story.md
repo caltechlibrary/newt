@@ -33,16 +33,16 @@ So here's my propositions
 
 Our middleware should be focus that last stage. Everything use should be provided by "off the shelf" components. The middleware focus is in the final composition from the parts. It can use configuration to do that.
 
-Proposed components for testing a the simple data router concept
+Proposed components for testing a the simple router concept
 
 - Postgres database
 - PostgREST to turns Postgres into a JSON API managed from Postgres
 - Pandoc running as a web service (a very light weight template engine)
 - Solr for full text search leveraging its JSON API support
 
-The data router needs to be configurable such that any given URL supported in your application can pass content between the database or search engine and through a template engine handing back the results.
+The router needs to be configurable such that any given URL supported in your application can pass content between the database or search engine and through a template engine handing back the results.
 
-Flask (like many other frameworks) suggest a excellent path foreword.  Flasks lets you assign a "route" to a function. A "route" is expressed with a path like string. It may include replaceable elements that the function can then use to do it's job (e.g. a record id passed in as part of the URL's path).  If you can identify a path using a simple description string and you pair that with a data pipeline sequence then now have a data router. The code you write is configuration for the path and how it should proceed through a pipeline sequence. 
+Flask (like many other frameworks) suggest a excellent path foreword.  Flasks lets you assign a "route" to a function. A "route" is expressed with a path like string. It may include replaceable elements that the function can then use to do it's job (e.g. a record id passed in as part of the URL's path).  If you can identify a path using a simple description string and you pair that with a data pipeline sequence then now have a router. The code you write is configuration for the path and how it should proceed through a pipeline sequence. 
 
 Use case 1: contact the JSON API for the search engine, take the results and run them through the template service. 
 

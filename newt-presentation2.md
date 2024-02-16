@@ -33,7 +33,7 @@ Is Newt and "off the shelf" enough?
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) =>  JSON data source
 - Newt Mustache => Transform JSON into web pages
-- Newt Data Router, ties it all together
+- Newt Router, ties it all together
 - YAML can express routes, pipelines and data models
 
 # Assembling it with YAML
@@ -58,6 +58,7 @@ A second prototype Newt application
 - "Off the shelf" is simpler
 - SQL turns people off, use a code generator
 - Mustache templates, simple but not too simple
+- Two YAML syntaxes is too many
 - Unexpected encounters ...
 
 # Unexpected encounters
@@ -72,7 +73,6 @@ A second prototype Newt application
 - Newt is **an experimental working prototype** (February 2024)
 - Pipeline delays accumulate
 - Many routes are hard to maintain
-- Three YAML syntaxes is too many
 - Newt is missing file upload support
 
 # Newt has strengths
@@ -86,7 +86,7 @@ A second prototype Newt application
 
 # Questions guiding next steps
 
-- Should the data router support non-localhost URLs?
+- Should the router support non-localhost URLs?
 - What tools should come from the Newt Project?
 - How do we move Newt beyond a Caltech Library experiment?
 

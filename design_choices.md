@@ -32,12 +32,12 @@ Newt's configuration langauge is YAML. YAML was picked because it is widely use 
 
 ### Newt's minimal feature set
 
-- `newt` as a two stage data router
+- `newt` as a two stage router
 - `newt` as static file service
 - `newtpg` can use the Newt configuration file to render simple data models as SQL generator suitable to bootstrap a PostgREST+Postgres JSON API
 - `newtform` can use the Newt configuration file to render simple HTML/Markdown forms
 
-Here's the data flow steps of `newt` data router.
+Here's the data flow steps of `newt` router.
 
 1. Web browser => (Web Server proxy) => Newt
 2. Newt => data source (e.g. Postgres + PostgREST or S3 Object store)

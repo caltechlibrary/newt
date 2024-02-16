@@ -1,56 +1,63 @@
 
 # Newt YAML syntax
 
-Newt's configuration and modeling is based on a YAML file. That YAML file has a
-specific syntax.  The top level of syntax is formed from three properties.
+Newt programs are configured in YAML files. Newt programs may focus on some properties and ignore others. The interpretation is specific to the program.
+
+These are the top level properties in YAML files.
 
 application
-: holds the run time configuration used by the Newt web service and metadata about the application you're creating.
+: (optional: newtrouter, newtgenerator and mustache) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
 
 models
-: This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
+: (optional: newtrouter and newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
 
 routes
-: This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
+: (optional: newtrouter and newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
+
+templates
+: (optional: newtmustache, pdbundler)
 
 ## the "application" property
 
-The application property itself has four properties. All are optional. They also can be specified on the command line of `newt` and `newtgen`
+The application properties are optional. Some maybe set via command line. The the Newt application manual pages.
+
+namespace
+: (optional: newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
 
 port
-: (optional, default is This port number the Newt web services uses to listen for request on localhost
+: (optional: newtrouter, newtmustache, pdbundler) default is This port number the Newt web services uses to listen for request on localhost
 
 htdocs
-: (optional) Directory that holds your application's static content
+: (optional: newtrouter only) Directory that holds your application's static content
 
 metadata
 : (optional) This holds metadata about your application using the [CITATION.cff](https://citation-file-format.github.io/) YAML syntax under metadata.
 
 environment
-: (optional) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+: (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
-There is a fifth special attribute in application that can be used in place of `.metadata`. If you maintain a CITATION.cff file you can point to it to avoid maintaining it in two places. When `newt` is started up it will copy the contents into the `.metadata` property.
+The fifth attribute in application is special. It can be used in instead of `metadata`. If you maintain a CITATION.cff file you can point to it to avoid maintaining it in two places. When the Newt router or code generated is started up it will copy the contents into the `metadata` property.
 
 citation
 : (optional) This points at an file (e.g. CITATION.cff). It is used to populate the metadata property at startup
 
 ## the "routes" property
 
-Routes hosts a list of request descriptions and their data pipelines
+Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.
 
 ### a route object
 
 `id`
-: (required) This identifies the pipeline so that it can be re-used or included in other pipelines. It must conform to variable name rules[^1]
+: (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^1]
 
 `description`
-: (optional, encouraged) This is a description of what you're trying to accomplish in the route. It may be used in comments or by documentation generators.
+: (optional, encouraged) This is a human readable description of what you're trying to accomplish in this specific route. It may be used in comments or by documentation generators.
 
 `request [METHOD ][PATH]`
-: (required) This is a string that expresses the HTTP method and URL path to assign to a specific data pipeline. If METHOD is not provided it will match the request handler will catch all HTTP methods. You can express embedded variables in the PATH element using single curl braces. E.g. `GET /items/{item_id}` would make `item_id` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `/blog/{year}-{month}-{day}` would not work but `/blog/{year}/{month}/{day}` would capture the individual elements. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
+: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. `GET /items/{item_id}` would make `item_id` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `/blog/{year}-{month}-{day}` would not work but `/blog/{year}/{month}/{day}` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
 
 `pipeline`
-: (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail or the last element in the pipeline are returned as a response to the request
+: (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail will abort the pipeline returning an HTTP error status. If done fail then the result of the last stage it returned to the requesting browser.
 
 `error`
 : (optional) this points to a static page that can be displayed when the pipeline fails (e.g. like a 404 page used by web servers)
@@ -62,14 +69,11 @@ Routes hosts a list of request descriptions and their data pipelines
 
 A pipeline is a list of web services containing a type, URL, method and content types
 
-`service [METHOD] [URL]`
+`service [METHOD ][URL]`
 : (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
 
 `description`
-: (optional, recommended) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
-
-`content_type`
-: (optional) You can specify a mime content type for the data you are sending
+: (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
 
 `timeout`
 : (optional) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
@@ -77,7 +81,7 @@ A pipeline is a list of web services containing a type, URL, method and content 
 
 ## the "models" property
 
-Models holds a list of individual models used by our data pipelines. The models are used when generating the SQL code defining our schema and data management. It also is used to render templates that maybe used by a template engine in the data pipeline. It can be used to generate static HTML suitable for embedding in Markdown or HTML documents (e.g. web forms). The input elements can be used to form a URL require to other web services in our pipeline.
+Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYTS).
 
 ### a model object
 
@@ -137,7 +141,7 @@ checkboxes
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
 
-## Example Newt YAML
+## Example Newt YAML for router and code generator
 
 ```yaml
 application:
@@ -282,4 +286,117 @@ routes:
 [^2]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>, 
 
 [^3]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
+
+## templates property
+
+This property is used by Newt Mustache and pdbundler. It is ignore by Newt router and code generator.
+
+templates
+: (optional: newtmustache, pdbundler) this holds a list of template objects
+
+### template object model
+
+`request [METHOD ][PATH]`
+: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
+
+`template`
+: (required: newtmustache, optional: pdbundler) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
+
+`partials`
+: (optional, newtmustache only) A list of paths to partial Mustache templates used by `.template`.
+
+`options`
+: (optional: pdbundler) This are the default options you want to supply Pandoc web service, e.g. "to", "from", "standalone", "title"
+
+`debug`
+: (optional) this turns on debugging output for this template
+
+Example of newtmustache YAML:
+
+```yaml
+application:
+    port: 3032
+templates:
+  - request: GET /hello/{name}
+    template: testdata/simple.mustache
+  - request: GET /hello
+    template: testdata/simple.mustache
+    options:
+      name: Universe
+  - request: GET /hi/{name}
+    template: testdata/hithere.html
+    partials:
+      - testdata/name.mustache
+    debug: true
+  - request: GET /hi
+    template: testdata/hithere.html
+    partials:
+      - testdata/name.mustache
+    options:
+      name: Universe
+```
+
+Example of pdbundler YAML:
+
+```yaml
+application:
+    port: 3029
+templates:
+  - request: POST /hello
+    template: hello.md.tmpl
+    options:
+      from: markdown
+      to: markdown
+      standalone: false
+    debug: true
+  - request: POST /hello/{name}
+    template: hello.md.tmpl
+    options:
+      from: markdown
+      to: markdown
+    debug: true
+  - request: "POST /custom_page"
+    template: testdata/pdoc.html.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This is the custom template with this title
+    debug: true
+  - request: "POST /custom_page_with_title/{title}"
+    template: testdata/pdoc.html.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This title is overwritten by the one in the request
+    debug: true
+  - request: "POST /custom_page_include"
+    template: testdata/pdoc.html.tmpl
+    options:
+      from: markdown
+      to: html5
+      standalone: false
+    debug: true
+  - request: "POST /default_html5"
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: A Page using the default template
+    debug: true
+  - request: "POST /default_html5_with_title/{title}"
+    options:
+      from: markdown
+      to: html5
+      standalone: true
+      title: This title is replaced by the title in the URL
+  - request: "POST /default_html5_include"
+    options:
+      from: markdown
+      to: html5
+      standalone: false
+    debug: true
+```
+
 

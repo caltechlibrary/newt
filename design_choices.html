@@ -98,7 +98,7 @@ information needed for data routing in Newt. YAML seemed a good fit for
 Newt.</p>
 <h3 id="newts-minimal-feature-set">Newt’s minimal feature set</h3>
 <ul>
-<li><code>newt</code> as a two stage data router</li>
+<li><code>newt</code> as a two stage router</li>
 <li><code>newt</code> as static file service</li>
 <li><code>newtpg</code> can use the Newt configuration file to render
 simple data models as SQL generator suitable to bootstrap a
@@ -106,7 +106,7 @@ PostgREST+Postgres JSON API</li>
 <li><code>newtform</code> can use the Newt configuration file to render
 simple HTML/Markdown forms</li>
 </ul>
-<p>Here’s the data flow steps of <code>newt</code> data router.</p>
+<p>Here’s the data flow steps of <code>newt</code> router.</p>
 <ol type="1">
 <li>Web browser =&gt; (Web Server proxy) =&gt; Newt</li>
 <li>Newt =&gt; data source (e.g. Postgres + PostgREST or S3 Object

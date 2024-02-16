@@ -2,8 +2,9 @@
 Installation
 ------------
 
-newt is an experimental web service for working with Pandoc+PostgREST. It also provides a simple static file web service, template engine and code generator. At this time you must install it from source code. It is probably broken and certainly will contain many bugs. It's a prototype!
+Newt is an experimental set of programs for rapid application development for libraries, archives and museums. It provides a router, code generator, tmustache template engine and a JSON bundler for working with Pandoc web service. At this time you must install it from source code. The programs are likely broken, poorly documented and certainly contain bugs. It's a prototype!
 
+<!-- 
 Quick install with curl
 -----------------------
 
@@ -13,16 +14,15 @@ with the following curl command.
 ~~~
 curl https://caltechlibrary.github.io/newt/installer.sh
 ~~~
+-->
 
 Install from source
 -------------------
 
-## Requirements
+## Installation Requirements
 
-- Go ≥ 1.22
+- Go ≥ 1.22.0
 - Pandoc ≥ 3.1 (to render Markdown content and some Go code)
-- Postgres ≥ 16
-- PostgREST ≥ 12
 - Git compatible tool for retrieving the GitHub repository of Newt
 - GNU Make ≥ 4.3
 - GNU grep ≥ 3.7
@@ -38,15 +38,13 @@ Install from source
 
 1. Check if Go is installed and it is the right version. See <https://golang.org> to download and install Go
 2. Check if Pandoc is installed and the right version. See <https://pandoc.org> to download and install Pandoc
-3. Check if SQLite3 is installed and the right version. See <https://sqlite.org> to download and install SQLite3
-4. Check if Git is installed and version. To install the Git command see, <https://git-scm.com/>. GitHub provides [GA](https://docs.github.com/en/github-cli) and [GitHub Desktop](https://docs.github.com/en/desktop) with similar capabilities. Newt install instructions assume the venerable `git` command.
-5. Check if your GNU or POSIX commands are available
+3. Check if Git is installed and version. To install the Git command see, <https://git-scm.com/>. GitHub provides [GA](https://docs.github.com/en/github-cli) and [GitHub Desktop](https://docs.github.com/en/desktop) with similar capabilities. Newt install instructions assume the venerable `git` command.
+4. Check if your GNU or POSIX commands are available
    - These command often installed by POSIX operating system and its package manager
 
 ~~~shell
 go version
 pandoc --version
-sqlite3 --version
 git version
 make --version
 grep --version
@@ -81,6 +79,8 @@ go test
 go install
 ~~~
 
+<!-- 
+
 ## Precompiled binaries
 
 You can find prep-compiled binaries for some versions of Newt. They are available at <https://github.com/caltechlibrary/newt/releases>.
@@ -96,6 +96,7 @@ The binaries are available in a Zip archive file for download. The name uses the
     - `newt-v0.0.2-Linux-armv7l.zip` (Raspberry Pi OS, 32bit)
     - `newt-v0.0.2-Linux-aarch64.zip` (Linux on ARM 64)
 
+-->
 
 ## Getting help
 

@@ -15,14 +15,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// TemplateBundler models the application `tmplbndl`
-type TemplateBundler struct {
+// PandocBundler models the application `pdbundler`
+type PandocBundler struct {
 	Port string `json:"port,omitempty" yaml:"port"`
-	Templates []*TemplateBundle `json:"templates,omitempty" yaml:"templates"`
+	Templates []*PandocBundle `json:"templates,omitempty" yaml:"templates"`
 }
 
-// TemplateBundle hold the request to template mapping for `tmplbndl`
-type TemplateBundle struct {
+// PandocBundle hold the request to template mapping for `pdbundler`
+type PandocBundle struct {
 	// Pattern holds a request pattern, e.g. `POST /blog_post`
 	// A request is associated with a template to be bundled into
 	// an JSON object. The pattern conforms to Go 1.22 or later's
@@ -47,10 +47,10 @@ type TemplateBundle struct {
 	Vars []string
 }
 
-// NewTemplateBundler create a new TemplateBundler struct. If a filename
+// NewPandocBundler create a new PandocBundler struct. If a filename
 // is provided it reads the file and sets things up accordingly.
-func NewTemplateBundler(fName string) (*TemplateBundler, error) {
-	tb := &TemplateBundler{}
+func NewPandocBundler(fName string, cfg *Config) (*PandocBundler, error) {
+	tb := &PandocBundler{}
 	if fName == "" {
 		return tb, fmt.Errorf("missing configuration file")
 	}
@@ -61,6 +61,9 @@ func NewTemplateBundler(fName string) (*TemplateBundler, error) {
 	err = yaml.Unmarshal(src, &tb)
 	if err != nil {
 		return nil, err
+	}
+	if tb.Port == "" && cfg.Application != nil &&  cfg.Application.Port != ""{
+		tb.Port = cfg.Application.Port	
 	}
 	// Prefix the port number with a colon
 	if ! strings.HasPrefix(tb.Port, ":") {
@@ -73,7 +76,7 @@ func NewTemplateBundler(fName string) (*TemplateBundler, error) {
 // you're going to use one of Pandoc default templates. If a name is
 // provided then it reads the file saving the results in `.Src`
 // An error is returned in a problem is encountered.
-func (b *TemplateBundle) ResolveTemplate() error {
+func (b *PandocBundle) ResolveTemplate() error {
 	if b.Template != "" {
  		src, err := os.ReadFile(b.Template)
 		if err != nil {
@@ -85,7 +88,7 @@ func (b *TemplateBundle) ResolveTemplate() error {
 }
 
 // Handler provides a HandleFunc for use with an http.ServeMux struct.
-func (b *TemplateBundle) Handler(w http.ResponseWriter, r *http.Request) {
+func (b *PandocBundle) Handler(w http.ResponseWriter, r *http.Request) {
 	if b.Debug {
 		log.Printf("DEBUG .Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
@@ -165,7 +168,7 @@ func (b *TemplateBundle) Handler(w http.ResponseWriter, r *http.Request) {
 
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (b *TemplateBundle) ResolvePath() error {
+func (b *PandocBundle) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
 	if strings.Contains(b.Pattern, "{") {
 		if ! strings.Contains(b.Pattern, "}") {
@@ -181,7 +184,7 @@ func (b *TemplateBundle) ResolvePath() error {
 	return nil
 }
 
-func (tb *TemplateBundler) ListenAndServe() error {
+func (tb *PandocBundler) ListenAndServe() error {
 	mux := http.NewServeMux()
 	for _, bndl := range tb.Templates {
 		mux.HandleFunc(bndl.Pattern, func(w http.ResponseWriter, r *http.Request) {

@@ -22,22 +22,28 @@
 
 <section>
 <h2 id="installation">Installation</h2>
-<p>newt is an experimental web service for working with
-Pandoc+PostgREST. It also provides a simple static file web service,
-template engine and code generator. At this time you must install it
-from source code. It is probably broken and certainly will contain many
-bugs. It’s a prototype!</p>
-<h2 id="quick-install-with-curl">Quick install with curl</h2>
-<p>If you are running macOS or Linux you can install released versions
-of newt with the following curl command.</p>
-<pre><code>curl https://caltechlibrary.github.io/newt/installer.sh</code></pre>
+<p>Newt is an experimental set of programs for rapid application
+development for libraries, archives and museums. It provides a router,
+code generator, tmustache template engine and a JSON bundler for working
+with Pandoc web service. At this time you must install it from source
+code. The programs are likely broken, poorly documented and certainly
+contain bugs. It’s a prototype!</p>
+<!-- 
+Quick install with curl
+-----------------------
+
+If you are running macOS or Linux you can install released versions of newt
+with the following curl command.
+
+~~~
+curl https://caltechlibrary.github.io/newt/installer.sh
+~~~
+-->
 <h2 id="install-from-source">Install from source</h2>
-<h2 id="requirements">Requirements</h2>
+<h2 id="installation-requirements">Installation Requirements</h2>
 <ul>
-<li>Go ≥ 1.22</li>
+<li>Go ≥ 1.22.0</li>
 <li>Pandoc ≥ 3.1 (to render Markdown content and some Go code)</li>
-<li>Postgres ≥ 16</li>
-<li>PostgREST ≥ 12</li>
 <li>Git compatible tool for retrieving the GitHub repository of
 Newt</li>
 <li>GNU Make ≥ 4.3</li>
@@ -58,9 +64,6 @@ and install Go</li>
 <li>Check if Pandoc is installed and the right version. See <a
 href="https://pandoc.org" class="uri">https://pandoc.org</a> to download
 and install Pandoc</li>
-<li>Check if SQLite3 is installed and the right version. See <a
-href="https://sqlite.org" class="uri">https://sqlite.org</a> to download
-and install SQLite3</li>
 <li>Check if Git is installed and version. To install the Git command
 see, <a href="https://git-scm.com/"
 class="uri">https://git-scm.com/</a>. GitHub provides <a
@@ -76,7 +79,6 @@ package manager</li>
 </ol>
 <pre class="shell"><code>go version
 pandoc --version
-sqlite3 --version
 git version
 make --version
 grep --version
@@ -104,40 +106,24 @@ are still int eh directory where you completed step 2.</p>
 <pre class="shell"><code>go build
 go test
 go install</code></pre>
-<h2 id="precompiled-binaries">Precompiled binaries</h2>
-<p>You can find prep-compiled binaries for some versions of Newt. They
-are available at <a
-href="https://github.com/caltechlibrary/newt/releases"
-class="uri">https://github.com/caltechlibrary/newt/releases</a>.</p>
-<p>The binaries are available in a Zip archive file for download. The
-name uses the form
-<code>newt-&lt;VERSION_NO&gt;-&lt;OS_TYPE&gt;-&lt;CPU_TYPE&gt;.zip</code>.
-VERSION_NO will be a semver associated with the release (e.g. “v0.0.2”),
-the OS_TYPE will be either “Linux” (including Raspberry Pi OS),
-“Windows” and “macOS”. The CPU_TYPE will vary based on how the CPU type
-is reported on the POSIX system (e.g. what is returned by
-<code>uname -m</code>) or in the case of Windows either “x86_64” for
-Intel CPU types or “arm64” for ARM CPU (e.g. those in selected Surface
-tablets or Microsoft’s ARM Development Kit 2023).</p>
-<ul>
-<li>macOS example
-<ul>
-<li><code>newt-v0.0.2-macOS-arm64.zip</code> (M1, M2 CPU) or
-<code>newt-v0.0.2-macOS-x86_64.zip</code> (older Intel based Macs)</li>
-</ul></li>
-<li>Windows example
-<ul>
-<li><code>newt-v0.0.2-Windows-x86_64.zip</code> (for Most Windows
-machines)</li>
-</ul></li>
-<li>Linux example (including Raspberry Pi OS)
-<ul>
-<li><code>newt-v0.0.2-Linux-x86_64.zip</code> (Linux on Intel CPUs)</li>
-<li><code>newt-v0.0.2-Linux-armv7l.zip</code> (Raspberry Pi OS,
-32bit)</li>
-<li><code>newt-v0.0.2-Linux-aarch64.zip</code> (Linux on ARM 64)</li>
-</ul></li>
-</ul>
+<!-- 
+
+## Precompiled binaries
+
+You can find prep-compiled binaries for some versions of Newt. They are available at <https://github.com/caltechlibrary/newt/releases>.
+
+The binaries are available in a Zip archive file for download. The name uses the form `newt-<VERSION_NO>-<OS_TYPE>-<CPU_TYPE>.zip`. VERSION_NO will be a semver associated with the release (e.g. "v0.0.2"), the OS_TYPE will be either "Linux" (including Raspberry Pi OS), "Windows" and "macOS". The CPU_TYPE will vary based on how the CPU type is reported on the POSIX system (e.g. what is returned by `uname -m`) or in the case of Windows either "x86_64" for Intel CPU types or "arm64" for ARM CPU (e.g. those in selected Surface tablets or Microsoft's ARM Development Kit 2023).
+
+- macOS example
+    - `newt-v0.0.2-macOS-arm64.zip` (M1, M2 CPU) or `newt-v0.0.2-macOS-x86_64.zip` (older Intel based Macs)
+- Windows example
+    - `newt-v0.0.2-Windows-x86_64.zip` (for Most Windows machines)
+- Linux example (including Raspberry Pi OS)
+    - `newt-v0.0.2-Linux-x86_64.zip` (Linux on Intel CPUs)
+    - `newt-v0.0.2-Linux-armv7l.zip` (Raspberry Pi OS, 32bit)
+    - `newt-v0.0.2-Linux-aarch64.zip` (Linux on ARM 64)
+
+-->
 <h2 id="getting-help">Getting help</h2>
 <p><strong>The Newt Project is an experiment!!</strong>. The source code
 for the project is supplied “as is”. Newt is most likely broken. At a
