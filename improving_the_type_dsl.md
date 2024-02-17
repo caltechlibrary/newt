@@ -1,7 +1,7 @@
 
 # Improving Newt's model and type DSL
 
-GitHub has defined a YAML issue template DSL[^1] that they use to generate issues with a specific structure[^2]. The GitHub DSL includes a type attribute used to describe the user input expected for the issue. The types map to HTML5 form elements. I believe this DSL could also be used to support generating SQL data models.
+GitHub has defined a YAML issue template DSL[^51] that they use to generate issues with a specific structure[^52]. The GitHub DSL includes a type attribute used to describe the user input expected for the issue. The types map to HTML5 form elements. I believe this DSL could also be used to support generating SQL data models.
 
 The GitHub YAML issue syntax could be extended to better support data types specific to the application domains needed by libraries, archives and museums.
 
@@ -15,11 +15,11 @@ Newt's niche is as a rapid web application development platform for libraries, a
 
 ## Proposed Solution
 
-If I adopt GitHub YAML issue template syntax[^3] (abbr: GHYTS) I gain the advantage of our staff already being familiar with the GHYTS DSL. GHYTS appears sufficient to render both SQL models and HTML 5 forms. Adding the SQL support is a matter of mapping GHYTS input types to both general purpose HTML and their respective SQL data types.
+If I adopt GitHub YAML issue template syntax[^53] (abbr: GHYTS) I gain the advantage of our staff already being familiar with the GHYTS DSL. GHYTS appears sufficient to render both SQL models and HTML 5 forms. Adding the SQL support is a matter of mapping GHYTS input types to both general purpose HTML and their respective SQL data types.
 
 There is room for further enhancement without breaking GHYTS.  Libraries, archives and museums work with structured metadata. The metadata attributes often conform to a known data type. This is particularly true of identifiers (e.g. ORCID, DOI, ROR, arXiv). Using the existing GitHub YAML issue template syntax I could support a wider diversity of types through the value associated in the type attribute of the input element. 
 
-This would require replacing original prototype DSL defined in a Go struct found in [type_dsl.go](type_dsl.go) with a new series of struct that map out GHYTS. The current[^4] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to the rest of the Newt router.  I can also improve the code generation ability with this simpler structure for mapping data and representations.
+This would require replacing original prototype DSL defined in a Go struct found in [type_dsl.go](type_dsl.go) with a new series of struct that map out GHYTS. The current[^54] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to the rest of the Newt router.  I can also improve the code generation ability with this simpler structure for mapping data and representations.
 
 ### Advantages of adopting a common syntax
 
@@ -36,11 +36,11 @@ GitHub's YAML syntax promises the following advantages
 
 ## Footnotes
 
-[^1]: DSL, Domain-specific language, See [Wikipedia definition for details](https://en.wikipedia.org/wiki/Domain-specific_language).
+[^51]: DSL, Domain-specific language, See [Wikipedia definition for details](https://en.wikipedia.org/wiki/Domain-specific_language).
 
-[^2]: See GitHub [Syntax for issue forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms)
+[^52]: See GitHub [Syntax for issue forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms)
 
-[^3]: See GitHub [Syntax for GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#about-githubs-form-schema)
+[^53]: See GitHub [Syntax for GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#about-githubs-form-schema)
 
-[^4]: See Newt prototype version [v0.0.6](https://github.com/caltechlibrary/newt/releases/tag/v0.0.6)
+[^54]: See Newt prototype version [v0.0.6](https://github.com/caltechlibrary/newt/releases/tag/v0.0.6)
 

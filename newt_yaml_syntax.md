@@ -48,7 +48,7 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 ### a route object
 
 `id`
-: (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^1]
+: (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]
 
 `description`
 : (optional, encouraged) This is a human readable description of what you're trying to accomplish in this specific route. It may be used in comments or by documentation generators.
@@ -85,17 +85,17 @@ Models holds a list of individual models used by our data pipelines. The models 
 The model object is based largely on GitHub YAML issue template syntax with a couple extra properties that are Newt enhancements.
 
 id
-: (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^1]
+: (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^21]
 
 <!--
 routing
 : (optional, newt specific) this holds a list of route ids associated with this model. It is use in code generation, e.g. to populate a web form's action and model
 -->
 
-The following properties are based on the GitHub YAML issue template syntax[^2] (abbr: GHYTS)
+The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYTS)
 
 name
-: (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^2]. In Newt it will be used in populating comments in generated SQL
+: (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
 
 description
 : (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
@@ -105,10 +105,10 @@ body
 
 #### a model's input types
 
-This is based on GitHub YAML issue template (abbr: GHYTS) input types[^3]. 
+This is based on GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
 
 id
-: (required) an identifier for the element. Must conform to variable name rules[^1]. It is used to SQL as a column name and in web forms for the input property.
+: (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
 
 type
 : (required) Identifies the type of elements (input, textarea, markdown, checkbox, dropdown).
@@ -122,7 +122,7 @@ validations
 
 ## input types
 
-Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^3]. They include
+Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^23]. They include
 
 markdown
 : (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
@@ -275,11 +275,11 @@ routes:
 ```
 
 
-[^1]: variable numbers must start with a letter, may contain numbers but not spaces or punctuation except the underscore
+[^21]: variable numbers must start with a letter, may contain numbers but not spaces or punctuation except the underscore
 
-[^2]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>, 
+[^22]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>, 
 
-[^3]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
+[^23]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
 
 ## templates property
 

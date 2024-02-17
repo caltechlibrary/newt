@@ -1,17 +1,15 @@
----
-title: Overview of data routing
-pubDate: 2024-02-12
-updatedDate: 2024-02-15
-author: R. S. Doiel
----
 
-# Overview of data routing
+# Newt router explained
 
-In the first Newt prototype supported a two stage pipeline for routing request through return a web page. It supported either Postgres+PostgREST through Pandoc web service or JSON API like Solr through Pandoc web service round trip. With the second prototype the Newt router has been generalized. Rather than two stages the second prototype implements a pipeline. This allows for several services to be tied together each sending a request to the next. This allows the web services to be more focused in much the same way that Unix programs can be chained together to form pipelines.  Using a route selector the generalized pipeline become steps indicated by a list of HTTP methods, URLs and content types. The YAML notation used has been significantly changed to support this generalization. Let's focus on the individual route setup[^1].
+## Overview
 
-[^1]: See [Newt YAML syntax](newt_yaml_sentax.md) for complete description of the supported YAML. 
+In the first Newt prototype supported a two stage pipeline for routing request through return a web page. It supported either Postgres+PostgREST through Pandoc web service or JSON API like Solr through Pandoc web service round trip. With the second prototype the Newt router has been generalized. Rather than two stages the second prototype implements a pipeline. This allows for several services to be tied together each sending a request to the next. This allows the web services to be more focused in much the same way that Unix programs can be chained together to form pipelines.  Using a route selector the generalized pipeline become steps indicated by a list of HTTP methods, URLs and content types. The YAML notation used has been significantly changed to support this generalization. Let's focus on the individual route setup[^31].
+
+[^31]: See [Newt YAML syntax](newt_yaml_sentax.md) for complete description of the supported YAML. 
 
 It is easy to start with a specific example then show it would be notated.
+
+## A simple example
 
 Let's say we have a database of music albums and reviews.  Each album includes a rating of "interesting". The range is a zero (uninteresting) to five star rating (most interesting). Previously we've modeled this in our Postgres database using a `view`.  How do we create a page that lists albums in descending order of interest? Since we're building with Newt we can assume there is a template to list albums available. That using that template will be the "last stage" in our pipeline. We need to feed the view into that template. The `view` statement is implemented in SQL in Postgres. That is exposed as a JSON API by PostgREST. That's our first stage, a JSON data source.
 
@@ -51,7 +49,7 @@ This is where having the descriptions in the route definition is handy. It is ea
 ## Changes from the first prototype to the second.
 
 - routes include a pipeline rather than fixed stages
-- `newt` has been replaced by `newtrouter`. It does less. It just routes data. It doesn't know how to package things.
+- `newt` was replaced by `newtrouter`. It does less. It just routes data now. It does more, you can have any number of stages in our data pipeline now. It doesn't know how to package things.
 - `newtmustache` has replaced Pandoc web service as the Newt template engine of choice. Mustache is a popular templating language and well supported in numerious programming languages. It provided easier to debug issue than working with Pandoc server. `newtmustache` does require of configuration. 
 - each pipeline stage has its own timeout setting
 

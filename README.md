@@ -1,9 +1,9 @@
 
 # Newt Project
 
-The Newt Project is an experiment in rapid web application development for libraries, archives and museums (abbr: <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture formed data pipelines[^1]. The pipelines compose the web application. Newt comes with several to facilitate implementing this architecture.
+The Newt Project is an experiment in rapid web application development for libraries, archives and museums (abbr: <abbr title="libraries, archives and museums abbrevation">LAS</abbr>).  Newt uses a service oriented architecture formed data pipelines[^11]. The pipelines compose the web application. Newt comes with several to facilitate implementing this architecture.
 
-[^1]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
+[^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
 Taking this approach minimizes the software you need to write in favor of configuration. This is because "off the shelf" software is available to do the heavy lifting. Example, Postgres+PostgREST provides data management and a JSON API out of the box. MySQL plus MRS does the same. Solr, Elasticsearch and Opensearch all provide full text search in the form of a JSON API. Again these are all out of the box. Pair these with some data routing and a light weight template engine and you can check off most of the core features used to implement LAS software systems.  Newt provides the missing parts -- data router, template engine even a code generator. A YAML file is used to tie all this capability together. 
 
@@ -43,17 +43,17 @@ Over the last several decades web applications became very complex. This complex
 
 > A brief historic detour to set context
 
-Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. By 1993 the web as an application platform was born[^2] and with it a good platform for providing useful organizational software.
+Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. By 1993 the web as an application platform was born[^12] and with it a good platform for providing useful organizational software.
 
-By the mid 1990s the Open Source databases MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^3]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^4]. Yahoo Pipes inspired Newt's data pipelines.  Specialization has continued ever since. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases[^5]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example was the bespoke content management systems gave way to systems like [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
+By the mid 1990s the Open Source databases MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^13]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems for curating and distributing web content. By the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse) became the rage. As this increased in popularity web systems specialized further to cater to reuse. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^14]. Yahoo Pipes inspired Newt's data pipelines.  Specialization has continued ever since. Some of these systems have become less bespoke. Eventual bespoke systems gave way to common use cases[^15]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example was the bespoke content management systems gave way to systems like [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
 
-[^2]: Web applications proceeded to eat all the venerable green screen systems they could find. Eventually they and their corporate sponsors invented the surveillance economy we have today. Sometimes "good ideas" have terrible consequences. Making it easier to produce custom web applications should always be done keeping in mind the necessity for humane and inclusive use. Newt can be both part of a solution but also be used to exacerbate human problems. Develop with consideration for others.
+[^12]: Web applications proceeded to eat all the venerable green screen systems they could find. Eventually they and their corporate sponsors invented the surveillance economy we have today. Sometimes "good ideas" have terrible consequences. Making it easier to produce custom web applications should always be done keeping in mind the necessity for humane and inclusive use. Newt can be both part of a solution but also be used to exacerbate human problems. Develop with consideration for others.
 
-[^3]: HTTP being the protocol the communicates with. Essentially at the time RDBMS spoke a dialect of SQL as the unifying language. The web of the time understood HTML and to a certain degree XML. By 2000 people were looking for something simpler than XML to move structured data about. [JSON](https://en.wikipedia.org/wiki/JSON) quickly became the answer.
+[^13]: HTTP being the protocol the communicates with. Essentially at the time RDBMS spoke a dialect of SQL as the unifying language. The web of the time understood HTML and to a certain degree XML. By 2000 people were looking for something simpler than XML to move structured data about. [JSON](https://en.wikipedia.org/wiki/JSON) quickly became the answer.
 
-[^4]: The basic concept was to make it easy to work with "data feeds" and combined them into a useful human friendly web pages. It even included a visual programming language to make it friendly to the non-programmer crowd.
+[^14]: The basic concept was to make it easy to work with "data feeds" and combined them into a useful human friendly web pages. It even included a visual programming language to make it friendly to the non-programmer crowd.
 
-[^5]: If a use case is solved reliably enough it becomes "off the shelf" software.
+[^15]: If a use case is solved reliably enough it becomes "off the shelf" software.
 
 > fast forward to 2024, context set
 
@@ -74,11 +74,11 @@ Even without Newt we have allot to work with. Here's a shortlist of ones I use.
 
 ## The missing bits
 
-With the above list we can build capable applications relying on the sophisticated features of our web browsers. There is a cost. JavaScript is required to render everything. Relying on JavaScript in the browser to assemble our content from JSON or XML API is a horrible idea[^6]. A better approach is for the web browser to make a minimum number of requests to a web service and get back useful results without having to process more than HTML and CSS.
+With the above list we can build capable applications relying on the sophisticated features of our web browsers. There is a cost. JavaScript is required to render everything. Relying on JavaScript in the browser to assemble our content from JSON or XML API is a horrible idea[^16]. A better approach is for the web browser to make a minimum number of requests to a web service and get back useful results without having to process more than HTML and CSS.
 
 Taking the better approach in the past has required the writing of complex middleware. Newt's few tools help us avoid writing middleware.
 
-For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" is described by an HTTP method and URL path. The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^7]. The collection of routes and their functions compose the API your browser uses to navigate through your application.
+For over a decade web frameworks developed for programming languages like Go, Java, JavaScript, PHP, Python, and Ruby have relied on a concept of "routes". A "route" is described by an HTTP method and URL path. The mapping of a route to a function simplifies the model of receiving and responding to HTTP requests[^17]. The collection of routes and their functions compose the API your browser uses to navigate through your application.
 
 Historically before single sign-on systems became common the function handling a web request was responsible for the whole transaction. A single function would need to handle access control, data validation, data formatting, storing or retrieving data from the database. You had to make sure the request from the public didn't lead to a compromise of your database or operating system. Inertia has ensure many web applications built as middleware still do this. Even successful projects like Drupal and WordPress do this.
 
@@ -100,9 +100,9 @@ In 2024 you can answer is "yes we can" to all these propositions.
 
 Newt provides a small set of web services and a code generator. These are driven from YAML files. The Newt code generator lets you bootstrap your application by generating SQL for Postgres+PostgREST. It can also generate templates for web pages. The Newt router takes that YAML file and pairs the requests with data pipelines defined in YAML. The last stage of the pipeline executed is returned to the web browser. Newt's code generator and router share the same YAML file keeping implementation and orchestration in sync. There isn't much middleware left to write using this approach. If you do write middleware you can make it simple and laser focused to a specific stage of your data pipeline. 
 
-[^6]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
+[^16]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
-[^7]: In programmer's jargon we call that a "handler" or "route handler".
+[^17]: In programmer's jargon we call that a "handler" or "route handler".
 
 ## What comes with the Newt Project?
 
@@ -128,11 +128,11 @@ The developer writes YAML to generate the back end data management. The YAML is 
 
 ## What about security, integration with single sign-on or other websites or services?
 
-The `newtrouter` is a simple web service providing data routing based on its YAML configuration. It's a team player. In a production setting it should be used behind a front end web server like Apache 2 or NginX. That latter can be configured to support single sign-on systems like Shibboleth[^8]. The front end web service controls access and handles securing the connection with the web browser. The front end web service proxies to the Newt router. Newt router receives requests and runs the data pipelines on localhost. The data pipelines can be composed of off the shelf software like Postgres+PostgREST, Solr and template engine to turn your JSON into a web page. Having a clear division of responsibilities helps in securing your web application. Since Newt router only knows how to talk to services on localhost you can keep it contained and prevent it from being used for nefarious actions off system. Like Newt router Newt Mustache is constrained to localhost for similar reasons.
+The `newtrouter` is a simple web service providing data routing based on its YAML configuration. It's a team player. In a production setting it should be used behind a front end web server like Apache 2 or NginX. That latter can be configured to support single sign-on systems like Shibboleth[^18]. The front end web service controls access and handles securing the connection with the web browser. The front end web service proxies to the Newt router. Newt router receives requests and runs the data pipelines on localhost. The data pipelines can be composed of off the shelf software like Postgres+PostgREST, Solr and template engine to turn your JSON into a web page. Having a clear division of responsibilities helps in securing your web application. Since Newt router only knows how to talk to services on localhost you can keep it contained and prevent it from being used for nefarious actions off system. Like Newt router Newt Mustache is constrained to localhost for similar reasons.
 
 Limiting Newt web service applications to localhost keeps them simple. Doing the minimum limits the attack surface for those who want to do mischief.  Neither `newtrouter` or `newtmustache` write to disk or require secrets. They only communicate via localhost using HTTP protocol.
 
-[^8]: Shibboleth is a common single sign-on platform in research libraries, universities and colleges.
+[^18]: Shibboleth is a common single sign-on platform in research libraries, universities and colleges.
 
 ### What about "scaling"?
 
@@ -166,10 +166,5 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 **The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is most likely broken. At a stretch it could be considered a working prototype. You should not use it for production systems.  However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in mind it remains an **experiment** as of February 2024.
 
-## Documentation
-
-- [User Manual](user_manual.md)
-- [INSTALL](INSTALL.md)
-- [About](about.md)
 
 

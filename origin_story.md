@@ -68,10 +68,10 @@ This was expressed in the from of questions and comments.
     - Writing SQL isn't fun!
 - I don't need a pipeline! The browser can assemble the page! ...
     - React/Angular/(replace with your favor JS framework) means I don't need templates.
-    - Who cares about HTML, JavaScript can deliver everything!![^1]
+    - Who cares about HTML, JavaScript can deliver everything!![^41]
     - But aren't templates the old thing people used to use? Why use them now?
 
-[^1]: Example: SquareSpace and Wix deliver web pages as JavaScript.  I think this is to hide what they are really selling.
+[^41]: Example: SquareSpace and Wix deliver web pages as JavaScript.  I think this is to hide what they are really selling.
 
 > NOTE: the exclamations and summation are my editorial. Everyone I encountered was very supportive and encouraging.
 
@@ -87,24 +87,24 @@ After taking this all in and having a long think 2024 arrived. These are my curr
 
 ## Addressing the SQL conundrum
 
-> SQL is a problem because embedding SQL causes a cognitive shift.[^2]
+> SQL is a problem because embedding SQL causes a cognitive shift.[^42]
 > SQL is a problem because it is significantly different from general purpose programming languages
 
-[^2]: The price of that shift is similar to when you inline CSS or JavaScript in HTML.
+[^42]: The price of that shift is similar to when you inline CSS or JavaScript in HTML.
 
 In most computer languages we are telling the computer how to do something. This is true even with object oriented languages, e.g. take this object and apply it's method. SQL takes a different approach. The SQL engine is going to do the heavy lifting. Instead we use SQL to express the result we want. In other words the "what" question versus the "how" instructions. When we embed SQL in a procedural or object oriented language we force these two together in close proximity. Newt's approach to take advantage of distance. By using SQL code generation we don't focus on the what at the same time we're focusing on the how. 
 
-I feel comfortable with SQL. I've learned it informally[^3]. I've personally found it challenging when embedding in a general purpose language like Python. This is true even when I've used an ORM. It's a constant tug of war between thinking about Python (the how) then thinking about the SQL (the what I asked for). Typically I've wound up assembling the SQL statements and running them directly in the database to gain insight into unexpected behavior. If the SQL is conditionally constructed then it become harder to figure out exactly when was sent to the SQL engine.
+I feel comfortable with SQL. I've learned it informally[^43]. I've personally found it challenging when embedding in a general purpose language like Python. This is true even when I've used an ORM. It's a constant tug of war between thinking about Python (the how) then thinking about the SQL (the what I asked for). Typically I've wound up assembling the SQL statements and running them directly in the database to gain insight into unexpected behavior. If the SQL is conditionally constructed then it become harder to figure out exactly when was sent to the SQL engine.
 
-[^3]: SQL is built up from smaller domain specific languages. I've only learned each when I needed it.
+[^43]: SQL is built up from smaller domain specific languages. I've only learned each when I needed it.
 
 The result of that experience has convinced me that keeping the SQL separate as SQL is helpful. I can work directly with the database and understand what I'm asking for (e.g. INSERT, SELECT, UPDATE, DELETE). When you do need to embed it using an SQL view can often simplify a complex SQL statement lowering the cognitive overhead.
 
 Two general approaches appear promising to me. Separate your SQL out and don't embedding it. Use a combo like Postgres plus PostgREST to get a JSON API web service. Your middleware doesn't need to include any SQL at all then. It just calls URLs can procedurally processes results. If you can generate the SQL you need in the database because you know you will need to support CRUD-L then that saves time writing SQL to do that.
 
-I'm not advocating avoiding learning SQL. But I am advocating learning as much as you need when you need it. I am also advocating your middleware should be ignorant completely of SQL. Working with human readable generated SQL can afford you the opportunity to learn SQL incrementally. It gives you the opportunity to learn to trust the database[^4] as a partner rather than simply as a place to store things. 
+I'm not advocating avoiding learning SQL. But I am advocating learning as much as you need when you need it. I am also advocating your middleware should be ignorant completely of SQL. Working with human readable generated SQL can afford you the opportunity to learn SQL incrementally. It gives you the opportunity to learn to trust the database[^44] as a partner rather than simply as a place to store things. 
 
-[^4]: I would go so far as saying attempting to learn a SQL dialect all at once is a bad idea.
+[^44]: I would go so far as saying attempting to learn a SQL dialect all at once is a bad idea.
 
 I have come to think about SQL's domain specific languages as service descriptions.
 
@@ -119,17 +119,17 @@ DML, data modification language
 
 Thinking of these as services lets me step back and simplify my interactions with our data. The nice thing about this approach is that orchestrating services can be thought of completely procedurally. This how Newt approaches SQL code generation. It can express the services it needs (e.g. create a record, read back some records, update or delete records) because it knows about the model being used. `newtgen` renders models as human readable SQL files (complete with comments). This gives us a change to both test the SQL but also to pick learn it as we explore the generated code.
 
-If your application only requires the basic CRUD-L[^5] then you might be able to skip the SQL completely.
+If your application only requires the basic CRUD-L[^45] then you might be able to skip the SQL completely.
 
-[^5]: Data operations often fall under the acronym CRUD-L. Create, Read, Upload, Delete and List. That's a good thing. With a the knowledge of a data model you can calculate the SQL needed for those operations. No AI needed :wink:.
+[^45]: Data operations often fall under the acronym CRUD-L. Create, Read, Upload, Delete and List. That's a good thing. With a the knowledge of a data model you can calculate the SQL needed for those operations. No AI needed :wink:.
 
-Taking SQL code generation approach like an ORM let's you postpone thinking about SQL while you're coding in your general purpose language. Code generation, unlike an ORM, let's you avoid the constant cognitive shifts. When you're ready to deal with SQL you focus your time in the database[^6]. Less frequent cognitive shifts makes the task more pleasant.
+Taking SQL code generation approach like an ORM let's you postpone thinking about SQL while you're coding in your general purpose language. Code generation, unlike an ORM, let's you avoid the constant cognitive shifts. When you're ready to deal with SQL you focus your time in the database[^46]. Less frequent cognitive shifts makes the task more pleasant.
 
-[^6]: Loading a file of SQL commands, say  "myfile.sql" targeting "mydatabase", is trivial with `psql`. Example: `psql mydatabase <myfile.sql`.
+[^46]: Loading a file of SQL commands, say  "myfile.sql" targeting "mydatabase", is trivial with `psql`. Example: `psql mydatabase <myfile.sql`.
 
-It was stumbling on the Postgres+PostgREST combo that remembered data pipelines.  Newt became obvious when I realized that the setup of Postgres+PostgREST could be calculated from a configuration file.  I quickly realized that the combo of Postgres+PostgREST meant any JSON data source code be a first stage in a pipeline. Of course other SQL engines can perform a similar role[^7] but the Postgres+PostgREST really fit the bill nicely for the systems I'm working with.
+It was stumbling on the Postgres+PostgREST combo that remembered data pipelines.  Newt became obvious when I realized that the setup of Postgres+PostgREST could be calculated from a configuration file.  I quickly realized that the combo of Postgres+PostgREST meant any JSON data source code be a first stage in a pipeline. Of course other SQL engines can perform a similar role[^47] but the Postgres+PostgREST really fit the bill nicely for the systems I'm working with.
 
-[^7]: MySQL can be coupled with MySQL REST Service (MRS) to achieve a similar results a Postgres+PostgREST
+[^47]: MySQL can be coupled with MySQL REST Service (MRS) to achieve a similar results a Postgres+PostgREST
 
 ## A recent insight
 

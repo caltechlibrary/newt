@@ -83,7 +83,10 @@ presentations: .FORCE
 clean-website:
 	make -f website.mak clean
 
-website: clean-website presentations .FORCE
+book: .FORCE
+	make -f book_of_newt.mak
+
+website: clean-website presentations book .FORCE
 	make -f website.mak
 
 

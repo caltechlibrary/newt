@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Newt -- a new take on the webstack</title>
+    <title>Newt -- newtrouter_explained</title>
     <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
 </head>
 <body>
@@ -21,7 +21,8 @@
 </nav>
 
 <section>
-<h1 id="overview-of-data-routing">Overview of data routing</h1>
+<h1 id="newt-router-explained">Newt router explained</h1>
+<h2 id="overview">Overview</h2>
 <p>In the first Newt prototype supported a two stage pipeline for
 routing request through return a web page. It supported either
 Postgres+PostgREST through Pandoc web service or JSON API like Solr
@@ -38,6 +39,7 @@ route setup<a href="#fn1" class="footnote-ref" id="fnref1"
 role="doc-noteref"><sup>1</sup></a>.</p>
 <p>It is easy to start with a specific example then show it would be
 notated.</p>
+<h2 id="a-simple-example">A simple example</h2>
 <p>Let’s say we have a database of music albums and reviews. Each album
 includes a rating of “interesting”. The range is a zero (uninteresting)
 to five star rating (most interesting). Previously we’ve modeled this in
@@ -110,8 +112,9 @@ browser.</p>
 the first prototype to the second.</h2>
 <ul>
 <li>routes include a pipeline rather than fixed stages</li>
-<li><code>newt</code> has been replaced by <code>newtrouter</code>. It
-does less. It just routes data. It doesn’t know how to package
+<li><code>newt</code> was replaced by <code>newtrouter</code>. It does
+less. It just routes data now. It does more, you can have any number of
+stages in our data pipeline now. It doesn’t know how to package
 things.</li>
 <li><code>newtmustache</code> has replaced Pandoc web service as the
 Newt template engine of choice. Mustache is a popular templating

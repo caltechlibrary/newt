@@ -8,3 +8,4 @@ htdocs/*
 *.env
 dist/*
 man/*
+pdf/*
