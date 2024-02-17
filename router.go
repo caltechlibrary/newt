@@ -238,7 +238,7 @@ func NewNewtRouter(fName string, cfg *Config) (*NewtRouter, error) {
 	}
 	env := map[string]string{}
 	if cfg.Application != nil {
-		if rtr.Port == "" && cfg.Application.Port != 0 {
+		if cfg.Application.Port != 0 {
 			rtr.Port = fmt.Sprintf(":%d", cfg.Application.Port)
 		}
 		// Populate an env from our allowed environment variables
@@ -280,6 +280,11 @@ func NewNewtRouter(fName string, cfg *Config) (*NewtRouter, error) {
 func (rtr *NewtRouter) ListenAndServe() error {
 	mux := http.NewServeMux()
 	for _, nr := range rtr.Routes {
+		// FIXME: need to warn if the patter is / when the htdocs 
+		// directory is set.
+		if (nr.Pattern == "/" || strings.HasSuffix(nr.Pattern, " /")) && rtr.Htdocs != "" {
+			log.Println("WARNING: you have a htdocs directory set to service files and you've mapped a route to the name end point, /")
+		}
 		mux.HandleFunc(nr.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			if nr.Debug {
 				log.Printf("mux.HandleFunc(%q, nr.Handler)", nr.Pattern)
@@ -288,10 +293,15 @@ func (rtr *NewtRouter) ListenAndServe() error {
 			nr.Handler(w, r)
 		})
 	}
+	// Do we need to support htdocs static resources?
+	if rtr.Htdocs != "" {
+		fsys := dotFileHidingFileSystem{http.Dir(rtr.Htdocs)}
+		mux.Handle("/", http.FileServer(fsys))
+	}
 	// Now create my http server
 	svr := new(http.Server)
 	svr.Addr = rtr.Port
-	svr.Handler = mux
+	svr.Handler = NewLogger(mux)
 	if err := svr.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}

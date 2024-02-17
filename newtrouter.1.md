@@ -1,6 +1,6 @@
 ---
-title: "newtrouter(1) user manual | 0.0.7-dev f836e44"
-pubDate: 2024-02-16
+title: "newtrouter(1) user manual | 0.0.7-dev 0715cd8"
+pubDate: 2024-02-17
 author: "R. S. Doiel"
 ---
 
@@ -14,7 +14,9 @@ newtrouter YAML_CONFIG_FILE
 
 # DESCRIPTION
 
-**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results to the browser or service that made the request. It can be configured to serve static web content too which is useful during development. 
+**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requestor. It's just a data router that manages a pipeline of services for each defined request pattern.
+
+In additional content routing newtrouter can also service out static resources. This is handy during development but less useful if you are using a front end web server such as a production setting.
 
 **newtrouter**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtrouter** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
 

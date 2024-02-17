@@ -125,20 +125,37 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		// Default port number for tmplbnld
 		PORT = ":8020"
 	)
+	// You can run Newt Router with just an htdocs directory. If so you don't require a config file.
+	var err error
+	cfg := &Config{}
+	router := &NewtRouter{}
 	fName := ""
-	if len(args) > 0 {
-		fName = args[0]
-	}
-	cfg, err := LoadConfig(fName)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
-	}
-	// Finally Instantiate the router from fName and Config object
-	router, err := NewNewtRouter(fName, cfg)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
+	if htdocs == "" || len(args) > 0 {
+		if len(args) > 0 {
+			fName = args[0]
+		}
+		cfg, err = LoadConfig(fName)
+		if err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return CONFIG
+		}
+		// Finally Instantiate the router from fName and Config object
+		router, err = NewNewtRouter(fName, cfg)
+		if err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return CONFIG
+		}
+		if cfg.Application != nil {
+			if port == 0 && cfg.Application.Port > 0{
+				router.Port = fmt.Sprintf(":%d", cfg.Application.Port)
+			}
+			if htdocs == "" && cfg.Application.Htdocs != "" {
+				router.Htdocs = cfg.Application.Htdocs
+			}
+			if len(cfg.Application.Environment) > 0 {
+				router.Environment = append(router.Environment, cfg.Application.Environment...)
+			}
+		}
 	}
 	if router.Port == "" {
 		router.Port = PORT
@@ -182,7 +199,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 	}
 
 	// Launch web service
-	fmt.Fprintf(out, "%s listening on port %s", path.Base(os.Args[0]), router.Port)
+	fmt.Fprintf(out, "%s listening on port %s\n", path.Base(os.Args[0]), router.Port)
 	if err := router.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return WEBSERVICE
