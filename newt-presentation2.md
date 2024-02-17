@@ -109,6 +109,7 @@ A second prototype Newt application
 # Thank you!
 
 - This Presentation <https://caltechlibrary.github.io/newt/presentation2/>
+- Newt Documentation <https://caltechlibrary.github.io/newt>
 - Project: <https://github.com/caltechlibrary/newt>
 - Email: rsdoiel@caltech.edu
 
