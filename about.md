@@ -16,7 +16,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.6
+version: 0.0.7-dev
 
 keywords: [ "web development", "web service", "service oriented
 architecture", "micro service
@@ -28,7 +28,7 @@ api" ]
 About this software
 ===================
 
-## Newt 0.0.6
+## Newt 0.0.7-dev
 
 ### Authors
 

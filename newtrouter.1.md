@@ -1,6 +1,6 @@
 ---
-title: "newtrouter(1) user manual | 0.0.1 c5f3051"
-pubDate: 2023-06-05
+title: "newtrouter(1) user manual | 0.0.7-dev f836e44"
+pubDate: 2024-02-16
 author: "R. S. Doiel"
 ---
 
@@ -10,17 +10,11 @@ newtrouter
 
 # SYNOPSIS
 
-newtrouter [CONFIG_FILE]
+newtrouter YAML_CONFIG_FILE
 
 # DESCRIPTION
 
-**newtrouter** is a microservice designed to work along side Postgres, PostgREST, and Pandoc server. It provides URL routing and data flow between the microservices based on a list of "routes" described in a YAML file.  **newtrouter** first sends requests to a JSON data source then processes the results via Pandoc running as a web service.  While **newtrouter** was created to work specifically with PostgREST it can actually talk to any JSON data source that can be specified by a URL and HTTP method (e.g. Solr, Elasticsearch, Opensearch).
-
-Before contacting the JSON data source the request path and any form data is validated based on the request path and any variables defined for the route. If validation is successful values are extracted from the request path along with form data. These are then used to make a request to a JSON data source (e.g. PostgREST) described in our route definition.
-
-When the data source replies the results can be fed through Pandoc running as a web service based on a template filename associated with the route. If no template file is specified then the results of the JSON data source is passed directly back to the web browser (or requesting service).
-
-Additionally **newtrouter** can function as a static content web service.  This is handy when developing a **newtrouter** based project. A typical setup might include running Postgres, PostgREST and Pandoc server along with **newtrouter** as you develop your project. Since **newtrouter** always works as a "localhost" service you will need to proxy to it when deploying to a production setting (e.g. via Apache2 or NginX).
+**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results to the browser or service that made the request. It can be configured to serve static web content too which is useful during development. 
 
 **newtrouter**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtrouter** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
 
@@ -38,158 +32,62 @@ Additionally **newtrouter** can function as a static content web service.  This 
 -dry-run
 : Load YAML configuration and report any errors found
 
-# CONFIGURATION
+# YAML_CONFIG_FILE
 
-**newtrouter** looks for four environment variables at startup.
+**newtrouter** is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the enviroment variables identifified tthe `.appliction.environment` property. Here's a summary of the Newt YAML syntax that **newtrouter** uses.
 
-NEWT_PORT
-: (optional) The port Newt will listen for requests
+Top level properties for **newtrouter** YAML.
 
-NEWT_CONFIG
-: (optional) The name of a YAML file holding newt configuration
+application
+: (optional: newtrouter, newtgenerator, newtmustache) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
 
-NEWT_ENV
-: (optional) The names of environment variables **newtrouter** can make available when setting up route handling.
+routes
+: (optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
-NEWT_HTDOCS
-: (optional) The directory holding static content that Newt will serve alonside any defined data routes specified in the configuration.
+## the "application" property
 
-Example environment expressed in sh.
+The application properties are optional.
 
-~~~
-export NEWT_PORT="8001"
-export NEWT_ROUTES="routes.yaml"
-export NEWT_ENV="DB_NAME;DB_USER;DB_PASSWORD"
-export NEWT_HTDOCS="/var/local/html/htdocs"
-~~~
+port
+: (optional: newtrouter, newtmustache) default is This port number the Newt web services uses to listen for request on localhost
 
-These can also be expressed directly in the YAML configuration file using the following attribute names -- "port", "routes", "env", and "htdocs". 
+htdocs
+: (optional: newtrouter only) Directory that holds your application's static content
 
-~~~
-port: 8001
-routes: routes.yaml
-env: [ "DB_NAME", "DB_USER", "DB_PASSWORD" ]
-htdocs: /var/local/html/htdocs
-~~~
+environment
+: (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
-The environment will load first then the configuration file.  The configuration file takes precedence over the environment.
+Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.
 
-**newtrouter** does not contain secrets.  These should be passed in via the environment. This follows the practices that have become commonplace when using containers and Lamdda like services.
+### a route object
 
-Avoiding secrets allows your routes in the YAML file to be safely included in your project source repository along side any Pandoc templates and SQL source included in your project's source code repository.
+`id`
+: (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]
 
-# Routing data
+`description`
+: (optional, encouraged) This is a human readable description of what you're trying to accomplish in this specific route. It may be used in comments or by documentation generators.
 
-For **newtrouter** to function as a data router it needs information about which requests will be serviced and how to map them to a JSON source before (optionally) sending to Pandoc.
+`request [METHOD ][PATH]`
+: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. `GET /items/{item_id}` would make `item_id` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `/blog/{year}-{month}-{day}` would not work but `/blog/{year}/{month}/{day}` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
 
-The routes are held in YAML file under the "routes" attribute.  The following attributes are supported for a route.
+`pipeline`
+: (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail will abort the pipeline returning an HTTP error status. If done fail then the result of the last stage it returned to the requesting browser.
 
-var
-: One or more variable name and type pairs used in request path or form data. The types allow for data validation.
+`debug`
+: (optional) if set to true the `newtrouter` service will log verbose results to standard out for this specific pipeline
 
-req_path
-: This is the URL path to watch for incoming requests, it may be a literal path or one containing variable declarations used in forming a HTTP call to a JSON source.
+#### a pipeline object
 
-req_method
-: This is the HTTP method to listen for -- "GET", "POST", "PUT", "PATCH" or "DELETE".
+A pipeline is a list of web services containing a type, URL, method and content types
 
-api_url
-: This is the URL used to connect to the JSON data source (e.g. PostgREST, Solr, Elasticsearch). It may contain defined variables embedded in the request path or form form data.
+`service [METHOD ][URL]`
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
 
-api_method
-: This is the HTTP method used to access the JSON data source. Maybe "OPTIONS", "GET", "POST", "PUT", "PATCH" or "DELETE"
+`description`
+: (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
 
-api_content_type
-: This is the HTTP content type string to send with your JSON data source request, typically it is "application/json". 
-
-template
-: If included Newt will load the Pandoc template file into memory and use it when results are returned from a JSON data source. The data is provided to the Pandoc template as part of the "body" pandoc template variable.
-
-render_port (optional)
-: This is the port number used for the render engine, e.g. Pandoc server or **newtmustache** render. It not specified then port 3030 is assumed.
-
-res_headers
-: This is any additional HTTP headers you want to send back to the client.
-
-# Defining variables
-
-Each route can have its own associated set of variables. Variables are "typed".  The code for type definitions includes validation. When a variable is detected in a request path or form data it is vetted using it's associated type. Only if the variables past validation are they allowed to be used to assemble a request to a JSON data source. 
-
-Variables are defined in the YAML "var" attribute. Here's an example "var" definition defining three form variables for a route. The variable names are "bird", "place" and "sighted" with the types "String", "String" and "Date".
-
-~~~yaml
-var: [ "bird": "String", "place": "String", "sighted": "Date" ]
-~~~
-
-If a web browser injected additional form values they would not get passed along via the JSON data API request, they would be ignored. This is part of the declaritive approach for defining Newt's behavior.
-
-The variables "bird", "place" and "sighted" can be used when specifying a request route.  Variables that are defined in a route are delimited by an opening '${' and closing '}'.  In the following example the URL could represent browsing birds by place and date sighted.
-
-~~~
-/birds/${place}/${sighted}
-/birds/${place}/${sighted}/${bird}
-~~~
-
-This might be used to make a request to a JSON data source (e.g. PostgREST) like this.
-
-~~~
-https://localhost:3000/sightings?bird=${bird}&place=${place}&sighted=${sighted}
-~~~
-
-The result of the JSON source request could then be processed with a Pandoc template to render an HTML page.
-
-# Variable types
-
-String
-: Any sequence of characters. If the variabe is embedded in a path then "/" will be used to delimited path parts and would not be passed into the variables value.
-
-Date
-: (default) A year, month, day string like 2006-01-02
-
-Date 2006
-: A four digit year (e.g. 2023)
-
-Date 01
-: A two digit month (e.g. "01" for January, "10" for October)
-
-Date 02
-: A two digit day (e.g. "01" for the first, "11" for the eleventh)
-
-Basename
-: A file's basename (filename without an extension)
-
-Extname
-: A file's extension (e.g. ".html", ".txt", ".rss", ".js")
-
-Isbn10
-: An ten digit ISBN
-
-Isbn13
-: A thirteen digit ISBN
-
-Isbn
-: An ISBN (either 10 ro 13 digit)
-
-Issn
-: An ISSN
-
-DOI
-: A DOI (digital object identifier)
-
-Isni
-: An ISNI
-
-ORCID
-: An ORCID identifier
- 
-NOTE: The current names associated with types will likely change
-as the prototype **newtrouter** evolves. It is planned for them to be
-stable if and when we get to a v1 release (e.g. when we're out of the
-prototype phase).
-
-# Pandoc, Pandoc templates
-
-Values received from the JSON data source are passed to the Pandoc template bound to the variable name "data". This is done by taking the JSON recieved and forming a front matter document that is then used alongside Pandoc template in the POST request made to Pandoc running in server mode. See <https://pandoc.org/pandoc-server.html> and <https://pandoc.org/MANUAL.html#templates> for details.
+`timeout`
+: (optional) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
 
 # EXAMPLES
 
@@ -202,23 +100,67 @@ newtrouter blog.yaml
 An example of a YAML file describing blog like application based on Postgres+PostgREST.
 
 ~~~
-env: [ "DB_USER", "DB_PASSWORD" ]
-htdocs: htdocs
+application:
+  htdocs: htdocs
+  environment:
+    - DB_USER
+    - DB_PASSWORD
+#
+# Postgres+PostgREST is listening on port 3000
+# Newt Mustache template engine is listening on port 3032
+#
+# DB_USER and DB_PASSWORD required to access the PostgREST JSON API
+# so is passed in via the environment.
 routes:
-  - var: [ "yr": "Date 2006", "mo": "Date 01", "dy": "Date 02" }
-    req_path: "/blog/${yr}/${mo}/${dy}"
-    req_method: GET
-    api_url: "http://${DB_USER}:${DB_PASSWORD}@localhost:3000/posts?year=${yr}&month=${mo}&day=${dy}"
-    api_method: GET
-    api_content_type: "application/json"
-    pandoc_template: article_list.tmpl
-    res_headers: { "content-type": "text/html" }
-  - var: [ "yr": "Year", "mo": "Month", "dy": "Day" }
-    req_path: "/blog/${yr}/${mo}/${dy}/${title-slug}"
-    req_method: GET
-    api_url": "http://${DB_USER}:${DB_PASSWORD}@localhost:3000/posts?year=${yr}&month=${mo}&day=${dy}&title-slug=${title-slug}"
-    pandoc_template: article.tmpl
-    res_headers: { "content-type": "text/html" }
+  - id: retrieve_all_posts
+    request: GET /archives
+    description: This route returns the full blog content
+    pipeline:
+      - description: |
+          Retrieve the blog posts order by descending date
+        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/view_all_posts
+      - description: render the posts using the list_posts.tmpl
+        service: POST http://localhost:3032/list_posts.tmpl
+  - id: retrieve_year posts
+    request: GET /{year}
+    description: This route retrieves all the posts in a specific year
+    pipeline:
+      - description: Retrieve the posts for a specific year
+        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/year_posts/{year}
+      - description: Turn the JSON list into a web page.
+        service: POST http://localhost:3032/list_posts.tmpl
+  - id: retrieve_month_posts
+    request: GET /{year}/{month}
+    description: This route retrieves all the posts in a specific year/month
+    pipeline:
+      - description: Retrieve the posts in the DB for year/month
+        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/month_posts/{year}/{month}
+      - description: Transform monthly list into web page
+        service: POST http://localhost:3032/list_posts.tmpl
+  - id: retrieve_day_posts
+    request: GET /{year}/{month}/{day}
+    description: Retrieve all the posts on a specific day
+    pipeline:
+      - description: Retrieve the posts happending on year/month/day
+        service: GET http://{DB_USER}:{DB_PASSWOR}@localhost:3000/rpc/day_posts/{year}/{month}/{day}
+      - description: Transform monthly list into web page
+        service: POST http://localhost:3032/list_posts.tmpl
+  - id: retrieve_recent_posts
+    request: GET /
+    description: This route retrieves the recent 10 posts.
+    pipeline:
+      - description: Use the recent_post view to retrieve the recent posts in descending date order
+        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/recent_posts
+      - description: Take the JSON for recent posts and turn it into a web page
+        service: GET http://localhost:3032/list_posts.tmpl
+  - id: retrieve_a_post
+    request: GET /{year}/{month}/{day}/{title-slug}
+    description: Retrieve a specific host and display it
+    pipeline:
+      - description: retrieve the requested post from the blog path
+        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/{year}/{month}/{day}/{title-slug}
+      - description: Turn the JSON into a web page
+        service: GET http://localhost:3032/blog_post.tmpl
 ~~~
 
 

@@ -7,7 +7,7 @@
     "downloadUrl": "https://github.com/caltechlibrary/releases",
     "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
     "name": "Newt",
-    "version": "0.0.6",
+    "version": "0.0.7-dev",
     "description": "Newt is an experimental web service providing data routing and a multistage pipeline. The pipeline can contain services that work with JSON data. Example object storage, form data validation, JSON transformation, even static file services. Newt can route data from a request to a JSON data source (e.g. Postgres+PostgREST or Solr) and then run those results through a pipeline that may include Newt's Mustache template engine.",
     "applicationCategory": "computer science",
     "releaseNotes": "This release added multiple stage pipeline, introduce a mustache template engine and unified generator for Postgres SQL dialect, HTML and mustache templates.",

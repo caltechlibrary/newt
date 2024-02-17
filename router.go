@@ -82,7 +82,7 @@ func (nr *NewtRoute) ResolveRoute() error {
 
 // Request a service, sending any import if provided.
 // Returns a byte splice of results and an error value
-func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) ([]byte, error) {
+func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) ([]byte, string, error) {
 	// The default method for a service is POST, it can be overwritten by what is supplied in the .Service's pattern.
 	method := http.MethodPost
 	uri := s.Service
@@ -110,14 +110,14 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 	// We should now have enough information to make our request.
 	req, err := http.NewRequest(method, uri, bytes.NewReader(input))
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	client := http.Client{
 		Timeout: timeout,
 	}
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	statusText := http.StatusText(response.StatusCode)
 	if response.StatusCode < http.StatusOK || response.StatusCode > http.StatusNoContent {
@@ -125,24 +125,30 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 		if debug {
 			log.Printf("%s", err)
 		}
-		return nil, err
+		return nil, "", err
+	}
+	contentType := ""
+	if response.Header != nil {
+		contentType = response.Header.Get("Content-Type")
 	}
 	data, err := io.ReadAll(response.Body)
 	if err != nil {
 		if debug {
 			log.Printf("failed to read response body %s %s %d %s, %s", method, uri, response.StatusCode, statusText, err)
 		}
-		return nil, err
+		return nil, "", err
+	}
+	if contentType == "" {
+		contentType = http.DetectContentType(data)
 	}
 	if debug {
-		contentType := http.DetectContentType(data)
 		l := len(data)
 		log.Printf("%s %s returning %s, %d byte(s)", method, uri, contentType, l)
 	}
-	return data, nil
+	return data, contentType, nil
 }
 
-func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]string) ([]byte, error) {
+func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]string) ([]byte, string, error) {
 	var (
 		input  []byte
 		output []byte
@@ -151,18 +157,19 @@ func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map
 	if nr.Debug && len(env) > 0 {
 		log.Printf("pipeline environment %+v", env)
 	}
+	contentType := ""
 	for i, service := range nr.Pipeline {
-		output, err = service.MakeRequest(env, input, nr.Debug)
+		output, contentType, err = service.MakeRequest(env, input, nr.Debug)
 		if err != nil {
 			if nr.Debug {
 				log.Printf("service %d, %s error %s", i, service.Service, err)
 			}
 			// We stop processing there was a problem.
-			return nil, err
+			return nil, contentType, err
 		}
 		input = output
 	}
-	return output, nil
+	return output, contentType, nil
 }
 
 // ResolvePattern takes the request Pattern and pulls out the values from the actual request.
@@ -189,7 +196,7 @@ func (nr *NewtRoute) Handler(w http.ResponseWriter, r *http.Request) {
 	env := nr.ResolvePattern(r)
 
 	// Build now we can run our pipeline and get back some data
-	data, err := nr.RunPipeline(w, r, env)
+	data, contentType, err := nr.RunPipeline(w, r, env)
 	if err != nil {
 		// FIXME: should return Error page
 		if nr.Debug {
@@ -202,6 +209,15 @@ func (nr *NewtRoute) Handler(w http.ResponseWriter, r *http.Request) {
 		// 504 Gateway Timeout
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
+	}
+	if contentType == "" {
+		contentType = http.DetectContentType(data)
+	}
+	if nr.Debug {
+		log.Printf("%s return content type: %q", nr.Pattern, contentType)
+	}
+	if contentType != "" {
+		w.Header().Set("Content-Type", contentType)
 	}
 	w.Write(data)
 }

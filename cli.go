@@ -75,7 +75,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
-	if port != 0 {
+	if cfg.Application != nil  && cfg.Application.Port != 0 {
 		mb.Port = fmt.Sprintf("%d", port)
 	}
 	if mb.Port == "" {
@@ -112,7 +112,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 }
 
 // RunNewtRouter is a runner for Newt data router and static file service
-func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool) int {
+func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRun bool, port int, htdocs string, verbose bool) int {
 	const (
 		// These constants are used for exit code. FIXME: look up the POSIX recommendation on exit
 		// codes and adopt those.
@@ -140,6 +140,20 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
+	if router.Port == "" {
+		router.Port = PORT
+	}
+	if port != 0 {
+		router.Port = fmt.Sprintf(":%d", port)
+	}
+	// Prefix the port number with a colon
+	if ! strings.HasPrefix(router.Port, ":") {
+		router.Port = fmt.Sprintf(":%s", router.Port)
+	}
+
+	if htdocs != "" {
+		router.Htdocs = htdocs
+	}
 
 	// Are we ready to run service?
 	if router.Routes == nil && router.Htdocs == "" {
@@ -151,9 +165,15 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		return CONFIG
 	}
 
-	if router.Port == "" {
+	if router.Port == "" || router.Port == ":" {
 		fmt.Fprintf(eout, "port is not set, default is not available")
 		return WEBSERVICE
+	}
+
+	if verbose && router.Routes != nil {
+		for _, route := range router.Routes {
+			route.Debug = true
+		}
 	}
 
 	if dryRun {
@@ -162,6 +182,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 	}
 
 	// Launch web service
+	fmt.Fprintf(out, "%s listening on port %s", path.Base(os.Args[0]), router.Port)
 	if err := router.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return WEBSERVICE
