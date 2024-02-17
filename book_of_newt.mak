@@ -41,4 +41,8 @@ book: .FORCE
 	    $(BOOK_SECTIONS) \
 		-o pdf/book_of_newt.pdf
 
+epub: .FORCE
+	mkdir -p epub
+	pandoc cover.md $(BOOK_SECTIONS) -o epub/book_of_newt.epub
+
 .FORCE:

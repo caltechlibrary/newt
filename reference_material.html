@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- reference_material</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="reference-material">Reference Material</h1>
+<p>These are links to prior art, related efforts and resources for
+consideration in how Newt evolves as a prototype.</p>
+<h2 id="data-modeling">Data Modeling</h2>
+<ul>
+<li><a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema">Syntax
+for GitHub form schema</a></li>
+<li><a href="https://github.com/rjsf-team/react-jsonschema-form">A React
+component for building Web forms from JSON Schema</a></li>
+<li><a href="https://jsonforms.io/docs/">JSON Forms</a>
+<ul>
+<li>pretty heavy weight in the deployed results (i.e. renders to either
+React or Angular)</li>
+<li>Uses JSON rather than YAML or TOML to describe forms which can be
+construed as less human friendly</li>
+</ul></li>
+<li><a
+href="https://yaql.readthedocs.io/en/latest/getting_started.html">YAQL</a>,
+a YAML like query language that maps to SQL</li>
+<li><a href="https://github.com/pganalyze/pg_query">pg_query</a>, a Ruby
+library to parse SQL and normalize into a data structure</li>
+<li><a href="https://htmx.org/">htmx</a>, a Web Component like markup
+implementing the wrapping layer between JSON API and HTML structured
+markup</li>
+<li><a href="http://docs.yafowil.info/">Yafowil, yet another form widget
+library</a>
+<ul>
+<li><a
+href="https://yafowil.readthedocs.io/en/latest/yaml.html">Describe
+YAFOWIL forms with YAML</a></li>
+</ul></li>
+<li><a
+href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Components">MDN
+Web Components</a>, useful for make specialize input elements, like
+ORCID, DOI, ArXiv identifier entry</li>
+<li><a
+href="https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types">MDN
+HTML5 input types</a></li>
+<li><a href="https://github.com/cxong/pykwalify-webform">Generate
+webforms based on YAML schema with pykwalify</a></li>
+<li><a href="https://pypi.org/project/flask-openapi3/">Flask Open API
+3</a></li>
+</ul>
+<h2 id="sql-db-to-rest-json-api">SQL DB to REST JSON API</h2>
+<ul>
+<li><a href="https://postgrest.org">PostgREST</a>, build a REST JSON API
+directly on top of Postgres. This is what started my think about Newt
+prototype</li>
+<li><a
+href="https://dev.mysql.com/doc/dev/mysql-rest-service/latest/">MRS</a>,
+MySQL REST Service</li>
+<li><a href="https://github.com/nside/sqlite2rest">sqlite2rest</a>,
+Automatically RESTful OpenAPI server from SQLite database</li>
+<li><a href="https://github.com/thevahidal/soul">Soul</a>, A SQLite REST
+and realtime server built on NodeJS (wonder if it runs in Deno?)</li>
+</ul>
+<h2 id="sql-json-support">SQL JSON support</h2>
+<ul>
+<li>SQL dialects
+<ul>
+<li><a href="https://database.guide/">database guide</a>, documentation
+for various SQL dialects including Postgres and SQLite</li>
+</ul></li>
+<li>Postgres
+<ul>
+<li><a
+href="https://www.postgresql.org/docs/16/functions-json.html">Postgres
+JSON functions and operators</a></li>
+<li><a
+href="https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-json/">Postgres
+JSON tutorial</a></li>
+</ul></li>
+<li>SQLite 3
+<ul>
+<li>SQLite <a href="https://sqlite.org/json1.html">Overview JSON
+functions</a></li>
+<li><a
+href="https://tirkarthi.github.io/programming/2022/02/26/sqlite-json-improvements.html">JSON
+improvements in SQLite 3.38.0</a></li>
+<li>SQLite <a
+href="https://sqlite.org/src/doc/json-enhancements/doc/json-enhancements.html">JSON
+function enhancements (2022)</a></li>
+<li>SQLite cli <a href="https://sqlite.org/cli.html">docs</a>,
+e.g. “Changing output formats” in section 5 covers
+<code>.mode json</code></li>
+</ul></li>
+</ul>
+<h2 id="data-transformation-and-mashups">Data transformation and
+mashups</h2>
+<ul>
+<li><a href="https://www.pipes.digital/docs">Pipes</a> is a spiritual
+successor to <a href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo!
+Pipes</a></li>
+</ul>
+<h2 id="other-approaches-and-background">Other approaches and
+background</h2>
+<ul>
+<li><a
+href="https://github.com/pillarjs/path-to-regexp">path-to-regexp</a></li>
+<li><a
+href="https://developer.mozilla.org/en-US/docs/Web/API/URLPattern">URLPattern</a>
+at MDN</li>
+<li><a
+href="https://developer.chrome.com/articles/urlpattern/">URLPattern</a>
+at Chrome Developer site</li>
+<li><a href="https://pythonbasics.org/flask-tutorial-routes/">Flask
+Route tutorial</a></li>
+<li><a href="https://github.com/tildeio/router.js/">router.js</a></li>
+<li><a
+href="https://learn.microsoft.com/en-us/azure/application-gateway/url-route-overview#pathbasedrouting-rule">Azure
+application gateway routing</a></li>
+<li><a href="https://reactrouter.com/en/main/route/route">React
+Router</a></li>
+<li><a
+href="https://nextjs.org/docs/app/building-your-application/routing">Nextjs
+routing</a></li>
+<li><a
+href="https://www.django-rest-framework.org/api-guide/routers/">dJango
+routing</a></li>
+<li><a href="https://www.markus-lanthaler.com/hydra/">HYDRA</a>,
+Hypermedia-Driven Web API</li>
+<li><a href="https://stateless.group/hal_specification.html">HAL</a>,
+Hypertext Application Language
+<ul>
+<li><a
+href="https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-00">JSON-HAL</a></li>
+</ul></li>
+<li><a href="https://en.wikipedia.org/wiki/JSON-LD">JSON-LD</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Richardson_Maturity_Model">Richardson
+Maturity Model</a>, used to evaluate RESTful-ness in JSON API</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

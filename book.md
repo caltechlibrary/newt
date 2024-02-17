@@ -1,11 +1,13 @@
 ---
 author: R. S. Doiel
 createdDate: 2024-02-16
+draft: true
+publish: false
 title: The book of Newt
 ---
 
--   [[1]{.toc-section-number} The Book of
-    Newt](#the-book-of-newt){#toc-the-book-of-newt}
+-   [[1]{.toc-section-number} The Book of Newt
+    (DRAFT)](#the-book-of-newt-draft){#toc-the-book-of-newt-draft}
 -   [[2]{.toc-section-number} Preface, the Newt Experiment, February
     2024](#preface-the-newt-experiment-february-2024){#toc-preface-the-newt-experiment-february-2024}
     -   [[2.1]{.toc-section-number} Summer, Fall
@@ -102,7 +104,7 @@ title: The book of Newt
     -   [[8.5]{.toc-section-number} Other approaches and
         background](#other-approaches-and-background){#toc-other-approaches-and-background}
 
-# The Book of Newt
+# The Book of Newt (DRAFT)
 
 # Preface, the Newt Experiment, February 2024
 
