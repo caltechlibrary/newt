@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- newt-presentation2</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="goal-second-prototype">Goal: Second Prototype</h1>
+<p>Is Newt and “off the shelf” enough?</p>
+<h1 id="choose-wisely-pick-your-abstractions">Choose wisely: pick your abstractions</h1>
+<ul>
+<li>Simple = (No code) + (Less code)</li>
+<li>Compose applications, use data pipelines</li>
+<li>Align service and deliverables</li>
+</ul>
+<h1 id="off-the-shelf">Off the shelf</h1>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> + <a href="https://postgrest.org">PostgREST</a> =&gt; JSON data source</li>
+<li>Newt Mustache =&gt; Transform JSON into web pages</li>
+<li>Newt Router, ties it all together</li>
+<li>YAML can express routes, pipelines and data models</li>
+</ul>
+<h1 id="assembling-it-with-yaml">Assembling it with YAML</h1>
+<ul>
+<li>Newt’s Second Prototype has a new YAML syntax
+<ul>
+<li>GitHub YAML issue template syntax</li>
+</ul></li>
+<li>Code generator, “look Mom, no AI!”</li>
+<li>Newt Mustache, “YAML your templates in your pipeline”</li>
+</ul>
+<h1 id="demo-time">Demo time</h1>
+<p>A second prototype Newt application</p>
+<h1 id="what-did-we-see">What did we see?</h1>
+<ul>
+<li>Code generation</li>
+<li>Data pipelines and a bunch-o-services</li>
+<li>Minimal browser expectations</li>
+</ul>
+<h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp; 2</h1>
+<ul>
+<li>“Off the shelf” is simpler</li>
+<li>SQL turns people off, use a code generator</li>
+<li>Mustache templates, simple but not too simple</li>
+<li>Two YAML syntaxes is too many</li>
+<li>Unexpected encounters …</li>
+</ul>
+<h1 id="unexpected-encounters">Unexpected encounters</h1>
+<ul>
+<li>Web services’ cognitive price</li>
+<li>Containers add to complexity</li>
+<li>Web services need a “developer” mode for debugging</li>
+<li>Newt, <strong>a static site generator platform</strong></li>
+</ul>
+<h1 id="newt-has-weaknesses">Newt has weaknesses</h1>
+<ul>
+<li>Newt is <strong>an experimental working prototype</strong> (February 2024)</li>
+<li>Pipeline delays accumulate</li>
+<li>Many routes are hard to maintain</li>
+<li>Newt is missing file upload support</li>
+</ul>
+<h1 id="newt-has-strengths">Newt has strengths</h1>
+<blockquote>
+<p>A very mature foundation</p>
+</blockquote>
+<ul>
+<li>20th Century tech
+<ul>
+<li>SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)</li>
+</ul></li>
+<li>21st Century tech
+<ul>
+<li>JSON (2001), YAML (2001), Pandoc (2006), Mustache templates (2009), PostgREST (2014)</li>
+</ul></li>
+</ul>
+<h1 id="questions-guiding-next-steps">Questions guiding next steps</h1>
+<ul>
+<li>Should the router support non-localhost URLs?</li>
+<li>What tools should come from the Newt Project?</li>
+<li>How do we move Newt beyond a Caltech Library experiment?</li>
+</ul>
+<h1 id="my-wish-list">My wish list …</h1>
+<ul>
+<li>S3 protocol support</li>
+<li>SQLite 3 database support</li>
+<li>Non-linear conditional pipelines</li>
+<li>Visually programming for Newt YAML files</li>
+<li>Web components for LAS metadata types</li>
+</ul>
+<h1 id="related-resources">Related resources</h1>
+<ul>
+<li>Newt <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Postgres <a href="https://postgres.org" class="uri">https://postgres.org</a> + PostgREST <a href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
+<li><a href="https://mustache.github.io">Mustache</a> programming languages support</li>
+<li><a href="https://github.com/cbroglie/mustache">Go Mustache package</a>, provides a mustache cli</li>
+<li>Go 1.22, pattern language in HTTP handlers, see <a href="https://pkg.go.dev/net/http#hdr-Patterns" class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a></li>
+</ul>
+<h1 id="thank-you">Thank you!</h1>
+<ul>
+<li>This Presentation <a href="https://caltechlibrary.github.io/newt/presentation2/" class="uri">https://caltechlibrary.github.io/newt/presentation2/</a></li>
+<li>Project: <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Email: rsdoiel@caltech.edu</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

@@ -8,9 +8,9 @@
     "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
     "name": "Newt",
     "version": "0.0.7-dev",
-    "description": "Newt is an experimental web service providing data routing and a multistage pipeline. The pipeline can contain services that work with JSON data. Example object storage, form data validation, JSON transformation, even static file services. Newt can route data from a request to a JSON data source (e.g. Postgres+PostgREST or Solr) and then run those results through a pipeline that may include Newt's Mustache template engine.",
+    "description": "Newt is an experimental set of tools for rapid application development of metadata curation tools. Newt applications implement a service orient architecture to minimize the written to run on the server. Newt comes with a data router, a Mustache template engine and a code generation. Each of these programs use YAML for configuration. The code generator supports generate configuration and SQL for use with Postgres and PostgREST. Newt's data router implements a data pipeline concept where the JSON output of one web service and then be fed into the next in a manner similar to Unix pipes. Newt works well with and software that can production JSON data such as Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a few.  The data router also provides support to for serving static files in additional to the content generated from a data pipepline.",
     "applicationCategory": "computer science",
-    "releaseNotes": "This release added multiple stage pipeline, introduce a mustache template engine and unified generator for Postgres SQL dialect, HTML and mustache templates.",
+    "releaseNotes": "This release implements the Newt second prototype. It uses a new simpler YAML syntax and comes with three programs, newtrouter, newtmustache and newtgenerator.",
     "developmentStatus": "concept",
     "funder": {
         "@type": "Organization",
@@ -18,20 +18,24 @@
     },
     "keywords": [
         "web development",
-		"web service",
-		"service oriented architecture",
-		"micro service architecture",
-        "microservice",
-        "postgres",
-        "postgrest",
-        "pandoc",
-		"mustache",
-		"json api"
+	"web service",
+	"service oriented architecture",
+	"micro service architecture",
+        "micro service",
+        "Postgres",
+        "PostgREST",
+        "Pandoc",
+	"Mustache template",
+	"JSON API",
+	"data router",
+	"static web server",
+	"template engine",
+	"rapid application development"
     ],
     "programmingLanguage": [
-		"YAML",
-		"SQL",
-		"Golang"
+	"YAML",
+	"SQL",
+	"Golang"
     ],
     "operatingSystem": [
         "Linux",
@@ -43,7 +47,7 @@
         "PostgREST ≥ 12",
         "Pandoc ≥ 3.1",
         "Golang ≥ 1.22",
-        "A front end web server supporting reverse proxy (e.g. Apache2, NginX)"
+        "A front end web server supporting reverse proxy (e.g. Apache2, NGINX)"
     ],
     "relatedLink": [
         "https://caltechlibrary.github.io/newt"

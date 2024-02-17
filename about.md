@@ -20,8 +20,8 @@ version: 0.0.7-dev
 
 keywords: [ "web development", "web service", "service oriented
 architecture", "micro service
-architecture", "microservice", "postgres", "postgrest", "pandoc", "mustache", "json
-api" ]
+architecture", "microservice", "Postgres", "PostgREST", "Pandoc", "mustache", "JSON
+API" ]
 
 ---
 
@@ -61,10 +61,10 @@ template engine.
 - Windows
 - macOS
 
-### Software Requiremets
+### Software Requirements
 
 - Postgres ≥ 16
 - PostgREST ≥ 12
 - Pandoc ≥ 3.1
 - Golang ≥ 1.22
-- A front end web server supporting reverse proxy (e.g. Apache2, NginX)
+- A front end web server supporting reverse proxy (e.g. Apache2, NGINX)

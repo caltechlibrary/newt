@@ -3,80 +3,29 @@
 
 ## Bugs
 
+- [ ] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
+
 ## Next
 
-- [ ] Update generate SQL to confirm to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentatation)
-    - [ ] Include a short SQL tutorial split between DDL (data definition language), DQL (data query language) and DML (data modification langauge), touch on transactions
-- [ ] Next version of Newt needs to be based on Go 1.22, it includes sane routing dsl and will let Newt be simplier
-- [ ] Adopt GitHub's YAML Issue Syntax for describing models
-    - [x] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
-    - [ ] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
-- [ ] It would be nice to be able to define some global constants to minimize repeated strings like a common PostgREST url prefix, `http://localhost:3000` expressed as `{api}` 
-- [ ] Prune required boiler plate in Newt's YAML file
-    - [ ] Make sure `*_method:` defaults to "GET"
-    - [ ] Make sure `api_content_type:` defaults to "application/json"
+- [ ] Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
+- [ ] Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
+  - [ ] Using a combined file would make it easy to generate startup scripts or systemd configurations
+- [ ] Decide what is logged by default for Newt Mustache and Newt Router
+- [ ] Decide what is logged in "debug" or "verbose" model by Newt Mustache and Newt Router
+- [ ] Generate SQL confirming to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentation)
+- [ ] Writing the URL for a localhost service can be tedious and obscure what is happening, create an example where you use a environment variable or application option to express the service name to a variable that can then be reference in the URL pattern
+- [x] Adopt GitHub's YAML Issue Syntax for describing models
+  - [x] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
+  - [x] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
 - [x] Present at Code4Lib meetup, July 14, 2023
-- [x] Demo for DLD staff
-- [x] Decide if I want a "redirect on success", "redirect on fail" columns in the routes CSV file. This could be used to make webform integration smoother for simple webform handling (it would save using a dummy Mustache template to has redirect handler
-- [ ] Create a data model structure YAML syntax (and processor) to do the following
-    - [ ] generate PostgREST setup SQL
-    - [x] generate SQL table create statement
-    - [ ] generate a default view
-    - [ ] generate a default create, update, delete, functions for table
-    - [ ] generate HTML web forms for the SQL table models described in the YAML file
-    - [ ] generate Mustache template web for using the create/update functions 
-- [ ] Finish Newt prototype
-    - [ ] Newt router handling for OPTIONS
-    - [ ] Newt router handling for HEAD
-    - [x] Newt router handling for GET
-    - [x] Newt router handling for POST
-    - [ ] Newt router handling for PUT
-    - [ ] Newt router handling for PATCH
-    - [ ] Newt router handling for DELETE
-    - [ ] Test newt router handling OPTIONS
-    - [ ] Test newt router handling HEAD
-    - [ ] Test newt router handling GET
-    - [ ] Test newt router handling POST
-    - [ ] Test newt router handling PUT
-    - [ ] Test newt router handling PATCH
-    - [ ] Test newt router handling DELETE
-    - [ ] Test newt birds3 demo and debug
-    - [x] Does the environment need to merge with objects sent to data API via POST, PUT, PATCH?
-    - [x] Debug interaction between static file service and Router
-    - [x] Test assembled Newt static file handling
-    - [x] Test newt router only handling
-    - [x] implement Path DSL
-    - [x] Figure out where resoling the types, values and url request should go
-    - [x] Nail down where table of routes comes from
-    - [x] Nail down and implement configuration file
-    - [x] Add load configuration to Runner
-    - [x] Add load routes to Runner
-    - [x] Implement web service for Newt router
-    - [x] Dry run and start up web service to Runner
-- [x] Create birds demo 3 (using Postgres+PostgREST, Pandoc, Newt)
-- [x] Create birds demo 1 (static site with Pandoc)
-- [x] Create birds demo 2 (dynamic site with Postgres+PostgREST and JavaScript using xhr calls)
-- [x] Draft presentation
-- [x] Documenting ideas
-- [x] Prototype a Mustache render engine that funtions similar to Pandoc server
+- [ ] Demo second prototype for DLD developer group, newt-presentation2.md
+- [x] Create birds demo for 2nd Prototype3(using Postgres+PostgREST, Newt Router and Newt Mustache)
 
 ## Someday, maybe
 
-- [ ] Newt should support development with SQLite 3 database
-    - [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server
-    - [ ] Think about a dsn that could read to the tabel level, or think about the API end points provided by web form building platforms (e.g. Google's forms, WuFoo, etc)
-- [ ] Flesh out support for S3 object store as well as JSON API data sources
-    - [ ] decide how it will be expressed in YAML
-    - [ ] decide if it only operates on FILE uploads or if it can work for other content that might get processed via Mustache
-    - [ ] Figure out what package I want to use to integrate with S3 Object store
-        - [ ] Review Minio and see if I can just use it for S3 object store integration
-        - [ ] Review s5cmd and its dependencies to see how s5 does S3 integration
-        - [ ] Review the Go SWS SDK and see if this will also work for other S3 object stores
-- [ ] Think about how to support SQLLite 3 data files in the Newt data pipe line
-    - [ ] Make a PostgREST work alike that uses SQLite3 databases
-        - [ ] Look at libSQL (SQLite3 database wrapped to support Postgres wire protocol), turso databsase and see if it's HTTP REST API can be supported by Newt
-    - [ ] better yet, find one that is already implemented and point to it!
-- [ ] Think about moving the `type_dsl.go` to its own package
-- [ ] Newt should delegate file uploads to an S3 like service, Minio is written in Go and I think supports a file streaming model
-- [ ] Create a community portal integrated with GitHub for sharing project YAML, SQL and Mustache templates
-- [x] Review Stonebooks' DbOS project at https://dbos-project.github.io/ and see what Ideas might be useful for integration into Newt
+- [ ] Newt should support development with SQLite 3 databases
+  - [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server
+  - [ ] Should a write a newtsqlite service?
+- [ ] Can I extend Newt to support file uploads?
+  - [ ] Should this be a separate service, a stage in the pipeline?
+  - [ ] Should I integrate S3 protocol support to allow file upload handling?

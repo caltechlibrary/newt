@@ -2,7 +2,7 @@
 Installation
 ------------
 
-Newt is an experimental set of programs for rapid application development for libraries, archives and museums. It provides a router, code generator, tmustache template engine and a JSON bundler for working with Pandoc web service. At this time you must install it from source code. The programs are likely broken, poorly documented and certainly contain bugs. It's a prototype!
+Newt is an experimental set of programs for rapid application development for libraries, archives and museums. It provides a data router, code generator and Mustache template engine. At this time you must install it from source code. The programs are likely broken, poorly documented and certainly contain bugs. It's a prototype!
 
 <!-- 
 Quick install with curl

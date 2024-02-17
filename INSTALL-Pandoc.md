@@ -32,5 +32,5 @@ sudo port install libiconv
 cd ..
 ~~~
 
-NOTE: Even though you are using cabal with the "install pandoc-cli" option the resulting Pandoc can function as the Pandoc web service by invoking pandoc server command option.
+NOTE: Even though you are using cabal with the "install pandoc-cli" option the resulting Pandoc can function as the Pandoc web service by invoking Pandoc server command option.
 
