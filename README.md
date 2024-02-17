@@ -149,7 +149,7 @@ Newt application development is friendly to version control systems (e.g. Git). 
   - `*.sql` these are the SQL files used by your application to define your models and behaviors in Postgres
   - `templates` a template holding your template pages
   - `app.yaml` would hold the a Newt router and code generator configuration file
-  - `tmpl.yaml` holding the configuration for `newtmustache`
+  - `tmpl.yaml` holding the configuration for `newtmustache`, it cannot run on the same port as `newtrouter`.
   - `CITATION.cff` or `codemeta.json` for project metadata
 
 > Newt, a type of salamander, doesn't seek attention. It does its own thing. You only notice it if you look carefully.
