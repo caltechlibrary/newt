@@ -1,11 +1,11 @@
 
 # Newt Project
 
-Newt is an experimental set of tools for rapid application development of metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAS). Newt applications implement a service orient architecture. This allows you to take advantage of off the shelf software like Postgres+PostgREST, MariaDB or MySQL with MySQL Rest Service, Solr, Elasticsearch and Opensearch. These software come with a JSON API, a JSON data source. Newt provides a data router that can pair a request with a JSON data pipeline[^11]. Place Newt Mustache as the last service in your pipeline and you can transform your JSON objects into web pages using the Mustache template language. Newt's code generator can take advantage of Newt's YAML file to render data models as the SQL and configuration for Postgres+PostgREST. Newt's code generator can use that same YAML to render Mustache templates too. With Newt's tools and a YAML file you can create a web application for managing metadata which supports that basic CRUD-L[^12] operations needed to curate your metadata. Through in a full text search engine like Solr and you have the core capabilities found in many LAS applications like ArchivesSpace. 
+Newt is an experimental set of tools for rapid application development. More specifically Newt can build metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAS). Newt applications implement a service orient architecture. This allows you to take advantage of off the shelf software like Postgres+PostgREST, MariaDB or MySQL with MySQL Rest Service, Solr, Elasticsearch and Opensearch. Each of these software can function as a JSON data source through their JSON web API. Newt provides a data router. The Newt Router works easily with JSON data sources. In fact it can send a request to a JSON data source, get the result and send that on to another web service. This chain of a web accepting some JSON and then handing the result to another website can be thought of as a data pipeline[^11]. The Newt Router can implement data pipelines. Newt Mustache can be used as the last service in your pipeline. It can transform a JSON objects into a web page using the Mustache template language. But how do you setup a database as a JSON data source? Newt's code generator can lend a hand there. Newt's code generator understands Newt's YAML file and can render the data models in useful ways.  The Newt code generator can render the SQL and configuration for Postgres+PostgREST. Newt's code generator can render Mustache templates too. With Newt's tools and a YAML file you can create a web application for managing metadata which supports that basic CRUD-L[^12] operations for managing data. Throw in a full text search engine like Solr and you have the core capabilities found in many LAS applications like ArchivesSpace. 
 
 Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal or WordPress. Newt generators the applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a separate service or use a rich platform like Drupal or Invenio RDM.
 
-Newt applications are well suited to interacting with any existing platform that provides a JSON API. LAS applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach. The code you would need to write would be to configure a localhost proxy to those external systems. Similarly that opens the door to interesting integration with services like CrossRef, DataCite, Pub Med Central, ROR and ORCID. If what you need is a simple integration between these systems Newt might provide some useful tools to make that process easier.
+Newt applications are well suited to interacting with other applications that provide a JSON API. The JSON web API allows Newt to treat them as a JSON data source. LAS applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach. The code you would need to write would be to configure a localhost proxy to those external systems. Similarly that opens the door to interesting integration with services like CrossRef, DataCite, Pub Med Central, ROR and ORCID. If what you need is a simple integration between these systems Newt might provide some useful tools to make that process easier.
 
 [^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
@@ -25,7 +25,7 @@ In 2024 the first three can be provided by off the self software mentioned previ
 - `newtgenerator` is a code generator understands the data models described in Newt's YAML configuration file. It can generate code to setup Postgres and PostgREST, it can generate Mustache templates
 - `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
 
-Newt's web services and the data pipeline concept is being tested using
+Newt's web services and the data pipeline are being tested using
 
 - [Postgres](https://postgres.org), data management and modeling
 - [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
@@ -35,7 +35,7 @@ The Newt YAML ties this together expressing
 - application (run time information for Newt Router and Newt Mustache)
 - models (descriptions of data as you would provided in a web form)
 - routes (web requests differentiated by a HTTP method and URL path that trigger processing in a data pipeline)
-- templates (pairs a request with a template to transform a JSON into some other form)
+- templates (pairs a request with a template to transform a JSON into some other format such as an HTML document)
 
 
 ## What type of applications are supported by Newt?
@@ -66,19 +66,19 @@ Much of the back end of web applications can largely be assemble from off the sh
 
 I think a radical simplification is due.  Newt in part is intended to spark that conversation. My observation is most software doesn't need to scale large. Even in the research and LAS communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software. A better human experience is an intended side effect of Newt.
 
-Back in the day whenever we were writing in PHP, Python or Perl we creating middleware. Even Drupal ad WordPress can be thought of as middleware. Middleware sites between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX).
+> OK, a little more context
 
-A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. The approach starts to sound an like the old Unix philosophy and a single tool that does one thing really web chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog systems can import data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What is that type of integration was as easy as using Unix pipes for forming a data processing workflow?
+Back in the day whenever we were writing in PHP, Python or Perl we were creating middleware. Even Drupal and WordPress are really middleware. Middleware sits between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2 or proxied to by NGINX. It's still middleware.
 
-If you can define the functions of a middleware system from existing system and route one system's output into another as import then we can use to pipeline approach to crate useful applications. We just need a means of describing the pipeline (YAML in the case of Newt) and running the pipeline when requested (Newt Router provides this).
+A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. The approach starts to sound an like the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog systems can import data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What if doing that was as easy as using Unix pipes to form a data processing workflow?
 
-Taking this approach (implementing a service oriented architecture) it becomes easy to assign responsibility to various off the shelf components. Here's an example dividing responsibility with off the shelf software.
+We can make it that easy if we use service oriented architecture and off the shelf web services. With Newt's simple data router and pipelines we get just that. Here is a description of one implementation of that idea.
 
 1. Apache 2 with Shibboleth provides access control and helps up communicate with a web browser (e.g. SSL support in the public URL)
 2. Apache 2 proxies to a Newt Router. Newt Router either maps the request to a data pipeline or provides static content
 3. The data pipeline performs our processing. It can include any number of web services running on localhost. Which services depend on what we want to do. If we're managing data then Postgres+PostgREST is a good choice. The pipeline first stage might start there.  Eventually we'll want to turn that JSON into HTML so Newt Mustache provides a reliable means of doing that.
 
-In this example structure we can mix and match database with a JSON API and search engines. Using this approach we can "mashup" our data sources locally from behind our front end web service. The web browser contacts the front in web service, it contacts Newt Router and the results flow back through Newt router and the front end web server to the web browser making the request.
+This example is pretty generalized. We could mix and match database with a JSON API and search engines as long was we can easily map request to the right pipeline. In effect we're "mashing up" our local services to provide the data management and content we need for our application.
 
 ## Off the shelf deliverables
 
@@ -97,11 +97,11 @@ The problem with my off the shelf list so far is that it forces us to rely on Ja
 
 [^17]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
-What we should do is use Newt to tie those JSON services together, render the results using a template engine web service and hand HTML back to the web browser. Newt Router provides a means to tie the services together, Newt Mustache provides a template engine as web service. The Newt Router can also serve out our static content that might be included in the HTML results created by a Mustache template. Newt provides the missing bits so we don't need to send JavaScript down the virtual wire to assemble web content. Less bandwidth required on the network, few network accesses needed, the web browser knows how to quickly display HTML and CSS. It's a big step forward without writing much code, maybe with out writing any code if Newt's code generator does a sufficient job for your needs.
+What we should do is use Newt to tie those JSON services together, render the results using a template engine web service and hand HTML back to the web browser. Newt Router provides a means to tie the services together, Newt Mustache provides a template engine as web service. The Newt Router can also serve out our static content that might be included in the HTML results created by a Mustache template. Newt provides the missing bits so we don't need to send JavaScript down the virtual wire. This approach uses  consume less bandwidth, fewer network accesses and less computations cycles on our device. The web browser knows how to quickly display HTML and CSS, a Newt application can provide those easily. It's a big step forward without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
 
 ### A Newt baseline
 
-Web services talk to other web services all the time. This isn't new. It isn't exotic it. LAS systems often do this too. Just thing of how they integrate content from external sources like CrossRef, DataCite, ORCID and ROR. Can we do this on the small scale too? Let me break that down further.
+Web services talk to other web services all the time. This isn't new. It isn't exotic it. LAS systems often do this too. Can we do this at small scale too? Let me break that down further.
 
 - Can we align access control with our front end web server?
 - Can we insist our database management system provides flexible JSON API?
@@ -122,25 +122,14 @@ Newt's code generator is used to create the SQL to setup our Postgres database, 
 ## What comes with the Newt Project?
 
 - [newtrouter](newtrouter.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a router and as a static file server. It does this by routing your request through a YAML defined pipeline and returning the results. Typically this will be a JSON data source and running that output through a template engine like Newt Mustache.
-- [newtgenerator](newtgenerator.1.md) is a command line program that reads the Newt YAML file and generates SQL and templates used to build your application.  Currently the generator target SQL for use with Postgres+PostgREST. The template language being targeted is Mustache.
+- [newtgenerator](newtgenerator.1.md) is a command line program that reads the Newt YAML file and generates SQL and templates used to build your application.  Currently the generator targets SQL for use with Postgres+PostgREST. The template language being targeted is Mustache.
 - [newtmustache](newmustache.1.md) implements a simple lightweight template engine supporting [Mustache](https://mustache.github.io/) templates. Mustache template language is well support by a wide variety of programming languages include Python, PHP, and JavaScript.
 
 NOTE: See the [user manual](user_manual.md) for details
 
-## How is Newt speeding up development?
+## Where is my development time going to be spent?
 
-The Newt suite of tools use a common YAML file.
-
-- `newtgenerator` can render SQL suitable for bootstrapping your Postgres+PostgREST database as well as Mustache templates
-- `newtmustache` provides a simple, stateless, Mustache template engine
-- `newtrouter` provides data routing between other web services that fill specific functions or roles.
-
-Your back end is constructed from "off the shelf" parts. Newt provides the routing. It allows our customization efforts to focus on data modeling in the database and with a template engine it renders content that you view in your web browser.
-
-## Where is development time spent?
-
-The developer writes YAML to generate the back end data management and templates to render those results. You can enhance the generated code further if you want. I suspect that you'll spend most of your time improving the human experience of your application through improving the HTML markup in the templates, writing some CSS and perhaps enhancing behavior with the JavaScript run in the web browser. If you need to enhance the back end you work in SQL. If you simply need to improve the rendering of database results then you are working with Mustache templates. Otherwise you are focused on front end development.
-
+The developer writes YAML to generate the back end data management and templates to render web pages for your application. You can enhance the generated code further if you want. I suspect that you'll spend most of your time improving the human experience of your application through improving the HTML markup in the templates, writing some CSS and perhaps enhancing behavior with the JavaScript run in the web browser. If you need to enhance the back end you work in SQL. If you simply need to improve the rendering of your database results then you are working with Mustache templates.
 
 ## What about security, integration with single sign-on or other websites or services?
 
