@@ -28,7 +28,7 @@
 <ul>
 <li>R. S. Doiel</li>
 </ul>
-<p>Newt is an experimental web service providing data routing and a multistage pipeline. The pipeline can contain services that work with JSON data. Example object storage, form data validation, JSON transformation, even static file services. Newt can route data from a request to a JSON data source (e.g. Postgres+PostgREST or Solr) and then run those results through a pipeline that may include Newt’s Mustache template engine.</p>
+<p>Newt is an experimental set of tools for rapid application development of metadata curation tools. Newt applications implement a service orient architecture to minimize the written to run on the server. Newt comes with a data router, a Mustache template engine and a code generation. Each of these programs use YAML for configuration. The code generator supports generate configuration and SQL for use with Postgres and PostgREST. Newt’s data router implements a data pipeline concept where the JSON output of one web service and then be fed into the next in a manner similar to Unix pipes. Newt works well with and software that can production JSON data such as Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a few. The data router also provides support to for serving static files in additional to the content generated from a data pipepline.</p>
 <ul>
 <li>GitHub: &lt;git+https://github.com/caltechlibrary/newt&gt;</li>
 <li>Issues: &lt;git+https://github.com/caltechlibrary/newt/issues&gt;</li>
@@ -45,7 +45,7 @@
 <li>Windows</li>
 <li>macOS</li>
 </ul>
-<h3 id="software-requirements">Software Requirements</h3>
+<h3 id="software-requiremets">Software Requiremets</h3>
 <ul>
 <li>Postgres ≥ 16</li>
 <li>PostgREST ≥ 12</li>

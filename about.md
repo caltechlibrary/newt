@@ -3,13 +3,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "Newt"
-abstract: "Newt is an experimental web service providing data routing
-and a multistage pipeline. The pipeline can contain services that work
-with JSON data. Example object storage, form data validation, JSON
-transformation, even static file services. Newt can route data from a
-request to a JSON data source (e.g. Postgres+PostgREST or Solr) and then
-run those results through a pipeline that may include Newt’s Mustache
-template engine."
+abstract: "Newt is an experimental set of tools for rapid application development of metadata curation tools. Newt applications implement a service orient architecture to minimize the written to run on the server. Newt comes with a data router, a Mustache template engine and a code generation. Each of these programs use YAML for configuration. The code generator supports generate configuration and SQL for use with Postgres and PostgREST. Newt’s data router implements a data pipeline concept where the JSON output of one web service and then be fed into the next in a manner similar to Unix pipes. Newt works well with and software that can production JSON data such as Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a few. The data router also provides support to for serving static files in additional to the content generated from a data pipepline."
 authors:
   - family-names: Doiel
     given-names: R. S.
@@ -18,10 +12,7 @@ authors:
 repository-code: "git+https://github.com/caltechlibrary/newt"
 version: 0.0.7-dev
 
-keywords: [ "web development", "web service", "service oriented
-architecture", "micro service
-architecture", "microservice", "Postgres", "PostgREST", "Pandoc", "mustache", "JSON
-API" ]
+keywords: [ "web development", "web service", "service oriented architecture", "micro service architecture", "micro service", "Postgres", "PostgREST", "Pandoc", "Mustache template", "JSON API", "data router", "static web server", "template engine", "rapid application development" ]
 
 ---
 
@@ -36,13 +27,7 @@ About this software
 
 
 
-Newt is an experimental web service providing data routing and a
-multistage pipeline. The pipeline can contain services that work with
-JSON data. Example object storage, form data validation, JSON
-transformation, even static file services. Newt can route data from a
-request to a JSON data source (e.g. Postgres+PostgREST or Solr) and then
-run those results through a pipeline that may include Newt’s Mustache
-template engine.
+Newt is an experimental set of tools for rapid application development of metadata curation tools. Newt applications implement a service orient architecture to minimize the written to run on the server. Newt comes with a data router, a Mustache template engine and a code generation. Each of these programs use YAML for configuration. The code generator supports generate configuration and SQL for use with Postgres and PostgREST. Newt’s data router implements a data pipeline concept where the JSON output of one web service and then be fed into the next in a manner similar to Unix pipes. Newt works well with and software that can production JSON data such as Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a few. The data router also provides support to for serving static files in additional to the content generated from a data pipepline.
 
 
 - GitHub: <git+https://github.com/caltechlibrary/newt>
@@ -61,7 +46,7 @@ template engine.
 - Windows
 - macOS
 
-### Software Requirements
+### Software Requiremets
 
 - Postgres ≥ 16
 - PostgREST ≥ 12
