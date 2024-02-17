@@ -82,7 +82,7 @@ A second prototype Newt application
 - 20th Century tech
   - SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)
 - 21st Century tech
-  - JSON (2001), YAML (2001), Pandoc (2006), Mustache templates (2009), PostgREST (2014)
+  - JSON (2001), YAML (2001), Mustache templates (2009), PostgREST (2014)
 
 # Questions guiding next steps
 
