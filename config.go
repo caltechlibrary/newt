@@ -30,6 +30,10 @@ type Config struct {
 	// Routes holds an array of maps of route definitions used by
 	// the data router and code generator
 	Routes []*NewtRoute `json:"routes,omitempty" yaml:"routes,omitempty"`
+
+  // Templates holds an array of mapsthe request to template to request for
+	// Newt Mustache
+	Templates []*NewtMustache `json:"templates,omitempty" yaml:"templates,omitempty"`
 }
 
 // Applications holds the runtime information for newt router, generator,
