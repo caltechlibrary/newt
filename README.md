@@ -5,7 +5,7 @@ Newt is an experimental set of tools for rapid application development. More spe
 
 How does Newt do that? Newt takes a service oriented architecture to assembling web applications. This allows Newt to do less while making it easier for you to integrate off the shelf software to compose your application.
 
-You can think of a web application as a sequence of requests and responses. In a service oriented architecture we take advantage of that concept but enhance the model by allowing one web service to make a request from another. Typically when a web browser contacts your application one of two things will happen. Your app may know the answer and hand back the result. With the service oriented architecture your application has another option. Your application can contact to another service and use that result to answer the request feom the web browser. Newt makes this easy by providing a data router. Unlike setting up a proxy relationship in Apache or NGINX or relying on a complicated set of nested containers Newt provides a pipeline[^11]. Newt's pipeline is expressed in YAML. The last service completed hands be the result that Newt Router will return to the web browser.
+You can think of a web application as a sequence of requests and responses. In a service oriented architecture we take advantage of that concept but enhance the model by allowing one web service to make a request from another. Typically when a web browser contacts your application one of two things will happen. Your app may know the answer and hand back the result. With the service oriented architecture your application has another option. Your application can contact to another service and use that result to answer the request from the web browser. Newt makes this easy by providing a data router. Unlike setting up a proxy relationship in Apache or NGINX or relying on a complicated set of nested containers Newt provides a pipeline[^11]. Newt's pipeline is expressed in YAML. The last service completed hands be the result that Newt Router will return to the web browser.
 
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples.
 
@@ -15,15 +15,15 @@ Why is this important? Much of the "back end" of a web application is already av
 - Elasticseach and Opensearch provide a full text search engine as a web service
 - ArchiveSpace provides a JSON API web service
 - InvenioRDM provides a JSON API web service
-- Cantaloupe privides a IIIF web service or IIIF content
+- Cantaloupe IIIF Image server has integration points
 
-This is not an exhaustive list. This can all be integrated into your application through configuring the connection in Newt's YAML file because Newt can make requests and get responses in a data pipeline. 
+This is not an exhaustive list. Thse types of applications can all be integrated into your application through configuring the connection in Newt's YAML file because Newt can make requests and get responses in a data pipeline. 
 
 Newt provides more than data routing and pipelines.
 
 How do you setup a database as a JSON data source? Newt's code generator can lend a hand there. Newt's code generator understands Newt's YAML file and can render the data models in useful ways.  The Newt code generator can render the SQL and configuration for Postgres+PostgREST. Newt's code generator can render Mustache templates too. Between the SQL and Mustache temples you have the basic CRUD-L[^12] operations for managing data covered. The off the self software, Newt generator, router and temple web service gives you the core features in many LAS application.
 
-Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal, WordPress, or Islandora. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use a software like Drupal or Invenio RDM.
+Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal, WordPress, or Islandora. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use a software ike Rupal that provides that feature.
 
 Newt applications are well suited to interacting with other applications that provide a JSON API. The JSON web API allows Newt to treat them as a JSON data source. A JSON data source can easily be run through a pipeline. Many LAS applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach. You would only meed to provide a proxy to those services on localhost, write your Newt YAML file and purhaps enhance some SQL or Mustache templates generated by Newt. Similar you can integrate external services too. E.g. ORCID, ROR, CrossRef, DataCite, Pub Med Central to name a few.
 
@@ -34,7 +34,7 @@ Newt applications are well suited to interacting with other applications that pr
 A Newt application encourages the following.
 
 - preference for "off the shelf" over writing new code
-- model your data simply
+- modeling your data simply
 - use a database management system for managing your data
 - prefer software that can function as a JSON data source
 - transformation data representations (if needed) using a light weight web service
@@ -43,17 +43,17 @@ A Newt application encourages the following.
 In 2024 the first three can be provided by off the self software mentioned previously. Newt provides a few tools to fill in the gaps.
 
 - `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
-- `newtgenerator` is a code generator understands the data models described in Newt's YAML configuration file. It can generate code to setup Postgres and PostgREST, it can generate Mustache templates
+- `newtgenerator` is a code generator understands the data models described in Newt's YAML configuration file. Newt targets generating code to setup Postgres and PostgREST or generate Mustache templates
 - `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
 
-Newt's web services and the data pipeline are being tested using
+Newt's is being tested building applications based on 
 
 - [Postgres](https://postgres.org), data management and modeling
 - [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
 
 The Newt YAML ties this together expressing
 
-- application (run time information for Newt Router and Newt Mustache)
+- applications (run time information for Newt Router and Newt Mustache)
 - models (descriptions of data as you would provided in a web form)
 - routes (web requests differentiated by a HTTP method and URL path that trigger processing in a data pipeline)
 - templates (pairs a request with a template to transform a JSON into some other format such as an HTML document)
