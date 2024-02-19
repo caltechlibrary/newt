@@ -5,7 +5,7 @@ Newt is an experimental set of tools for rapid application development. More spe
 
 How does Newt do that? Newt implements a service oriented architecture to assemble web applications. This allows Newt to do less while making it easier for you to integrate off the shelf software to compose your application.
 
-You can think of a web application as a sequence of requests and responses. In a service oriented architecture we take advantage of that concept but enhance the model by allowing one web service to make a request from another. Typically when a web browser contacts your application one of two things will happen. Your app may know the answer and hand back the result. With the service oriented architecture your application has another option. Your application can contact to another service and use that result to answer the request from the web browser. Newt makes this easy by providing a data router. Unlike setting up a proxy relationship in Apache or NGINX or relying on a complicated set of nested containers Newt provides a pipeline[^11]. Newt's pipeline is expressed in YAML. The last service completed hands be the result that Newt Router will return to the web browser.
+You can think of a web application as a sequence of requests and responses. In a service oriented architecture we take advantage of that concept but enhance the model by allowing one web service to make a request from another. Typically when a web browser contacts your application one of two things will happen. Your app may know the answer and hand back the result. With the service oriented architecture your application has another option. Your application can contact to another service and use that result to answer the request from the web browser. Newt makes this easy by providing a data router. Unlike setting up a proxy relationship in Apache or NGINX or relying on a complicated set of nested containers Newt provides a pipeline[^11]. Newt's pipeline is expressed in YAML. The last service completed hands its result to the Newt Router which returns the result to the web browser.
 
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples.
 
@@ -17,13 +17,11 @@ Why is this important? Much of the "back end" of a web application is already av
 - InvenioRDM provides a JSON API web service
 - Cantaloupe IIIF Image server has integration points
 
-This is not an exhaustive list. Thse types of applications can all be integrated into your application through configuring the connection in Newt's YAML file because Newt can make requests and get responses in a data pipeline. 
+This is not an exhaustive list. These types of applications can all be integrated into your application through configuring the connection in Newt's YAML file. Newt Router runs the data pipelines.
 
-Newt provides more than data routing and pipelines.
+How do you setup a database as a JSON data source? Newt's code generator can lend a hand there. Newt's code generator understands Newt's YAML file and can render the data models in useful ways.  The Newt code generator can render the SQL and configuration for Postgres+PostgREST. Newt's code generator can render Mustache templates too. Between the SQL and Mustache temples you have the basic CRUD-L[^12] operation required for managing data. The off the self software, Newt generator, router and temple service gives you the core features for building in many LAS application.
 
-How do you setup a database as a JSON data source? Newt's code generator can lend a hand there. Newt's code generator understands Newt's YAML file and can render the data models in useful ways.  The Newt code generator can render the SQL and configuration for Postgres+PostgREST. Newt's code generator can render Mustache templates too. Between the SQL and Mustache temples you have the basic CRUD-L[^12] operations for managing data covered. The off the self software, Newt generator, router and temple web service gives you the core features in many LAS application.
-
-Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal, WordPress, or Islandora. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use a software ike Rupal that provides that feature.
+Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal, WordPress, or Islandora. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use another software system.
 
 Newt applications are well suited to interacting with other applications that provide a JSON API. The JSON web API allows Newt to treat them as a JSON data source. A JSON data source can easily be run through a pipeline. Many LAS applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach. You would only meed to provide a proxy to those services on localhost, write your Newt YAML file and purhaps enhance some SQL or Mustache templates generated by Newt. Similar you can integrate external services too. E.g. ORCID, ROR, CrossRef, DataCite, Pub Med Central to name a few.
 
@@ -40,7 +38,7 @@ A Newt application encourages the following.
 - transformation data representations (if needed) using a light weight web service
 - code generation where appropriate
 
-In 2024 the first three can be provided by off the self software mentioned previously. Newt provides a few tools to fill in the gaps.
+In 2024 the much can be provided by off the self software. Newt provides a few tools to fill in the gaps.
 
 - `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
 - `newtgenerator` is a code generator understands the data models described in Newt's YAML configuration file. Newt targets generating code to setup Postgres and PostgREST or generate Mustache templates
@@ -48,7 +46,7 @@ In 2024 the first three can be provided by off the self software mentioned previ
 
 Newt's is being tested building applications based on 
 
-- [Postgres](https://postgres.org), data management and modeling
+- [Postgres](https://postgres.org), data management
 - [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
 
 The Newt YAML ties this together expressing
@@ -71,7 +69,7 @@ Over the last several decades web applications became very complex. This complex
 
 Databases have been used to generate web pages since the early web.  Databases are well suited to managing data.  When the web became dynamic, databases continued to be use for data persistence. By 1993 the web as an application platform was born[^13] and with it a good platform for providing useful organizational and institutional software.
 
-By the mid 1990s the Open Source databases like MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^14]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems. The enabled in the late 1990s and the early 2000s the practice of "mashing up" sites (i.e. content reuse). As "mashing up" became the rage, bespoke systems took advantage of content reuse too. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^15]. Yahoo Pipes inspired Newt's data pipelines.  Eventual the bespoke systems gave way to common use cases[^16]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example is how bespoke content management systems gave way to [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
+By the mid 1990s the Open Source databases like MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^14]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems. This in the late 1990s and the early 2000s led to the practice of "mashing up" sites (i.e. content reuse). As "mashing up" became the rage, bespoke systems took advantage of content reuse too. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^15]. Yahoo Pipes inspired Newt's data pipelines.  Eventual the bespoke systems gave way to common use cases[^16]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example is how bespoke content management systems gave way to [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
 
 [^13]: Web applications proceeded to eat all the venerable green screen systems they could find. Eventually they and their corporate sponsors invented the surveillance economy we have today. Sometimes "good ideas" have terrible consequences. Making it easier to produce custom web applications should always be done keeping in mind the necessity for humane and inclusive use. Newt can be both part of a solution but also be used to exacerbate human problems. Develop with consideration for others.
 
@@ -89,21 +87,21 @@ I think a radical simplification is due.  Newt in part is intended to spark that
 
 > OK, a little more context
 
-Back in the day whenever we were writing in PHP, Python or Perl we were creating middleware. Even Drupal and WordPress are really middleware. Middleware sits between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2 or proxied to by NGINX. It's still middleware.
+Back in the day whether we were writing in PHP, Python or Perl we were creating middleware. Even Drupal and WordPress are really middleware. Middleware sits between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2 or proxied loke with NGINX. It's still middleware.
 
-A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. The approach starts to sound an like the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog systems can import data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What if doing that was as easy as using Unix pipes to form a data processing workflow?
+A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. The approach starts to sound familiar. It is the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog system imports data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What if doing that was as easy as using Unix pipes? I think it can using a little YAML notation.
 
-We can make it that easy if we use service oriented architecture and off the shelf web services. With Newt's simple data router and pipelines we get just that. Here is a description of one implementation of that idea.
+Here is a description of one implementation of that idea.
 
 1. Apache 2 with Shibboleth provides access control and helps up communicate with a web browser (e.g. SSL support in the public URL)
 2. Apache 2 proxies to a Newt Router. Newt Router either maps the request to a data pipeline or provides static content
 3. The data pipeline performs our processing. It can include any number of web services running on localhost. Which services depend on what we want to do. If we're managing data then Postgres+PostgREST is a good choice. The pipeline first stage might start there.  Eventually we'll want to turn that JSON into HTML so Newt Mustache provides a reliable means of doing that.
 
-This example is pretty generalized. We could mix and match database with a JSON API and search engines as long was we can easily map request to the right pipeline. In effect we're "mashing up" our local services to provide the data management and content we need for our application.
+This example is pretty generalized. We could mix and match database with a JSON API or search engines. It can be easy because we can map requests to the right pipeline. In effect "mashing up" our local services to provide the data management and content we need for our application.
 
-## Off the shelf deliverables
+## Working with off the shelf deliverables
 
-Even without Newt we have allot to work with. Here's a shortlist of ones I use.
+Take the following as a for instance.
 
 - (data management) Postgres combined with PostgREST gives you an out of the box JSON API for managing data
 - (full text search) Solr gives you a powerful, friendly, JSON API for search and discovery
@@ -112,7 +110,7 @@ Even without Newt we have allot to work with. Here's a shortlist of ones I use.
 
 With the above list we can build capable applications relying on the sophisticated features of our web browsers. 
 
-## Hidden costs and missing bits
+## Hidden costs without the missing bits
 
 The problem with my off the shelf list so far is that it forces us to rely on JavaScript (or WASM module) running in the web browser to use the JSON API or the search engine that renders JSON results. It sounds like it should be easier because you are not writing anything that runs server side. In practice this is a horrible idea[^17].
 
@@ -174,8 +172,7 @@ Newt application development is friendly to version control systems (e.g. Git). 
   - `htdocs` this directory holds your static content needed by your web application
   - `*.sql` these are the SQL files used by your application to define your models and behaviors in Postgres
   - `templates` a template holding your template pages
-  - `app.yaml` would hold the a Newt router and code generator configuration file
-  - `tmpl.yaml` holding the configuration for `newtmustache`, it cannot run on the same port as `newtrouter`.
+  - `app.yaml` would holds the configuration of our Newt tools
   - `CITATION.cff` or `codemeta.json` for project metadata
 
 > Newt, a type of salamander, doesn't seek attention. It does its own thing. You only notice it if you look carefully.
