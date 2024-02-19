@@ -52,7 +52,8 @@ type Applications struct {
 	// available to the web services.
 	Environment []string `json:"enviroment,omitempty" yaml:"enviroment"`
 
-	// Options is a map of name to string values
+	// Options is a map of name to string values, it is where the
+  // environment variables values are stored.
   Options map[string] string `json:"options,omitempty" yaml:"options"`
 }
 
@@ -116,40 +117,16 @@ func LoadConfig(configFName string) (*Config, error) {
 	}
 
 	// Load environment if missing from config file.
-	if cfg.Application == nil {
-		cfg.Application = new(Application)
+	if cfg.Applications == nil {
+		cfg.Applications = new(Applications)
 	}
-	if len(cfg.Application.Environment) == 0 {
-		s := os.Getenv("NEWT_ENV")
-		if s != "" {
-			for _, envar := range strings.Split(s, ";") {
-				cfg.Application.Environment = append(cfg.Application.Environment, strings.TrimSpace(envar))
+	if len(cfg.Applications.Environment) == 0 {
+     cfg.Options := map[string] interface {}{}
+     for _,envar:= range cfg.Applications.Environment {
+			// YAML settings take presidence over environment, check for conflicts 
+			if _, conflict:= cfg.Options[envar]; ! conflict {
+					cfg.Options[envar] = os.Getenv(envar)
 			}
-		}
-	}
-	if cfg.Application.Port == 0 {
-		val := os.Getenv("NEWT_PORT")
-		if val != "" {
-			port, err := strconv.Atoi(val)
-			if err != nil {
-				return nil, fmt.Errorf("NEWT_PORT holds an port number, %s", err)
-			}
-			cfg.Application.Port = port
-		}
-	}
-	if cfg.Application.Htdocs == "" {
-		cfg.Application.Htdocs = os.Getenv("NEWT_HTDOCS")
-	}
-
-	//
-	// Sanity check the configuration.
-	//
-
-	// Make sure Htdocs exists
-	if cfg.Application.Htdocs != "" {
-		if _, err := os.Stat(cfg.Application.Htdocs); err != nil {
-			dir, _ := os.Getwd()
-			return nil, fmt.Errorf("Can't read %q from %s, %s", cfg.Application.Htdocs, dir, err)
 		}
 	}
 	return cfg, nil
