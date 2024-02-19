@@ -33,7 +33,7 @@ type Config struct {
 
   // Templates holds an array of mapsthe request to template to request for
 	// Newt Mustache
-	Templates []*NewtMustache `json:"templates,omitempty" yaml:"templates,omitempty"`
+	Templates []*MustacheBundle `json:"templates,omitempty" yaml:"templates,omitempty"`
 }
 
 // Applications holds the runtime information for newt router, generator,
