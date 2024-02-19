@@ -1,13 +1,31 @@
 
 # Newt Project
 
-Newt is an experimental set of tools for rapid application development. More specifically Newt can build metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAS). Newt applications implement a service orient architecture. This allows you to take advantage of off the shelf software like Postgres+PostgREST, MariaDB or MySQL with MySQL Rest Service, Solr, Elasticsearch and Opensearch. Each of these software can function as a JSON data source through their JSON web API. Newt provides a data router. The Newt Router works easily with JSON data sources. In fact it can send a request to a JSON data source, get the result and send that on to another web service. This chain of a web service accepting some JSON and then handing the result to another web service can be thought of as a data pipeline[^11]. The Newt Router can implement data pipelines. You're getting the JSON responses you'll probably want to turn that into a webpage. Newt Mustache can be used as the last service in your pipeline. It can transform a JSON objects into a web page using the Mustache template language. If you can map urls to data pilelines and get webpages out the side you have a web application. Newt provides tools to help make that process quicker to define and simpler to setup.
+Newt is an experimental set of tools for rapid application development. More specifically Newt can build metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAS). Newt makes creating these type of applications easier. 
 
-How do you setup a database as a JSON data source? Newt's code generator can lend a hand there. Newt's code generator understands Newt's YAML file and can render the data models in useful ways.  The Newt code generator can render the SQL and configuration for Postgres+PostgREST. Newt's code generator can render Mustache templates too. With Newt's tools and a YAML file you can create a web application for managing metadata which supports that basic CRUD-L[^12] operations for managing data. Throw in a full text search engine like Solr and you have the core capabilities found in many LAS applications like ArchivesSpace. 
+How does Newt do that? Newt takes a service oriented architecture to assembling web applications. This allows Newt to do less while making it easier for you to integrate off the shelf software to compose your application.
 
-Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal or WordPress. Newt generators the applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a separate service or use a rich platform like Drupal or Invenio RDM.
+You can think of a web application as a sequence of requests and responses. In a service oriented architecture we take advantage of that concept but enhance the model by allowing one web service to make a request from another. Typically when a web browser contacts your application one of two things will happen. Your app may know the answer and hand back the result. With the service oriented architecture your application has another option. Your application can contact to another service and use that result to answer the request feom the web browser. Newt makes this easy by providing a data router. Unlike setting up a proxy relationship in Apache or NGINX or relying on a complicated set of nested containers Newt provides a pipeline[^11]. Newt's pipeline is expressed in YAML. The last service completed hands be the result that Newt Router will return to the web browser.
 
-Newt applications are well suited to interacting with other applications that provide a JSON API. The JSON web API allows Newt to treat them as a JSON data source. LAS applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach. The code you would need to write would be to configure a localhost proxy to those external systems. Similarly that opens the door to interesting integration with services like CrossRef, DataCite, Pub Med Central, ROR and ORCID. If what you need is a simple integration between these systems Newt might provide some useful tools to make that process easier.
+Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples.
+
+- Postgres and PostgREST provides a JSON API for data management
+- MySQL or MariaDB combined with MySQL REST Service provides a web api for datat management
+- Solr provides full text search as a web service
+- Elasticseach and Opensearch provide a full text search engine as a web service
+- ArchiveSpace provides a JSON API web service
+- InvenioRDM provides a JSON API web service
+- Cantaloupe privides a IIIF web service or IIIF content
+
+This is not an exhaustive list. This can all be integrated into your application through configuring the connection in Newt's YAML file because Newt can make requests and get responses in a data pipeline. 
+
+Newt provides more than data routing and pipelines.
+
+How do you setup a database as a JSON data source? Newt's code generator can lend a hand there. Newt's code generator understands Newt's YAML file and can render the data models in useful ways.  The Newt code generator can render the SQL and configuration for Postgres+PostgREST. Newt's code generator can render Mustache templates too. Between the SQL and Mustache temples you have the basic CRUD-L[^12] operations for managing data covered. The off the self software, Newt generator, router and temple web service gives you the core features in many LAS application.
+
+Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal, WordPress, or Islandora. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use a software like Drupal or Invenio RDM.
+
+Newt applications are well suited to interacting with other applications that provide a JSON API. The JSON web API allows Newt to treat them as a JSON data source. A JSON data source can easily be run through a pipeline. Many LAS applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach. You would only meed to provide a proxy to those services on localhost, write your Newt YAML file and purhaps enhance some SQL or Mustache templates generated by Newt. Similar you can integrate external services too. E.g. ORCID, ROR, CrossRef, DataCite, Pub Med Central to name a few.
 
 [^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
@@ -16,9 +34,10 @@ Newt applications are well suited to interacting with other applications that pr
 A Newt application encourages the following.
 
 - preference for "off the shelf" over writing new code
-- use a database management system for modeling and managing your data
+- model your data simply
+- use a database management system for managing your data
 - prefer software that can function as a JSON data source
-- data transformation (if needed) is provided as a light weight web service
+- transformation data representations (if needed) using a light weight web service
 - code generation where appropriate
 
 In 2024 the first three can be provided by off the self software mentioned previously. Newt provides a few tools to fill in the gaps.
