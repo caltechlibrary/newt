@@ -21,7 +21,7 @@ templates
 
 ## The applications property
 
-The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. This property lets you override the default settings of the programs. It also allows for setting aliases for off the shelf services that are required by your Newt based project. The applications property may hold
+The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
 newtrouter
 : this containes configuration for the Newt Router, i.e. port and htdocs
@@ -44,7 +44,7 @@ namespace
 : (newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
 
 port
-: (all) default is This port number the Newt web services uses to listen for request on localhost
+: (all) Port number to used for Newt web service running on localhost
 
 htdocs
 : (newtrouter) Directory that holds your application's static content
@@ -153,27 +153,16 @@ Newt may add additional types in the future.
 ## Example Newt YAML for router and code generator
 
 ```yaml
-application:
-  port: 8011
-  htdocs: htdocs
-  metadata:
-    cff-version: 1.2.0
-    message: Demo of Newt YAML file
-    type: software
-    title: Newt a faster way to build metadata curation applications
-    abstract: |
-      This is a demonstation of a YAML that can generate a simple
-      application to manage people and groups
-    version: 0.0.0
-    status: concept
-    authors:
-      - family-names: Doiel
-        given-names: R. S.
-        orcid: "https://orcid.org/0000-0003-0900-6903"
-    keywords:
-      - demo
-      - newt
-      - rapid application development
+applications:
+  newtgenerator:
+    namespace: people # E.g. "people" Namespace to use generating Postgres SQL
+  newtrouter:
+    port: 8011 # Port number for Newt Router
+    htdocs: htdocs # Path to static content directory if required
+  newtmustache:
+    port: 8012 # Port number for Newt Mustache 
+  #options:
+    # name value pairs used for alaising strings in routes, models, and templates 
   environment:
     - DB_USER
     - DB_PASSWORD
@@ -319,8 +308,9 @@ The template objects are used by Newt Mustache template engine. If you're not us
 Example of newtmustache YAML:
 
 ```yaml
-application:
-    port: 3032
+applications:
+  newtmustache:
+    port: 8012
 templates:
   - request: GET /hello/{name}
     template: testdata/simple.mustache
