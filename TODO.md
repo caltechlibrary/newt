@@ -7,14 +7,16 @@
 
 ## Next
 
-- [ ] Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
-- [ ] Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
-  - [ ] Using a combined file would make it easy to generate startup scripts or systemd configurations
-- [ ] Decide what is logged by default for Newt Mustache and Newt Router
-- [ ] Decide what is logged in "debug" or "verbose" model by Newt Mustache and Newt Router
+- [ ] Nail down the second prototype YAML syntax
+- [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
+- [X] (rethought the application concept in favor of a single YAML file) Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
+- [X] (one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
+  - [X] (future prototype can do OS level suggested conf files) Using a combined file would make it easy to generate startup scripts or systemd configurations
+- [X] Decide what is logged by default for Newt Mustache and Newt Router
+- [X] Decide what is logged in "debug" or "verbose" model by Newt Mustache and Newt Router
 - [ ] Generate SQL confirming to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentation)
-- [ ] Writing the URL for a localhost service can be tedious and obscure what is happening, create an example where you use a environment variable or application option to express the service name to a variable that can then be reference in the URL pattern
-- [x] Adopt GitHub's YAML Issue Syntax for describing models
+- [X] (options and environment can solve this) Writing the URL for a localhost service can be tedious and obscure what is happening, create an example where you use a environment variable or application option to express the service name to a variable that can then be reference in the URL pattern
+- [X] Adopt GitHub's YAML Issue Syntax for describing models
   - [x] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
   - [x] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
 - [x] Present at Code4Lib meetup, July 14, 2023
