@@ -21,7 +21,7 @@ import (
 // Config holds a configuration for Newt for the data router and code generator.
 type Config struct {
 	// Application holds the application specific settings and metadata
-	Application *Application `json:"application,omitempty" yaml:"application"`
+	Applications map[string]interface{} `json:"applications,omitempty" yaml:"applications"`
 
 	// Models holds a list of data models. It is used by
 	// both the data router and code generator. 
