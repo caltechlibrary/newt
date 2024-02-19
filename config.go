@@ -21,7 +21,7 @@ import (
 // Config holds a configuration for Newt for the data router and code generator.
 type Config struct {
 	// Application holds the application specific settings and metadata
-	Applications map[string]interface{} `json:"applications,omitempty" yaml:"applications"`
+	Applications *Applications `json:"applications,omitempty" yaml:"applications"`
 
 	// Models holds a list of data models. It is used by
 	// both the data router and code generator. 
@@ -32,8 +32,27 @@ type Config struct {
 	Routes []*NewtRoute `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
-// Application holds the information for the runtime of the application
-// as well as the application's metadata.
+// Applications holds the runtime information for newt router, generator,
+// template engine.
+type Applications struct {
+  // Newt Router runtime config 
+	NewtRouter *Application `json:"newtrouter,omitempty" yaml:"newtrouter"`
+
+  // Newt Mustache runtime config 
+	NewtMustache *Application `json:"newtmustache,omitempty" yaml:"newtmustache"`
+
+  // Newt Generator runtime config 
+  NewtGenerator *Application `json:"newtgenerator,omitempty" yaml:"newtgenerator"`
+
+	// Environment holds a list of OS environment variables that can be made
+	// available to the web services.
+	Environment []string `json:"enviroment,omitempty" yaml:"enviroment"`
+
+	// Options is a map of name to string values
+  Options map[string] string `json:"options,omitempty" yaml:"options"`
+}
+
+// Application implements runtime config for Newt programs
 type Application struct {
 	// Namespace holds the Postgres Schema name It is used to generate
 	// a setup.sql file using the -pg-setup option in newt cli.
@@ -45,17 +64,6 @@ type Application struct {
 	// Htdocs holds any static files you want to make available through
 	// Newt router.
 	Htdocs string `json:"htdocs,omitempty" yaml:"htdocs,omitempty"`
-
-	// Metadata holds the metadata about the app in a CITATION.cff compatible format
-	Metadata map[string]interface{} `json:"metadata,omitempty" yaml:"metadata"`
-
-	// CittionCff holds a path to the CITATION.cff file, this is read in and populates
-	// .metadata object.
-	CitationCff string `json:"citation_cff,omitempty" yaml:"citation_cff"`
-
-	// Environment holds a list of OS environment variables that can be made
-	// available to the web services.
-	Environment []string `json:"enviroment,omitempty" yaml:"enviroment"`
 }
 
 
