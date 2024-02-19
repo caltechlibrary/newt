@@ -3,7 +3,7 @@
 
 Newt is an experimental set of tools for rapid application development. More specifically Newt can build metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAS). Newt makes creating these type of applications easier. 
 
-How does Newt do that? Newt takes a service oriented architecture to assembling web applications. This allows Newt to do less while making it easier for you to integrate off the shelf software to compose your application.
+How does Newt do that? Newt implements a service oriented architecture to assemble web applications. This allows Newt to do less while making it easier for you to integrate off the shelf software to compose your application.
 
 You can think of a web application as a sequence of requests and responses. In a service oriented architecture we take advantage of that concept but enhance the model by allowing one web service to make a request from another. Typically when a web browser contacts your application one of two things will happen. Your app may know the answer and hand back the result. With the service oriented architecture your application has another option. Your application can contact to another service and use that result to answer the request from the web browser. Newt makes this easy by providing a data router. Unlike setting up a proxy relationship in Apache or NGINX or relying on a complicated set of nested containers Newt provides a pipeline[^11]. Newt's pipeline is expressed in YAML. The last service completed hands be the result that Newt Router will return to the web browser.
 
