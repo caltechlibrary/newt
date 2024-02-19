@@ -23,6 +23,8 @@
 
 ## Someday, maybe
 
+- [ ] seeing the data past thru a pipeline will be an important part in debugging problems. Newt Inspector could adress that as a pass thru web service that output debugging info to the log output.
+- [ ] An OCFL service would allow Newt to support building repository like applications. U. C. Santa Barbara has some Go packages related to this.
 - [ ] Newt should support development with SQLite 3 databases
   - [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server
   - [ ] Should a write a newtsqlite service?
