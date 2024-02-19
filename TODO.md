@@ -8,6 +8,7 @@
 ## Next
 
 - [ ] Nail down the second prototype YAML syntax
+- [ ] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go coommand wraps govet, gofmt, etc. This will be convenient for development
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
 - [X] (rethought the application concept in favor of a single YAML file) Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
 - [X] (one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
@@ -21,7 +22,8 @@
   - [x] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
 - [x] Present at Code4Lib meetup, July 14, 2023
 - [ ] Demo second prototype for DLD developer group, newt-presentation2.md
-- [x] Create birds demo for 2nd Prototype3(using Postgres+PostgREST, Newt Router and Newt Mustache)
+- [ ] Create birds demo for 2nd Prototype (using Postgres+PostgREST, Newt Router and Newt Mustache)
+- [ ] Create postcards demo, armchair archive example
 
 ## Someday, maybe
 
