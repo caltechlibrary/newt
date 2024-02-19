@@ -1,45 +1,54 @@
 
 # Newt YAML syntax
 
-Newt programs are configured in YAML files. Newt programs may focus on some properties and ignore others. The interpretation is specific to the program.
+Newt is configured in a YAML file. A Newt program may focus on some properties and ignore others. What is described below is the complete YAML syntax use in a Newt project that uses all of the Newt programs.
+
+## Top level properties
 
 These are the top level properties in YAML files.
 
-application
-: (optional: newtrouter, newtgenerator, newtmustache) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
+applications
+: (optional) holds the run time configuration used by the Newt applications.
 
 models
-: (optional: newtrouter, newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
+: (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
 
 routes
-: (optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
+: (required by newtrouter) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 templates
-: (optional: newtmustache)
+: (required by newtmustache)
 
-## the "application" property
+## The applications property
 
-The application properties are optional. Some maybe set via command line. The the Newt application manual pages.
+The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. This property lets you override the default settings of the programs. It also allows for setting aliases for off the shelf services that are required by your Newt based project. The applications property may hold
 
-namespace
-: (optional: newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
+newtrouter
+: this containes configuration for the Newt Router, i.e. port and htdocs
 
-port
-: (optional: newtrouter, newtmustache) default is This port number the Newt web services uses to listen for request on localhost
+newtgenerator
+: this contains configuration for the Newt Generator, e.g. port, namespace
 
-htdocs
-: (optional: newtrouter only) Directory that holds your application's static content
+newtmustache
+: this contains configuration for Newt Mustache, i.e. port
 
-metadata
-: (optional) This holds metadata about your application using the [CITATION.cff](https://citation-file-format.github.io/) YAML syntax under metadata.
+options
+: holds key value pairs of which can be referenced in the values of models, routes and templates.
 
 environment
 : (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
-The fifth attribute in application is special. It can be used in instead of `metadata`. If you maintain a CITATION.cff file you can point to it to avoid maintaining it in two places. When the Newt router or code generated is started up it will copy the contents into the `metadata` property.
+### Configuring Newt programs
 
-citation
-: (optional) This points at an file (e.g. CITATION.cff). It is used to populate the metadata property at startup
+namespace
+: (newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
+
+port
+: (all) default is This port number the Newt web services uses to listen for request on localhost
+
+htdocs
+: (newtrouter) Directory that holds your application's static content
+
 
 ## the "routes" property
 
