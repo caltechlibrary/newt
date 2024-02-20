@@ -27,9 +27,10 @@ author: "R. S. Doiel"
 
 # DESCRIPTION
 
-**{app_name}** is an application runner. For each service defined in a Newt YAML file
-the service will be started. This lets you bring up the Newt Router and Newt Mustache
-up as one service.
+**{app_name}** is an application runner. If both Newt Router and Mustache are
+defined in the YAML_CONFIG_FILE then **{app_name}** will run them each on their
+own port. This allows you to have your Newt programs under one process which can
+be convient during development.
 
 # OPTIONS
 

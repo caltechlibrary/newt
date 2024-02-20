@@ -27,9 +27,11 @@
 <h1 id="synopsis">SYNOPSIS</h1>
 <p>newt <a href="#options">OPTIONS</a> YAML_CONFIG_FILE</p>
 <h1 id="description">DESCRIPTION</h1>
-<p><strong>newt</strong> is an application runner. For each service
-defined in a Newt YAML file the service will be started. This lets you
-bring up the Newt Router and Newt Mustache up as one service.</p>
+<p><strong>newt</strong> is an application runner. If both Newt Router
+and Mustache are defined in the YAML_CONFIG_FILE then
+<strong>newt</strong> will run them each on their own port. This allows
+you to have your Newt programs under one process which can be convient
+during development.</p>
 <h1 id="options">OPTIONS</h1>
 <p>The following options are supported by <strong>newt</strong>.</p>
 <dl>

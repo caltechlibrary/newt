@@ -1,5 +1,5 @@
 ---
-title: "newt(1) user manual | 0.0.7-dev f7a98be"
+title: "newt(1) user manual | 0.0.7-dev 8ddec82"
 pubDate: 2024-02-20
 author: "R. S. Doiel"
 ---
@@ -14,9 +14,10 @@ newt [OPTIONS] YAML_CONFIG_FILE
 
 # DESCRIPTION
 
-**newt** is an application runner. For each service defined in a Newt YAML file
-the service will be started. This lets you bring up the Newt Router and Newt Mustache
-up as one service.
+**newt** is an application runner. If both Newt Router and Mustache are
+defined in the YAML_CONFIG_FILE then **newt** will run them each on their
+own port. This allows you to have your Newt programs under one process which can
+be convient during development.
 
 # OPTIONS
 

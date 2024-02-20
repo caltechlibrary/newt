@@ -1,0 +1,138 @@
+#
+# cold - controlled object list device
+#
+applications:
+  newtrouter:
+    port: 8001
+    htdocs: htdocs
+  newtmustache:
+    port: 8002
+  newtgenerator:
+    namespace: cold
+  environment:
+    - DB_USER
+    - DB_PASSWORD
+    - DB_HOST
+models:
+  - id: people
+    name: People Profiles
+    description: |
+      This models a curated set of profiles of organization members
+      with publications in our repositories
+    body:
+      - id: clpid
+        type: input
+        attributes:
+          label: A unique person id, no spaces, alpha numeric
+          placeholder: ex. jane-do-007
+        validations:
+          required: true
+      - id: display_name
+        type: input
+        attributes:
+          label: (optional) A person display name, defaults to given/lived name and family name
+          placeholder: ex. J. Doe, journalist
+      - id: sort_name
+        type: input
+        attributes:
+          label: (required) A person's for sorting purposes, defaults to family name, lived name
+          placeholder: ex. Doe, Jane
+        validations:
+          required: true
+      - id: lived_name
+        type: input
+        attributes:
+          label: (requested) A person's given or lived name
+          placeholder: ex. Jane
+      - id: family_name
+        type: input
+        attributes:
+          label: (request) A person's family name
+          placeholder: ex. Jones
+      - id: orcid
+        type: input
+        attributes:
+          label: (optional) A person's ORCID identifier
+          placeholder: ex. 0000-0000-0000-0000
+        validations:
+          pattern: "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
+      - id: ror
+        type: input
+        attributes:
+          label: (optional) A person's ROR identifing their affiliation
+      - id: email
+        type: "input[type=email]"
+        attributes:
+          label: (optional) A person public email address
+      - id: website
+        type: "input[type=url]"
+        attributes:
+          label: (optional) A person's public website
+          placeholder: ex. https://jane.doe.example.org
+routes:
+  - id: create_person
+    description: Create new person profile
+    request: POST /person
+    pipeline:
+      - id: pg_create_person
+        service: POST http://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people
+        description: This will generate a new user in the database
+      - id: tmpl_create_person
+        service: POST http://localhost:8002/create_peron.tmpl
+        description: |
+          This sends the results of creating a person to the template engine
+  - id: read_person
+    desciption: Read (retrieve) a person's profile
+    request: GET /person/{{clpid}}
+    pipeline:
+      - id: pg_get_person
+        service: GET http://{{DB_USER}}@{{DB_HOST}}:3000/person/{{clpid}}
+        description: Retrieve a person's profile
+      - id: tmpl_get_person
+        service: POST http:localhost:8002/read_person.tmpl
+        description: |
+          Render a person's profile
+  - id: update_person
+    description: Update person's profile
+    request: PUT /person/{{people_id}}
+    pipeline:
+        - id: pg_update_person
+          service: PUT http://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people
+          description: This will update a person record in the database
+        - id: tmpl_update_person
+          service: POST http://localhost:8002/update_person.tmpl
+          description: |
+            This sends the results of updating a person to the template engine
+  - id: remove_person
+    description: Remove person's profile
+    request: DELETE /person/{{people_id}}
+    pipeline:
+      - id: pg_remove_person
+        service: DELETE http://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people_id}}
+        description: Remove the person for the database
+      - id: tmpl_remove_person
+        service: POST http://localhost:8002/delete_person.tmpl
+        description: |
+          Indicate the success of removing a person from the database.
+  - id: list_people
+    description: List people profiles available
+    request: GET /people
+    pipeline:
+      - id: pg_list_people
+        service: GET http://{{DB_HOST}}@{{DB_HOST}}:3000/people
+        description: Retrieve a list of all people profiles available
+      - id: tmpl_list_people
+        service: POST http://localhost:8002/list_people.tmpl
+        discription: format a browsable people list linking to individual profiles
+templates:
+  - request: POST /create_person.tmpl
+    template: create_person.mustache
+  - request: POST /read_person.tmpl
+    template: read_person.tmpl
+  - request: POST /update_person.tmpl
+    template: update_person.mustache
+  - request: POST /delete_person.tmpl
+    template: delete_person.mustache
+  - request: POST /list_people.tmpl
+    template: list_people.mustache
+
