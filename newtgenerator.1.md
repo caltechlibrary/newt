@@ -1,6 +1,6 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7-dev af85d0b"
-pubDate: 2024-02-17
+title: "newtgenerator(1) user manual | 0.0.7-dev 41cddc4"
+pubDate: 2024-02-20
 author: "R. S. Doiel"
 ---
 
@@ -10,11 +10,15 @@ newtgenerator
 
 # SYNOPSIS
 
-newtgenerator [CONFIG_FILE]
+newtgenerator CONFIG_FILE GENERATOR [PARAMS]
 
 # DESCRIPTION
 
-**newtgenerator** is a command line tool for generate SQL suitable to bootstrap a microservice implemented with PostgREST and Postgres.  It uses the same YAML file as the Newt web service using the namespace and models attributes to render table structure, views and funcitons to support basic CRUD and list operations in SQL.
+**newtgenerator** is a command line tool for generate SQL and configuration files used in bootstrapping a web service. Currently the following generatation is supported.
+
+- Postgres SQL for use with PostgREST
+- PostgREST configuration file
+- Mustache templates for use with Newt Mustache
 
 **newtgenerator**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtgenerator** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
 
@@ -29,127 +33,165 @@ newtgenerator [CONFIG_FILE]
 -version
 : display version
 
--dry-run
-: Load YAML configuration and report any errors found
+# CONFIG_FILE
 
-Newt has some experimental options to render Postgres dialect of
-SQL from a YAML file containing models. These options will render SQL
-suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based project.
+**newtgenerator** uses the Newt YAML syntax. What follows are those properties of specific
+relevance to **newtgenerator** configuration.
 
--setup
-: This renders a SQL document suitable for bootstraping Postgres+PostgREST access
+### Top level properties
 
--models
-: This renders a SQL file to bootstrap modeling data with Postgres+PostgREST
+These are the top level properties in YAML files.
 
--models-test
-: This renders a SQL file to bootstrap writing SQL tests for Postgres+PostgREST
-
-
-# CONFIGURATION
-
-**newtgenerator** looks for two attributes in the Newt YAML file.
-
-namespace
-: This indicates the Postgres schema associated with your application
+applications
+: (optional) holds the run time configuration used by the Newt applications.
 
 models
-: This is a list of models that map to tables in your Postgres schema/database.
+: (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
 
-The **models** attribute holds a list of models expressed in Newt's data model DSL. Models are optional but can be used to by Newt to generate bootstrap SQL code for use with PostgREST+Postgres. This is very experimental (2024) and likely to change as usage of Newt increases. Each model has a `model` attribute holding the models name (conforming to a variable name found in langauges like JavaScript, Python, or Lua). Each model also contains a `var` attribute which is a list of key/value pairs. The key/value pairs are made from a variable name (key) and type definition (value). The type definitions are mapped to suitable Postgres SQL schema when generating table definitions. Example models used for groups and people metadata. The asterix at the end of a type string indicates this is to be used as a key when looking up the object.
+### The applications property
+
+newtgenerator
+: this contains configuration for the Newt Generator, e.g. port, namespace
+
+options
+: holds key value pairs of which can be referenced in the values of models, routes and templates.
+
+### newtgenerator property
+
+namespace
+: newtgenerator uses this in the SQL generated for setting up Postgres+PostgREST
+
+### the "models" property
+
+Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYTS).
+
+### a model object
+
+The model object is based largely on GitHub YAML issue template syntax with a couple extra properties that are Newt enhancements.
+
+id
+: (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^21]
+
+The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYTS)
+
+name
+: (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
+
+description
+: (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
+
+body
+: (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
+
+#### a model's input types
+
+This is based on GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
+
+id
+: (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
+
+type
+: (required) Identifies the type of elements (input, textarea, markdown, checkbox, dropdown).
+
+attributes
+: (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML.
+
+validations
+: (optional, encouraged) A set of key-value pairs setting constraints of the element content. E.g. required, regexp properties, validation rule provided with certain identifiers (e.g. DOI, ROR, ORCID).
+
+#### input types
+
+Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^23]. They include
+
+markdown
+: (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
+
+textarea
+: (models only) A multi-line text field
+
+input
+: A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `input[type=data]` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
+
+dropdown
+: A dropdown menu. In SQL this could render as an enumerated type. In HTML it would render as a drop down list
+
+checkboxes
+: A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
+
+Newt may add additional types in the future.
+
+[^21]: variable numbers must start with a letter, may contain numbers but not spaces or punctuation except the underscore
+
+[^22]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>, 
+
+[^23]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
+
+# GENERATOR
+
+Currently three types of generators are being implemented in the 2nd Newt Protoype. This parameter
+lets you set which one you are using. It is required.
+
+# PARAMS
+
+Some generators may need additional information. This is true of the Mustache template generator.
+This is where you would provide those parameters. The Postgres and PostgREST generators do not
+currently take any parameters.
+
+# EXAMPLES
 
 ~~~yaml
-namespace: groups_and_people
+applications:
+  newtgenerator:
+    namespace: people # E.g. "people" Namespace to use generating Postgres SQL
 models:
-- model: cl_person
-  var:
-    family_name: String
-    given_name: String
-    orcid: ORCID
-    ror: ROR
-    created: Timestamp
-    updated: Timestamp
-- model: cl_group
-  var:
-    cl_group_id: String*
-    short_name: String
-    display_name: String
-    description: Text
-    contact: EMail
-    created: Timestamp
-    updated: Timestamp
-    founded: Date 2006-01-02
-    disbanded: Date 2006-01-02
-    approx_founding: Boolean
-    active: Boolean
-    website: URL
-    ror: ROR
-    grid: String
-    isni: ISNI
-    ringold: String
-    viaf: String
+  - id: people
+    name: People Profiles
+    description: |
+      This models a curated set of profiles of colleagues
+    body:
+      - id: people_id
+        type: input
+        attributes:
+          label: A unique person id, no spaces, alpha numeric
+          placeholder: ex. jane-do-007
+        validations:
+          required: true
+      - id: display_name
+        type: input
+        attributes:
+          label: (optional) A person display name
+          placeholder: ex. J. Doe, journalist
+      - id: family_name
+        type: input
+        attributes:
+          label: (required) A person's family name or singular when only one name exists
+          placeholder: ex. Doe
+        validations:
+          required: true
+      - id: given_name
+        type: input
+        attributes:
+          label: (optional, encouraged) A person's given name
+          placeholder: ex. Jane
+      - id: orcid
+        type: input
+        attributes:
+          label: (optional) A person's ORCID identifier
+          placeholder: ex. 0000-0000-0000-0000
+        validations:
+          pattern: "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
+      - id: ror
+        type: input
+        attributes:
+          label: (optional) A person's ROR identifing their affiliation
+      - id: email
+        type: "input[type=email]"
+        attributes:
+          label: (optional) A person public email address
+      - id: website
+        type: "input[type=url]"
+        attributes:
+          label: (optional) A person's public website
+          placeholder: ex. https://jane.doe.example.org
 ~~~
-
-# Defining variables
-
-Each model can have its own associated set of variables. Variables are "typed".  The code for type definitions includes validation. When a variable is detected in a request path or form data it is vetted using it's associated type. Only if the variables past validation are they allowed to be used to assemble a request to a JSON data source. 
-
-Variables are defined in the YAML "var" attribute. Here's an example "var" definition defining three form variables for a route. The variable names are "bird", "place" and "sighted" with the types "String", "String" and "Date". The "bird" variable is also a "key" for the table so has its type end in an asterix.
-
-~~~
-var:
-  bird: String*
-  place: String
-  sighted: Date 2006-01-02
-~~~
-
-# Variable types
-
-String
-: Any sequence of characters. If the variabe is embedded in a path then "/" will be used to delimited path parts and would not be passed into the variables value.
-
-Date
-: (default) A year, month, day string like 2006-01-02
-
-Date 2006
-: A four digit year (e.g. 2023)
-
-Date 01
-: A two digit month (e.g. "01" for January, "10" for October)
-
-Date 02
-: A two digit day (e.g. "01" for the first, "11" for the eleventh)
-
-Basename
-: A file's basename (filename without an extension)
-
-Extname
-: A file's extension (e.g. ".html", ".txt", ".rss", ".js")
-
-Isbn10
-: An ten digit ISBN
-
-Isbn13
-: A thirteen digit ISBN
-
-Isbn
-: An ISBN (either 10 ro 13 digit)
-
-Issn
-: An ISSN
-
-DOI
-: A DOI (digital object identifier)
-
-Isni
-: An ISNI
-
-ORCID
-: An ORCID identifier
- 
-NOTE: The current names associated with types will likely change
-as the prototype **newtgenerator** evolves. It is planned for them to be
-stable if and when we get to a v1 release (e.g. when we're out of the
-prototype phase).
-
 

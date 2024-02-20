@@ -82,53 +82,89 @@ used is based on Go package <https://github.com/cbroglie/mustache>.
 
 # YAML_CONFIG_FILE
 
-port
-: (integer, defaults to 3032) the port number the service should listen on
+This is a list of the Newt YAML syntax relavent to **{app_name}**.
+
+## Top level properties
+
+These are the top level properties in YAML files.
+
+applications
+: (optional) holds the run time configuration used by the Newt applications.
 
 templates
-: (list of template paths and options)
+: (required by newtmustache)
 
-## a template description
+## The applications property
 
-An individual template description has four properties.
+The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
-request
-: (string, required) This is the METHOD and PATH that `+"`"+`{app_name}`+"`"+` will listen for to map this template. If no HTTP method is indicated a POST will be assumed to be the target. Go 1.22 HTTP handler patterns's variables maybe used to overwrite attributes in the submitted JSON Object. They are applied after those in `+"`"+`.options`+"`"+` have been applied.
-
-template
-: (string, required) This is the path to the primary Mustache template for this request. The source is read and associated with this request signature.
+newtmustache
+: this contains configuration for Newt Mustache, i.e. port
 
 options
-: (object, optional) These are additional attributes that can be merged into the JSON processed by the Mustache template. These are merge before any variables taken from the URL path pattern are merge.
+: holds key value pairs of which can be referenced in the values of models, routes and templates.
 
-debug
-: (bool, optional) If set to true then provide verbose log output for this request route
+### newtmustache settings
+
+port
+: (all) Port number to used for Newt web service running on localhost
+
+### the "routes" property
+
+Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.
+
+## templates property
+
+This property is used by Newt Mustache. It is ignore by Newt router and code generator.
+
+templates
+: (optional: newtmustache) this holds a list of template objects
+
+### template object model
+
+The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
+
+`+"`"+`request [METHOD ][PATH]`+"`"+`
+: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
+
+`+"`"+`template`+"`"+`
+: (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
+
+`+"`"+`partials`+"`"+`
+: (optional, newtmustache only) A list of paths to partial Mustache templates used by `+"`"+`.template`+"`"+`.
+
+`+"`"+`options`+"`"+`
+: (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template
+
+`+"`"+`debug`+"`"+`
+: (optional) this turns on debugging output for this template
 
 # EXAMPLES
 
-## YAML configuration
-
-This example shows fix different template options. The first three applies a custom `+"`"+`page.tmpl`+"`"+` in different ways. In the last two the default Mustache template is setup.
+Example of newtmustache YAML:
 
 ~~~yaml
-port: 3032
+applications:
+  newtmustache:
+    port: 8012
 templates:
-  - request: "POST /custom_page"
-    template: page.tmpl
+  - request: GET /hello/{name}
+    template: testdata/simple.mustache
+  - request: GET /hello
+    template: testdata/simple.mustache
     options:
-      title: This is the custom template with this title
-  - request: "POST /custom_page_with_title/{title}"
-    template: page.tmpl
+      name: Universe
+  - request: GET /hi/{name}
+    template: testdata/hithere.html
+    partials:
+      - testdata/name.mustache
+    debug: true
+  - request: GET /hi
+    template: testdata/hithere.html
+    partials:
+      - testdata/name.mustache
     options:
-      title: This title is overwritten by the one in the request
-  - request: "POST /custom_page_include"
-    template: page.tmpl
-  - request: "POST /default_html5"
-    options:
-      title: A Page using the default template
-  - request: "POST /default_html5_with_title/{title}"
-    options:
-      title: This title is replaced by the title in the URL
+      name: Universe
 ~~~
 
 `
@@ -152,7 +188,7 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "display version")
 	
 	// App option(s)
-	port, timeout, verbose := 8040, 3, false
+	port, timeout, verbose := 0, 0, false
 	flag.IntVar(&port, "port", port, fmt.Sprintf("set the port %s will listen on", appName))
 	flag.IntVar(&timeout, "timeout", timeout, "timeout for requests")
 	flag.BoolVar(&verbose, "verbose", verbose, "display template debugging and request information")

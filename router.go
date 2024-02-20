@@ -6,28 +6,20 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
-
-	// 3rd Party packages
-	"gopkg.in/yaml.v3"
 )
 
 // NewtRouter is used to implement the Newt Router
 type NewtRouter struct {
 	// Port is the port the router will listen on
-	Port string `json:"port,omitempty" yaml:"port"`
+	Port string 
 
 	// Routes holds a list of route
-	Routes []*NewtRoute `json:"routes,omitempty" yaml:"routes"`
+	Routes []*NewtRoute
 
 	// Htdocs holds the location of a the static files if used
-	Htdocs string `json:"htdocs,omitempty" yaml:"htdocs"`
-
-	// Environment holds those environment values propogates at startup.
-	// these are mapped into each route's "options"
-	Environment []string `json:"environment,omitempty" yaml:"environment"`
+	Htdocs string
 }
 
 // This holds the route definitions, e.g. request, description, pipeline, debug
@@ -82,7 +74,7 @@ func (nr *NewtRoute) ResolveRoute() error {
 
 // Request a service, sending any import if provided.
 // Returns a byte splice of results and an error value
-func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) ([]byte, string, error) {
+func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) ([]byte, int, string, error) {
 	// The default method for a service is POST, it can be overwritten by what is supplied in the .Service's pattern.
 	method := http.MethodPost
 	uri := s.Service
@@ -110,14 +102,14 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 	// We should now have enough information to make our request.
 	req, err := http.NewRequest(method, uri, bytes.NewReader(input))
 	if err != nil {
-		return nil, "", err
+		return nil, http.StatusInternalServerError, "", err
 	}
 	client := http.Client{
 		Timeout: timeout,
 	}
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, "", err
+		return nil, response.StatusCode, "", err
 	}
 	statusText := http.StatusText(response.StatusCode)
 	if response.StatusCode < http.StatusOK || response.StatusCode > http.StatusNoContent {
@@ -125,7 +117,7 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 		if debug {
 			log.Printf("%s", err)
 		}
-		return nil, "", err
+		return nil, response.StatusCode, "", err
 	}
 	contentType := ""
 	if response.Header != nil {
@@ -136,7 +128,7 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 		if debug {
 			log.Printf("failed to read response body %s %s %d %s, %s", method, uri, response.StatusCode, statusText, err)
 		}
-		return nil, "", err
+		return nil, response.StatusCode, "", err
 	}
 	if contentType == "" {
 		contentType = http.DetectContentType(data)
@@ -145,10 +137,10 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 		l := len(data)
 		log.Printf("%s %s returning %s, %d byte(s)", method, uri, contentType, l)
 	}
-	return data, contentType, nil
+	return data, response.StatusCode, contentType, nil
 }
 
-func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]string) ([]byte, string, error) {
+func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]string) ([]byte, int, string, error) {
 	var (
 		input  []byte
 		output []byte
@@ -158,18 +150,19 @@ func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map
 		log.Printf("pipeline environment %+v", env)
 	}
 	contentType := ""
+	statusCode := http.StatusOK
 	for i, service := range nr.Pipeline {
-		output, contentType, err = service.MakeRequest(env, input, nr.Debug)
+		output, statusCode, contentType, err = service.MakeRequest(env, input, nr.Debug)
 		if err != nil {
 			if nr.Debug {
 				log.Printf("service %d, %s error %s", i, service.Service, err)
 			}
 			// We stop processing there was a problem.
-			return nil, contentType, err
+			return nil, statusCode, contentType, err
 		}
 		input = output
 	}
-	return output, contentType, nil
+	return output, statusCode, contentType, nil
 }
 
 // ResolvePattern takes the request Pattern and pulls out the values from the actual request.
@@ -196,18 +189,14 @@ func (nr *NewtRoute) Handler(w http.ResponseWriter, r *http.Request) {
 	env := nr.ResolvePattern(r)
 
 	// Build now we can run our pipeline and get back some data
-	data, contentType, err := nr.RunPipeline(w, r, env)
+	data, statusCode, contentType, err := nr.RunPipeline(w, r, env)
 	if err != nil {
 		// FIXME: should return Error page
 		if nr.Debug {
 			log.Printf("pipeline failed for route %s, %s", nr.Pattern, err)
 		}
-		// Need to decide which http status is right
-		// 500 Internel Server Error
-		// 501 Not implemented
-		// 503 Service Unavailable
-		// 504 Gateway Timeout
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		// Bubble up any HTTP error codes
+		http.Error(w, http.StatusText(statusCode), statusCode)
 		return
 	}
 	if contentType == "" {
@@ -223,57 +212,32 @@ func (nr *NewtRoute) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewNewtRouter creates a newt router suprisingly
-func NewNewtRouter(fName string, cfg *Config) (*NewtRouter, error) {
-	rtr := &NewtRouter{}
-	if fName == "" {
-		return rtr, fmt.Errorf("missing configuration file")
+func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
+	router := &NewtRouter{
+		Routes: cfg.Routes,
 	}
-	src, err := os.ReadFile(fName)
-	if err != nil {
-		return nil, err
+	if cfg.Applications.NewtRouter.Htdocs != "" {
+		router.Htdocs = cfg.Applications.NewtRouter.Htdocs
 	}
-	err = yaml.Unmarshal(src, &rtr)
-	if err != nil {
-		return nil, err
+	if cfg.Applications.NewtRouter.Port != 0 {
+		router.Port = fmt.Sprintf(":%d", cfg.Applications.NewtRouter.Port)
 	}
-	env := map[string]string{}
-	if cfg.Application != nil {
-		if cfg.Application.Port != 0 {
-			rtr.Port = fmt.Sprintf(":%d", cfg.Application.Port)
-		}
-		// Populate an env from our allowed environment variables
-		if len(cfg.Application.Environment) > 0 {
-			for _, envar := range cfg.Application.Environment {
-				val := os.Getenv(envar)
-				if val != "" {
-					env[envar] = val
-				}
-			}
-		}
-		if len(env) > 0 {
-			for _, route := range rtr.Routes {
-				// Copy in the environment values without overwriting defined options.
-				for k, v := range env {
-					if _, conflict := route.Options[k]; !conflict {
-						route.Options[k] = v
-					}
-				}
-			}
-		}
-	}
-	// Prefix the port number with a colon
-	if !strings.HasPrefix(rtr.Port, ":") {
-		rtr.Port = fmt.Sprintf(":%s", rtr.Port)
-	}
-	for _, route := range rtr.Routes {
-		// Map the environment into options if not set
-		for k, v := range env {
-			if _, conflict := route.Options[k]; !conflict {
+	// Populate an env from our allowed environment variables
+	for _, route := range router.Routes {
+		// Copy in the applications options without overwriting the route specific
+		// defined options.  NOTE: Application options have already been resolved
+		// with the environment by cfg.LoadConfig()
+		for k, v := range cfg.Applications.Options {
+			if _, conflict := route.Options[k]; ! conflict {
 				route.Options[k] = v
 			}
 		}
 	}
-	return rtr, nil
+	// Prefix the port number with a colon
+	if !strings.HasPrefix(router.Port, ":") {
+		router.Port = fmt.Sprintf(":%s", router.Port)
+	}
+	return router, nil
 }
 
 // ListenAndServe() runs the router web service

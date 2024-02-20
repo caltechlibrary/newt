@@ -11,20 +11,21 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
-	// 3rd Party Packages
+	// 3rd Party Templates
 	"github.com/cbroglie/mustache"
-	"gopkg.in/yaml.v3"
 )
 
 // NewtMustache defines the `newtmustache` application configuration YAML
 type NewtMustache struct {
-	Port string `json:"port,omitempty" yaml:"port"`
-	Templates []*MustacheBundle `json:"templates,omitempty" yaml:"templates"`
+	Port string
+	Templates []*MustacheTemplate
+	Timeout time.Duration
 }
 
-// MustacheBundle hold the request to template mapping for NewtMustache struct
-type MustacheBundle struct {
+// MustacheTemplate hold the request to template mapping for NewtMustache struct
+type MustacheTemplate struct {
 	// Pattern holds a request pattern, e.g. `POST /blog_post`. If the METHOD is not specified a POST is assumed.
 	// A request is associated with a template to be bundled into
 	// an JSON object. The pattern conforms to Go 1.22 or later's
@@ -57,42 +58,32 @@ type MustacheBundle struct {
 
 // NewNewtMustache create a new NewtMustache struct. If a filename
 // is provided it reads the file and sets things up accordingly.
-func NewNewtMustache(fName string, cfg *Config) (*NewtMustache, error) {
-	nm := &NewtMustache{}
-	if fName == "" {
-		return nm, fmt.Errorf("missing configuration file")
+func NewNewtMustache(cfg *Config) (*NewtMustache, error) {
+	nm := &NewtMustache{
+		Templates: cfg.Templates,
 	}
-	src, err := os.ReadFile(fName)
-	if err != nil {
-		return nil, err
+	if cfg.Applications.NewtMustache.Port != 0 {
+		nm.Port = fmt.Sprintf(":%d", cfg.Applications.NewtMustache.Port)
 	}
-	err = yaml.Unmarshal(src, &nm)
-	if err != nil {
-		return nil, err
-	}
-	if nm.Port == "" && cfg.Application.Port != 0 {
-		nm.Port = fmt.Sprintf(":%d", cfg.Application.Port)
-	}
-	// Prefix the port number with a colon
-	if ! strings.HasPrefix(nm.Port, ":") {
-		nm.Port = fmt.Sprintf(":%s", nm.Port)
+	if cfg.Applications.NewtMustache.Timeout != 0 {
+		nm.Timeout = cfg.Applications.NewtMustache.Timeout * time.Second
 	}
 	return nm, nil
 }
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (mb *MustacheBundle) ResolvePath() error {
+func (mt *MustacheTemplate) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
-	if strings.Contains(mb.Pattern, "{") {
-		if ! strings.Contains(mb.Pattern, "}") {
-			return fmt.Errorf("%q is malformed", mb.Pattern)
+	if strings.Contains(mt.Pattern, "{") {
+		if ! strings.Contains(mt.Pattern, "}") {
+			return fmt.Errorf("%q is malformed", mt.Pattern)
 		}
 		// Record our list of var names so handler can override the object being constructed from a path.
-		mb.Vars = PatternKeys(mb.Pattern)
+		mt.Vars = PatternKeys(mt.Pattern)
 	}
-	if mb.Debug {
-		log.Printf("assigning mb.Pattern -> %q\n", mb.Pattern)
-		log.Printf("vars -> %+v\n", mb.Vars)
+	if mt.Debug {
+		log.Printf("assigning mt.Pattern -> %q\n", mt.Pattern)
+		log.Printf("vars -> %+v\n", mt.Vars)
 	}
 	return nil
 }
@@ -100,16 +91,16 @@ func (mb *MustacheBundle) ResolvePath() error {
 
 // ResolvesTemplate is responsible for reading and parse the template and partials associated with a mapped request.
 // If an error is encountered a error value is returned.
-func (mb *MustacheBundle) ResolveTemplate() error {
-	if mb.Template != "" {
-		if len(mb.Partials) > 0 {
-			if mb.Debug {
+func (mt *MustacheTemplate) ResolveTemplate() error {
+	if mt.Template != "" {
+		if len(mt.Partials) > 0 {
+			if mt.Debug {
 				log.Printf("handling primary and partial templates")
 			}
 			sp := mustache.StaticProvider{}
 			sp.Partials = map[string]string{}
-			for _, fName := range mb.Partials {
-				if mb.Debug {
+			for _, fName := range mt.Partials {
+				if mt.Debug {
 					log.Printf("attempting to read %q", fName)
 				}
 				src, err := os.ReadFile(fName)
@@ -119,10 +110,10 @@ func (mb *MustacheBundle) ResolveTemplate() error {
 				name := strings.TrimSuffix(path.Base(fName), path.Ext(fName))
 				sp.Partials[name] = fmt.Sprintf("%s", src)
 			}
-			if mb.Debug {
-				log.Printf("attempting to parse template with partials %q", mb.Template)
+			if mt.Debug {
+				log.Printf("attempting to parse template with partials %q", mt.Template)
 			}
-			src, err := os.ReadFile(mb.Template)
+			src, err := os.ReadFile(mt.Template)
 			if err != nil {
 				return err
 			}
@@ -131,21 +122,21 @@ func (mb *MustacheBundle) ResolveTemplate() error {
 			if err != nil {
 				return err
 			}
-			mb.Tmpl = tmpl
-			if mb.Debug {
+			mt.Tmpl = tmpl
+			if mt.Debug {
 				log.Printf("templates and partials parsed successfully")
 			}
 			return nil
 		}
-		if mb.Debug {
-			log.Printf("attempting to parse single template %q", mb.Template)
+		if mt.Debug {
+			log.Printf("attempting to parse single template %q", mt.Template)
 		}
-		tmpl, err := mustache.ParseFile(mb.Template)
+		tmpl, err := mustache.ParseFile(mt.Template)
 		if err != nil {
 			return err
 		}
-		mb.Tmpl = tmpl
-		if mb.Debug {
+		mt.Tmpl = tmpl
+		if mt.Debug {
 			log.Printf("templates parsed successfully")
 		}
 		return nil
@@ -154,15 +145,15 @@ func (mb *MustacheBundle) ResolveTemplate() error {
 }
 
 // Handler decodes a the request body and then processes that as a Mustache template.
-func (mb *MustacheBundle) Handler(w http.ResponseWriter, r *http.Request) {
-	if mb.Debug {
+func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
+	if mt.Debug {
 		log.Printf(".Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
 	// FIXME: Think about what it means if a GET, HEAD, PUT, DELETE are to be handled. 
 	obj := map[string]interface{}{}
 	src, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		if mb.Debug {
+		if mt.Debug {
 			log.Printf("failed to read request body, %s\n", err)
 		}
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -173,20 +164,20 @@ func (mb *MustacheBundle) Handler(w http.ResponseWriter, r *http.Request) {
 		dec := json.NewDecoder(bytes.NewBuffer(src))
 		dec.UseNumber()
 		if err := dec.Decode(&obj); err != nil  && err != io.EOF {
-			if mb.Debug {
+			if mt.Debug {
 				log.Printf("failed to decode JSON Response body, %s", err)
 			}
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
-		if mb.Debug {
+		if mt.Debug {
 			log.Printf("obj populated from request body, %+v", obj)
 		}
 	}
 	params := r.URL.Query()
 	if len(params) > 0 {
 		// Let's check if data came in as query paramters and add it to our object.
-		if mb.Debug {
+		if mt.Debug {
 			log.Printf("URL Query parameters -> %+v", params)
 		}
 		for k, v := range params {
@@ -197,66 +188,66 @@ func (mb *MustacheBundle) Handler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		if mb.Debug {
+		if mt.Debug {
 			log.Printf("obj after processing query parameters, %+v", obj)
 		}
 	}
 	// Merge (without overwriting our POST content) in our options into obj
-	if mb.Options != nil {
-		if mb.Debug {
-			log.Printf("options -> %+v\n", mb.Options)
+	if mt.Options != nil {
+		if mt.Debug {
+			log.Printf("options -> %+v\n", mt.Options)
 		}
-		for k, v := range mb.Options {
+		for k, v := range mt.Options {
 			// Options take presidence over POST or GET QUERY parameters.
 			obj[k] = v
 		}
-		if mb.Debug {
+		if mt.Debug {
 			log.Printf("obj after processing options -> %+v", obj)
 		}
 	}
 	// Merge in path values into obj
-	if len(mb.Vars) > 0 {
-		if mb.Debug {
-			log.Printf("varnames -> %+v\n", mb.Vars)
+	if len(mt.Vars) > 0 {
+		if mt.Debug {
+			log.Printf("varnames -> %+v\n", mt.Vars)
 		}
-		for _, varname := range mb.Vars {
+		for _, varname := range mt.Vars {
 			val := r.PathValue(varname)
 			if val != "" {
-				// val presidence over mb.Options
+				// val presidence over mt.Options
 				obj[varname] = val
 			}
 		}
-		if mb.Debug {
+		if mt.Debug {
 			log.Printf("obj after processing varnames -> %+v", obj)
 		}
 	}
 	if obj == nil {
-		if mb.Debug {
+		if mt.Debug {
 			log.Printf("no data attribute defined for template processing")
 		}
 		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
 	// Handle case where some how the service was started before setting up template processing
-	if mb.Tmpl == nil {
+	if mt.Tmpl == nil {
 		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
-	if mb.Debug {
-		log.Printf("mb.Tmpl -> %+v", mb.Tmpl)
+	if mt.Debug {
+		log.Printf("mt.Tmpl -> %+v", mt.Tmpl)
 	}
-	mb.Tmpl.FRender(w, obj)
+	mt.Tmpl.FRender(w, obj)
 }
 
 func (nm *NewtMustache) ListenAndServe() error {
 	mux := http.NewServeMux()
-	for _, mb := range nm.Templates {
-		mux.HandleFunc(mb.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			if mb.Debug {
-				log.Printf("mux.HandleFunc(%q, mb.Handler)", mb.Pattern)
-				log.Printf(".vars -> %+v", mb.Vars)
+	for _, mt := range nm.Templates {
+		mux.HandleFunc(mt.Pattern, func(w http.ResponseWriter, r *http.Request) {
+			if mt.Debug {
+				log.Printf("mux.HandleFunc(%q, mt.Handler)", mt.Pattern)
+				log.Printf(".vars -> %+v", mt.Vars)
 			}
-			mb.Handler(w, r)
+			mt.Handler(w, r)
 		})
 	}
 	// Now create my http server

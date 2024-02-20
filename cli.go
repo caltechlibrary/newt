@@ -11,10 +11,11 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
-func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string, pgSetupSQL bool, pgModelsSQL bool, pgModelsTestSQL bool) int {
+func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
 	const (
 		// These constants are used for exit code. FIXME: look up the POSIX recommendation on exit
 		// codes and adopt those.
@@ -22,21 +23,33 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 		CONFIG
 		GENFAIL
 	)
-	fName := ""
+	fName, target, codeType := "", "", ""
 	if len(args) > 0 {
 		fName = args[0]
+	} else {
+		fmt.Fprintf(eout, "missing YAML configuration file\n")
+		return CONFIG
+	}
+	if len(args) > 1 {
+		target = args[1]
+	} else {
+		fmt.Fprintf(eout, "missing generator name, e.g. postgres, postgrest, mustache\n")
+		return CONFIG
+	}
+	if len(args) > 2 {
+		codeType = args[2]
 	}
 	cfg, err := LoadConfig(fName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
-	generator, err := NewGenerator(fName, cfg)
+	generator, err := NewGenerator(cfg)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
-	if err := generator.Generate(); err != nil {
+	if err := generator.Generate(target, codeType); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return GENFAIL
 	}
@@ -55,12 +68,16 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		WEBSERVICE
 
 		// Default port number for tmplbnld
-		PORT = ":8040"
+		PORT = ":8011"
+		TIMEOUT = 3 * time.Second
 	)
 	// Configure the template bundler webservice
 	fName := ""
 	if len(args) > 0 {
 		fName = args[0]
+	} else {
+		fmt.Fprintf(eout, "missing Newt YAML configuration\n")
+		return CONFIG
 	}
 	// Load the Newt YAML syntax file holding the configuration
 	// and make sure it conforms.
@@ -70,41 +87,55 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		return CONFIG
 	}
 	// Instantiate the specific application with the filename and Config object
-	mb, err := NewNewtMustache(fName, cfg)
+	mt, err := NewNewtMustache(cfg)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
-	if cfg.Application != nil  && cfg.Application.Port != 0 {
-		mb.Port = fmt.Sprintf("%d", port)
+	// If port is not set in the config, set it to the default port.
+	if mt.Port == "" {
+		mt.Port = PORT
 	}
-	if mb.Port == "" {
-		mb.Port = PORT
+	// See if we have a command line option for port to process.
+	if port != 0 {
+		mt.Port = fmt.Sprintf(":%d", port)
 	}
-	// Prefix the port number with a colon
-	if ! strings.HasPrefix(mb.Port, ":") {
-		mb.Port = fmt.Sprintf(":%s", mb.Port)
+	if verbose {
+		fmt.Fprintf(out, "port set to %q\n", mt.Port)
 	}
-
+	// Onelast check to make sure the port number as the colon prefix
+	if ! strings.HasPrefix(mt.Port, ":") {
+		mt.Port = fmt.Sprintf(":%s", mt.Port)
+	}
+	if timeout != 0 {
+		mt.Timeout = time.Duration(timeout) * time.Second
+	}
+	if mt.Timeout == 0 {
+		mt.Timeout = TIMEOUT
+	}
+	if len(mt.Templates) == 0 {
+		fmt.Fprintf(eout, "no templates in configuration\n")
+		return CONFIG
+	}
     fmt.Printf("starting %s\n", path.Base(os.Args[0]))
 	// Create mux for http service
 	// Resolve partial templates and build handlers
-	for _, bndl := range mb.Templates {
+	for _, tmpl := range mt.Templates {
 		if verbose {
-			bndl.Debug = true
+			tmpl.Debug = true
 		}
-		if err := bndl.ResolveTemplate(); err != nil {
-			fmt.Fprintf(eout, "%s failed to resolve, %s\n", bndl.Template, err)
+		if err := tmpl.ResolveTemplate(); err != nil {
+			fmt.Fprintf(eout, "%s failed to resolve, %s\n", tmpl.Template, err)
 			return RESOLVE
 		}
-		if err := bndl.ResolvePath(); err != nil {
-			fmt.Fprintf(eout, "failed to build handler for %q, %s\n", bndl.Pattern, err)
+		if err := tmpl.ResolvePath(); err != nil {
+			fmt.Fprintf(eout, "failed to build handler for %q, %s\n", tmpl.Pattern, err)
 			return HANDLER
 		}
 	}
 	// Launch web service
-    fmt.Printf("listening on port %s\n", mb.Port)
-	if err := mb.ListenAndServe(); err != nil {
+    fmt.Printf("listening on port %s\n", mt.Port)
+	if err := mt.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return WEBSERVICE
 	}
@@ -123,11 +154,16 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		WEBSERVICE
 
 		// Default port number for tmplbnld
-		PORT = ":8020"
+		PORT = ":8010"
 	)
 	// You can run Newt Router with just an htdocs directory. If so you don't require a config file.
 	var err error
-	cfg := &Config{}
+	cfg := &Config{
+		Applications: &Applications{
+			NewtRouter: &Application{
+			},
+		},
+	}
 	router := &NewtRouter{}
 	fName := ""
 	if htdocs == "" || len(args) > 0 {
@@ -140,21 +176,10 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 			return CONFIG
 		}
 		// Finally Instantiate the router from fName and Config object
-		router, err = NewNewtRouter(fName, cfg)
+		router, err = NewNewtRouter(cfg)
 		if err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return CONFIG
-		}
-		if cfg.Application != nil {
-			if port == 0 && cfg.Application.Port > 0{
-				router.Port = fmt.Sprintf(":%d", cfg.Application.Port)
-			}
-			if htdocs == "" && cfg.Application.Htdocs != "" {
-				router.Htdocs = cfg.Application.Htdocs
-			}
-			if len(cfg.Application.Environment) > 0 {
-				router.Environment = append(router.Environment, cfg.Application.Environment...)
-			}
 		}
 	}
 	if router.Port == "" {
@@ -167,23 +192,18 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 	if ! strings.HasPrefix(router.Port, ":") {
 		router.Port = fmt.Sprintf(":%s", router.Port)
 	}
-
 	if htdocs != "" {
 		router.Htdocs = htdocs
 	}
 
 	// Are we ready to run service?
 	if router.Routes == nil && router.Htdocs == "" {
-		if fName != "" {
-			fmt.Fprintf(eout, "nether routes or htdocs are set.")
-			return CONFIG
-		} 
-		fmt.Fprintf(eout, "NEWT_ROUTES and NEWT_HTDOCS are undefined.")
+		fmt.Fprintf(eout, "nether routes or htdocs are set.")
 		return CONFIG
 	}
 
 	if router.Port == "" || router.Port == ":" {
-		fmt.Fprintf(eout, "port is not set, default is not available")
+		fmt.Fprintf(eout, "port is not set, default is not available\n")
 		return WEBSERVICE
 	}
 
