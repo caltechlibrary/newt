@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<title>Test of Newt Mustache and Router</title>
+<body>
+
+Should have an h1 title next<p>
+{{#name}}<h1>{{name}}</h1>{{/name}}
+<p>
+Should see abstract next in a blockquote element.
+<p>
+
+{{#description}}<blockquote>{{description}}</blockquote>{{/description}}
+<p>
+Should see authors next in a UL list.
+</p>
+{{#author}}
+<ul>
+  <li>{{familyName}}, {{givenName}}</li>
+</ul>
+{{/author}}
+</body>
+</html>

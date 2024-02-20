@@ -143,6 +143,7 @@ Newt's code generator is used to create the SQL to setup our Postgres database, 
 - [newtrouter](newtrouter.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a router and as a static file server. It does this by routing your request through a YAML defined pipeline and returning the results. Typically this will be a JSON data source and running that output through a template engine like Newt Mustache.
 - [newtgenerator](newtgenerator.1.md) is a command line program that reads the Newt YAML file and generates SQL and templates used to build your application.  Currently the generator targets SQL for use with Postgres+PostgREST. The template language being targeted is Mustache.
 - [newtmustache](newmustache.1.md) implements a simple lightweight template engine supporting [Mustache](https://mustache.github.io/) templates. Mustache template language is well support by a wide variety of programming languages include Python, PHP, and JavaScript.
+- [newt](newt.1.md) is a single program that runs both Newt Router and Newt Mustache concurrent in one process. Helpful in development.
 
 NOTE: See the [user manual](user_manual.md) for details
 

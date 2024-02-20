@@ -22,14 +22,33 @@
 </nav>
 
 <section>
-<h1 id="installing-pandoc-from-source">Installing Pandoc from source</h1>
-<p>I’ve had the best results compiling Pandoc on macOS using GHCup to provide my Haskell build environment. This doesn’t replace the recommendations at the <a href="https://pandoc.org">Pandoc Website</a>. It’s the my notes about how I got things up on my Mac Mini with an M1 process while using Mac Ports. The basic recipe is modified because of a potential link conflict in which libiconv if you’ve also installed Mac Ports to get reliable development tools like Git. Pandoc needs to link against the macOS supplied libiconv but Mac Ports also provides this and the Git that comes with Mac Ports relies on the Mac Ports libiconv. The trick then is to do all the Git commands before before temporarily uninstalling the libiconv that comes with Mac Ports. You can then invoking Cabal and put libiconv back afterward Pandoc installation is complete. If you’re not using the libiconv installed as part of Mac Ports applications you can skip those steps.</p>
+<h1 id="installing-pandoc-from-source">Installing Pandoc from
+source</h1>
+<p>I’ve had the best results compiling Pandoc on macOS using GHCup to
+provide my Haskell build environment. This doesn’t replace the
+recommendations at the <a href="https://pandoc.org">Pandoc Website</a>.
+It’s the my notes about how I got things up on my Mac Mini with an M1
+process while using Mac Ports. The basic recipe is modified because of a
+potential link conflict in which libiconv if you’ve also installed Mac
+Ports to get reliable development tools like Git. Pandoc needs to link
+against the macOS supplied libiconv but Mac Ports also provides this and
+the Git that comes with Mac Ports relies on the Mac Ports libiconv. The
+trick then is to do all the Git commands before before temporarily
+uninstalling the libiconv that comes with Mac Ports. You can then
+invoking Cabal and put libiconv back afterward Pandoc installation is
+complete. If you’re not using the libiconv installed as part of Mac
+Ports applications you can skip those steps.</p>
 <p>The basic recipe</p>
 <ol type="1">
-<li>Install Haskell with <a href="https://www.haskell.org/ghcup/">GHCup</a> (I accept the defaults and use the “recommended” versions set via <code>ghcup tui</code>)</li>
-<li>Make sure the GHCup environment is available, <code>source $HOME/.ghcup/env</code></li>
-<li>Make sure you are using the “recommended” of GHC, Cabal, Stack, etc.</li>
-<li>Clone <a href="https://github.com/jgm/pandoc">Pandoc</a> repository from GitHub</li>
+<li>Install Haskell with <a
+href="https://www.haskell.org/ghcup/">GHCup</a> (I accept the defaults
+and use the “recommended” versions set via <code>ghcup tui</code>)</li>
+<li>Make sure the GHCup environment is available,
+<code>source $HOME/.ghcup/env</code></li>
+<li>Make sure you are using the “recommended” of GHC, Cabal, Stack,
+etc.</li>
+<li>Clone <a href="https://github.com/jgm/pandoc">Pandoc</a> repository
+from GitHub</li>
 <li>Change into the Pandoc directory</li>
 <li>Checkout the version of Pandoc you want to build (e.g. 3.1.4)</li>
 <li>Remove the Mac Ports libiconv library using Ports command</li>
@@ -48,7 +67,9 @@ cabal update
 cabal install pandoc-cli
 sudo port install libiconv
 cd ..</code></pre>
-<p>NOTE: Even though you are using cabal with the “install pandoc-cli” option the resulting Pandoc can function as the Pandoc web service by invoking Pandoc server command option.</p>
+<p>NOTE: Even though you are using cabal with the “install pandoc-cli”
+option the resulting Pandoc can function as the Pandoc web service by
+invoking Pandoc server command option.</p>
 </section>
 
 <footer>

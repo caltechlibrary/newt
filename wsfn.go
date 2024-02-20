@@ -24,7 +24,11 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if ! l.After {
     	log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
 	}
-	l.handler.ServeHTTP(w, r)
+	if l.handler != nil && l.handler.ServeHTTP != nil {
+		l.handler.ServeHTTP(w, r)
+	} else {
+		log.Printf("%s %s %v handler or ServiceHTTP is nil", r.Method, r.URL.Path, time.Since(start))
+	}
 	if l.After {
     	log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
 	}

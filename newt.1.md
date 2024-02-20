@@ -1,7 +1,43 @@
+---
+title: "newt(1) user manual | 0.0.7-dev f7a98be"
+pubDate: 2024-02-20
+author: "R. S. Doiel"
+---
 
-# Newt YAML syntax
+# NAME
 
-The Newt programs are configured in a YAML file. Each Newt program may focus on some properties and ignore others. What is described below is the complete YAML syntax use in a Newt project that uses all of the Newt programs.
+newt
+
+# SYNOPSIS
+
+newt [OPTIONS] YAML_CONFIG_FILE
+
+# DESCRIPTION
+
+**newt** is an application runner. For each service defined in a Newt YAML file
+the service will be started. This lets you bring up the Newt Router and Newt Mustache
+up as one service.
+
+# OPTIONS
+
+The following options are supported by **newt**.
+
+-h, -help
+: display this help message
+
+-license
+: display the software license
+
+-version
+: display version information
+
+-verbose
+: If set provide verbose debugging output for requests
+
+# YAML_CONFIG_FILE 
+
+**newt** is configured in a YAML file. What is described below is the complete
+YAML syntax use in a Newt project that uses all of the Newt programs.
 
 ## Top level properties
 
@@ -156,6 +192,8 @@ applications:
     htdocs: htdocs # Path to static content directory if required
   newtmustache:
     port: 8012 # Port number for Newt Mustache 
+  #options:
+    # name value pairs used for alaising strings in routes, models, and templates 
   environment:
     - DB_USER
     - DB_PASSWORD
@@ -323,4 +361,5 @@ templates:
     options:
       name: Universe
 ~~~
+
 

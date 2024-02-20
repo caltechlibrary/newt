@@ -68,7 +68,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		WEBSERVICE
 
 		// Default port number for tmplbnld
-		PORT = ":8011"
+		PORT    = ":8011"
 		TIMEOUT = 3 * time.Second
 	)
 	// Configure the template bundler webservice
@@ -104,7 +104,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		fmt.Fprintf(out, "port set to %q\n", mt.Port)
 	}
 	// Onelast check to make sure the port number as the colon prefix
-	if ! strings.HasPrefix(mt.Port, ":") {
+	if !strings.HasPrefix(mt.Port, ":") {
 		mt.Port = fmt.Sprintf(":%s", mt.Port)
 	}
 	if timeout != 0 {
@@ -117,7 +117,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		fmt.Fprintf(eout, "no templates in configuration\n")
 		return CONFIG
 	}
-    fmt.Printf("starting %s\n", path.Base(os.Args[0]))
+	fmt.Printf("starting %s\n", path.Base(os.Args[0]))
 	// Create mux for http service
 	// Resolve partial templates and build handlers
 	for _, tmpl := range mt.Templates {
@@ -134,7 +134,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		}
 	}
 	// Launch web service
-    fmt.Printf("listening on port %s\n", mt.Port)
+	fmt.Printf("listening on port %s\n", mt.Port)
 	if err := mt.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return WEBSERVICE
@@ -160,8 +160,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 	var err error
 	cfg := &Config{
 		Applications: &Applications{
-			NewtRouter: &Application{
-			},
+			NewtRouter: &Application{},
 		},
 	}
 	router := &NewtRouter{}
@@ -189,7 +188,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		router.Port = fmt.Sprintf(":%d", port)
 	}
 	// Prefix the port number with a colon
-	if ! strings.HasPrefix(router.Port, ":") {
+	if !strings.HasPrefix(router.Port, ":") {
 		router.Port = fmt.Sprintf(":%s", router.Port)
 	}
 	if htdocs != "" {
@@ -227,3 +226,129 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 	return OK
 }
 
+// RunNewt is a runner for Newt Router and Newt Mustache.
+func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
+	const (
+		// These constants are used for exit code. FIXME: look up the POSIX recommendation on exit
+		// codes and adopt those.
+		OK = iota
+		CONFIG
+		RESOLVE
+		HANDLER
+		WEBSERVICE
+	)
+	appName := path.Base(os.Args[0])
+	fName := ""
+	if len(args) > 0 {
+		fName = args[0]
+	} else {
+		fmt.Fprintf(eout, "%s expected a Newt YAML filename\n", appName)
+		return CONFIG
+	}
+	cfg, err := LoadConfig(fName)
+	if err != nil {
+		fmt.Fprintf(eout, "%s failed to load %q, %s", appName, fName, err)
+		return CONFIG
+	}
+	// Setup and start Newt Mustache first
+	go func() {
+		const (
+			PORT    = ":8011"
+			TIMEOUT = 3 * time.Second
+		)
+		// Instantiate the specific application with the filename and Config object
+		mt, err := NewNewtMustache(cfg)
+		if err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return
+		}
+		// If port is not set in the config, set it to the default port.
+		if mt.Port == "" {
+			mt.Port = PORT
+		}
+		if verbose {
+			fmt.Fprintf(out, "port set to %q\n", mt.Port)
+		}
+		// Onelast check to make sure the port number as the colon prefix
+		if !strings.HasPrefix(mt.Port, ":") {
+			mt.Port = fmt.Sprintf(":%s", mt.Port)
+		}
+		if mt.Timeout == 0 {
+			mt.Timeout = TIMEOUT
+		}
+		if len(mt.Templates) == 0 {
+			fmt.Fprintf(eout, "no templates in configuration\n")
+			return
+		}
+		fmt.Printf("starting %s\n", path.Base(os.Args[0]))
+		// Create mux for http service
+		// Resolve partial templates and build handlers
+		for _, tmpl := range mt.Templates {
+			if verbose {
+				tmpl.Debug = true
+			}
+			if err := tmpl.ResolveTemplate(); err != nil {
+				fmt.Fprintf(eout, "%s failed to resolve, %s\n", tmpl.Template, err)
+				return
+			}
+			if err := tmpl.ResolvePath(); err != nil {
+				fmt.Fprintf(eout, "failed to build handler for %q, %s\n", tmpl.Pattern, err)
+				return
+			}
+		}
+		// Launch web service
+		fmt.Printf("%s Newt Mustache listening on port %s\n", appName, mt.Port)
+		if err := mt.ListenAndServe(); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return
+		}
+	}()
+
+	// The router starts up and is what prevents service from falling through.
+	func() {
+		const (
+			// Default port number for tmplbnld
+			PORT = ":8010"
+		)
+		// Finally Instantiate the router from fName and Config object
+		router, err := NewNewtRouter(cfg)
+		if err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return
+		}
+
+		if router.Port == "" {
+			router.Port = PORT
+		}
+		// Prefix the port number with a colon
+		if !strings.HasPrefix(router.Port, ":") {
+			router.Port = fmt.Sprintf(":%s", router.Port)
+		}
+
+		// Are we ready to run service?
+		if router.Routes == nil && router.Htdocs == "" {
+			fmt.Fprintf(eout, "nether routes or htdocs are set.")
+			return
+		}
+
+		if router.Port == "" || router.Port == ":" {
+			fmt.Fprintf(eout, "port is not set, default is not available\n")
+			return
+		}
+
+		if verbose && router.Routes != nil {
+			for _, route := range router.Routes {
+				route.Debug = true
+			}
+		}
+
+		// Launch web service
+		fmt.Fprintf(out, "%s Newt Router listening on port %s\n", appName, router.Port)
+		if err := router.ListenAndServe(); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return
+		}
+		return
+	}()
+	return OK
+}

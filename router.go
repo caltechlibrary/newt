@@ -109,7 +109,7 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 	}
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, response.StatusCode, "", err
+		return nil, http.StatusBadGateway, "", err
 	}
 	statusText := http.StatusText(response.StatusCode)
 	if response.StatusCode < http.StatusOK || response.StatusCode > http.StatusNoContent {

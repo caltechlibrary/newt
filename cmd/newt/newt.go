@@ -1,7 +1,56 @@
+package main
 
-# Newt YAML syntax
+import (
+	"flag"
+	"fmt"
+	"os"
+	"path"
 
-The Newt programs are configured in a YAML file. Each Newt program may focus on some properties and ignore others. What is described below is the complete YAML syntax use in a Newt project that uses all of the Newt programs.
+	// Caltech Library Packages
+	"github.com/caltechlibrary/newt"
+)
+
+var (
+	helpText = `---
+title: "{app_name}(1) user manual | {version} {release_hash}"
+pubDate: {release_date}
+author: "R. S. Doiel"
+---
+
+# NAME
+
+{app_name}
+
+# SYNOPSIS
+
+{app_name} [OPTIONS] YAML_CONFIG_FILE
+
+# DESCRIPTION
+
+**{app_name}** is an application runner. For each service defined in a Newt YAML file
+the service will be started. This lets you bring up the Newt Router and Newt Mustache
+up as one service.
+
+# OPTIONS
+
+The following options are supported by **{app_name}**.
+
+-h, -help
+: display this help message
+
+-license
+: display the software license
+
+-version
+: display version information
+
+-verbose
+: If set provide verbose debugging output for requests
+
+# YAML_CONFIG_FILE 
+
+**{app_name}** is configured in a YAML file. What is described below is the complete
+YAML syntax use in a Newt project that uses all of the Newt programs.
 
 ## Top level properties
 
@@ -56,32 +105,32 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 
 ### a route object
 
-`id`
+`+"`"+`id`+"`"+`
 : (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]
 
-`description`
+`+"`"+`description`+"`"+`
 : (optional, encouraged) This is a human readable description of what you're trying to accomplish in this specific route. It may be used in comments or by documentation generators.
 
-`request [METHOD ][PATH]`
-: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. `GET /items/{item_id}` would make `item_id` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `/blog/{year}-{month}-{day}` would not work but `/blog/{year}/{month}/{day}` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
+`+"`"+`request [METHOD ][PATH]`+"`"+`
+: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. `+"`"+`GET /items/{item_id}`+"`"+` would make `+"`"+`item_id`+"`"+` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `+"`"+`/blog/{year}-{month}-{day}`+"`"+` would not work but `+"`"+`/blog/{year}/{month}/{day}`+"`"+` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
 
-`pipeline`
+`+"`"+`pipeline`+"`"+`
 : (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail will abort the pipeline returning an HTTP error status. If done fail then the result of the last stage it returned to the requesting browser.
 
-`debug`
-: (optional) if set to true the `newt` service will log verbose results to standard out for this specific pipeline
+`+"`"+`debug`+"`"+`
+: (optional) if set to true the `+"`"+`newt`+"`"+` service will log verbose results to standard out for this specific pipeline
 
 #### a pipeline object
 
 A pipeline is a list of web services containing a type, URL, method and content types
 
-`service [METHOD ][URL]`
-: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
+`+"`"+`service [METHOD ][URL]`+"`"+`
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `+"`"+`.application.environment`+"`"+`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
 
-`description`
+`+"`"+`description`+"`"+`
 : (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
 
-`timeout`
+`+"`"+`timeout`+"`"+`
 : (optional) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
 
 
@@ -135,7 +184,7 @@ textarea
 : (models only) A multi-line text field
 
 input
-: A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `input[type=data]` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
+: A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `+"`"+`input[type=data]`+"`"+` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
 
 dropdown
 : A dropdown menu. In SQL this could render as an enumerated type. In HTML it would render as a drop down list
@@ -156,6 +205,8 @@ applications:
     htdocs: htdocs # Path to static content directory if required
   newtmustache:
     port: 8012 # Port number for Newt Mustache 
+  #options:
+    # name value pairs used for alaising strings in routes, models, and templates 
   environment:
     - DB_USER
     - DB_PASSWORD
@@ -283,19 +334,19 @@ templates
 
 The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
 
-`request [METHOD ][PATH]`
+`+"`"+`request [METHOD ][PATH]`+"`"+`
 : (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
 
-`template`
+`+"`"+`template`+"`"+`
 : (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
-`partials`
-: (optional, newtmustache only) A list of paths to partial Mustache templates used by `.template`.
+`+"`"+`partials`+"`"+`
+: (optional, newtmustache only) A list of paths to partial Mustache templates used by `+"`"+`.template`+"`"+`.
 
-`options`
+`+"`"+`options`+"`"+`
 : (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template
 
-`debug`
+`+"`"+`debug`+"`"+`
 : (optional) this turns on debugging output for this template
 
 Example of newtmustache YAML:
@@ -324,3 +375,49 @@ templates:
       name: Universe
 ~~~
 
+`
+
+	showHelp    bool
+	showLicense bool
+	showVersion bool
+)
+
+func main() {
+	appName := path.Base(os.Args[0])
+	// NOTE: The following variables are set when version.go is generated
+	version := newt.Version
+	releaseDate := newt.ReleaseDate
+	releaseHash := newt.ReleaseHash
+	fmtHelp := newt.FmtHelp
+
+	// Standard Options
+	flag.BoolVar(&showHelp, "help", false, "display help")
+	flag.BoolVar(&showLicense, "license", false, "display license")
+	flag.BoolVar(&showVersion, "version", false, "display version")
+	
+	// App option(s)
+	verbose := false
+	flag.BoolVar(&verbose, "verbose", verbose, "display template debugging and request information")
+
+	// We're ready to process args
+	flag.Parse()
+	args := flag.Args()
+
+	in := os.Stdin
+	out := os.Stdout
+	eout := os.Stderr
+
+	if showHelp {
+		fmt.Fprintf(out, "%s\n", fmtHelp(helpText, appName, version, releaseDate, releaseHash))
+		os.Exit(0)
+	}
+	if showLicense {
+		fmt.Fprintf(out, "%s\n", newt.LicenseText)
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
+		os.Exit(0)
+	}
+	os.Exit(newt.RunNewt(in, out, eout, args, verbose))
+}

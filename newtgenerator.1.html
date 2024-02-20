@@ -25,130 +25,273 @@
 <h1 id="name">NAME</h1>
 <p>newtgenerator</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>newtgenerator [CONFIG_FILE]</p>
+<p>newtgenerator CONFIG_FILE GENERATOR <a href="#params">PARAMS</a></p>
 <h1 id="description">DESCRIPTION</h1>
-<p><strong>newtgenerator</strong> is a command line tool for generate SQL suitable to bootstrap a microservice implemented with PostgREST and Postgres. It uses the same YAML file as the Newt web service using the namespace and models attributes to render table structure, views and funcitons to support basic CRUD and list operations in SQL.</p>
-<p><strong>newtgenerator</strong>’s configuration uses a declaritive model expressed in YAML. It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the <strong>newtgenerator</strong> YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.</p>
+<p><strong>newtgenerator</strong> is a command line tool for generate
+SQL and configuration files used in bootstrapping a web service.
+Currently the following generatation is supported.</p>
+<ul>
+<li>Postgres SQL for use with PostgREST</li>
+<li>PostgREST configuration file</li>
+<li>Mustache templates for use with Newt Mustache</li>
+</ul>
+<p><strong>newtgenerator</strong>’s configuration uses a declaritive
+model expressed in YAML. It can also allow environment variables read at
+start up to be part of the data for mapping JSON data source requests.
+This is particularly helpful for supplying access credentials. You do
+not express secrets in the <strong>newtgenerator</strong> YAML
+configuration file. This follows the best practice used when working
+with container services and Lambda like systems.</p>
 <h1 id="options">OPTIONS</h1>
 <dl>
 <dt>-help</dt>
-<dd>display help
+<dd>
+display help
 </dd>
 <dt>-license</dt>
-<dd>display license
+<dd>
+display license
 </dd>
 <dt>-version</dt>
-<dd>display version
-</dd>
-<dt>-dry-run</dt>
-<dd>Load YAML configuration and report any errors found
+<dd>
+display version
 </dd>
 </dl>
-<p>Newt has some experimental options to render Postgres dialect of SQL from a YAML file containing models. These options will render SQL suitable to bootstrap a Newt+Pandoc+Postgres+PostgREST based project.</p>
+<h1 id="config_file">CONFIG_FILE</h1>
+<p><strong>newtgenerator</strong> uses the Newt YAML syntax. What
+follows are those properties of specific relevance to
+<strong>newtgenerator</strong> configuration.</p>
+<h3 id="top-level-properties">Top level properties</h3>
+<p>These are the top level properties in YAML files.</p>
 <dl>
-<dt>-setup</dt>
-<dd>This renders a SQL document suitable for bootstraping Postgres+PostgREST access
-</dd>
-<dt>-models</dt>
-<dd>This renders a SQL file to bootstrap modeling data with Postgres+PostgREST
-</dd>
-<dt>-models-test</dt>
-<dd>This renders a SQL file to bootstrap writing SQL tests for Postgres+PostgREST
-</dd>
-</dl>
-<h1 id="configuration">CONFIGURATION</h1>
-<p><strong>newtgenerator</strong> looks for two attributes in the Newt YAML file.</p>
-<dl>
-<dt>namespace</dt>
-<dd>This indicates the Postgres schema associated with your application
+<dt>applications</dt>
+<dd>
+(optional) holds the run time configuration used by the Newt
+applications.
 </dd>
 <dt>models</dt>
-<dd>This is a list of models that map to tables in your Postgres schema/database.
+<dd>
+(required by newtgenerator) This holds the description of the data
+models in your application. Each model uses the <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms">GitHub
+YAML issue template syntax</a> (abbr: GHYTS)
 </dd>
 </dl>
-<p>The <strong>models</strong> attribute holds a list of models expressed in Newt’s data model DSL. Models are optional but can be used to by Newt to generate bootstrap SQL code for use with PostgREST+Postgres. This is very experimental (2024) and likely to change as usage of Newt increases. Each model has a <code>model</code> attribute holding the models name (conforming to a variable name found in langauges like JavaScript, Python, or Lua). Each model also contains a <code>var</code> attribute which is a list of key/value pairs. The key/value pairs are made from a variable name (key) and type definition (value). The type definitions are mapped to suitable Postgres SQL schema when generating table definitions. Example models used for groups and people metadata. The asterix at the end of a type string indicates this is to be used as a key when looking up the object.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">namespace</span><span class="kw">:</span><span class="at"> groups_and_people</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">models</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">model</span><span class="kw">:</span><span class="at"> cl_person</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">var</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">family_name</span><span class="kw">:</span><span class="at"> String</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">given_name</span><span class="kw">:</span><span class="at"> String</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="at">    </span><span class="fu">orcid</span><span class="kw">:</span><span class="at"> ORCID</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="at">    </span><span class="fu">ror</span><span class="kw">:</span><span class="at"> ROR</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">created</span><span class="kw">:</span><span class="at"> Timestamp</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="at">    </span><span class="fu">updated</span><span class="kw">:</span><span class="at"> Timestamp</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">model</span><span class="kw">:</span><span class="at"> cl_group</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="at">  </span><span class="fu">var</span><span class="kw">:</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="at">    </span><span class="fu">cl_group_id</span><span class="kw">:</span><span class="at"> String*</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a><span class="at">    </span><span class="fu">short_name</span><span class="kw">:</span><span class="at"> String</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="at">    </span><span class="fu">display_name</span><span class="kw">:</span><span class="at"> String</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Text</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="at">    </span><span class="fu">contact</span><span class="kw">:</span><span class="at"> EMail</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="at">    </span><span class="fu">created</span><span class="kw">:</span><span class="at"> Timestamp</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="at">    </span><span class="fu">updated</span><span class="kw">:</span><span class="at"> Timestamp</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="at">    </span><span class="fu">founded</span><span class="kw">:</span><span class="at"> Date 2006-01-02</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="at">    </span><span class="fu">disbanded</span><span class="kw">:</span><span class="at"> Date 2006-01-02</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a><span class="at">    </span><span class="fu">approx_founding</span><span class="kw">:</span><span class="at"> Boolean</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="at">    </span><span class="fu">active</span><span class="kw">:</span><span class="at"> Boolean</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a><span class="at">    </span><span class="fu">website</span><span class="kw">:</span><span class="at"> URL</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a><span class="at">    </span><span class="fu">ror</span><span class="kw">:</span><span class="at"> ROR</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a><span class="at">    </span><span class="fu">grid</span><span class="kw">:</span><span class="at"> String</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a><span class="at">    </span><span class="fu">isni</span><span class="kw">:</span><span class="at"> ISNI</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a><span class="at">    </span><span class="fu">ringold</span><span class="kw">:</span><span class="at"> String</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a><span class="at">    </span><span class="fu">viaf</span><span class="kw">:</span><span class="at"> String</span></span></code></pre></div>
-<h1 id="defining-variables">Defining variables</h1>
-<p>Each model can have its own associated set of variables. Variables are “typed”. The code for type definitions includes validation. When a variable is detected in a request path or form data it is vetted using it’s associated type. Only if the variables past validation are they allowed to be used to assemble a request to a JSON data source.</p>
-<p>Variables are defined in the YAML “var” attribute. Here’s an example “var” definition defining three form variables for a route. The variable names are “bird”, “place” and “sighted” with the types “String”, “String” and “Date”. The “bird” variable is also a “key” for the table so has its type end in an asterix.</p>
-<pre><code>var:
-  bird: String*
-  place: String
-  sighted: Date 2006-01-02</code></pre>
-<h1 id="variable-types">Variable types</h1>
+<h3 id="the-applications-property">The applications property</h3>
 <dl>
-<dt>String</dt>
-<dd>Any sequence of characters. If the variabe is embedded in a path then “/” will be used to delimited path parts and would not be passed into the variables value.
+<dt>newtgenerator</dt>
+<dd>
+this contains configuration for the Newt Generator, e.g. port, namespace
 </dd>
-<dt>Date</dt>
-<dd>(default) A year, month, day string like 2006-01-02
-</dd>
-<dt>Date 2006</dt>
-<dd>A four digit year (e.g. 2023)
-</dd>
-<dt>Date 01</dt>
-<dd>A two digit month (e.g. “01” for January, “10” for October)
-</dd>
-<dt>Date 02</dt>
-<dd>A two digit day (e.g. “01” for the first, “11” for the eleventh)
-</dd>
-<dt>Basename</dt>
-<dd>A file’s basename (filename without an extension)
-</dd>
-<dt>Extname</dt>
-<dd>A file’s extension (e.g. “.html”, “.txt”, “.rss”, “.js”)
-</dd>
-<dt>Isbn10</dt>
-<dd>An ten digit ISBN
-</dd>
-<dt>Isbn13</dt>
-<dd>A thirteen digit ISBN
-</dd>
-<dt>Isbn</dt>
-<dd>An ISBN (either 10 ro 13 digit)
-</dd>
-<dt>Issn</dt>
-<dd>An ISSN
-</dd>
-<dt>DOI</dt>
-<dd>A DOI (digital object identifier)
-</dd>
-<dt>Isni</dt>
-<dd>An ISNI
-</dd>
-<dt>ORCID</dt>
-<dd>An ORCID identifier
+<dt>options</dt>
+<dd>
+holds key value pairs of which can be referenced in the values of
+models, routes and templates.
 </dd>
 </dl>
-<p>NOTE: The current names associated with types will likely change as the prototype <strong>newtgenerator</strong> evolves. It is planned for them to be stable if and when we get to a v1 release (e.g. when we’re out of the prototype phase).</p>
+<h3 id="newtgenerator-property">newtgenerator property</h3>
+<dl>
+<dt>namespace</dt>
+<dd>
+newtgenerator uses this in the SQL generated for setting up
+Postgres+PostgREST
+</dd>
+</dl>
+<h3 id="the-models-property">the “models” property</h3>
+<p>Models holds a list of individual models used by our data pipelines.
+The models are by Newt code generator and the Newt router. Models
+defines a superset of the GitHub YAML issue template syntax (abbr:
+GHYTS).</p>
+<h3 id="a-model-object">a model object</h3>
+<p>The model object is based largely on GitHub YAML issue template
+syntax with a couple extra properties that are Newt enhancements.</p>
+<dl>
+<dt>id</dt>
+<dd>
+(required, newt specific) this is the name identifying the model. It
+must conform to variable name rules<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a>
+</dd>
+</dl>
+<p>The following properties are based on the GitHub YAML issue template
+syntax<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a> (abbr: GHYTS)</p>
+<dl>
+<dt>name</dt>
+<dd>
+(required: GHYTS, optional: newt) Must be unique to use with GitHub YAML
+issue templates<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>. In Newt it will be used in
+populating comments in generated SQL
+</dd>
+<dt>description</dt>
+<dd>
+(required: GHYTS, optional: newt) A human description of the model, It
+will appear in the web form and SQL components generated from the model
+</dd>
+<dt>body</dt>
+<dd>
+(required) A a list of input types. Each input type maps to columns in
+SQL, input element in web forms and or HTML elements in read only pages
+</dd>
+</dl>
+<h4 id="a-models-input-types">a model’s input types</h4>
+<p>This is based on GitHub YAML issue template (abbr: GHYTS) input
+types<a href="#fn4" class="footnote-ref" id="fnref4"
+role="doc-noteref"><sup>4</sup></a>.</p>
+<dl>
+<dt>id</dt>
+<dd>
+(required) an identifier for the element. Must conform to variable name
+rules<a href="#fn5" class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a>. It is used to SQL as a column name
+and in web forms for the input property.
+</dd>
+<dt>type</dt>
+<dd>
+(required) Identifies the type of elements (input, textarea, markdown,
+checkbox, dropdown).
+</dd>
+<dt>attributes</dt>
+<dd>
+(optional) A key-value list that define properties of the element. These
+used in rendering the element in SQL or HTML.
+</dd>
+<dt>validations</dt>
+<dd>
+(optional, encouraged) A set of key-value pairs setting constraints of
+the element content. E.g. required, regexp properties, validation rule
+provided with certain identifiers (e.g. DOI, ROR, ORCID).
+</dd>
+</dl>
+<h4 id="input-types">input types</h4>
+<p>Both the routes and models may contain input types. The types
+supported in Newt are based on the types found in the GHYTS for scheme<a
+href="#fn6" class="footnote-ref" id="fnref6"
+role="doc-noteref"><sup>6</sup></a>. They include</p>
+<dl>
+<dt>markdown</dt>
+<dd>
+(models only) markdown request displayed to the user but not submitted
+to the user but not submitted by forms.
+</dd>
+<dt>textarea</dt>
+<dd>
+(models only) A multi-line text field
+</dd>
+<dt>input</dt>
+<dd>
+A single line text field. This conforms to value input types in HTML 5
+and can be expressed using the CSS selector notation. E.g.
+<code>input[type=data]</code> would be a date type. This would result in
+a date column type in SQL, a date input type in HTML forms and in
+formatting other HTML elements for display.
+</dd>
+<dt>dropdown</dt>
+<dd>
+A dropdown menu. In SQL this could render as an enumerated type. In HTML
+it would render as a drop down list
+</dd>
+<dt>checkboxes</dt>
+<dd>
+A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio
+button) then the result is stored in a single column, if multiple checks
+are allowed it is stored as a JSON Array column.
+</dd>
+</dl>
+<p>Newt may add additional types in the future.</p>
+<h1 id="generator">GENERATOR</h1>
+<p>Currently three types of generators are being implemented in the 2nd
+Newt Protoype. This parameter lets you set which one you are using. It
+is required.</p>
+<h1 id="params">PARAMS</h1>
+<p>Some generators may need additional information. This is true of the
+Mustache template generator. This is where you would provide those
+parameters. The Postgres and PostgREST generators do not currently take
+any parameters.</p>
+<h1 id="examples">EXAMPLES</h1>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtgenerator</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> people</span><span class="co"> # E.g. &quot;people&quot; Namespace to use generating Postgres SQL</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">models</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> people</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> People Profiles</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">    description</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      This models a curated set of profiles of colleagues</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">body</span><span class="kw">:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> people_id</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> A unique person id, no spaces, alpha numeric</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. jane-do-007</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">validations</span><span class="kw">:</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> display_name</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person display name</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. J. Doe, journalist</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> family_name</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (required) A person&#39;s family name or singular when only one name exists</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. Doe</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">validations</span><span class="kw">:</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> given_name</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional, encouraged) A person&#39;s given name</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. Jane</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> orcid</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person&#39;s ORCID identifier</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. 0000-0000-0000-0000</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">validations</span><span class="kw">:</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">pattern</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]&quot;</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> ror</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person&#39;s ROR identifing their affiliation</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> email</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;input[type=email]&quot;</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person public email address</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> website</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;input[type=url]&quot;</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person&#39;s public website</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. https://jane.doe.example.org</span></span></code></pre></div>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>variable numbers must start with a letter, may contain
+numbers but not spaces or punctuation except the underscore<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms</a>,<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms</a>,<a
+href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
+href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>variable numbers must start with a letter, may contain
+numbers but not spaces or punctuation except the underscore<a
+href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
+href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 </section>
 
 <footer>
