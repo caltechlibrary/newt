@@ -1,12 +1,13 @@
 package newt
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
+	"strings"
 	"text/scanner"
 	"time"
-	"strings"
 )
 
 // Logger implementes Newt Project's web logging
@@ -17,12 +18,12 @@ type Logger struct {
 	After bool
 }
 
-//ServeHTTP handles the request by passing it to the real
-//handler and logging the request details
+// ServeHTTP handles the request by passing it to the real
+// handler and logging the request details
 func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    start := time.Now()
-	if ! l.After {
-    	log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+	start := time.Now()
+	if !l.After {
+		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
 	}
 	if l.handler != nil && l.handler.ServeHTTP != nil {
 		l.handler.ServeHTTP(w, r)
@@ -30,15 +31,15 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %v handler or ServiceHTTP is nil", r.Method, r.URL.Path, time.Since(start))
 	}
 	if l.After {
-    	log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
 	}
 }
 
-//NewLogger constructs a new Logger middleware handler
+// NewLogger constructs a new Logger middleware handler
 func NewLogger(handlerToWrap http.Handler) *Logger {
 	return &Logger{
 		handler: handlerToWrap,
-		After: true,
+		After:   true,
 	}
 }
 
@@ -117,4 +118,22 @@ func (fsys dotFileHidingFileSystem) Open(name string) (http.File, error) {
 	return dotFileHidingFile{file}, err
 }
 
-
+func NewtStaticFileServer(port int, htdocs string) error {
+	if htdocs == "" {
+		htdocs = "."
+	}
+	if port == 0 {
+		port = 8000
+	}
+	mux := http.NewServeMux()
+	fsys := dotFileHidingFileSystem{http.Dir(htdocs)}
+	mux.Handle("/", http.FileServer(fsys))
+	// Now create my http server
+	svr := new(http.Server)
+	svr.Addr = fmt.Sprintf(":%d", port)
+	svr.Handler = NewLogger(mux)
+	if err := svr.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
+	return nil
+}

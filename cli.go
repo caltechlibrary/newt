@@ -49,6 +49,8 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
+	generator.out = out
+	generator.eout = eout
 	if err := generator.Generate(target, codeType); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return GENFAIL
@@ -224,6 +226,30 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		return WEBSERVICE
 	}
 	return OK
+}
+
+// RunStaticWebServer this provides a localhost for static file content.
+func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []string, port int) int {
+	const (
+		OK = iota
+		SERVER_ERROR
+
+		// Defaults
+		PORT = 8000
+		HTDOCS = "."
+	)
+	if port == 0 {
+		port = PORT
+	}
+	htdocs := HTDOCS
+	if len(args) > 0 {
+		htdocs = args[0]
+	}
+	if err := NewtStaticFileServer(port, htdocs); err != nil {
+		fmt.Fprintf(eout, "%s\n", err)
+		return SERVER_ERROR
+	}
+	return OK	
 }
 
 // RunNewt is a runner for Newt Router and Newt Mustache.

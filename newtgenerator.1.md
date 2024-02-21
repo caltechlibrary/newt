@@ -1,5 +1,5 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7-dev 8ddec82"
+title: "newtgenerator(1) user manual | 0.0.7-dev 3bdd982"
 pubDate: 2024-02-20
 author: "R. S. Doiel"
 ---
@@ -10,17 +10,15 @@ newtgenerator
 
 # SYNOPSIS
 
-newtgenerator CONFIG_FILE GENERATOR [PARAMS]
+newtgenerator CONFIG_FILE GENERATOR [MODEL] [ACTION]
 
 # DESCRIPTION
 
-**newtgenerator** is a command line tool for generate SQL and configuration files used in bootstrapping a web service. Currently the following generatation is supported.
-
-- Postgres SQL for use with PostgREST
-- PostgREST configuration file
-- Mustache templates for use with Newt Mustache
-
-**newtgenerator**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtgenerator** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
+**newtgenerator** is a command line tool for generate Postgres SQL, PostgREST configuration, Mustache templates and html.
+It generates content per model definition in Newt's YAML file. For SQL and configuration generation the MODEL and ACTION
+are ignored. One file will be written to standard out containing the generated code. Mustache template generation you need
+to include MODEL and ACTION becasue the specific template code generator needs to apply to one model and one of the
+CRUD-L actions.
 
 # OPTIONS
 
@@ -131,11 +129,11 @@ Newt may add additional types in the future.
 Currently three types of generators are being implemented in the 2nd Newt Protoype. This parameter
 lets you set which one you are using. It is required.
 
-# PARAMS
+# MODELS and ACTION
 
-Some generators may need additional information. This is true of the Mustache template generator.
-This is where you would provide those parameters. The Postgres and PostgREST generators do not
-currently take any parameters.
+The Mustache generator needs to know which model and for what CRUD-L operation you require a template generatored.
+MODEL should match on of the model id values in the models property of the Newt YAML. The ACTION needs to be
+one of the following, "create", "read", "update", "delete", or "list".
 
 # EXAMPLES
 
