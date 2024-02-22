@@ -30,6 +30,10 @@ func pgSetup(out io.Writer, namespace string) error {
 -- would not be stored in the file!
 --
 
+-- Uncomment these two lines if you have used Postgres' createdb yet.
+-- DROP DATABASE IF EXISTS {{namespace}};
+-- CREATE DATABASE EXISTS {{namespace}};
+
 -- Make sure we are in the {{namespace}} namespace/database
 \c {{namespace}}
 
@@ -53,7 +57,7 @@ CREATE ROLE {{namespace}}_anonymous nologin;
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
 DROP ROLE IF EXISTS {{namespace};
-CREATE ROLE {{namespace}} NOINHERIT LOGIN PASSWORD '<SECRET_PASSWORD_GOES_HERE>';
+CREATE ROLE {{namespace}} NOINHERIT LOGIN PASSWORD '<<<secret password goes here>>>';
 GRANT {{namespace}}_anonymous TO {{namespace}};
 `
 	tmpl, err := mustache.ParseString(txt)
@@ -102,7 +106,9 @@ SET search_path TO {{namespace}}, public;
 --
 -- DROP TABLE IF EXISTS {{namespace}}.{{model}};
 CREATE TABLE {{namespace}}.{{model}} (
-  {{field_defs}}
+--  Need to insure all objects have an object identifier (primary key), creatd and updated timestamps
+-- working without interventions for CRUD-L operations.
+--  {{fields_def}}
 );
 
 --
@@ -111,24 +117,27 @@ CREATE TABLE {{namespace}}.{{model}} (
 
 -- {{namspace}}.{{model}}_create is a stored function to create a new object
 -- It becomes the end point '/rpc/create_{{model}}'
-CREATE OR REPLACE FUNCTION {{namespace}}.create_{{model}}({{field_names}})
+-- Three 
+CREATE OR REPLACE FUNCTION {{namespace}}.create_{{model}}({{fields_ref}})
 RETURNS bool LANGUAGE SQL AS $$
-  INSERT INTO {{namespace}}.{{model}} ({{field_names}})) VALUES ({{field_values}});
+  INSERT INTO {{namespace}}.{{model}} ({{fields_ref}})) VALUES ({{fields_ref}});
 -- FIXME: Need to return the object key or whole object.
   SELECT true;
 $$;
 
 -- {{namespace}}.{{model}}_update is a stored function to update an object.
 -- It becomes the end point '/rpc/update_{{model}}'
-CREATE OR REPLACE FUNCTION {{namespace}}.update_{{model}}({{frield_names}}, {{field_values}})
+CREATE OR REPLACE FUNCTION {{namespace}}.update_{{model}}({{fields_ref}})
 RETURN book LANGAUGE SQL AS $$
-   UPDATE {{namespace}}.{{model}} SET {{field_value_list}} WHERE {{filter_for_record}};
+-- FIXME: Need to generste a {{a_field_ref}} = '{{field_value}}' pairing.
+   UPDATE {{namespace}}.{{model}} SET {{field_value_list}} WHERE {{filter_for_record}} LIMIT 1;
+-- FIXME: Need to return the object key or whole object.
    SELECT true;
 $$;
 
 -- {{namespace}}.read_{{model}} will become an end point in PostgREST, '/read_{{model}}'
 CREATE OR REPLACE VIEW {{namespace}}.read_{{model}} AS
-  {{read_view_select}};
+  SELECT {{fields_refs}} FROM {{namespace}}.{{model}} WHERE {{filter_for_record}} LIMIT 1;
 
 -- {{namespace}}.delete_{{model}} is a stored function to delete an object.
 -- It becomes the end point '/rpc/delete_{{model}}'
@@ -151,10 +160,9 @@ CREATE OR REPLACE VIEW {{namespace}}.list_{{model}} AS
 	for _, m := range models {
 		data["namespace"] = namespace
 		data["model"] = m.Name
-		data["field_defs"] = ""//FIXME: Need a function that can take a model and return SQL field defs.
-		data["list_view_select"] = "" //FIXME: Need a function that can take a model and generator a list view select statement.
-		data["read_view_select"] = "" //FIXME: Need a function that can take a model and generator a list view select statement.
-		data["filter_for_record"] = ""  // FIXME: Need to write the WHERE clause filter to return a specific record.
+		data["fields_def"] = "<<<field definitions goes here>>>" //FIXME: Need a function that can take a model and return SQL field defs.
+		data["fields_ref"] = "<<<field references goes here>>>" //FIXME: Need a function that can take a model and return SQL field defs.
+		data["filter_for_record"] = "<<<where clause filter goes here>>>"  // FIXME: Need to write the WHERE clause filter to return a specific record.
 		if err := tmpl.FRender(out, data); err != nil {
 			return err
 		}
@@ -169,9 +177,10 @@ CREATE OR REPLACE VIEW {{namespace}}.list_{{model}} AS
 -- we want PostgREST to expose our data via JSON API we GRANT or
 -- revoke role permissions here to match our model.
 GRANT USAGE ON SCHEMA {{namespace}} TO {{namespace}}_anonymous;
--- NOTE: We are allowing insert because this is a demo and we are not
--- implementing an account login requirement. Normally I would force
--- a form update via a SQL function or procedure only.
+-- NOTE: The generated functions for create, update and delete do not
+-- implement an account requirement. In a production application you
+-- should modify these functions to check for authorization before
+-- allowing changes to be made.
 `
 	tmpl, err = mustache.ParseString(txt)
 	if err != nil {

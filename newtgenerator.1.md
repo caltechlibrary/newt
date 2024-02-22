@@ -1,6 +1,6 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7-dev 3bdd982"
-pubDate: 2024-02-20
+title: "newtgenerator(1) user manual | 0.0.7-dev 24f2d1a"
+pubDate: 2024-02-22
 author: "R. S. Doiel"
 ---
 

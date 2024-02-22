@@ -44,6 +44,10 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
+	if cfg.Applications == nil || cfg.Applications.NewtGenerator == nil {
+		fmt.Fprintf(eout, "missing newtgenerator configuration, aborting\n")
+		return CONFIG
+	}
 	generator, err := NewGenerator(cfg)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)

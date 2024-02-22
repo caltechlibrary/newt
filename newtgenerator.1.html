@@ -25,23 +25,16 @@
 <h1 id="name">NAME</h1>
 <p>newtgenerator</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>newtgenerator CONFIG_FILE GENERATOR <a href="#params">PARAMS</a></p>
+<p>newtgenerator CONFIG_FILE GENERATOR [MODEL] [ACTION]</p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>newtgenerator</strong> is a command line tool for generate
-SQL and configuration files used in bootstrapping a web service.
-Currently the following generatation is supported.</p>
-<ul>
-<li>Postgres SQL for use with PostgREST</li>
-<li>PostgREST configuration file</li>
-<li>Mustache templates for use with Newt Mustache</li>
-</ul>
-<p><strong>newtgenerator</strong>’s configuration uses a declaritive
-model expressed in YAML. It can also allow environment variables read at
-start up to be part of the data for mapping JSON data source requests.
-This is particularly helpful for supplying access credentials. You do
-not express secrets in the <strong>newtgenerator</strong> YAML
-configuration file. This follows the best practice used when working
-with container services and Lambda like systems.</p>
+Postgres SQL, PostgREST configuration, Mustache templates and html. It
+generates content per model definition in Newt’s YAML file. For SQL and
+configuration generation the MODEL and ACTION are ignored. One file will
+be written to standard out containing the generated code. Mustache
+template generation you need to include MODEL and ACTION becasue the
+specific template code generator needs to apply to one model and one of
+the CRUD-L actions.</p>
 <h1 id="options">OPTIONS</h1>
 <dl>
 <dt>-help</dt>
@@ -204,11 +197,12 @@ are allowed it is stored as a JSON Array column.
 <p>Currently three types of generators are being implemented in the 2nd
 Newt Protoype. This parameter lets you set which one you are using. It
 is required.</p>
-<h1 id="params">PARAMS</h1>
-<p>Some generators may need additional information. This is true of the
-Mustache template generator. This is where you would provide those
-parameters. The Postgres and PostgREST generators do not currently take
-any parameters.</p>
+<h1 id="models-and-action">MODELS and ACTION</h1>
+<p>The Mustache generator needs to know which model and for what CRUD-L
+operation you require a template generatored. MODEL should match on of
+the model id values in the models property of the Newt YAML. The ACTION
+needs to be one of the following, “create”, “read”, “update”, “delete”,
+or “list”.</p>
 <h1 id="examples">EXAMPLES</h1>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
