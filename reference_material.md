@@ -67,6 +67,7 @@ These are links to prior art, related efforts and resources for consideration in
 - Go implementations
     - [UUID](https://pkg.go.dev/github.com/google/UUID), v4 UUID, go storage in Postgres, long for URL
     - [shortid](https://pkg.go.dev/github.com/teris-io/shortid)
+    - [shortuuid](https://github.com/skorokithakis/shortuuid), Python shortuuid pacakge
     - [shortuuid](https://github.com/lithammer/shortuuid), a Port of the Python package to Go, algorithmically compatible with the Python implementation
     - [ulid](https://github.com/oklog/ulid), a logically sortable unique identifier package, ported from the JavaScript package implementing ulid
 
