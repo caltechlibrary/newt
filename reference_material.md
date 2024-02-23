@@ -62,3 +62,11 @@ These are links to prior art, related efforts and resources for consideration in
 - [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD)
 - [Richardson Maturity Model](https://en.wikipedia.org/wiki/Richardson_Maturity_Model), used to evaluate RESTful-ness in JSON API
 
+## Identifiers for a minimal object definition of unique id with created and updated timestamps
+
+- Go implementations
+    - [UUID](https://pkg.go.dev/github.com/google/UUID), v4 UUID, go storage in Postgres, long for URL
+    - [shortid](https://pkg.go.dev/github.com/teris-io/shortid)
+    - [shortuuid](https://github.com/lithammer/shortuuid), a Port of the Python package to Go, algorithmically compatible with the Python implementation
+    - [ulid](https://github.com/oklog/ulid), a logically sortable unique identifier package, ported from the JavaScript package implementing ulid
+
