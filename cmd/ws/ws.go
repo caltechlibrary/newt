@@ -29,7 +29,8 @@ author: "R. S. Doiel"
 
 **{app_name}** is a simple static web server running on localhost. The default port
 is 8000 and the current working directory is the default document root. There is no
-configuration aside from providing a directory path and optionally changing the port.
+configuration aside from providing a directory path, optionally changing the port and
+setting a verbose mode useful for debugging requests.
 
 This is a mimimal web server. No http, no embedded programming languages. No remapping
 content types, redirect or other fancy stuff. It provides a quick way to allow your
@@ -53,6 +54,9 @@ The following options are supported by **{app_name}**.
 -port
 : set the port the web server listens on
 
+-verbose
+: show verbose logging of requests, e.g. contents of a POST
+
 # EXAMPLE
 
 In the example below the web server would listen for `+"`"+`http://localhost:8080`+"`"+`
@@ -61,6 +65,14 @@ and respond with the content in htdocs.
 ~~~shell
 ws -port 8080 htdocs
 ~~~
+
+An example of using the static file server to debug a form submission by showing
+what the forms submits in the log output.
+
+~~~shell
+ws -verbose -port 8080 htdocs
+~~~
+
 
 `
 
@@ -83,8 +95,9 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "display version")
 	
 	// App option(s)
-	port := 0
+	port, verbose := 0, false
 	flag.IntVar(&port, "port", port, "set the port number for service")
+	flag.BoolVar(&verbose, "verbose", verbose, "display detail logging of requests")
 
 	// We're ready to process args
 	flag.Parse()
@@ -106,5 +119,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunStaticWebServer(in, out, eout, args, port))
+	os.Exit(newt.RunStaticWebServer(in, out, eout, args, port, verbose))
 }

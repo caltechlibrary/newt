@@ -57,7 +57,7 @@ CREATE ROLE {{namespace}}_anonymous nologin;
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
 DROP ROLE IF EXISTS {{namespace};
-CREATE ROLE {{namespace}} NOINHERIT LOGIN PASSWORD '<<<secret password goes here>>>';
+CREATE ROLE {{namespace}} NOINHERIT LOGIN PASSWORD '${PASSWORD_GOES_HERE}';
 GRANT {{namespace}}_anonymous TO {{namespace}};
 `
 	tmpl, err := mustache.ParseString(txt)

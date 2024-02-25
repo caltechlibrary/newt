@@ -27,7 +27,7 @@ type NewtGenerator struct {
 // It returns a Generator object and error value.
 func NewGenerator(cfg *Config) (*NewtGenerator, error) {
 	if cfg.Applications == nil || cfg.Applications.NewtGenerator == nil {
-		return fmt.Errorf("configuration missing for Newt Generator")
+		return nil, fmt.Errorf("configuration missing for Newt Generator")
 	}
 	generator := &NewtGenerator{}
 	generator.Namespace = cfg.Applications.NewtGenerator.Namespace

@@ -233,7 +233,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 }
 
 // RunStaticWebServer this provides a localhost for static file content.
-func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []string, port int) int {
+func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, verbose bool) int {
 	const (
 		OK = iota
 		SERVER_ERROR
@@ -249,7 +249,7 @@ func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []stri
 	if len(args) > 0 {
 		htdocs = args[0]
 	}
-	if err := NewtStaticFileServer(port, htdocs); err != nil {
+	if err := NewtStaticFileServer(port, htdocs, verbose); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return SERVER_ERROR
 	}

@@ -140,7 +140,9 @@ Newt may add additional types in the future.
 # GENERATOR
 
 Currently three types of generators are being implemented in the 2nd Newt Protoype. This parameter
-lets you set which one you are using. It is required.
+lets you set which one you are using. It is required. Each generator type may accept more options.
+The Postgres SQL generator, "postgres", can generate three different SQL files, setup.sql, models.sql and
+models_test.sql.  
 
 # MODELS and ACTION
 
@@ -149,6 +151,19 @@ MODEL should match on of the model id values in the models property of the Newt 
 one of the following, "create", "read", "update", "delete", or "list".
 
 # EXAMPLES
+
+In this example we use the models described below to generate the configuration file and SQL
+file need to boostrap Postgres+PostgREST.
+
+~~~
+{app_name} people.yaml postgres setup >setup.sql
+{app_name} people.yaml postgres models >models.sql
+{app_name} people.yaml postgres models_test >models_test.sql
+{app_name} people.yaml postgrest >postgrest.conf
+~~~
+{app_name} people.yaml mustache create
+
+This is an example YAML file used to generator Postgres SQL, PostgREST configuration and Mustache templates.
 
 ~~~yaml
 applications:

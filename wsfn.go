@@ -1,7 +1,9 @@
 package newt
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -12,18 +14,44 @@ import (
 
 // Logger implementes Newt Project's web logging
 type Logger struct {
+	// handler holds the handler (mux) you're wrapping with your logger.
 	handler http.Handler
 
 	// After (defaults to true) logs the request after running the wrapped handler
 	After bool
+
+	// Verbose (defaults to false) show the contents of a GET, POST, PUT and DELETE in log output
+	Verbose bool
 }
 
 // ServeHTTP handles the request by passing it to the real
 // handler and logging the request details
 func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
+	buf := []byte{}
+	header := []byte{}
+	if l.Verbose {
+		header, _ = json.MarshalIndent(r.Header, "", "  ")
+		switch r.Method {
+			case http.MethodPost :
+				buf, _ = io.ReadAll(r.Body)
+			case http.MethodGet:
+				values := r.URL.Query()
+				buf = []byte(fmt.Sprintf("%+v", values))
+			case http.MethodPut:
+				buf, _ = io.ReadAll(r.Body)
+			case http.MethodPatch:
+				buf, _ = io.ReadAll(r.Body)
+			default:
+				buf = []byte("body not captured for method "+r.Method)
+		}
+	}
 	if !l.After {
-		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+		if l.Verbose {
+			log.Printf("%s %s %v\nHeaders ->\n%s\n\n Body ->\n%s\n\n", r.Method, r.URL.Path, time.Since(start), header, buf)
+		} else {
+			log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+		}
 	}
 	if l.handler != nil && l.handler.ServeHTTP != nil {
 		l.handler.ServeHTTP(w, r)
@@ -31,7 +59,11 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %v handler or ServiceHTTP is nil", r.Method, r.URL.Path, time.Since(start))
 	}
 	if l.After {
-		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+		if l.Verbose {
+			log.Printf("%s %s %v\nHeaders ->\n%s\n\n Body ->\n%s\n\n", r.Method, r.URL.Path, time.Since(start), header, buf)
+		} else {
+			log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+		}
 	}
 }
 
@@ -40,6 +72,7 @@ func NewLogger(handlerToWrap http.Handler) *Logger {
 	return &Logger{
 		handler: handlerToWrap,
 		After:   true,
+		Verbose: false,
 	}
 }
 
@@ -118,7 +151,7 @@ func (fsys dotFileHidingFileSystem) Open(name string) (http.File, error) {
 	return dotFileHidingFile{file}, err
 }
 
-func NewtStaticFileServer(port int, htdocs string) error {
+func NewtStaticFileServer(port int, htdocs string, verbose bool) error {
 	if htdocs == "" {
 		htdocs = "."
 	}
@@ -128,10 +161,13 @@ func NewtStaticFileServer(port int, htdocs string) error {
 	mux := http.NewServeMux()
 	fsys := dotFileHidingFileSystem{http.Dir(htdocs)}
 	mux.Handle("/", http.FileServer(fsys))
+	// Wrap our mux in a logger, it will become the wrapper of our mux handed off to the server
+	logger := NewLogger(mux)
+	logger.Verbose = verbose
 	// Now create my http server
 	svr := new(http.Server)
 	svr.Addr = fmt.Sprintf(":%d", port)
-	svr.Handler = NewLogger(mux)
+	svr.Handler = logger
 	if err := svr.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}

@@ -62,12 +62,30 @@ These are links to prior art, related efforts and resources for consideration in
 - [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD)
 - [Richardson Maturity Model](https://en.wikipedia.org/wiki/Richardson_Maturity_Model), used to evaluate RESTful-ness in JSON API
 
-## Identifiers for a minimal object definition of unique id with created and updated timestamps
 
-- Go implementations
-    - [UUID](https://pkg.go.dev/github.com/google/UUID), v4 UUID, go storage in Postgres, long for URL
-    - [shortid](https://pkg.go.dev/github.com/teris-io/shortid)
-    - [shortuuid](https://github.com/skorokithakis/shortuuid), Python shortuuid pacakge
-    - [shortuuid](https://github.com/lithammer/shortuuid), a Port of the Python package to Go, algorithmically compatible with the Python implementation
-    - [ulid](https://github.com/oklog/ulid), a logically sortable unique identifier package, ported from the JavaScript package implementing ulid
+## Go implementations for unique identifiers
+
+It appears it may be desirable when generating SQL code and web forms to allow for the automatic creation of three object attributes as some sort of minimally viable object, unique object id with created and updated timestamps
+
+~~~json
+{
+    "oid": "xxxxxxxxx",
+    "created": "timestamp value for object creation",
+    "updated": "timestamp, updates on change"
+}
+~~~
+
+This could be implemented directory into the generated SQL or have an identifer service that sits in front of the DB JSON API.
+
+- [UUID](https://pkg.go.dev/github.com/google/UUID), v4 UUID, go storage in Postgres, long for URL
+- [shortid](https://pkg.go.dev/github.com/teris-io/shortid)
+- [shortuuid](https://github.com/skorokithakis/shortuuid), Python shortuuid pacakge
+- [shortuuid](https://github.com/lithammer/shortuuid), a Port of the Python package to Go, algorithmically compatible with the Python implementation
+- [ulid](https://github.com/oklog/ulid), a logically sortable unique identifier package, ported from the JavaScript package implementing ulid
+
+## Web Components
+
+If Newt shipped with a set of LAS oriented web component that could allow for a more complex data model to be addressed by Newt. E.g. lists of authors are a web component would probably have not just the name fields but also identifiers like ORCID and ISNI attached to them. Something worth exploring.
+
+Internet Archives seems to be investing in the [Lit](https://lit.dev) component library heavely.
 
