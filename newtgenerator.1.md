@@ -1,5 +1,5 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7-dev bd7a00d"
+title: "newtgenerator(1) user manual | 0.0.7-dev b865091"
 pubDate: 2024-02-25
 author: "R. S. Doiel"
 ---
