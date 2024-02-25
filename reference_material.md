@@ -61,7 +61,12 @@ These are links to prior art, related efforts and resources for consideration in
     - [JSON-HAL](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-00)
 - [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD)
 - [Richardson Maturity Model](https://en.wikipedia.org/wiki/Richardson_Maturity_Model), used to evaluate RESTful-ness in JSON API
-
+- [HAR](http://www.softwareishard.com/blog/har-12-spec), HTTP Archive Request
+- [GoJa](https://github.com/dop251/goja), Pure Go JavaScript engine
+- [HTTPie-go](https://github.com/nojima/httpie-go), A go implementation of HTTPie, useful to debug API interactions
+    - Fork with out stale package references, [HTTP-Pie-go](https://github.com/HexmosTech/httpie-go)
+- [Lama2](https://github.com/HexmosTech/Lama2), a plain text powered rest client (not to be confused with Meta's LLM)
+- [Go's extended html docs](https://pkg.go.dev/golang.org/x/net/html), HTML tokanizer and parser package
 
 ## Go implementations for unique identifiers
 
