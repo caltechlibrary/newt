@@ -96,7 +96,7 @@ A second prototype Newt application
 - SQLite 3 database support
 - Non-linear conditional pipelines
 - Visually programming for Newt YAML files
-- Web components for LAS metadata types
+- Web components for LAM metadata types
 
 # Related resources
 

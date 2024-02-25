@@ -85,7 +85,7 @@ This could be implemented directory into the generated SQL or have an identifer 
 
 ## Web Components
 
-If Newt shipped with a set of LAS oriented web component that could allow for a more complex data model to be addressed by Newt. E.g. lists of authors are a web component would probably have not just the name fields but also identifiers like ORCID and ISNI attached to them. Something worth exploring.
+If Newt shipped with a set of LAM oriented web component that could allow for a more complex data model to be addressed by Newt. E.g. lists of authors are a web component would probably have not just the name fields but also identifiers like ORCID and ISNI attached to them. Something worth exploring.
 
 Internet Archives seems to be investing in the [Lit](https://lit.dev) component library heavely.
 
