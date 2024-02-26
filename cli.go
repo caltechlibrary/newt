@@ -239,7 +239,7 @@ func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		SERVER_ERROR
 
 		// Defaults
-		PORT = 8000
+		PORT   = 8000
 		HTDOCS = "."
 	)
 	if port == 0 {
@@ -253,7 +253,7 @@ func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		fmt.Fprintf(eout, "%s\n", err)
 		return SERVER_ERROR
 	}
-	return OK	
+	return OK
 }
 
 // RunNewt is a runner for Newt Router and Newt Mustache.

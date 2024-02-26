@@ -19,9 +19,9 @@ import (
 
 // NewtMustache defines the `newtmustache` application configuration YAML
 type NewtMustache struct {
-	Port string
+	Port      string
 	Templates []*MustacheTemplate
-	Timeout time.Duration
+	Timeout   time.Duration
 }
 
 // MustacheTemplate hold the request to template mapping for NewtMustache struct
@@ -75,7 +75,7 @@ func NewNewtMustache(cfg *Config) (*NewtMustache, error) {
 func (mt *MustacheTemplate) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
 	if strings.Contains(mt.Pattern, "{") {
-		if ! strings.Contains(mt.Pattern, "}") {
+		if !strings.Contains(mt.Pattern, "}") {
 			return fmt.Errorf("%q is malformed", mt.Pattern)
 		}
 		// Record our list of var names so handler can override the object being constructed from a path.
@@ -87,7 +87,6 @@ func (mt *MustacheTemplate) ResolvePath() error {
 	}
 	return nil
 }
-
 
 // ResolvesTemplate is responsible for reading and parse the template and partials associated with a mapped request.
 // If an error is encountered a error value is returned.
@@ -149,7 +148,7 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 	if mt.Debug {
 		log.Printf(".Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
-	// FIXME: Think about what it means if a GET, HEAD, PUT, DELETE are to be handled. 
+	// FIXME: Think about what it means if a GET, HEAD, PUT, DELETE are to be handled.
 	obj := map[string]interface{}{}
 	src, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -163,7 +162,7 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 	if len(src) > 0 {
 		dec := json.NewDecoder(bytes.NewBuffer(src))
 		dec.UseNumber()
-		if err := dec.Decode(&obj); err != nil  && err != io.EOF {
+		if err := dec.Decode(&obj); err != nil && err != io.EOF {
 			if mt.Debug {
 				log.Printf("failed to decode JSON Response body, %s", err)
 			}
@@ -182,8 +181,8 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 		}
 		for k, v := range params {
 			if k != "" {
-				// Take the first value set (e.g. in POST or GET QUERY parameters) 
-				if _, conflict := obj[k]; ! conflict {
+				// Take the first value set (e.g. in POST or GET QUERY parameters)
+				if _, conflict := obj[k]; !conflict {
 					obj[k] = v
 				}
 			}

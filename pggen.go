@@ -13,11 +13,9 @@ import (
 //
 
 var (
-	ModelToPgSQLType = map[string]string{
-	}
+	ModelToPgSQLType = map[string]string{}
 
-	ModelToPgSQLFuncType = map[string]string{
-	}
+	ModelToPgSQLFuncType = map[string]string{}
 )
 
 // pgSetup renders setup SQL for namespace.
@@ -49,15 +47,15 @@ CREATE SCHEMA {{namespace}};
 -- are {{namespace}} schema and database.
 --
 DROP ROLE IF EXISTS {{namespace}}_anonymous;
-CREATE ROLE {{namespace}}_anonymous nologin;
+CREATE ROLE {{namespace}}_anonymous NOLOGIN;
 
 --
 -- NOTE: The "CREATE ROLE" line is the problem line for
 -- checking into your source control system. It contains a secret!
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
-DROP ROLE IF EXISTS {{namespace};
-CREATE ROLE {{namespace}} NOINHERIT LOGIN PASSWORD '${PASSWORD_GOES_HERE}';
+DROP ROLE IF EXISTS {{namespace}};
+CREATE ROLE {{namespace}} NOINHERIT LOGIN PASSWORD '{{secret}}';
 GRANT {{namespace}}_anonymous TO {{namespace}};
 `
 	tmpl, err := mustache.ParseString(txt)
@@ -66,6 +64,7 @@ GRANT {{namespace}}_anonymous TO {{namespace}};
 	}
 	data := map[string]string{
 		"namespace": namespace,
+		"secret": "__change_me_password_goes_here__",
 	}
 	return tmpl.FRender(out, data)
 }
@@ -76,7 +75,7 @@ func pgModels(out io.Writer, namespace string, models []*NewtModel) error {
 -- Below is the SQL I would noramally check into a project repository.
 -- It does not contain secrets. It contains our data models, views,
 -- and functions. This defines the behaviors made available through
--- PostgRESTS.
+-- PostgREST.
 --
 
 -- Make sure we are in the birds namespace/database
@@ -92,7 +91,7 @@ SET search_path TO {{namespace}}, public;
 	if err != nil {
 		return err
 	}
-	data := map[string]string {
+	data := map[string]string{
 		"namespace": namespace,
 	}
 	if err := tmpl.FRender(out, data); err != nil {
@@ -160,9 +159,9 @@ CREATE OR REPLACE VIEW {{namespace}}.list_{{model}} AS
 	for _, m := range models {
 		data["namespace"] = namespace
 		data["model"] = m.Name
-		data["fields_def"] = "<<<field definitions goes here>>>" //FIXME: Need a function that can take a model and return SQL field defs.
-		data["fields_ref"] = "<<<field references goes here>>>" //FIXME: Need a function that can take a model and return SQL field defs.
-		data["filter_for_record"] = "<<<where clause filter goes here>>>"  // FIXME: Need to write the WHERE clause filter to return a specific record.
+		data["fields_def"] = "<<<field definitions goes here>>>"          //FIXME: Need a function that can take a model and return SQL field defs.
+		data["fields_ref"] = "<<<field references goes here>>>"           //FIXME: Need a function that can take a model and return SQL field defs.
+		data["filter_for_record"] = "<<<where clause filter goes here>>>" // FIXME: Need to write the WHERE clause filter to return a specific record.
 		if err := tmpl.FRender(out, data); err != nil {
 			return err
 		}
@@ -186,7 +185,7 @@ GRANT USAGE ON SCHEMA {{namespace}} TO {{namespace}}_anonymous;
 	if err != nil {
 		return err
 	}
-	data = map[string]string {
+	data = map[string]string{
 		"namespace": namespace,
 	}
 	if err := tmpl.FRender(out, data); err != nil {
@@ -207,9 +206,9 @@ GRANT SELECT ON {{namespace}}.list_{{model}} TO {{namespace}}_anonymous;
 		return err
 	}
 	for _, m := range models {
-		data = map[string]string {
+		data = map[string]string{
 			"namespace": namespace,
-			"model": m.Name,
+			"model":     m.Name,
 		}
 		if err := tmpl.FRender(out, data); err != nil {
 			return err

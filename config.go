@@ -65,7 +65,7 @@ type Application struct {
 	Port int `json:"port,omitempty" yaml:"port,omitempty"`
 
 	// Timeout is a duration, it is used to set timeouts and the application.
-	Timeout time.Duration  `json:"timeout,omitempty" yaml:"timeout,omitempty"`
+	Timeout time.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
 
 	// Htdocs holds any static files you want to make available through
 	// Newt router.
@@ -96,11 +96,11 @@ func ConfigUnmarshal(src []byte, cfg *Config) error {
 	}
 	if cfg.Applications == nil {
 		cfg.Applications = &Applications{
-			NewtRouter: &Application{},
-			NewtMustache: &Application{},
+			NewtRouter:    &Application{},
+			NewtMustache:  &Application{},
 			NewtGenerator: &Application{},
-			Options: map[string]string{},
-			Environment: []string{},
+			Options:       map[string]string{},
+			Environment:   []string{},
 		}
 	}
 	return nil
@@ -131,11 +131,11 @@ func LoadConfig(configFName string) (*Config, error) {
 
 	if cfg.Applications == nil {
 		cfg.Applications = &Applications{
-			NewtRouter: &Application{},
-			NewtMustache: &Application{},
+			NewtRouter:    &Application{},
+			NewtMustache:  &Application{},
 			NewtGenerator: &Application{},
-			Options: map[string]string{},
-			Environment: []string{},
+			Options:       map[string]string{},
+			Environment:   []string{},
 		}
 	}
 	// Load environment if missing from config file.
@@ -149,3 +149,58 @@ func LoadConfig(configFName string) (*Config, error) {
 	}
 	return cfg, nil
 }
+
+// GetModelIds returns a list of model ids
+func (cfg *Config) GetModelIds() []string {
+	ids := []string{}
+	for _, m := range cfg.Models {
+		if m.Id != "" {
+			ids = append(ids, m.Id)
+		}
+	}
+	return ids
+}
+
+// GetModelNames returns a list of model names (not to be confused with Model ids)
+func (cfg *Config) GetModelNames() []string {
+	names := []string{}
+	for _, m := range cfg.Models {
+		if m.Name != "" {
+			names = append(names, m.Name)
+		}
+	}
+	return names
+}
+
+// GetModelById return a specific model by it's id
+func (cfg *Config) GetModelById(id string) (*NewtModel, bool) {
+	for _, m := range cfg.Models {
+		if m.Id == id {
+			return m, true
+		}
+	}
+	return nil, false
+}
+
+/*
+// GetTemplateIds return a list of template ids
+func (cfg *Config) GetTemplateIds() []string {
+	ids := []string{}
+	for _, t := range cfg.Templates {
+		if t.Id != "" {
+			ids = append(ids, t.Id)
+		}
+	}
+	return ids
+}
+
+// GetTemplateById return a a list
+func (cfg *Config) GetTemplateById(id string) (*NewtTemplate, bool) {
+	for _, t := range cfg.Models {
+		if t.Id == id {
+			return t, true
+		}
+	}
+	return nil, false
+}
+*/

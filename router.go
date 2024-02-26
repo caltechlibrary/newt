@@ -13,7 +13,7 @@ import (
 // NewtRouter is used to implement the Newt Router
 type NewtRouter struct {
 	// Port is the port the router will listen on
-	Port string 
+	Port string
 
 	// Routes holds a list of route
 	Routes []*NewtRoute
@@ -228,7 +228,7 @@ func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
 		// defined options.  NOTE: Application options have already been resolved
 		// with the environment by cfg.LoadConfig()
 		for k, v := range cfg.Applications.Options {
-			if _, conflict := route.Options[k]; ! conflict {
+			if _, conflict := route.Options[k]; !conflict {
 				route.Options[k] = v
 			}
 		}
@@ -244,7 +244,7 @@ func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
 func (rtr *NewtRouter) ListenAndServe() error {
 	mux := http.NewServeMux()
 	for _, nr := range rtr.Routes {
-		// FIXME: need to warn if the patter is / when the htdocs 
+		// FIXME: need to warn if the patter is / when the htdocs
 		// directory is set.
 		if (nr.Pattern == "/" || strings.HasSuffix(nr.Pattern, " /")) && rtr.Htdocs != "" {
 			log.Println("WARNING: you have a htdocs directory set to service files and you've mapped a route to the name end point, /")

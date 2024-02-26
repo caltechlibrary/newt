@@ -1,7 +1,7 @@
 package newt
 
 import (
-"testing"
+	"testing"
 )
 
 func TestRouter(t *testing.T) {

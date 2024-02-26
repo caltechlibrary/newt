@@ -1,5 +1,38 @@
 application:
   port: 3029
+models:
+  - id: post
+    name: Blog Post
+    description: A blog post or article
+    body:
+      - id: title
+        type: input
+        attributes:
+          name: title
+          placeholdertext: ex. My Blog Post for Today
+        validation:
+          required: false
+      - id: byline
+        type: input
+        attributes:
+          name: byline
+          placeholdertext: ex. By Jane Jones, 1912-12-12
+        validation:
+          required: false
+      - id: content
+        type: textarea
+        description: The content of your post or article
+        attributes:
+          name: content
+        validation:
+          required: true
+      - id: pubDate
+        type: input[type=date]
+        description: date to publish the post
+        attributes:
+          name: pubDate
+        validation:
+          required: true
 templates:
   - request: "POST /custom_page"
     template: page.tmpl

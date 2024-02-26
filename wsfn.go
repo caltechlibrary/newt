@@ -33,17 +33,17 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if l.Verbose {
 		header, _ = json.MarshalIndent(r.Header, "", "  ")
 		switch r.Method {
-			case http.MethodPost :
-				buf, _ = io.ReadAll(r.Body)
-			case http.MethodGet:
-				values := r.URL.Query()
-				buf = []byte(fmt.Sprintf("%+v", values))
-			case http.MethodPut:
-				buf, _ = io.ReadAll(r.Body)
-			case http.MethodPatch:
-				buf, _ = io.ReadAll(r.Body)
-			default:
-				buf = []byte("body not captured for method "+r.Method)
+		case http.MethodPost:
+			buf, _ = io.ReadAll(r.Body)
+		case http.MethodGet:
+			values := r.URL.Query()
+			buf = []byte(fmt.Sprintf("%+v", values))
+		case http.MethodPut:
+			buf, _ = io.ReadAll(r.Body)
+		case http.MethodPatch:
+			buf, _ = io.ReadAll(r.Body)
+		default:
+			buf = []byte("body not captured for method " + r.Method)
 		}
 	}
 	if !l.After {
@@ -53,7 +53,7 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
 		}
 	}
-	if l.handler != nil && l.handler.ServeHTTP != nil {
+	if l.handler != nil {
 		l.handler.ServeHTTP(w, r)
 	} else {
 		log.Printf("%s %s %v handler or ServiceHTTP is nil", r.Method, r.URL.Path, time.Since(start))

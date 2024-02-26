@@ -46,9 +46,9 @@ func NewGenerator(cfg *Config) (*NewtGenerator, error) {
 // renderPostgreSQL does what its name implies. It outputs an SQL
 // program in Postgres SQL dialect. It does so for a specific type
 // request. Possible values are "setup", "models" and "models_test".
-// 
+//
 // The "setup" code type includes a placeholder for your DB credentials.
-// It should not be included in your GitHub repository. 
+// It should not be included in your GitHub repository.
 //
 // The "models" contains all the table definitions, view definitions,
 // and functions implementing CRUD-L operations for each model.
@@ -57,16 +57,15 @@ func NewGenerator(cfg *Config) (*NewtGenerator, error) {
 // were created successfully.
 func (g *NewtGenerator) renderPostgreSQL(codeType string) error {
 	switch codeType {
-		case "setup":
-			return pgSetup(g.out, g.Namespace)
-		case "models":
-			return pgModels(g.out, g.Namespace, g.Models)
-		case "models_test":
-			return pgModelsTest(g.out, g.Models)
-		default:
-			return fmt.Errorf("%q not supported at this time", codeType)
+	case "setup":
+		return pgSetup(g.out, g.Namespace)
+	case "models":
+		return pgModels(g.out, g.Namespace, g.Models)
+	case "models_test":
+		return pgModelsTest(g.out, g.Models)
+	default:
+		return fmt.Errorf("%q not supported at this time", codeType)
 	}
-	return fmt.Errorf("g.renderPostgreSQL(%q) not implemented", codeType)
 }
 
 func (g *NewtGenerator) renderPostgREST(codeType string) error {
@@ -85,16 +84,15 @@ func (g *NewtGenerator) renderHtml(codeType string) error {
 // FIXME: Not implemented yet.
 func (g *NewtGenerator) Generate(target string, codeType string) error {
 	switch target {
-		case "postgres":
-			return g.renderPostgreSQL(codeType)
-		case "postgrest":
-			return g.renderPostgREST(codeType)
-		case "mustache":
-			return g.renderMustache(codeType)
-		case "html":
-			return g.renderHtml(codeType)
-		default:
-			return fmt.Errorf("%q is not supported at this time", target)
+	case "postgres":
+		return g.renderPostgreSQL(codeType)
+	case "postgrest":
+		return g.renderPostgREST(codeType)
+	case "mustache":
+		return g.renderMustache(codeType)
+	case "html":
+		return g.renderHtml(codeType)
+	default:
+		return fmt.Errorf("%q is not supported at this time", target)
 	}
-	return nil
 }
