@@ -27,7 +27,7 @@ newtrouter
 : this containes configuration for the Newt Router, i.e. port and htdocs
 
 newtgenerator
-: this contains configuration for the Newt Generator, e.g. port, namespace
+: this contains configuration for the Newt Generator, i.e. namespace
 
 newtmustache
 : this contains configuration for Newt Mustache, i.e. port
@@ -36,7 +36,7 @@ options
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
 
 environment
-: (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+: (optional) this is a list of operating system environment variables that will be available to models, routes and templates. You can use this to pass in secrets (e.g. credentials) to your pipelined services.
 
 ### Configuring Newt programs
 

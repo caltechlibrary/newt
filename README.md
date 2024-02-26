@@ -120,7 +120,7 @@ What we should do is use Newt to tie those JSON services together, render the re
 
 ### A Newt baseline
 
-Web services talk to other web services all the time. This isn't new. It isn't exotic it. LAM systems often do this too. Can we do this at small scale too? Let me break that down further.
+Web services talk to other web services all the time. This isn't new. It isn't exotic it. LAM systems often do this too. Can we do this on a small scale too?
 
 - Can we align access control with our front end web server?
 - Can we insist our database management system provides flexible JSON API?
