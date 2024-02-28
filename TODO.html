@@ -34,13 +34,17 @@ pipeline</label></li>
 <ul class="task-list">
 <li><label><input type="checkbox" />Nail down the second prototype YAML
 syntax</label></li>
-<li><label><input type="checkbox" />There should be a “newt” command
-that wraps the router, generator and mustache engine in the way the go
-coommand wraps govet, gofmt, etc. This will be convenient for
+<li><label><input type="checkbox" checked="" />There should be a “newt”
+command that wraps the router, generator and mustache engine in the way
+the go coommand wraps govet, gofmt, etc. This will be convenient for
 development</label></li>
 <li><label><input type="checkbox" />I need to implement the second
 prototype code generator once I’ve debugged the Newt YAML
 syntax</label></li>
+<li><label><input type="checkbox" />An “object manager” takes a model
+and maps it to the SQL JSON storage model of the generated code (id,
+created, updated, object), it also validates the submitted object
+against that model</label></li>
 <li><label><input type="checkbox" checked="" />(rethought the
 application concept in favor of a single YAML file) Should Application
 metadata really be it’s own top level attribute? Wouldn’t having a

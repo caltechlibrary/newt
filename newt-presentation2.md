@@ -25,18 +25,18 @@ Is Newt and "off the shelf" enough?
 
 # Choose wisely: pick your abstractions
 
-- Simple = (No code) + (Less code)
+- Simple = (No coding) + (Less code)
 - Compose applications, use data pipelines
 - Align service and deliverables
 
-# Off the shelf
+# Off the shelf (no coding)
 
 - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) =>  JSON data source
 - Newt Mustache => Transform JSON into web pages
 - Newt Router, ties it all together
 - YAML can express routes, pipelines and data models
 
-# Assembling it with YAML
+# Assembling it with YAML (less code)
 
 - Newt's Second Prototype has a new YAML syntax
   - GitHub YAML issue template syntax

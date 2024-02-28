@@ -8,8 +8,9 @@
 ## Next
 
 - [ ] Nail down the second prototype YAML syntax
-- [ ] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go coommand wraps govet, gofmt, etc. This will be convenient for development
+- [x] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go coommand wraps govet, gofmt, etc. This will be convenient for development
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
+- [ ] An "object manager" takes a model and maps it to the SQL JSON storage model of the generated code (id, created, updated, object), it also validates the submitted object against that model
 - [X] (rethought the application concept in favor of a single YAML file) Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
 - [X] (one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
   - [X] (future prototype can do OS level suggested conf files) Using a combined file would make it easy to generate startup scripts or systemd configurations

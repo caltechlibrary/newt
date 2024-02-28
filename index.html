@@ -53,25 +53,29 @@ already available as off the shelf software. Here is a short list of
 examples.</p>
 <ul>
 <li>Postgres and PostgREST provides a JSON API for data management</li>
-<li>MySQL or MariaDB combined with MySQL REST Service provides a web api
-for datat management</li>
+<li>MySQL or MariaDB combined with MySQL REST Service provides a web API
+for data management</li>
 <li>Solr provides full text search as a web service</li>
-<li>Elasticseach and Opensearch provide a full text search engine as a
+<li>Elasticsearch and Opensearch provide a full text search engine as a
 web service</li>
 <li>ArchiveSpace provides a JSON API web service</li>
-<li>InvenioRDM provides a JSON API web service</li>
+<li>Invenio RDM provides a JSON API web service</li>
 <li>Cantaloupe IIIF Image server has integration points</li>
 </ul>
 <p>This is not an exhaustive list. These types of applications can all
 be integrated into your application through configuring the connection
 in Newt’s YAML file. Newt Router runs the data pipelines.</p>
-<p>How do you setup a database as a JSON data source? Newt’s code
-generator can lend a hand there. Newt’s code generator understands
-Newt’s YAML file and can render the data models in useful ways. The Newt
-code generator can render the SQL and configuration for
-Postgres+PostgREST. Newt’s code generator can render Mustache templates
-too. Between the SQL and Mustache temples you have the basic CRUD-L<a
-href="#fn2" class="footnote-ref" id="fnref2"
+<blockquote>
+<p>Wait, what about my custom metadata needs?</p>
+</blockquote>
+<p>That’s role is filled by your JSON data source. In the second Newt
+prototype our focus is on using Postgres+PostgREST as the JSON data
+source. Newt’s code generator can lend a hand here. Using Newt’s YAML
+file the code generator can generate a the SQL setup for
+Postgres+PostgREST, the SQL for managing your objects and the
+configuration file for PostgREST. Additionally Newt’s code generator can
+render Mustache templates too. Between the SQL and Mustache temples you
+have the basic CRUD-L<a href="#fn2" class="footnote-ref" id="fnref2"
 role="doc-noteref"><sup>2</sup></a> operations required for managing
 data. The off the self software, Newt generator, router and temple
 service gives you the core features for building LAM applications.</p>
@@ -201,7 +205,7 @@ intended side effect of Newt.</p>
 were creating middleware. Even Drupal and WordPress are really
 middleware. Middleware sits between a data source (e.g. a database) and
 the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2
-or proxied loke with NGINX. It’s still middleware.</p>
+or proxied like with NGINX. It’s still middleware.</p>
 <p>A big key to simplification is narrowing the focus of our middleware.
 When our middleware has to implement everything it becomes very complex.
 Look at Drupal and WordPress. They implement data modeling, data

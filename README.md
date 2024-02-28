@@ -10,16 +10,18 @@ You can think of a web application as a sequence of requests and responses. In a
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples.
 
 - Postgres and PostgREST provides a JSON API for data management
-- MySQL or MariaDB combined with MySQL REST Service provides a web api for datat management
+- MySQL or MariaDB combined with MySQL REST Service provides a web API for data management
 - Solr provides full text search as a web service
-- Elasticseach and Opensearch provide a full text search engine as a web service
+- Elasticsearch and Opensearch provide a full text search engine as a web service
 - ArchiveSpace provides a JSON API web service
-- InvenioRDM provides a JSON API web service
+- Invenio RDM provides a JSON API web service
 - Cantaloupe IIIF Image server has integration points
 
 This is not an exhaustive list. These types of applications can all be integrated into your application through configuring the connection in Newt's YAML file. Newt Router runs the data pipelines.
 
-How do you setup a database as a JSON data source? Newt's code generator can lend a hand there. Newt's code generator understands Newt's YAML file and can render the data models in useful ways.  The Newt code generator can render the SQL and configuration for Postgres+PostgREST. Newt's code generator can render Mustache templates too. Between the SQL and Mustache temples you have the basic CRUD-L[^12] operations required for managing data. The off the self software, Newt generator, router and temple service gives you the core features for building LAM applications.
+> Wait, what about my custom metadata needs?
+
+That's role is filled by your JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as the JSON data source. Newt's code generator can lend a hand here. Using Newt's YAML file the code generator can generate a the SQL setup for Postgres+PostgREST, the SQL for managing your objects and the configuration file for PostgREST. Additionally Newt's code generator can render Mustache templates too. Between the SQL and Mustache temples you have the basic CRUD-L[^12] operations required for managing data. The off the self software, Newt generator, router and temple service gives you the core features for building LAM applications.
 
 Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal, WordPress, or Islandora. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use another software system.
 
@@ -87,7 +89,7 @@ I think a radical simplification is due.  Newt in part is intended to spark that
 
 > OK, a little more context
 
-Back in the day whether we were writing in PHP, Python or Perl we were creating middleware. Even Drupal and WordPress are really middleware. Middleware sits between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2 or proxied loke with NGINX. It's still middleware.
+Back in the day whether we were writing in PHP, Python or Perl we were creating middleware. Even Drupal and WordPress are really middleware. Middleware sits between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2 or proxied like with NGINX. It's still middleware.
 
 A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. The approach starts to sound familiar. It is the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog system imports data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What if doing that was as easy as using Unix pipes? I think it can using a little YAML notation.
 

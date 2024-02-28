@@ -77,7 +77,19 @@ func pgModels(out io.Writer, namespace string, models []*NewtModel) error {
 -- and functions. This defines the behaviors made available through
 -- PostgREST.
 --
-
+-- Newt Generator creates a simple SQL schema leveraging the JSONB column
+-- support in Postgres.  There are four fields inspired by a simplification
+-- of RDM records.
+--
+-- oid: This is a short unique identifier for the object
+-- created: This is the date the object was created (timestamp format)
+-- updated: This is a timestamp of when an object changed
+-- object: This is a jsonb column holding our object
+--
+-- This simplification allows for simplier code in the 2nd Newt Prototype.
+-- In principle the model could be mapped directly into column defs but
+-- this is unnecessary in the prototype so skipped for now.
+--
 -- Make sure we are in the birds namespace/database
 \c {{namespace}}
 -- Make sure our namespace is first in the search path
@@ -105,10 +117,24 @@ SET search_path TO {{namespace}}, public;
 --
 -- DROP TABLE IF EXISTS {{namespace}}.{{model}};
 CREATE TABLE {{namespace}}.{{model}} (
---  Need to insure all objects have an object identifier (primary key), creatd and updated timestamps
--- working without interventions for CRUD-L operations.
---  {{fields_def}}
+	oid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+	object JSONB
 );
+
+CREATE OR REPLACE FUNCTION {{model}}_update_updated()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated = current_timestamp;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER {{model}}_updated_trigger
+BEFORE UPDATE ON {{model}}
+FOR EACH ROW
+EXECUTE FUNCTION {{model}}_update_updated();
 
 --
 -- {{namespace}}.{{model}} CRUD-L operations (functions and views)
@@ -116,52 +142,47 @@ CREATE TABLE {{namespace}}.{{model}} (
 
 -- {{namspace}}.{{model}}_create is a stored function to create a new object
 -- It becomes the end point '/rpc/create_{{model}}'
--- Three 
-CREATE OR REPLACE FUNCTION {{namespace}}.create_{{model}}({{fields_ref}})
-RETURNS bool LANGUAGE SQL AS $$
-  INSERT INTO {{namespace}}.{{model}} ({{fields_ref}})) VALUES ({{fields_ref}});
--- FIXME: Need to return the object key or whole object.
-  SELECT true;
+-- It turns the generator UUID
+CREATE OR REPLACE FUNCTION {{namespace}}.create_{{model}}(object)
+RETURNS UUID, TIMESTAMPZ, TIMESTAMPZ, JSONB LANGUAGE SQL AS $$
+    INSERT INTO {{namespace}}.{{model}} (object)) VALUES (object)
+    RETURNING {{model}}.oid, {{model}}.created, {{model}}.updated, {{model}}.object
 $$;
 
 -- {{namespace}}.{{model}}_update is a stored function to update an object.
 -- It becomes the end point '/rpc/update_{{model}}'
-CREATE OR REPLACE FUNCTION {{namespace}}.update_{{model}}({{fields_ref}})
-RETURN book LANGAUGE SQL AS $$
--- FIXME: Need to generste a {{a_field_ref}} = '{{field_value}}' pairing.
-   UPDATE {{namespace}}.{{model}} SET {{field_value_list}} WHERE {{filter_for_record}} LIMIT 1;
--- FIXME: Need to return the object key or whole object.
-   SELECT true;
+CREATE OR REPLACE FUNCTION {{namespace}}.update_{{model}}(oid, object)
+RETURN UUID, TIMESTAMPZ, TIMESTAMPZ, JSONB LANGAUGE SQL AS $$
+    UPDATE {{namespace}}.{{model}} SET {{model}}.object = object WHERE {{model}}.oid = oid 
+    RETURNING {{model}}.oid, {{model}}.created, {{model}}.updated, {{model}}.object
 $$;
 
 -- {{namespace}}.read_{{model}} will become an end point in PostgREST, '/read_{{model}}'
 CREATE OR REPLACE VIEW {{namespace}}.read_{{model}} AS
-  SELECT {{fields_refs}} FROM {{namespace}}.{{model}} WHERE {{filter_for_record}} LIMIT 1;
+  SELECT oid, created, updated, object FROM {{namespace}}.{{model}} WHERE oid = ? LIMIT 1;
 
 -- {{namespace}}.delete_{{model}} is a stored function to delete an object.
 -- It becomes the end point '/rpc/delete_{{model}}'
-CREATE OR REPLACE FUNCTION {{namespace}}.delete_{{model}}({{frield_names}}, {{field_values}})
-RETURN book LANGAUGE SQL AS $$
-   DELETE {{namespace}}.{{model}} WHERE {{filter_for_record}};
-   SELECT true;
+CREATE OR REPLACE FUNCTION {{namespace}}.delete_{{model}}(oid)
+RETURN UUID, TIMESTAMPZ, TIMESTAMPZ, JSONB LANGAUGE SQL AS $$
+   DELETE {{namespace}}.{{model}} WHERE {{model}}.oid = oid
+   RETURn oid, created, updated, object;
 $$;
 
 -- {{namespace}}.list_{{model}} will become an end point in PostgREST, '/list_{{model}}'
+-- It returns a list sorted by descending updated date.
 CREATE OR REPLACE VIEW {{namespace}}.list_{{model}} AS
-  {{list_view_select}};
-
+  SELECT oid, created, updated, object FROM {{namespace}}.{{model}} ORDER BY updated DESC;
 `
 	tmpl, err = mustache.ParseString(txt)
 	if err != nil {
 		return err
 	}
+	fmt.Fprintf(out, "-- DEBUG Code generated for for %d models\n", len(models))
 	data = map[string]string{}
 	for _, m := range models {
 		data["namespace"] = namespace
 		data["model"] = m.Name
-		data["fields_def"] = "<<<field definitions goes here>>>"          //FIXME: Need a function that can take a model and return SQL field defs.
-		data["fields_ref"] = "<<<field references goes here>>>"           //FIXME: Need a function that can take a model and return SQL field defs.
-		data["filter_for_record"] = "<<<where clause filter goes here>>>" // FIXME: Need to write the WHERE clause filter to return a specific record.
 		if err := tmpl.FRender(out, data); err != nil {
 			return err
 		}
