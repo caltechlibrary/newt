@@ -90,7 +90,7 @@ A second prototype Newt application
 - Web services' cognitive price
 - Containers add to complexity
 - Web services need a "developer" mode for debugging
-- Newt, **a static site generator platform**
+- Newt, **a static site generator platform?**
 
 # Newt has weaknesses
 
