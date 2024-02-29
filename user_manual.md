@@ -11,6 +11,9 @@
     - [newt](newt.1.md), this program runs both Newt Router and Mustache as one process
     - [ws](ws.1.md), provides a localhost static file server on port 8000, including a verbose model for debugging POST, PUT and PATCH
 
+- Turtorials
+  - [ornothology](ornothology.md), a demo of building an out of the box app with Newt, Postgres and PostgREST
+
 - Presentations, articles and examples
   - [Newt Prototype 2 Presentation](presentation2/), (draft, Feb 15, 2024)
   - [Newt Mustache Explained](newtmustache_explained.md), Feb 12, 2024

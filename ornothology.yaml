@@ -1,0 +1,154 @@
+#
+# ornothology.yaml is a YAML file to test on going develement of Newt tools.
+# Particularly the generator.
+#
+applications:
+  newtrouter:
+    htdocs: /Users/rsdoiel/Sites/rsdoiel.github.io/
+    port: 8020
+  newtmustache:
+    port: 8030
+  newtgenerator:
+    namespace: ornothology
+models:
+  - id: sighting
+    name: Bird Sightings
+    description: |
+      This model captures the data for a bird sighting.
+    body:
+      - id: bird
+        type: input
+        description: Bird name or description
+        attibributes:
+          name: bird
+          placeholdertext: ex. Blue Bird, Hummingbird
+        validations:
+          required: true
+      - id: place
+        type: input
+        description: short description of where sited
+        attributes:
+          name: place
+          placeholdertext: ex. Backyard, Central Park
+        validations:
+          required: true
+      - id: sighted
+        type: input[type=date]
+        description: approx date/time of sighting
+        attributes:
+          name: sighted
+          placeholdertext: ex. 2024-02-29 20:00 PST
+        validation:
+          required: true
+      - id: notes
+        type: textarea
+        description: Any additional notes
+        attributes:
+          name: notes
+          placeholdertext: |
+            ex. Tree was bare. Frost on the ground.
+        validations:
+          required: false
+#
+# These routes need to be rewriten to actually test
+# PostgREST with for CRUD-L verification of generated SQL.
+#
+routes:
+  - id: sightings
+    request: GET /sightings/
+    description: Fetch a list of bird sightings
+    pipeline:
+      - service: GET http://localhost:8000/
+        description: Birds #1 from the data pipeline
+    debug: false
+# We need an empty web form before submitting it when adding a bird.
+  - id: create_sighting_webform
+    request: GET /add_sighting
+    description: Display the web form for adding a sighting.
+    pipeline:
+      - service: GET http://localhost:8030/create_sighting
+        description: Add a sighting via PostgREST JSON API
+# Once the form is submitted, we can process it in the pipeline.
+  - id: create_sighting
+    request: POST /sightings/
+    description: Create a new sighting entry
+    pipeline:
+      - service: POST http://localhost:3000/rpc/ornothology/create_sighting
+        description: Add a sighting via PostgREST JSON API
+      - service: POST http://localhost:8030/create_sighting
+        description: Display the results of creating the sighthing
+  - id: read_sighting
+    request: GET /sighting/{oid}
+    discription: Retrieve the sighting record
+    pipeline:
+      - service: GET http://localhost:3000/rpc/ornothology/read_sighting/{oid}
+        description: Retrieve the sighting record from PostgREST
+      - service: POST http://localhost:8030/read_sighting
+        description: format the record in HTML
+# Update we need to retreive the record then format the record for updating via web form
+  - id: update_sighting_webform
+    request: GET /update_sighting
+    description: Retrieve the record from PostgREST and populate the update web form
+    pipeline:
+      - service: GET http://localhost:3000/rpc/ornothology/read_sighting/{oid}
+        description: Retrieve the record so we can populate the web form
+      - service: POST http://localhost:8030/update_sighting
+        description : Present the update sighthing web form
+# Update submission
+  - id: update_sighting
+    request: POST /update_sighting/{oid}
+    description: Process the web form submissio to update the record
+    pipeline:
+      - service: PUT http://localhost:3000/rpc/ornothology/update_sighting/{oid}
+        description: Post the data to PostgREST API
+      - service: POST http://localhost:8030/update_sighting
+        description: Show the results of the updated record
+# Delete record web form
+  - id: delete_sighting_webform
+    request: GET /delete_sighting
+    description: Display a web form to delete the record.
+    pipeline:
+      - service: GET http://localhost:8030/delete_sighting
+        description: Get the empty template to delete a record.
+# Delete submission, process the deletion request
+  - id: delete_sighting
+    request: DELETE /delete_sighting/{oid}
+    description: Process the deletion request
+    pipeline:
+      - service: DELETE http://localhost/rpc/ornothology/delete_sighting/{oid}
+        description: Delete the record via PostgREST API
+      - service: POST http://localhost:8030/delete_sighting
+        description: Show the deletion result page
+# List records
+  - id: list_sighting
+    request: GET /sighting
+    decription: Display a list of sightings
+    pipeline:
+      - service: GET http://localhost:3000/rpc/ornothology/list_sighting
+        description: Retrieve a JSON array of sightings to display
+      - service: POST http://localhost:8030/list_sighting
+        decription: Display the list of sightings as HTML
+#
+# Thse templates should be generated using Newt Generator
+# and then tested in a pipeline with Postgres+PostgREST
+#
+# NOTE: we use  POST when sending data to be rendered but
+# use a GET when retrieving a fresh empty template. This means
+# both C (create) and U (update) options have both a GET and POST
+# version.
+#
+templates:
+  - request: GET /create_sighting
+    template: create_sighting.tmpl
+  - request: POST /create_sighting
+    template: create_sighting.tmpl
+  - request: POST /read_sighting
+    template: read_sighting.tmpl
+  - request: GET /update_sighting
+    template: update_sighting.tmpl
+  - request: POST /update_sighting
+    template: update_sighting.tmpl
+  - request: POST /delete_sighting
+    template: delete_sighting.tmpl
+  - request: POST /list_sighting
+    template: list_sighting.yaml

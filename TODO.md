@@ -7,18 +7,34 @@
 
 ## Next for the second prototype 
 
+NOTE: X is completed, P is partial completion, S is skipping for now
+
 - [ ] Nail down the second prototype YAML syntax
-- [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go command wraps govet, gofmt, etc. This will be convenient for development
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
     - [X] setup.sql
-    - [X] models.sql
+    - [P] models.sql
+        - [ ] a URL friendly uuid encoding is needed, see https://www.postgresql.org/docs/current/functions-binarystring.html and the function `encode()` and `decode()`, they support base64 encoding.
     - [ ] postgrest.conf
     - [ ] create mustache template
     - [ ] read mustache template
     - [ ] update mustache template
     - [ ] delete mustache template
     - [ ] list mustache template
+- [ ] Should `newt` runner be able to manage a postgrest instance?
+  - [ ] `newt` would need to respond SIGTERM, SIGHUP and SIGKILL
+  - [ ] `newt` need to track the pid of the external process, then folder that into the signal handlers
+- [ ] `newtinit`, an interactive Newt YAML file generator, need to decide on approach
+    - [ ] could be done as a cli interactive tool
+    - [ ] could be done as part of the Newt website, like the Codemeta generator, but using a web component to render the Newt YAML contents
+    - [ ] could be done as a GUI form based application
 - [ ] A "newt object manager" takes a model, validates it and if OK sends the result to the next stage in the pipeline for storage. It should deal with things like unpacking shortened uuids using a base encoding scheme
+- [ ] Present to DLD and interested staff
+- [ ] Present/announce via SoCal Code4Lib (recorded or in person presentation)
+- [ ] Create birds demo for 2nd Prototype (using Postgres+PostgREST, Newt Router and Newt Mustache)
+- [ ] Create postcards demo, armchair archive example
+- [ ] Implement Thesis Management System core in Newt (not email features)
+- [ ] Implement COLD core
+- [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go command wraps govet, gofmt, etc. This will be convenient for development
 - [X] (rethought the application concept in favor of a single YAML file) Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
 - [X] (one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
   - [X] (future prototype can do OS level suggested conf files) Using a combined file would make it easy to generate startup scripts or systemd configurations
@@ -30,12 +46,6 @@
   - [X] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
   - [X] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
 - [X] Present at Code4Lib meetup, July 14, 2023
-- [ ] Present to DLD and interested staff
-- [ ] Present/announce via SoCal Code4Lib (recorded or in person presentation)
-- [ ] Create birds demo for 2nd Prototype (using Postgres+PostgREST, Newt Router and Newt Mustache)
-- [ ] Create postcards demo, armchair archive example
-- [ ] Implement Thesis Management System core in Newt (not email features)
-- [ ] Implement COLD core
 
 ## Someday, maybe
 

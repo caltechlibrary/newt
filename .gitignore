@@ -11,3 +11,6 @@ man/*
 pdf/*
 epub/*
 old_code/*
+ornothology_*.sql
+ornothology_*.conf
+*_sightings.sql
