@@ -175,7 +175,7 @@ Newt application development is friendly to version control systems (e.g. Git). 
 - `/` project folder
   - `htdocs` this directory holds your static content needed by your web application
   - `*.sql` these are the SQL files used by your application to define your models and behaviors in Postgres
-  - `templates` a directory holding your template pages
+  - `templates` a directory holding your templates
   - `app.yaml` would holds the configuration of our Newt tools
   - `CITATION.cff` or `codemeta.json` for project metadata
 
