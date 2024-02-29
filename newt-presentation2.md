@@ -116,9 +116,8 @@ A second prototype Newt application
 
 # My wish list ...
 
-- S3 protocol support
+- simple web service with S3 protocol implementing current OCFL
 - SQLite 3 database support
-- Non-linear conditional pipelines
 - Visually programming for Newt YAML files
 - Web components for LAM metadata types
 
