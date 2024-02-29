@@ -158,10 +158,14 @@ file need to boostrap Postgres+PostgREST.
 ~~~
 {app_name} people.yaml postgres setup >setup.sql
 {app_name} people.yaml postgres models >models.sql
-{app_name} people.yaml postgres models_test >models_test.sql
 {app_name} people.yaml postgrest >postgrest.conf
+
+{app_name} people.yaml mustache create >create_people.tmpl
+{app_name} people.yaml mustache read >read_people.tmpl
+{app_name} people.yaml mustache update >update_people.tmpl
+{app_name} people.yaml mustache delete >delete_people.tmpl
+{app_name} people.yaml mustache list >list_people.tmpl
 ~~~
-{app_name} people.yaml mustache create
 
 This is an example YAML file used to generator Postgres SQL, PostgREST configuration and Mustache templates.
 
