@@ -1,4 +1,4 @@
----
+ok---
 title: "Newt, the second prototype"
 author: "R. S. Doiel, <rsdoiel@caltech.edu>"
 institute: |
@@ -46,6 +46,30 @@ Is Newt and "off the shelf" enough?
 # Demo time
 
 A second prototype Newt application
+
+# Step one create our YAML file
+
+- text editor
+
+# Step two generate our files
+
+- newtgenerator
+- text editor
+
+# Step three implement our JSON data source
+
+- psql
+- postgrest
+
+# Step four define routes and map templates
+
+- text editor
+
+# Step five, fire everything up and test
+
+- PostgREST 
+- newt
+- web browser
 
 # What did we see?
 
