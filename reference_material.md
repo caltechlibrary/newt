@@ -15,7 +15,7 @@ These are links to prior art, related efforts and resources for consideration in
 - [htmx](https://htmx.org/), a Web Component like markup implementing the wrapping layer between JSON API and HTML structured markup
 - [Yafowil, yet another form widget library](http://docs.yafowil.info/)
     - [Describe YAFOWIL forms with YAML](https://yafowil.readthedocs.io/en/latest/yaml.html)
-- [MDN Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_Components), useful for make specialize input elements, like ORCID, DOI, ArXiv identifier entry
+- [MDN Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_Components), coulf be useful for making specialize input elements, like ORCID, DOI, ArXiv identifier entry
 - [MDN HTML5 input types](https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types)
 - [Generate webforms based on YAML schema with pykwalify](https://github.com/cxong/pykwalify-webform)
 - [Flask Open API 3](https://pypi.org/project/flask-openapi3/)
