@@ -67,7 +67,7 @@ cd src/github.com/caltechlibrary/newt
 
 #### step 3
 
-For these three tasks we're going to use the Go command. It assumed are still int eh directory where you completed step 2.
+For these three tasks we're going to use the Go command. It assumed you are still in the directory where you completed step 2.
 
 1. Build the newt application
 2. Test the newt application
