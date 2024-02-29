@@ -43,7 +43,7 @@
 - [ ] An OCFL service would allow Newt to support building repository like applications. U. C. Santa Barbara has some Go packages related to this.
 - [ ] Newt should support development with SQLite 3 databases
   - [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server
-  - [ ] Should a write a newtsqlite service?
+  - [ ] Should Newt supply a newtsqlite service?
 - [ ] Can I extend Newt to support file uploads?
   - [ ] Should this be a separate service, a stage in the pipeline?
   - [ ] Should I integrate S3 protocol support to allow file upload handling?
