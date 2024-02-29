@@ -80,7 +80,7 @@ It appears it may be desirable when generating SQL code and web forms to allow f
 }
 ~~~
 
-This could be implemented directory into the generated SQL or have an identifer service that sits in front of the DB JSON API.
+This could be implemented directory into the generated SQL or have an Identifier service that sits in front of the DB JSON API.
 
 - [UUID](https://pkg.go.dev/github.com/google/UUID), v4 UUID, go storage in Postgres, long for URL
 - [shortid](https://pkg.go.dev/github.com/teris-io/shortid)
