@@ -29,8 +29,8 @@ func pgSetup(out io.Writer, namespace string) error {
 --
 
 -- Uncomment these two lines if you have used Postgres' createdb yet.
--- DROP DATABASE IF EXISTS {{namespace}};
--- CREATE DATABASE EXISTS {{namespace}};
+-- drop database if exists {{namespace}};
+-- create database {{namespace}};
 
 -- Make sure we are in the {{namespace}} namespace/database
 \c {{namespace}}
@@ -39,24 +39,24 @@ func pgSetup(out io.Writer, namespace string) error {
 -- Setup a Postgres "schema" (a.k.a. namespace) for
 -- working with PostgREST
 --
-DROP SCHEMA IF EXISTS {{namespace}} CASCADE;
-CREATE SCHEMA {{namespace}};
+drop schema if exists {{namespace}} cascade;
+create schema {{namespace}};
 
 --
 -- The following additional steps are needed for PostgREST access
 -- are {{namespace}} schema and database.
 --
-DROP ROLE IF EXISTS {{namespace}}_anonymous;
-CREATE ROLE {{namespace}}_anonymous NOLOGIN;
+drop role if exists {{namespace}}_anonymous;
+create role {{namespace}}_anonymous nologin;
 
 --
 -- NOTE: The "CREATE ROLE" line is the problem line for
 -- checking into your source control system. It contains a secret!
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
-DROP ROLE IF EXISTS {{namespace}};
-CREATE ROLE {{namespace}} NOINHERIT LOGIN PASSWORD '{{secret}}';
-GRANT {{namespace}}_anonymous TO {{namespace}};
+drop role if exists {{namespace}};
+create role {{namespace}} noinherit login password '{{secret}}';
+grant {{namespace}}_anonymous to {{namespace}};
 `
 	tmpl, err := mustache.ParseString(txt)
 	if err != nil {
@@ -93,7 +93,7 @@ func pgModels(out io.Writer, namespace string, models []*NewtModel) error {
 -- Make sure we are in the birds namespace/database
 \c {{namespace}}
 -- Make sure our namespace is first in the search path
-SET search_path TO {{namespace}}, public;
+set search_path to {{namespace}}, public;
 
 --
 -- Data Models
@@ -113,66 +113,143 @@ SET search_path TO {{namespace}}, public;
 	// Now for the table definitions.
 	txt = `
 --
--- This file contains the create statements for our bird table.
+-- {{namespace}}.{{model}} table definition
 --
--- DROP TABLE IF EXISTS {{namespace}}.{{model}};
-CREATE TABLE {{namespace}}.{{model}} (
-	oid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    updated TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-	object JSONB
+drop table if exists {{namespace}}.{{model}};
+create table {{namespace}}.{{model}}
+(
+	oid uuid primary key default gen_random_uuid(), 
+	created timestamp with time zone default now(),
+	updated timestamp with time zone default now(), 
+	object jsonb
 );
-
-CREATE OR REPLACE FUNCTION {{model}}_update_updated()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated = current_timestamp;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER {{model}}_updated_trigger
-BEFORE UPDATE ON {{model}}
-FOR EACH ROW
-EXECUTE FUNCTION {{model}}_update_updated();
 
 --
 -- {{namespace}}.{{model}} CRUD-L operations (functions and views)
 --
 
--- {{namspace}}.{{model}}_create is a stored function to create a new object
--- It becomes the end point '/rpc/create_{{model}}'
--- It turns the generator UUID
-CREATE OR REPLACE FUNCTION {{namespace}}.create_{{model}}(object)
-RETURNS UUID, TIMESTAMPZ, TIMESTAMPZ, JSONB LANGUAGE SQL AS $$
-    INSERT INTO {{namespace}}.{{model}} (object)) VALUES (object)
-    RETURNING {{model}}.oid, {{model}}.created, {{model}}.updated, {{model}}.object
-$$;
+-- {{namespace}}.create_{{model}} is a stored function to create a new object
+-- It takes the new object without oid, created, updated. It will return the
+-- assigned uuid.
+--
+-- This becomes the end point '/rpc/create_{{model}}' in PostgREST
+--
+drop function if exists {{namespace}}.create_{{model}} (new_object jsonb);
+create or replace function {{namespace}}.create_{{model}} (
+    new_object jsonb
+) returns uuid
+language sql
+as $$
+    insert into {{namespace}}.{{model}}
+        (oid, created, updated, object)
+    values
+        (gen_random_uuid(), now(), now(), new_object)
+    returning oid
+$$
+;
 
--- {{namespace}}.{{model}}_update is a stored function to update an object.
+--
+-- {{namespace}}.update_{{model}} is a stored function to update an object.
+-- NOTE: It replaces the whole object!
+--
+-- It takes the UUID of the object to update and the model's content. You do
+-- not need to provide created and updated attributes as those are managed by
+-- this function.  The value returned is the revised JSON including all attributes.
+--
 -- It becomes the end point '/rpc/update_{{model}}'
-CREATE OR REPLACE FUNCTION {{namespace}}.update_{{model}}(oid, object)
-RETURN UUID, TIMESTAMPZ, TIMESTAMPZ, JSONB LANGAUGE SQL AS $$
-    UPDATE {{namespace}}.{{model}} SET {{model}}.object = object WHERE {{model}}.oid = oid 
-    RETURNING {{model}}.oid, {{model}}.created, {{model}}.updated, {{model}}.object
-$$;
+--
+drop function if exists {{namespace}}.update_{{model}} (id uuid, new_object jsonb);
+create or replace function {{namespace}}.update_{{model}} (
+    id uuid,
+    new_object jsonb
+)
+returns jsonb
+language plpgsql
+as $$
+declare
+    updated_object jsonb;
+begin
+  update {{namespace}}.{{model}}
+  set updated = now(), object = new_object
+  where oid = id;
+  select (jsonb_build_object(
+    'oid', oid,
+    'created', created,
+    'updated', updated
+    ) || object) 
+  into updated_object
+  from {{namespace}}.{{model}}
+  where oid = id;
+  return updated_object;
+end;
+$$
+;
 
--- {{namespace}}.read_{{model}} will become an end point in PostgREST, '/read_{{model}}'
-CREATE OR REPLACE VIEW {{namespace}}.read_{{model}} AS
-  SELECT oid, created, updated, object FROM {{namespace}}.{{model}} WHERE oid = ? LIMIT 1;
+--
+-- {{namespace}}.read_{{model}} will retrieve the object stored flattening it to include
+-- the fields modelled but also include the attributes oid, created, updated enforce by these procedures.
+--
+-- It become an end point in PostgREST, '/rpc/read_{{model}}'
+--
+drop function {{namespace}}.read_{{model}} (IN id uuid, OUT obj jsonb);
+create or replace function {{namespace}}.read_{{model}} (
+  IN id uuid,
+  OUT obj jsonb
+)
+language sql
+as $$
+  select (jsonb_build_object(
+    'oid', oid,
+    'created', created,
+    'updated', updated
+    ) || object) as obj
+  from {{namespace}}.{{model}}
+  where oid = id
+  limit 1;
+$$
+;
 
+--
 -- {{namespace}}.delete_{{model}} is a stored function to delete an object.
+-- It takes the object UUID (oid) as a parameter. If successful it returns the
+-- oid deleted.
+--
 -- It becomes the end point '/rpc/delete_{{model}}'
-CREATE OR REPLACE FUNCTION {{namespace}}.delete_{{model}}(oid)
-RETURN UUID, TIMESTAMPZ, TIMESTAMPZ, JSONB LANGAUGE SQL AS $$
-   DELETE {{namespace}}.{{model}} WHERE {{model}}.oid = oid
-   RETURn oid, created, updated, object;
-$$;
+--
+drop function if exists {{namespace}}.delete_{{model}} (id uuid);
+create or replace function {{namespace}}.delete_{{model}} (
+    id uuid
+) returns uuid
+language sql
+as $$
+    delete from {{namespace}}.{{model}}
+    where oid = id
+    returning id
+$$
+;
 
--- {{namespace}}.list_{{model}} will become an end point in PostgREST, '/list_{{model}}'
--- It returns a list sorted by descending updated date.
-CREATE OR REPLACE VIEW {{namespace}}.list_{{model}} AS
-  SELECT oid, created, updated, object FROM {{namespace}}.{{model}} ORDER BY updated DESC;
+--
+-- {{namespace}}.list_{{model}} lists object by descending updated timestamp.
+-- It does not take any parameters.
+--
+-- It will become an end point in PostgREST, '/rpc/list_{{model}}'
+--
+drop function {{namespace}}.list_{{model}} ();
+create or replace function {{namespace}}.list_{{model}} ()
+returns table (
+  obj jsonb
+)
+language sql
+as $$
+  select (jsonb_build_object(
+    'oid', oid,
+    'created', created,
+    'updated', updated
+    ) || object) as obj
+  from {{namespace}}.{{model}}
+$$
+;
+
 `
 	tmpl, err = mustache.ParseString(txt)
 	if err != nil {
@@ -182,7 +259,7 @@ CREATE OR REPLACE VIEW {{namespace}}.list_{{model}} AS
 	data = map[string]string{}
 	for _, m := range models {
 		data["namespace"] = namespace
-		data["model"] = m.Name
+		data["model"] = m.Id
 		if err := tmpl.FRender(out, data); err != nil {
 			return err
 		}
@@ -196,11 +273,14 @@ CREATE OR REPLACE VIEW {{namespace}}.list_{{model}} AS
 -- Since our Postgres ROLE and SCHEMA exist and our models may change how
 -- we want PostgREST to expose our data via JSON API we GRANT or
 -- revoke role permissions here to match our model.
-GRANT USAGE ON SCHEMA {{namespace}} TO {{namespace}}_anonymous;
+
+grant usage on schema {{namespace}} to {{namespace}}_anonymous;
+
 -- NOTE: The generated functions for create, update and delete do not
 -- implement an account requirement. In a production application you
 -- should modify these functions to check for authorization before
 -- allowing changes to be made.
+
 `
 	tmpl, err = mustache.ParseString(txt)
 	if err != nil {
@@ -214,12 +294,12 @@ GRANT USAGE ON SCHEMA {{namespace}} TO {{namespace}}_anonymous;
 	}
 
 	txt = `
-GRANT SELECT, INSERT ON {{namespace}}.{{model}} TO {{namespace}}_anonymous;
-GRANT EXECUTE ON FUNCTION {{namespace}}.create_{{model}} TO {{namespace}}_anonymous;
-GRANT EXECUTE ON FUNCTION {{namespace}}.updated_{{model}} TO {{namespace}}_anonymous;
-GRANT EXECUTE ON FUNCTION {{namespace}}.delete_{{model}} TO {{namespace}}_anonymous;
-GRANT SELECT ON {{namespace}}.read_{{model}} TO {{namespace}}_anonymous;
-GRANT SELECT ON {{namespace}}.list_{{model}} TO {{namespace}}_anonymous;
+grant select, insert on {{namespace}}.{{model}} to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.create_{{model}} to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.update_{{model}} to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.delete_{{model}} to {{namespace}}_anonymous;
+grant select on {{namespace}}.read_{{model}} to {{namespace}}_anonymous;
+grant select on {{namespace}}.list_{{model}} to {{namespace}}_anonymous;
 
 `
 	tmpl, err = mustache.ParseString(txt)
@@ -229,7 +309,7 @@ GRANT SELECT ON {{namespace}}.list_{{model}} TO {{namespace}}_anonymous;
 	for _, m := range models {
 		data = map[string]string{
 			"namespace": namespace,
-			"model":     m.Name,
+			"model":     m.Id,
 		}
 		if err := tmpl.FRender(out, data); err != nil {
 			return err

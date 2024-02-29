@@ -3,13 +3,22 @@
 
 ## Bugs
 
-- [ ] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
+- [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
 
 ## Next
 
 - [ ] Nail down the second prototype YAML syntax
-- [x] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go coommand wraps govet, gofmt, etc. This will be convenient for development
+- [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go coommand wraps govet, gofmt, etc. This will be convenient for development
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
+    - [X] setup.sql
+    - [X] models.sql
+    - [ ] models_test.sql
+    - [ ] postgrest.conf
+    - [ ] create mustache template
+    - [ ] read mustache template
+    - [ ] update mustache template
+    - [ ] delete mustache template
+    - [ ] list mustache template
 - [ ] An "object manager" takes a model and maps it to the SQL JSON storage model of the generated code (id, created, updated, object), it also validates the submitted object against that model
 - [X] (rethought the application concept in favor of a single YAML file) Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
 - [X] (one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
@@ -19,12 +28,15 @@
 - [ ] Generate SQL confirming to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentation)
 - [X] (options and environment can solve this) Writing the URL for a localhost service can be tedious and obscure what is happening, create an example where you use a environment variable or application option to express the service name to a variable that can then be reference in the URL pattern
 - [X] Adopt GitHub's YAML Issue Syntax for describing models
-  - [x] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
-  - [x] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
-- [x] Present at Code4Lib meetup, July 14, 2023
-- [ ] Demo second prototype for DLD developer group, newt-presentation2.md
+  - [X] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
+  - [X] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
+- [X] Present at Code4Lib meetup, July 14, 2023
+- [ ] Present to DLD and interested staff
+- [ ] Present/announce via SoCal Code4Lib (recorded or in person presentation)
 - [ ] Create birds demo for 2nd Prototype (using Postgres+PostgREST, Newt Router and Newt Mustache)
 - [ ] Create postcards demo, armchair archive example
+- [ ] Implement Thesis Management System core in Newt (not email features)
+- [ ] Implement COLD core
 
 ## Someday, maybe
 
