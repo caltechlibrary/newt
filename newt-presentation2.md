@@ -1,4 +1,4 @@
-ok---
+---
 title: "Newt, the second prototype"
 author: "R. S. Doiel, <rsdoiel@caltech.edu>"
 institute: |
