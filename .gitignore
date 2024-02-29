@@ -13,4 +13,8 @@ epub/*
 old_code/*
 ornothology_*.sql
 ornothology_*.conf
-*_sightings.sql
+*_sighting.tmpl
+t.txt
+t.json
+t.tmpl
+t.sql
