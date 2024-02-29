@@ -5,7 +5,7 @@
 
 - [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
 
-## Next
+## Next for the second prototype 
 
 - [ ] Nail down the second prototype YAML syntax
 - [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go coommand wraps govet, gofmt, etc. This will be convenient for development
@@ -24,7 +24,7 @@
   - [X] (future prototype can do OS level suggested conf files) Using a combined file would make it easy to generate startup scripts or systemd configurations
 - [X] Decide what is logged by default for Newt Mustache and Newt Router
 - [X] Decide what is logged in "debug" or "verbose" model by Newt Mustache and Newt Router
-- [ ] Generate SQL confirming to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentation)
+- [X] Generate SQL confirming to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentation)
 - [X] (options and environment can solve this) Writing the URL for a localhost service can be tedious and obscure what is happening, create an example where you use a environment variable or application option to express the service name to a variable that can then be reference in the URL pattern
 - [X] Adopt GitHub's YAML Issue Syntax for describing models
   - [X] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
