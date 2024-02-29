@@ -8,7 +8,7 @@
 ## Next for the second prototype 
 
 - [ ] Nail down the second prototype YAML syntax
-- [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go coommand wraps govet, gofmt, etc. This will be convenient for development
+- [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go command wraps govet, gofmt, etc. This will be convenient for development
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
     - [X] setup.sql
     - [X] models.sql
@@ -39,7 +39,7 @@
 
 ## Someday, maybe
 
-- [ ] seeing the data past thru a pipeline will be an important part in debugging problems. Newt Inspector could adress that as a pass thru web service that output debugging info to the log output.
+- [ ] seeing the data past thru a pipeline will be an important part in debugging problems. Newt Inspector could address that as a pass thru web service that output debugging info to the log output.
 - [ ] An OCFL service would allow Newt to support building repository like applications. U. C. Santa Barbara has some Go packages related to this.
 - [ ] Newt should support development with SQLite 3 databases
   - [ ] Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server

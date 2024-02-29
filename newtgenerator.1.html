@@ -211,9 +211,13 @@ or “list”.</p>
 configuration file and SQL file need to boostrap Postgres+PostgREST.</p>
 <pre><code>newtgenerator people.yaml postgres setup &gt;setup.sql
 newtgenerator people.yaml postgres models &gt;models.sql
-newtgenerator people.yaml postgres models_test &gt;models_test.sql
-newtgenerator people.yaml postgrest &gt;postgrest.conf</code></pre>
-<p>newtgenerator people.yaml mustache create</p>
+newtgenerator people.yaml postgrest &gt;postgrest.conf
+
+newtgenerator people.yaml mustache create &gt;create_people.tmpl
+newtgenerator people.yaml mustache read &gt;read_people.tmpl
+newtgenerator people.yaml mustache update &gt;update_people.tmpl
+newtgenerator people.yaml mustache delete &gt;delete_people.tmpl
+newtgenerator people.yaml mustache list &gt;list_people.tmpl</code></pre>
 <p>This is an example YAML file used to generator Postgres SQL,
 PostgREST configuration and Mustache templates.</p>
 <div class="sourceCode" id="cb2"><pre

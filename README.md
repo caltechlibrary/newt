@@ -1,7 +1,7 @@
 
 # Newt Project
 
-Newt is an experimental set of tools for rapid application development. More specifically Newt can build metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAM). Newt makes creating these type of applications easier. 
+Newt is an experimental set of tools for rapid application development. More specifically Newt can build metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAM). Newt makes creating these type of applications easier.
 
 How does Newt do that? Newt implements a service oriented architecture to assemble web applications. This allows Newt to do less while making it easier for you to integrate off the shelf software to compose your application.
 
@@ -46,7 +46,7 @@ In 2024 there is allot of off the self software to build on. Newt provides a few
 - `newtgenerator` is a code generator understands the data models described in Newt's YAML configuration file. Newt targets generating code to setup Postgres and PostgREST or generate Mustache templates
 - `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
 
-Newt's 2nd prototype is being tested building applications based on 
+Newt's 2nd prototype is being tested building applications based on
 
 - [Postgres](https://postgres.org), data management
 - [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
@@ -91,7 +91,7 @@ I think a radical simplification is due.  Newt in part is intended to spark that
 
 Back in the day whether we were writing in PHP, Python or Perl we were creating middleware. Even Drupal and WordPress are really middleware. Middleware sits between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2 or proxied like with NGINX. It's still middleware.
 
-A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. Is this approach sound8ng familiar? It is the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog system imports data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What if doing that was as easy as using Unix pipes? I think it can be. I'm using a little YAML notation to represent the pipe.
+A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. Is this approach familiar? It is the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog system imports data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What if doing that was as easy as using Unix pipes? I think it can be. I'm using a little YAML notation to represent the pipe.
 
 Here is a description of one implementation of that idea.
 
@@ -110,7 +110,7 @@ Take the following as a for instance.
 - (access control) Apache 2 or NGINX combined with Shibboleth for access control and communicating with the web browser
 - (rich client) Web browsers now provide a rich software platform in their own right
 
-With the above list we can build capable applications relying on the sophisticated features of our web browsers. 
+With the above list we can build capable applications relying on the sophisticated features of our web browsers.
 
 ## Hidden costs without the missing bits
 
@@ -164,9 +164,9 @@ Limiting Newt web service applications to localhost keeps them simple. Doing the
 
 ### What about "scaling"?
 
-`newtrouter` is just a router. Aside from reading configuration at start up it doesn't maintain state. `newtmustache` functions the same way, read in the configuration and just run. By assigning different ports you can also run many instances of them. This makes it possible to run them in parallel, behind load balancer or even through proxying spread them across many machines. The instances don't share data or coordinate. They start up wait for a request and providing an answer. 
+`newtrouter` is just a router. Aside from reading configuration at start up it doesn't maintain state. `newtmustache` functions the same way, read in the configuration and just run. By assigning different ports you can also run many instances of them. This makes it possible to run them in parallel, behind load balancer or even through proxying spread them across many machines. The instances don't share data or coordinate. They start up wait for a request and providing an answer.
 
-So what does this all mean? In principle a Newt based applications can scale big as the slowest element of your pipeline service. 
+So what does this all mean? In principle a Newt based applications can scale big as the slowest element of your pipeline service.
 
 ### Anatomy of a Newt based web application
 

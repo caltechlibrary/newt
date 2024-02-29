@@ -40,7 +40,7 @@ The existing implementation (v1.5) uses database collections representing each r
 
 I have observed that building the CSV files using dsquery saves consider time. This is because the process is taking advantage of SQL performance in Postgres.
 
-When Newt's 2nd prototype becomes available it provides an opportunity to leverage Newt's data pipeline by creating all the JSON objects in the database then rendering the table results in one pass. Also be switching from Pandoc on the commandline to Newt's Mustache template engine also offers an opportuntity to significantly reduce the site building time. Ideally you only write files at the end of the pipeline rather then writing some reading some and writing some more.
+When Newt's 2nd prototype becomes available it provides an opportunity to leverage Newt's data pipeline by creating all the JSON objects in the database then rendering the table results in one pass. Also be switching from Pandoc on the command line to Newt's Mustache template engine also offers an opportunity to significantly reduce the site building time. Ideally you only write files at the end of the pipeline rather then writing some reading some and writing some more.
 
 It is desirable to produced a "combined" feed that aggregates content across our repository systems. If feeds output is staged in a dataset collection then them a combined repository view is possible is possible. It appears desirable that aggregation happens in the a single feeds dataset collection which also is well suited to the pipeline approach.
 

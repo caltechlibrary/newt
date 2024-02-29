@@ -7,7 +7,7 @@
   - [Newt Router](newtrouter.1.md), manages your requests and data pipelines
   - [Newt Generator](newtgenerator.1.md), bootstraps your SQL and Mustache templates
   - [Newt Mustache](newtmustache.1.md), a light weight template engine
-  - Convience tools, not strictly necessary but help in a developer setting
+  - Convenience tools, not strictly necessary but help in a developer setting
     - [newt](newt.1.md), this program runs both Newt Router and Mustache as one process
     - [ws](ws.1.md), provides a localhost static file server on port 8000, including a verbose model for debugging POST, PUT and PATCH
 
@@ -22,7 +22,7 @@
 - Installation
   - [Installing Newt](INSTALL.md)
   - [Installing PostgREST](INSTALL-PostgREST.md) from source (developer notes)
-  - [Installing Pandoc](INSTALL-Pandoc.md) from souce (developer notes)
+  - [Installing Pandoc](INSTALL-Pandoc.md) from source (developer notes)
 - Prototype Development 
   - [Use Cases](use_cases.md) (Newt prototype 2 proposals in upcoming projects)
-  - [Todo](TODO.md), prototype todo list
+  - [To do](TODO.md), prototype to do list

@@ -26,25 +26,38 @@
 <h1 id="action-items">Action Items</h1>
 <h2 id="bugs">Bugs</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Newt Router needs to bubble up the
-HTTP error code from the last retrieved HTTP response in the
-pipeline</label></li>
+<li><label><input type="checkbox" checked="" />Newt Router needs to
+bubble up the HTTP error code from the last retrieved HTTP response in
+the pipeline</label></li>
 </ul>
-<h2 id="next">Next</h2>
+<h2 id="next-for-the-second-prototype">Next for the second
+prototype</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Nail down the second prototype YAML
 syntax</label></li>
 <li><label><input type="checkbox" checked="" />There should be a “newt”
 command that wraps the router, generator and mustache engine in the way
-the go coommand wraps govet, gofmt, etc. This will be convenient for
+the go command wraps govet, gofmt, etc. This will be convenient for
 development</label></li>
 <li><label><input type="checkbox" />I need to implement the second
-prototype code generator once I’ve debugged the Newt YAML
-syntax</label></li>
-<li><label><input type="checkbox" />An “object manager” takes a model
-and maps it to the SQL JSON storage model of the generated code (id,
-created, updated, object), it also validates the submitted object
-against that model</label></li>
+prototype code generator once I’ve debugged the Newt YAML syntax</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />setup.sql</label></li>
+<li><label><input type="checkbox" checked="" />models.sql</label></li>
+<li><label><input type="checkbox" />postgrest.conf</label></li>
+<li><label><input type="checkbox" />create mustache
+template</label></li>
+<li><label><input type="checkbox" />read mustache template</label></li>
+<li><label><input type="checkbox" />update mustache
+template</label></li>
+<li><label><input type="checkbox" />delete mustache
+template</label></li>
+<li><label><input type="checkbox" />list mustache template</label></li>
+</ul></li>
+<li><label><input type="checkbox" />A “newt object manager” takes a
+model, validates it and if OK sends the result to the next stage in the
+pipeline for storage. It should deal with things like unpacking
+shortened uuids using a base encoding scheme</label></li>
 <li><label><input type="checkbox" checked="" />(rethought the
 application concept in favor of a single YAML file) Should Application
 metadata really be it’s own top level attribute? Wouldn’t having a
@@ -62,9 +75,9 @@ to generate startup scripts or systemd configurations</label></li>
 default for Newt Mustache and Newt Router</label></li>
 <li><label><input type="checkbox" checked="" />Decide what is logged in
 “debug” or “verbose” model by Newt Mustache and Newt Router</label></li>
-<li><label><input type="checkbox" />Generate SQL confirming to the style
-suggestion in “The Art of Postgres” (link as a reference in Newt
-documentation)</label></li>
+<li><label><input type="checkbox" checked="" />Generate SQL confirming
+to the style suggestion in “The Art of Postgres” (link as a reference in
+Newt documentation)</label></li>
 <li><label><input type="checkbox" checked="" />(options and environment
 can solve this) Writing the URL for a localhost service can be tedious
 and obscure what is happening, create an example where you use a
@@ -84,19 +97,24 @@ it?</label></li>
 </ul></li>
 <li><label><input type="checkbox" checked="" />Present at Code4Lib
 meetup, July 14, 2023</label></li>
-<li><label><input type="checkbox" />Demo second prototype for DLD
-developer group, newt-presentation2.md</label></li>
+<li><label><input type="checkbox" />Present to DLD and interested
+staff</label></li>
+<li><label><input type="checkbox" />Present/announce via SoCal Code4Lib
+(recorded or in person presentation)</label></li>
 <li><label><input type="checkbox" />Create birds demo for 2nd Prototype
 (using Postgres+PostgREST, Newt Router and Newt Mustache)</label></li>
 <li><label><input type="checkbox" />Create postcards demo, armchair
 archive example</label></li>
+<li><label><input type="checkbox" />Implement Thesis Management System
+core in Newt (not email features)</label></li>
+<li><label><input type="checkbox" />Implement COLD core</label></li>
 </ul>
 <h2 id="someday-maybe">Someday, maybe</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />seeing the data past thru a pipeline
 will be an important part in debugging problems. Newt Inspector could
-adress that as a pass thru web service that output debugging info to the
-log output.</label></li>
+address that as a pass thru web service that output debugging info to
+the log output.</label></li>
 <li><label><input type="checkbox" />An OCFL service would allow Newt to
 support building repository like applications. U. C. Santa Barbara has
 some Go packages related to this.</label></li>
@@ -106,7 +124,7 @@ SQLite 3 databases</label>
 <li><label><input type="checkbox" />Look at sqlite2rest (a Python
 project, automatic REST API for SQLite databases), work up a demo using
 it with Newt server</label></li>
-<li><label><input type="checkbox" />Should a write a newtsqlite
+<li><label><input type="checkbox" />Should Newt supply a newtsqlite
 service?</label></li>
 </ul></li>
 <li><label><input type="checkbox" />Can I extend Newt to support file

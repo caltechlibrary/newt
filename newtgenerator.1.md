@@ -1,6 +1,6 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7-dev b881ff0"
-pubDate: 2024-02-28
+title: "newtgenerator(1) user manual | 0.0.7-dev ee02a0e"
+pubDate: 2024-02-29
 author: "R. S. Doiel"
 ---
 
@@ -145,10 +145,14 @@ file need to boostrap Postgres+PostgREST.
 ~~~
 newtgenerator people.yaml postgres setup >setup.sql
 newtgenerator people.yaml postgres models >models.sql
-newtgenerator people.yaml postgres models_test >models_test.sql
 newtgenerator people.yaml postgrest >postgrest.conf
+
+newtgenerator people.yaml mustache create >create_people.tmpl
+newtgenerator people.yaml mustache read >read_people.tmpl
+newtgenerator people.yaml mustache update >update_people.tmpl
+newtgenerator people.yaml mustache delete >delete_people.tmpl
+newtgenerator people.yaml mustache list >list_people.tmpl
 ~~~
-newtgenerator people.yaml mustache create
 
 This is an example YAML file used to generator Postgres SQL, PostgREST configuration and Mustache templates.
 

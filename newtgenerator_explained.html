@@ -26,32 +26,32 @@
 <h1 id="newt-generator-explained">Newt Generator Explained</h1>
 <p>Newt comes with a code generator called <code>newtgenerator</code>.
 It uses the Newt YAML file to render Postgres SQL, PostgREST
-configuration and Mustache templates suitable to bookstrap your Newt
+configuration and Mustache templates suitable to bootstrap your Newt
 based project. How does it do this? What are the assumptions?</p>
 <p>The Newt code generator works primarily with the “models” property in
 your Newt YAML file.</p>
 <p>Our minimal useful application should be able to do five things -
 Create, Read, Update, Delete and List (abbr: CRUD-L). It needs to offer
 these actions for each model defined in our project. The second Newt
-prototype assumes each model is indepent. If you need to combine models
-(not unsual) then you will need to enhance the generated SQL. For now
-let us focus on the basics.</p>
+prototype assumes each model is independent. If you need to combine
+models (not unusual) then you will need to enhance the generated SQL.
+For now let us focus on the basics.</p>
 <p>In the Newt philosophy we model our data and manage our data in the
 database. For us this means Postgres. By combining Postgres and
-PostgREST we create a JSON API based on what we’ve modelled and managed
+PostgREST we create a JSON API based on what we’ve modeled and managed
 in our database. Our middleware, the stages in our pipelines, do not
 need to know anything about SQL. They don’t ever touch it. This gives us
 a clean break from SQL and the rest of our system. It avoids the burden
 of doing the cognitive shifts when implementing middleware. This is a
-result of Postgrs plus PostgREST automagically giving a JSON API. Clever
-stuff really.</p>
+result of Postgres plus PostgREST automatically giving a JSON API.
+Clever stuff really.</p>
 <h2 id="bringing-up-postgrespostgrest">Bringing up
 Postgres+PostgREST</h2>
 <p>Postgres and PostgREST provide us with a JSON API that can be used in
 a Newt router pipeline. Following the Newt philosophy data modeling and
-management happen in the database. That is done via the SQL langauge
+management happen in the database. That is done via the SQL language
 which the Newt generator can produce. After the database is setup in
-Postgres with the scheme, tabes, functions and views needed for basic
+Postgres with the scheme, tables, functions and views needed for basic
 CRUD-L operations you can generate a compatible PostgREST configuration
 file. Here’s the steps I follow after creating my Newt YAML file.</p>
 <ol type="1">
@@ -93,14 +93,14 @@ augment or replace the Newt generated parts.</p>
 this short. If you want to read about Postgres to better understand it I
 recommend the <a href="https://postgres.org">Postgres website</a> or the
 book <a href="https://theartofpostgresql.com/"
-title="website for the book">The Art of Postgres</a>. is heavely
+title="website for the book">The Art of Postgres</a>. is heavily
 commented, those your</p>
 <p>What was generated? The specifics will depend on what was in the
 “app.yaml” file, specifically the models property. Do you see comments
 you the generate SQL file? These were form from the
 <code>.description</code> properties found in the YAML. By taking the
 time to add description properties are making the generated code more
-human freindly. While these are optional properties they are really
+human friendly. While these are optional properties they are really
 handy when you evolve the code generator or come back to a project
 later.</p>
 <p>The first section of the SQL generate should have statements to
@@ -116,18 +116,18 @@ what you expected. A view is accessed through the SQL
 <code>select</code> statement.</p>
 <p>After a model’s view Newt will generate functions for create, read,
 update and delete. Why do this? First it allows us a consistent
-abstraction should the underlieing data model change in the future.
+abstraction should the underlying data model change in the future.
 Second you can enhance the function to perform additional validation if
 needed. Example, let’s say you’ve imported the Python library idutils
 into Postgres. You can use that library to validate identifiers like
 DOI, ORCID, ROR, arXiv, ISNI, etc. Since the operation is a “function”
-rather than an SQL prodecedure you can let the requestor there was a
+rather than an SQL procedure you can let the requestor there was a
 problem or take actions to mitigate it. A function can keep the
 conversation going with the web browser at the other end of the
 wire.</p>
 <p>You might be wondering about how things are name. The functions and
-view names are formed from the model name appened with “_”, followed by
-the action. Newt trys to give you a robust bootstrap. One of the ways
+view names are formed from the model name appended with “_”, followed by
+the action. Newt tries to give you a robust bootstrap. One of the ways
 that it accomplishes that is by naming things predictably. This improves
 code readability for us humans.</p>
 <p>After defining the models tables, views and functions the end of the
@@ -167,14 +167,14 @@ when you startup PostgREST</li>
 application</li>
 </ul>
 <p>Now we need to set things in motion. You can load your SQL into
-Postgres via the Postgres repl called <code>psql</code>. You’ll need to
-have administrative privilages to run the SQL as it will create a new
+Postgres via the Postgres REPL called <code>psql</code>. You’ll need to
+have administrative privileges to run the SQL as it will create a new
 database for your application. See <a
 href="https://www.postgresql.org/docs/current/sql-createuser.html"
 class="uri">https://www.postgresql.org/docs/current/sql-createuser.html</a>
 about creating database users for details.</p>
 <p>On my computer I have Postgres 16 running and my personal account has
-admin privilleges so I use <code>psql</code> like this to create the
+admin privileges so I use <code>psql</code> like this to create the
 database, schema, tables, views, functions and permissions needed for
 the my application.</p>
 <pre class="shell"><code>psql &lt; app.sql</code></pre>
@@ -218,7 +218,7 @@ newtgenerator mustache people update &gt;people_update.tmpl
 newtgenerator mustache people delete &gt;people_delete.tmpl
 newtgenerator mustache people list &gt;people_list.tmpl</code></pre>
 <p>If you examine the resulting templates you’ll notice that create,
-update and delete include webforms nad use the model types you describe.
+update and delete include webforms and use the model types you describe.
 On the other hand the templates for read and list do not include
 webforms just some standard markup elements. I expect you’ll want to
 enhance these to meet you applications need but they should function
@@ -241,15 +241,15 @@ empty web form as it is used to “create” new model instances and a model
 idea isn’t available. If the “person.json” JSON included an object id
 then you should see it in the update form as a hidden field. Update
 should not enable creating new objects in must cases. Similarly if you
-mockup a list of people in a JSON file called “people.json” then you
+mock up a list of people in a JSON file called “people.json” then you
 should be able to test the list template too.</p>
-<p>I generally will work directly with mockup JSON files and Newt
+<p>I generally will work directly with mock up JSON files and Newt
 Mustache to get the web interface I want for my application.</p>
 <p>It is important to remember that Newt Mustache reads the templates in
 at program start. If you revise your templates you need to
 <strong>restart</strong> Newt Mustache. In this way Newt Mustache and
 Newt Router are like PostgREST server that you will need to be
-comfortable stoping and start the services as you continue your
+comfortable stopping and start the services as you continue your
 development.</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
@@ -257,8 +257,8 @@ role="doc-endnotes">
 <ol>
 <li id="fn1"><p>In Postgres a “schema” is really a name space for the
 tables in a database. It should be confused with a specific SQL table
-definition, often refered to using the same term “schema”. In Postgres a
-“schema” provides a hook to manage table accesses and provide a
+definition, often referred to using the same term “schema”. In Postgres
+a “schema” provides a hook to manage table accesses and provide a
 namespace for referencing them es and provide a namespace for
 referencing them. See <a
 href="https://www.postgresql.org/docs/current/ddl-schemas.html"
@@ -269,8 +269,8 @@ delete”, CRUD-L stands for “create, read, update, delete and list”.
 CRUD-L are the basic operations you perform when managing metadata.<a
 href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>Newt creates functions for each of our CRUD operations.
-It does this to allow you a clean way to keep the JSON API constent even
-when you data models might evolve in differently.<a href="#fnref3"
+It does this to allow you a clean way to keep the JSON API consistent
+even when you data models might evolve in differently.<a href="#fnref3"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

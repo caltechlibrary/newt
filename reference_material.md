@@ -26,7 +26,7 @@ These are links to prior art, related efforts and resources for consideration in
 - [PostgREST](https://postgrest.org), build a REST JSON API directly on top of Postgres. This is what started my think about Newt prototype
 - [MRS](https://dev.mysql.com/doc/dev/mysql-rest-service/latest/), MySQL REST Service
 - [sqlite2rest](https://github.com/nside/sqlite2rest), Automatically RESTful OpenAPI server from SQLite database
-- [Soul](https://github.com/thevahidal/soul), A SQLite REST and realtime server built on NodeJS (wonder if it runs in Deno?)
+- [Soul](https://github.com/thevahidal/soul), A SQLite REST and real time server built on NodeJS (wonder if it runs in Deno?)
 
 ## SQL JSON support
 
@@ -66,7 +66,7 @@ These are links to prior art, related efforts and resources for consideration in
 - [HTTPie-go](https://github.com/nojima/httpie-go), A go implementation of HTTPie, useful to debug API interactions
     - Fork with out stale package references, [HTTP-Pie-go](https://github.com/HexmosTech/httpie-go)
 - [Lama2](https://github.com/HexmosTech/Lama2), a plain text powered rest client (not to be confused with Meta's LLM)
-- [Go's extended html docs](https://pkg.go.dev/golang.org/x/net/html), HTML tokanizer and parser package
+- [Go's extended html docs](https://pkg.go.dev/golang.org/x/net/html), HTML tokenizer and parser package
 
 ## Go implementations for unique identifiers
 
@@ -84,7 +84,7 @@ This could be implemented directory into the generated SQL or have an Identifier
 
 - [UUID](https://pkg.go.dev/github.com/google/UUID), v4 UUID, go storage in Postgres, long for URL
 - [shortid](https://pkg.go.dev/github.com/teris-io/shortid)
-- [shortuuid](https://github.com/skorokithakis/shortuuid), Python shortuuid pacakge
+- [shortuuid](https://github.com/skorokithakis/shortuuid), Python shortuuid package
 - [shortuuid](https://github.com/lithammer/shortuuid), a Port of the Python package to Go, algorithmically compatible with the Python implementation
 - [ulid](https://github.com/oklog/ulid), a logically sortable unique identifier package, ported from the JavaScript package implementing ulid
 
@@ -92,5 +92,5 @@ This could be implemented directory into the generated SQL or have an Identifier
 
 If Newt shipped with a set of LAM oriented web component that could allow for a more complex data model to be addressed by Newt. E.g. lists of authors are a web component would probably have not just the name fields but also identifiers like ORCID and ISNI attached to them. Something worth exploring.
 
-Internet Archives seems to be investing in the [Lit](https://lit.dev) component library heavely.
+Internet Archives seems to be investing in the [Lit](https://lit.dev) component library heavily.
 

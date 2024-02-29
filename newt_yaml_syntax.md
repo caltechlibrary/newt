@@ -24,7 +24,7 @@ templates
 The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
 newtrouter
-: this containes configuration for the Newt Router, i.e. port and htdocs
+: this contains configuration for the Newt Router, i.e. port and htdocs
 
 newtgenerator
 : this contains configuration for the Newt Generator, i.e. namespace
