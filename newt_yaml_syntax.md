@@ -7,49 +7,55 @@ The Newt programs are configured in a YAML file. Each Newt program may focus on 
 
 These are the top level properties in YAML files.
 
-applications
+`applications`
 : (optional) holds the run time configuration used by the Newt applications.
 
-models
+`models`
 : (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
 
-routes
+`routes`
 : (required by newtrouter) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
-templates
+`templates`
 : (required by newtmustache)
 
 ## The applications property
 
 The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
-newtrouter
+`newtrouter`
 : this contains configuration for the Newt Router, i.e. port and htdocs
 
-newtgenerator
+`newtgenerator`
 : this contains configuration for the Newt Generator, i.e. namespace
 
-newtmustache
+`newtmustache`
 : this contains configuration for Newt Mustache, i.e. port
 
-postgrest
-: this contains configuration information for running PostgREST
+`postgres`
+: this contains configuration information for the running Postgres database
 
-options
+`postgrest`
+: this contains configuration information managing PostgREST application with `newt`
+
+`options`
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
 
-environment
+`environment`
 : (optional) this is a list of operating system environment variables that will be available to models, routes and templates. You can use this to pass in secrets (e.g. credentials) to your pipelined services.
 
 ### Configuring Newt programs
 
-namespace
+`app_path`
+: (newt) the path to the program(s) managed by `newt`
+
+`namespace`
 : (newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
 
-port
+`port`
 : (all) Port number to used for Newt web service running on localhost
 
-htdocs
+`htdocs`
 : (newtrouter) Directory that holds your application's static content
 
 
@@ -96,34 +102,34 @@ Models holds a list of individual models used by our data pipelines. The models 
 
 The model object is based largely on GitHub YAML issue template syntax with a couple extra properties that are Newt enhancements.
 
-id
+`id`
 : (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^21]
 
 The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYTS)
 
-name
+`name`
 : (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
 
-description
+`description`
 : (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
 
-body
+`body`
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
 
 #### a model's input types
 
 This is based on GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
 
-id
+`id`
 : (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
 
-type
+`type`
 : (required) Identifies the type of elements (input, textarea, markdown, checkbox, dropdown).
 
-attributes
+`attributes`
 : (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML.
 
-validations
+`validations`
 : (optional, encouraged) A set of key-value pairs setting constraints of the element content. E.g. required, regexp properties, validation rule provided with certain identifiers (e.g. DOI, ROR, ORCID).
 
 
@@ -131,19 +137,19 @@ validations
 
 Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^23]. They include
 
-markdown
+`markdown`
 : (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
 
-textarea
+`textarea`
 : (models only) A multi-line text field
 
-input
+`input`
 : A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `input[type=data]` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
 
-dropdown
+`dropdown`
 : A dropdown menu. In SQL this could render as an enumerated type. In HTML it would render as a drop down list
 
-checkboxes
+`checkboxes`
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
 Newt may add additional types in the future.
@@ -159,6 +165,12 @@ applications:
     htdocs: htdocs # Path to static content directory if required
   newtmustache:
     port: 8012 # Port number for Newt Mustache 
+  postgres:
+    port: 5432 # Where to find the Postgres port
+  postgrest: # Configuration for running PostgREST via newt
+    port: 3000
+    app_path: /usr/local/bin/postgrest
+    conf: people.conf
   environment:
     - DB_USER
     - DB_PASSWORD

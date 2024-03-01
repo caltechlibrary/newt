@@ -21,6 +21,12 @@ type NewtGenerator struct {
 	out io.Writer
 	// internal this is the error output for code generation, usually resolves to stderr
 	eout io.Writer
+
+	// Postgres configuration information
+	Postgres *Application
+
+	// PostgREST configuration information
+	PostgREST *Application
 }
 
 // NewGenerator instaitates a new Generator object form a filename and Config object
@@ -33,6 +39,12 @@ func NewGenerator(cfg *Config) (*NewtGenerator, error) {
 	generator.Namespace = cfg.Applications.NewtGenerator.Namespace
 	generator.Models = cfg.Models
 	generator.Options = map[string]string{}
+	if cfg.Applications.Postgres != nil {
+		generator.Postgres = cfg.Applications.Postgres
+	}
+	if cfg.Applications.PostgREST != nil {
+		generator.PostgREST = cfg.Applications.PostgREST
+	}
 	// NOTE: LoadCondfig handles loading the environment into options. We just need to
 	// copy into the NewtGenerator struct.
 	if len(cfg.Applications.Options) > 0 {
@@ -71,8 +83,13 @@ func (g *NewtGenerator) renderPostgreSQL(codeType string) error {
 // renderPostgREST does what its name implies. It the configuration
 // file used when starting up PostgREST.
 func (g *NewtGenerator) renderPostgREST(codeType string) error {
-	return prConfig(g.out, g.Namespace)
+	port := "5432"
+	if g.Postgres != nil && g.Postgres.Port != 0 {
+		port = fmt.Sprintf("%s", g.Postgres.Port)
+	}
+	return prConfig(g.out, g.Namespace, port)
 }
+
 
 func (g *NewtGenerator) renderMustache(codeType string) error {
 	return fmt.Errorf("g.renderMustache(%q) not implemented", codeType)

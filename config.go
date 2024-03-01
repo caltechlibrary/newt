@@ -46,6 +46,12 @@ type Applications struct {
 	// Newt Generator runtime config
 	NewtGenerator *Application `json:"newtgenerator,omitempty" yaml:"newtgenerator"`
 
+	// Postgres runtime config, e.g. port number to use for connecting.
+	Postgres *Application `json:"postgres,omitempty" yaml:"postgres,omitempty"`
+
+	// PostgREST runtime config
+	PostgREST *Application `json:"postgrest,omitempty" yaml:"postgrest"`
+
 	// Environment holds a list of OS environment variables that can be made
 	// available to the web services.
 	Environment []string `json:"enviroment,omitempty" yaml:"enviroment"`
@@ -57,6 +63,13 @@ type Applications struct {
 
 // Application implements runtime config for Newt programs
 type Application struct {
+	// AppPath holds the path to the binary application, e.g. PostgREST
+	// This property provides the location of the service to run.
+	AppPath string `json:"app_path,omitempty" yaml:"app_path"`
+
+	// ConfPath holds teh path to the configuration file (e.g. PostgREST configuration file)
+	ConfPath string `json:"conf_path,omitempty" yaml:"conf_path"`
+
 	// Namespace holds the Postgres Schema name It is used to generate
 	// a setup.sql file using the -pg-setup option in newt cli.
 	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`

@@ -13,8 +13,8 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
     - [X] setup.sql
     - [X] models.sql
-    - [ ] models\_test.sql
-    - [ ] postgrest.conf
+    - [X] models\_test.sql
+    - [X] postgrest.conf
     - [ ] create mustache template
     - [ ] read mustache template
     - [ ] update mustache template
