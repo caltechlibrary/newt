@@ -113,7 +113,7 @@ set search_path to {{namespace}}, public;
 	// Now for the table definitions.
 	txt = `
 --
--- {{namespace}}.{{model}} table definition
+-- {{namespace}}.{{model}} table and index definitions
 --
 drop table if exists {{namespace}}.{{model}};
 create table {{namespace}}.{{model}}
@@ -134,17 +134,35 @@ create table {{namespace}}.{{model}}
 --
 -- This becomes the end point '/rpc/create_{{model}}' in PostgREST
 --
-drop function if exists {{namespace}}.create_{{model}} (new_object jsonb);
+--drop function if exists {{namespace}}.create_{{model}} (new_object jsonb);
 create or replace function {{namespace}}.create_{{model}} (
     new_object jsonb
-) returns uuid
-language sql
+) returns jsonb
+language plpgsql
 as $$
+declare
+  	id uuid;
+  	ts timestamp;
+    updated_object jsonb;
+begin
+    id := gen_random_uuid();
+	ts := now();
+	-- create record
     insert into {{namespace}}.{{model}}
         (oid, created, updated, object)
     values
-        (gen_random_uuid(), now(), now(), new_object)
-    returning oid
+        (id, ts, ts, new_object);
+	-- return created record
+  	select (jsonb_build_object(
+    	'oid', oid,
+    	'created', created,
+    	'updated', updated
+    	) || object) 
+  	into updated_object
+  	from {{namespace}}.{{model}}
+  	where oid = id;
+  	return updated_object;
+end;
 $$
 ;
 
@@ -158,7 +176,7 @@ $$
 --
 -- It becomes the end point '/rpc/update_{{model}}'
 --
-drop function if exists {{namespace}}.update_{{model}} (id uuid, new_object jsonb);
+--drop function if exists {{namespace}}.update_{{model}} (id uuid, new_object jsonb);
 create or replace function {{namespace}}.update_{{model}} (
     id uuid,
     new_object jsonb
@@ -169,18 +187,20 @@ as $$
 declare
     updated_object jsonb;
 begin
-  update {{namespace}}.{{model}}
-  set updated = now(), object = new_object
-  where oid = id;
-  select (jsonb_build_object(
-    'oid', oid,
-    'created', created,
-    'updated', updated
-    ) || object) 
-  into updated_object
-  from {{namespace}}.{{model}}
-  where oid = id;
-  return updated_object;
+	-- update record
+	update {{namespace}}.{{model}}
+	set updated = now(), object = new_object
+	where oid = id;
+	-- return updated record
+	select (jsonb_build_object(
+    	'oid', oid,
+    	'created', created,
+    	'updated', updated
+    	) || object) 
+	into updated_object
+	from {{namespace}}.{{model}}
+	where oid = id;
+	return updated_object;
 end;
 $$
 ;
@@ -191,7 +211,7 @@ $$
 --
 -- It become an end point in PostgREST, '/rpc/read_{{model}}'
 --
-drop function {{namespace}}.read_{{model}} (IN id uuid, OUT obj jsonb);
+--drop function if exists {{namespace}}.read_{{model}} (IN id uuid, OUT obj jsonb);
 create or replace function {{namespace}}.read_{{model}} (
   IN id uuid,
   OUT obj jsonb
@@ -216,15 +236,17 @@ $$
 --
 -- It becomes the end point '/rpc/delete_{{model}}'
 --
-drop function if exists {{namespace}}.delete_{{model}} (id uuid);
+--drop function if exists {{namespace}}.delete_{{model}} (id uuid);
 create or replace function {{namespace}}.delete_{{model}} (
     id uuid
 ) returns uuid
-language sql
+language plpgsql
 as $$
+begin
     delete from {{namespace}}.{{model}}
-    where oid = id
-    returning id
+    where oid = id;
+    return id;
+end;
 $$
 ;
 
@@ -234,7 +256,7 @@ $$
 --
 -- It will become an end point in PostgREST, '/rpc/list_{{model}}'
 --
-drop function {{namespace}}.list_{{model}} ();
+--drop function if exists {{namespace}}.list_{{model}} ();
 create or replace function {{namespace}}.list_{{model}} ()
 returns table (
   obj jsonb
@@ -245,8 +267,9 @@ as $$
     'oid', oid,
     'created', created,
     'updated', updated
-    ) || object) as obj
+    ) || object)::jsonb as obj
   from {{namespace}}.{{model}}
+  order by updated desc;
 $$
 ;
 
@@ -294,12 +317,12 @@ grant usage on schema {{namespace}} to {{namespace}}_anonymous;
 	}
 
 	txt = `
-grant select, insert on {{namespace}}.{{model}} to {{namespace}}_anonymous;
+grant select, insert, update, delete on {{namespace}}.{{model}} to {{namespace}}_anonymous;
 grant execute on function {{namespace}}.create_{{model}} to {{namespace}}_anonymous;
 grant execute on function {{namespace}}.update_{{model}} to {{namespace}}_anonymous;
 grant execute on function {{namespace}}.delete_{{model}} to {{namespace}}_anonymous;
-grant select on {{namespace}}.read_{{model}} to {{namespace}}_anonymous;
-grant select on {{namespace}}.list_{{model}} to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.read_{{model}} to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.list_{{model}} to {{namespace}}_anonymous;
 
 `
 	tmpl, err = mustache.ParseString(txt)

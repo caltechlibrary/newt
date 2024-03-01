@@ -2,8 +2,9 @@
 # This Makefile will generate the ornothology Newt application used to test the second prototype.
 #
 
-PROJECT_FILES = ornothology_setup.sql ornothology_models.sql ornothology.conf \
-                create_sighting.tmpl read_sighting.tmpl update_sighting.tmpl delete_sighting.tmpl list_sighting.tmpl
+#PROJECT_FILES = ornothology_setup.sql ornothology_models.sql ornothology.conf \
+#                create_sighting.tmpl read_sighting.tmpl update_sighting.tmpl delete_sighting.tmpl list_sighting.tmpl
+PROJECT_FILES = ornothology_setup.sql ornothology_models.sql ornothology.conf
 
 build: $(PROJECT_FILES)
 
@@ -12,14 +13,14 @@ run: $(PROJECT_FILES)
 	newt ornothology.yaml &
 
 
-ornothology_setup.sql: ornothology.yaml
+ornothology_setup.sql: ornothology.yaml .FORCE
 	./bin/newtgenerator ornothology.yaml postgres setup >ornothology_setup.sql
 
-ornothology_models.sql: ornothology.yaml
+ornothology_models.sql: ornothology.yaml .FORCE
 	./bin/newtgenerator ornothology.yaml postgres models >ornothology_models.sql
 
-ornothology_postgrest.conf: ornothology.yaml
-	./bin/newtgenerator ornothology.yaml postgrest >ornothology_postgrest.conf
+ornothology.conf: ornothology.yaml
+	./bin/newtgenerator ornothology.yaml postgrest >ornothology.conf
 
 create_sighting.tmpl: ornothology.yaml
 	./bin/newtgenerator ornothology.yaml mustache create sighting >create_sighting.tmpl
@@ -37,4 +38,4 @@ list_sighting.tmpl: ornothology.yaml
 	./bin/newtgenerator ornothology.yaml mustache list sighting >list_sighting.tmpl
 
 
-
+.FORCE:

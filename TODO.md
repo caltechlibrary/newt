@@ -7,13 +7,12 @@
 
 ## Next for the second prototype 
 
-NOTE: X is completed, P is partial completion, S is skipping for now
+NOTE: X is completed, P is partial completion, S is skipping for now (there's something preventing it)
 
 - [ ] Nail down the second prototype YAML syntax
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
     - [X] setup.sql
-    - [P] models.sql
-        - [ ] a URL friendly uuid encoding is needed, see https://www.postgresql.org/docs/current/functions-binarystring.html and the function `encode()` and `decode()`, they support base64 encoding.
+    - [X] models.sql
     - [ ] postgrest.conf
     - [ ] create mustache template
     - [ ] read mustache template
@@ -49,6 +48,7 @@ NOTE: X is completed, P is partial completion, S is skipping for now
 
 ## Someday, maybe
 
+- [ ] Explore alternatives to a uuid for object identifiers, some sort of short id like RDM would be very nice.
 - [ ] seeing the data past thru a pipeline will be an important part in debugging problems. Newt Inspector could address that as a pass thru web service that output debugging info to the log output.
 - [ ] An OCFL service would allow Newt to support building repository like applications. U. C. Santa Barbara has some Go packages related to this.
 - [ ] Newt should support development with SQLite 3 databases
