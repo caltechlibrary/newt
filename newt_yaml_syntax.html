@@ -70,6 +70,10 @@ this contains configuration for the Newt Generator, i.e. namespace
 <dd>
 this contains configuration for Newt Mustache, i.e. port
 </dd>
+<dt>postgrest</dt>
+<dd>
+this contains configuration information for running PostgREST
+</dd>
 <dt>options</dt>
 <dd>
 holds key value pairs of which can be referenced in the values of
@@ -404,7 +408,7 @@ and code generator.</p>
 <dl>
 <dt>templates</dt>
 <dd>
-(optional: newtmustache) this holds a list of template objects
+(optional: newtmustache) this holds a list of template objects.
 </dd>
 </dl>
 <h3 id="template-object-model">template object model</h3>
@@ -414,7 +418,7 @@ you’re not using it you can skip these.</p>
 <dt><code>request [METHOD ][PATH]</code></dt>
 <dd>
 (required) This holds the request HTTP method and path. If the HTTP
-method is missing a POST is assumed
+method is missing a POST is assumed.
 </dd>
 <dt><code>template</code></dt>
 <dd>
@@ -427,14 +431,20 @@ partial templates. Mustache does support partial templates
 (optional, newtmustache only) A list of paths to partial Mustache
 templates used by <code>.template</code>.
 </dd>
+<dt><code>vocabularies</code></dt>
+<dd>
+This is a YAML file containing “vocabulary” items that can be
+incorporated into the output of your Mustache template. It is read at
+Newt Mustache startup along with the template.
+</dd>
 <dt><code>options</code></dt>
 <dd>
 (optional, newtmustache only) An object that can be merged in with JSON
-received for processing by your Mustache template
+received for processing by your Mustache template.
 </dd>
 <dt><code>debug</code></dt>
 <dd>
-(optional) this turns on debugging output for this template
+(optional) this turns on debugging output for this template.
 </dd>
 </dl>
 <p>Example of newtmustache YAML:</p>

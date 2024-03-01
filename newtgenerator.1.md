@@ -1,5 +1,5 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7-dev c6283a4"
+title: "newtgenerator(1) user manual | 0.0.7-dev c067be0"
 pubDate: 2024-03-01
 author: "R. S. Doiel"
 ---
@@ -17,7 +17,7 @@ newtgenerator CONFIG_FILE GENERATOR [MODEL] [ACTION]
 **newtgenerator** is a command line tool for generate Postgres SQL, PostgREST configuration, Mustache templates and html.
 It generates content per model definition in Newt's YAML file. For SQL and configuration generation the MODEL and ACTION
 are ignored. One file will be written to standard out containing the generated code. Mustache template generation you need
-to include MODEL and ACTION becasue the specific template code generator needs to apply to one model and one of the
+to include MODEL and ACTION because the specific template code generator needs to apply to one model and one of the
 CRUD-L actions.
 
 # OPTIONS
@@ -44,7 +44,7 @@ applications
 : (optional) holds the run time configuration used by the Newt applications.
 
 models
-: (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
+: (required by newtgenerator) This holds the description of the data models in your application.
 
 ### The applications property
 
@@ -61,7 +61,7 @@ namespace
 
 ### the "models" property
 
-Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYTS).
+Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYITS).
 
 ### a model object
 
@@ -70,20 +70,20 @@ The model object is based largely on GitHub YAML issue template syntax with a co
 id
 : (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^21]
 
-The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYTS)
+The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYITS)
 
 name
-: (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
+: (required: GHYITS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
 
 description
-: (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
+: (required: GHYITS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
 
 body
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
 
 #### a model's input types
 
-This is based on GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
+This is based on GitHub YAML issue template (abbr: GHYITS) input types[^23]. 
 
 id
 : (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
@@ -99,7 +99,7 @@ validations
 
 #### input types
 
-Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^23]. They include
+Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYITS for scheme[^23]. They include
 
 markdown
 : (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
@@ -126,25 +126,26 @@ Newt may add additional types in the future.
 
 # GENERATOR
 
-Currently three types of generators are being implemented in the 2nd Newt Protoype. This parameter
+Currently three types of generators are being implemented in the 2nd Newt Prototype. This parameter
 lets you set which one you are using. It is required. Each generator type may accept more options.
 The Postgres SQL generator, "postgres", can generate three different SQL files, setup.sql, models.sql and
 models_test.sql.  
 
 # MODELS and ACTION
 
-The Mustache generator needs to know which model and for what CRUD-L operation you require a template generatored.
+The Mustache generator needs to know which model and for what CRUD-L operation you require a template generated.
 MODEL should match on of the model id values in the models property of the Newt YAML. The ACTION needs to be
 one of the following, "create", "read", "update", "delete", or "list".
 
 # EXAMPLES
 
 In this example we use the models described below to generate the configuration file and SQL
-file need to boostrap Postgres+PostgREST.
+file need to bootstrap Postgres+PostgREST.
 
 ~~~
 newtgenerator people.yaml postgres setup >setup.sql
 newtgenerator people.yaml postgres models >models.sql
+newtgenerator people.yaml postgres models_test >models_test.sql
 newtgenerator people.yaml postgrest >postgrest.conf
 
 newtgenerator people.yaml mustache create >create_people.tmpl
@@ -200,7 +201,7 @@ models:
       - id: ror
         type: input
         attributes:
-          label: (optional) A person's ROR identifing their affiliation
+          label: (optional) A person's ROR identifying their affiliation
       - id: email
         type: "input[type=email]"
         attributes:

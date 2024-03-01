@@ -1,5 +1,5 @@
 ---
-title: "ws(1) user manual | 0.0.7-dev c6283a4"
+title: "ws(1) user manual | 0.0.7-dev c067be0"
 pubDate: 2024-03-01
 author: "R. S. Doiel"
 ---
@@ -19,7 +19,7 @@ is 8000 and the current working directory is the default document root. There is
 configuration aside from providing a directory path, optionally changing the port and
 setting a verbose mode useful for debugging requests.
 
-This is a mimimal web server. No http, no embedded programming languages. No remapping
+This is a minimal web server. No http, no embedded programming languages. No remapping
 content types, redirect or other fancy stuff. It provides a quick way to allow your
 static content to be available to your web browser over http for development purposes.
 

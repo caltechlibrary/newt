@@ -1,5 +1,5 @@
 ---
-title: "newtrouter(1) user manual | 0.0.7-dev c6283a4"
+title: "newtrouter(1) user manual | 0.0.7-dev c067be0"
 pubDate: 2024-03-01
 author: "R. S. Doiel"
 ---
@@ -14,11 +14,11 @@ newtrouter YAML_CONFIG_FILE
 
 # DESCRIPTION
 
-**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requestor. It's just a data router that manages a pipeline of services for each defined request pattern.
+**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
 
 In additional content routing newtrouter can also service out static resources. This is handy during development but less useful if you are using a front end web server such as a production setting.
 
-**newtrouter**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtrouter** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
+**newtrouter**'s configuration uses a declarative model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **newtrouter** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
 
 # OPTIONS
 
@@ -36,7 +36,7 @@ In additional content routing newtrouter can also service out static resources. 
 
 # YAML_CONFIG_FILE
 
-**newtrouter** is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the enviroment variables identifified tthe `.appliction.environment` property. Here's a summary of the Newt YAML syntax that **newtrouter** uses.
+**newtrouter** is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the environment variables identified the `.appliction.environment` property. Here's a summary of the Newt YAML syntax that **newtrouter** uses.
 
 Top level properties for **newtrouter** YAML.
 
@@ -143,7 +143,7 @@ routes:
     request: GET /{year}/{month}/{day}
     description: Retrieve all the posts on a specific day
     pipeline:
-      - description: Retrieve the posts happending on year/month/day
+      - description: Retrieve the posts happening on year/month/day
         service: GET http://{DB_USER}:{DB_PASSWOR}@localhost:3000/rpc/day_posts/{year}/{month}/{day}
       - description: Transform monthly list into web page
         service: POST http://localhost:3032/list_posts.tmpl

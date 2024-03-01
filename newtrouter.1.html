@@ -33,13 +33,13 @@ side JSON API like that form with Postgres + PostgREST, and a template
 engine like Newt Mustache. <strong>newtrouter</strong> accepts a
 request, if it finds a matching route description it runs the request
 through a data pipeline of web services returning the results of the
-last one executed to the web browser or requestor. It’s just a data
+last one executed to the web browser or requester. It’s just a data
 router that manages a pipeline of services for each defined request
 pattern.</p>
 <p>In additional content routing newtrouter can also service out static
 resources. This is handy during development but less useful if you are
 using a front end web server such as a production setting.</p>
-<p><strong>newtrouter</strong>’s configuration uses a declaritive model
+<p><strong>newtrouter</strong>’s configuration uses a declarative model
 expressed in YAML. It can also allow environment variables read at start
 up to be part of the data for mapping JSON data source requests. This is
 particularly helpful for supplying access credentials. You do not
@@ -68,7 +68,7 @@ Load YAML configuration and report any errors found
 <h1 id="yaml_config_file">YAML_CONFIG_FILE</h1>
 <p><strong>newtrouter</strong> is configured from a YAML file. The YAML
 should not include secrets. Instead you can pass these in via the
-enviroment variables identifified tthe
+environment variables identified the
 <code>.appliction.environment</code> property. Here’s a summary of the
 Newt YAML syntax that <strong>newtrouter</strong> uses.</p>
 <p>Top level properties for <strong>newtrouter</strong> YAML.</p>
@@ -229,7 +229,7 @@ routes:
     request: GET /{year}/{month}/{day}
     description: Retrieve all the posts on a specific day
     pipeline:
-      - description: Retrieve the posts happending on year/month/day
+      - description: Retrieve the posts happening on year/month/day
         service: GET http://{DB_USER}:{DB_PASSWOR}@localhost:3000/rpc/day_posts/{year}/{month}/{day}
       - description: Transform monthly list into web page
         service: POST http://localhost:3032/list_posts.tmpl

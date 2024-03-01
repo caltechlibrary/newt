@@ -33,7 +33,7 @@ Postgres SQL, PostgREST configuration, Mustache templates and html. It
 generates content per model definition in Newt’s YAML file. For SQL and
 configuration generation the MODEL and ACTION are ignored. One file will
 be written to standard out containing the generated code. Mustache
-template generation you need to include MODEL and ACTION becasue the
+template generation you need to include MODEL and ACTION because the
 specific template code generator needs to apply to one model and one of
 the CRUD-L actions.</p>
 <h1 id="options">OPTIONS</h1>
@@ -66,9 +66,7 @@ applications.
 <dt>models</dt>
 <dd>
 (required by newtgenerator) This holds the description of the data
-models in your application. Each model uses the <a
-href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms">GitHub
-YAML issue template syntax</a> (abbr: GHYTS)
+models in your application.
 </dd>
 </dl>
 <h3 id="the-applications-property">The applications property</h3>
@@ -95,7 +93,7 @@ Postgres+PostgREST
 <p>Models holds a list of individual models used by our data pipelines.
 The models are by Newt code generator and the Newt router. Models
 defines a superset of the GitHub YAML issue template syntax (abbr:
-GHYTS).</p>
+GHYITS).</p>
 <h3 id="a-model-object">a model object</h3>
 <p>The model object is based largely on GitHub YAML issue template
 syntax with a couple extra properties that are Newt enhancements.</p>
@@ -109,18 +107,18 @@ id="fnref1" role="doc-noteref"><sup>1</sup></a>
 </dl>
 <p>The following properties are based on the GitHub YAML issue template
 syntax<a href="#fn2" class="footnote-ref" id="fnref2"
-role="doc-noteref"><sup>2</sup></a> (abbr: GHYTS)</p>
+role="doc-noteref"><sup>2</sup></a> (abbr: GHYITS)</p>
 <dl>
 <dt>name</dt>
 <dd>
-(required: GHYTS, optional: newt) Must be unique to use with GitHub YAML
-issue templates<a href="#fn3" class="footnote-ref" id="fnref3"
+(required: GHYITS, optional: newt) Must be unique to use with GitHub
+YAML issue templates<a href="#fn3" class="footnote-ref" id="fnref3"
 role="doc-noteref"><sup>3</sup></a>. In Newt it will be used in
 populating comments in generated SQL
 </dd>
 <dt>description</dt>
 <dd>
-(required: GHYTS, optional: newt) A human description of the model, It
+(required: GHYITS, optional: newt) A human description of the model, It
 will appear in the web form and SQL components generated from the model
 </dd>
 <dt>body</dt>
@@ -130,7 +128,7 @@ SQL, input element in web forms and or HTML elements in read only pages
 </dd>
 </dl>
 <h4 id="a-models-input-types">a model’s input types</h4>
-<p>This is based on GitHub YAML issue template (abbr: GHYTS) input
+<p>This is based on GitHub YAML issue template (abbr: GHYITS) input
 types<a href="#fn4" class="footnote-ref" id="fnref4"
 role="doc-noteref"><sup>4</sup></a>.</p>
 <dl>
@@ -160,8 +158,8 @@ provided with certain identifiers (e.g. DOI, ROR, ORCID).
 </dl>
 <h4 id="input-types">input types</h4>
 <p>Both the routes and models may contain input types. The types
-supported in Newt are based on the types found in the GHYTS for scheme<a
-href="#fn6" class="footnote-ref" id="fnref6"
+supported in Newt are based on the types found in the GHYITS for
+scheme<a href="#fn6" class="footnote-ref" id="fnref6"
 role="doc-noteref"><sup>6</sup></a>. They include</p>
 <dl>
 <dt>markdown</dt>
@@ -196,21 +194,23 @@ are allowed it is stored as a JSON Array column.
 <p>Newt may add additional types in the future.</p>
 <h1 id="generator">GENERATOR</h1>
 <p>Currently three types of generators are being implemented in the 2nd
-Newt Protoype. This parameter lets you set which one you are using. It
+Newt Prototype. This parameter lets you set which one you are using. It
 is required. Each generator type may accept more options. The Postgres
 SQL generator, “postgres”, can generate three different SQL files,
 setup.sql, models.sql and models_test.sql.</p>
 <h1 id="models-and-action">MODELS and ACTION</h1>
 <p>The Mustache generator needs to know which model and for what CRUD-L
-operation you require a template generatored. MODEL should match on of
-the model id values in the models property of the Newt YAML. The ACTION
+operation you require a template generated. MODEL should match on of the
+model id values in the models property of the Newt YAML. The ACTION
 needs to be one of the following, “create”, “read”, “update”, “delete”,
 or “list”.</p>
 <h1 id="examples">EXAMPLES</h1>
 <p>In this example we use the models described below to generate the
-configuration file and SQL file need to boostrap Postgres+PostgREST.</p>
+configuration file and SQL file need to bootstrap
+Postgres+PostgREST.</p>
 <pre><code>newtgenerator people.yaml postgres setup &gt;setup.sql
 newtgenerator people.yaml postgres models &gt;models.sql
+newtgenerator people.yaml postgres models_test &gt;models_test.sql
 newtgenerator people.yaml postgrest &gt;postgrest.conf
 
 newtgenerator people.yaml mustache create &gt;create_people.tmpl
@@ -264,7 +264,7 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="
 <span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> ror</span></span>
 <span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
 <span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person&#39;s ROR identifing their affiliation</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person&#39;s ROR identifying their affiliation</span></span>
 <span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> email</span></span>
 <span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;input[type=email]&quot;</span></span>
 <span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>

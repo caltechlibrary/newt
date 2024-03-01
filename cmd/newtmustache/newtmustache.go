@@ -30,7 +30,7 @@ author: "R. S. Doiel"
 **{app_name}** is a web service that provides a Mustache template rendering inspired by Pandoc server.
 
 Unlike Pandoc web server, `+"`"+`{app_name}`+"`"+` expects a YAML_CONFIG_FILE. The format is
-described below. That file specifics the request to template mapping along with any ancillary informtation
+described below. That file specifics the request to template mapping along with any ancillary information
 to merge into the submitted object for the template to process. In additional to options expressed in
 the configuration the pattern describing the request can also be merged into the JSON objects the template
 will process.
@@ -70,7 +70,7 @@ The following options are supported by **{app_name}**.
 
 # The templates
 
-Mustache templates are documented at <https://mustache.github.io>. The template engined
+Mustache templates are documented at <https://mustache.github.io>. The template engine
 used is based on Go package <https://github.com/cbroglie/mustache>.
 
 ## Features
@@ -82,7 +82,7 @@ used is based on Go package <https://github.com/cbroglie/mustache>.
 
 # YAML_CONFIG_FILE
 
-This is a list of the Newt YAML syntax relavent to **{app_name}**.
+This is a list of the Newt YAML syntax relevant to **{app_name}**.
 
 ## Top level properties
 

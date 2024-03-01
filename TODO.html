@@ -32,16 +32,16 @@ the pipeline</label></li>
 </ul>
 <h2 id="next-for-the-second-prototype">Next for the second
 prototype</h2>
-<p>NOTE: X is completed, P is partial completion, S is skipping for now
-(there’s something preventing it)</p>
-<ul class="task-list">
-<li><label><input type="checkbox" />Nail down the second prototype YAML
-syntax</label></li>
+<p>NOTE: X is completed, P is partial completion, D (dropped) is
+skipping implementation</p>
+<ul>
+<li>[P] Nail down the second prototype YAML syntax</li>
 <li><label><input type="checkbox" />I need to implement the second
 prototype code generator once I’ve debugged the Newt YAML syntax</label>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" />setup.sql</label></li>
 <li><label><input type="checkbox" checked="" />models.sql</label></li>
+<li><label><input type="checkbox" />models_test.sql</label></li>
 <li><label><input type="checkbox" />postgrest.conf</label></li>
 <li><label><input type="checkbox" />create mustache
 template</label></li>
@@ -52,8 +52,9 @@ template</label></li>
 template</label></li>
 <li><label><input type="checkbox" />list mustache template</label></li>
 </ul></li>
-<li><label><input type="checkbox" />Should <code>newt</code> runner be
-able to manage a postgrest instance?</label>
+<li><label><input type="checkbox" /><code>newt</code> runner should be
+able to manage a postgrest instance. This will simplify using Newt in
+the development setting</label>
 <ul class="task-list">
 <li><label><input type="checkbox" /><code>newt</code> would need to
 respond SIGTERM, SIGHUP and SIGKILL</label></li>

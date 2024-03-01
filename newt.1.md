@@ -1,5 +1,5 @@
 ---
-title: "newt(1) user manual | 0.0.7-dev c6283a4"
+title: "newt(1) user manual | 0.0.7-dev c067be0"
 pubDate: 2024-03-01
 author: "R. S. Doiel"
 ---
@@ -17,7 +17,7 @@ newt [OPTIONS] YAML_CONFIG_FILE
 **newt** is an application runner. If both Newt Router and Mustache are
 defined in the YAML_CONFIG_FILE then **newt** will run them each on their
 own port. This allows you to have your Newt programs under one process which can
-be convient during development.
+be convenient during development.
 
 # OPTIONS
 
@@ -48,7 +48,7 @@ applications
 : (optional) holds the run time configuration used by the Newt applications.
 
 models
-: (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
+: (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYITS)
 
 routes
 : (required by newtrouter) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
@@ -61,7 +61,7 @@ templates
 The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
 newtrouter
-: this containes configuration for the Newt Router, i.e. port and htdocs
+: this contains configuration for the Newt Router, i.e. port and htdocs
 
 newtgenerator
 : this contains configuration for the Newt Generator, e.g. port, namespace
@@ -124,7 +124,7 @@ A pipeline is a list of web services containing a type, URL, method and content 
 
 ## the "models" property
 
-Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYTS).
+Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYITS).
 
 ### a model object
 
@@ -133,20 +133,20 @@ The model object is based largely on GitHub YAML issue template syntax with a co
 id
 : (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^21]
 
-The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYTS)
+The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYITS)
 
 name
-: (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
+: (required: GHYITS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
 
 description
-: (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
+: (required: GHYITS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
 
 body
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
 
 #### a model's input types
 
-This is based on GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
+This is based on GitHub YAML issue template (abbr: GHYITS) input types[^23]. 
 
 id
 : (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
@@ -163,7 +163,7 @@ validations
 
 ## input types
 
-Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^23]. They include
+Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYITS for scheme[^23]. They include
 
 markdown
 : (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
@@ -194,7 +194,7 @@ applications:
   newtmustache:
     port: 8012 # Port number for Newt Mustache 
   #options:
-    # name value pairs used for alaising strings in routes, models, and templates 
+    # name value pairs used for aliasing strings in routes, models, and templates 
   environment:
     - DB_USER
     - DB_PASSWORD
@@ -239,7 +239,7 @@ models:
       - id: ror
         type: input
         attributes:
-          label: (optional) A person's ROR identifing their affiliation
+          label: (optional) A person's ROR identifying their affiliation
       - id: email
         type: "input[type=email]"
         attributes:
@@ -262,7 +262,7 @@ routes:
         service: POST http://localhost:3032/people_update_result.tmpl
         content_type: application/json
   - id: read_person
-    desciption: Update a person's profile
+    description: Update a person's profile
     request: "GET /person/{{people.people_id}}"
     pipeline:
       - description: Retrieve a person's profile
@@ -270,7 +270,7 @@ routes:
         content_type: application/json
       - description: |
           Render a person's profile
-        service: POST http:localhost:3032/profile.tmpl
+        service: POST http://localhost:3032/profile.tmpl
         content_type: application/json
   - id: update_person
     description: Update person's profile
@@ -290,7 +290,7 @@ routes:
       - description: Remove the person for the database
         service: DELETE "https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}"
         content_type: application/json
-      - description: Displace the result of what happed in the removal
+      - description: Displace the result of what happened in the removal
         service: POST http://localhost:3032/removed_person.tmpl
   - id: list_people
     description: List people profiles available
@@ -299,9 +299,9 @@ routes:
       - description: Retrieve a list of all people profiles available
         service: GET https://{{DB_HOST}}@{{DB_HOST}}:3000/people
         content_type: application/json
-      - discription: format a browsable people list linking to individual profiles
+      - description: format a browsable people list linking to individual profiles
         service: POST http://localhost:3030/list_people.tmpl
-        content_type: applicatin/json
+        content_type: application/json
 ~~~
 
 

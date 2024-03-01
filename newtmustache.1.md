@@ -1,5 +1,5 @@
 ---
-title: "newtmustache(1) user manual | 0.0.7-dev c6283a4"
+title: "newtmustache(1) user manual | 0.0.7-dev c067be0"
 pubDate: 2024-03-01
 author: "R. S. Doiel"
 ---
@@ -17,7 +17,7 @@ newtmustache [OPTIONS] YAML_CONFIG_FILE
 **newtmustache** is a web service that provides a Mustache template rendering inspired by Pandoc server.
 
 Unlike Pandoc web server, `newtmustache` expects a YAML_CONFIG_FILE. The format is
-described below. That file specifics the request to template mapping along with any ancillary informtation
+described below. That file specifics the request to template mapping along with any ancillary information
 to merge into the submitted object for the template to process. In additional to options expressed in
 the configuration the pattern describing the request can also be merged into the JSON objects the template
 will process.
@@ -57,7 +57,7 @@ The following options are supported by **newtmustache**.
 
 # The templates
 
-Mustache templates are documented at <https://mustache.github.io>. The template engined
+Mustache templates are documented at <https://mustache.github.io>. The template engine
 used is based on Go package <https://github.com/cbroglie/mustache>.
 
 ## Features
@@ -69,7 +69,7 @@ used is based on Go package <https://github.com/cbroglie/mustache>.
 
 # YAML_CONFIG_FILE
 
-This is a list of the Newt YAML syntax relavent to **newtmustache**.
+This is a list of the Newt YAML syntax relevant to **newtmustache**.
 
 ## Top level properties
 

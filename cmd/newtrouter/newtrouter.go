@@ -27,11 +27,11 @@ author: "R. S. Doiel"
 
 # DESCRIPTION
 
-**{app_name}** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **{app_name}** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requestor. It's just a data router that manages a pipeline of services for each defined request pattern.
+**{app_name}** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **{app_name}** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
 
 In additional content routing {app_name} can also service out static resources. This is handy during development but less useful if you are using a front end web server such as a production setting.
 
-**{app_name}**'s configuration uses a declaritive model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **{app_name}** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
+**{app_name}**'s configuration uses a declarative model expressed in YAML.  It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the **{app_name}** YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.
 
 # OPTIONS
 
@@ -49,7 +49,7 @@ In additional content routing {app_name} can also service out static resources. 
 
 # YAML_CONFIG_FILE
 
-**{app_name}** is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the enviroment variables identifified tthe `+"`"+`.appliction.environment`+"`"+` property. Here's a summary of the Newt YAML syntax that **{app_name}** uses.
+**{app_name}** is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the environment variables identified the `+"`"+`.appliction.environment`+"`"+` property. Here's a summary of the Newt YAML syntax that **{app_name}** uses.
 
 Top level properties for **{app_name}** YAML.
 
@@ -156,7 +156,7 @@ routes:
     request: GET /{year}/{month}/{day}
     description: Retrieve all the posts on a specific day
     pipeline:
-      - description: Retrieve the posts happending on year/month/day
+      - description: Retrieve the posts happening on year/month/day
         service: GET http://{DB_USER}:{DB_PASSWOR}@localhost:3000/rpc/day_posts/{year}/{month}/{day}
       - description: Transform monthly list into web page
         service: POST http://localhost:3032/list_posts.tmpl
