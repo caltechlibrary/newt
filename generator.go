@@ -62,14 +62,16 @@ func (g *NewtGenerator) renderPostgreSQL(codeType string) error {
 	case "models":
 		return pgModels(g.out, g.Namespace, g.Models)
 	case "models_test":
-		return pgModelsTest(g.out, g.Models)
+		return pgModelsTest(g.out, g.Namespace, g.Models)
 	default:
 		return fmt.Errorf("%q not supported at this time", codeType)
 	}
 }
 
+// renderPostgREST does what its name implies. It the configuration
+// file used when starting up PostgREST.
 func (g *NewtGenerator) renderPostgREST(codeType string) error {
-	return fmt.Errorf("g.renderPostgREST(%q) not implemented", codeType)
+	return prConfig(g.out, g.Namespace)
 }
 
 func (g *NewtGenerator) renderMustache(codeType string) error {

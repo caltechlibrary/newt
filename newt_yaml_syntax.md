@@ -32,6 +32,9 @@ newtgenerator
 newtmustache
 : this contains configuration for Newt Mustache, i.e. port
 
+postgrest
+: this contains configuration information for running PostgREST
+
 options
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
 
@@ -277,14 +280,14 @@ routes:
 This property is used by Newt Mustache. It is ignore by Newt router and code generator.
 
 templates
-: (optional: newtmustache) this holds a list of template objects
+: (optional: newtmustache) this holds a list of template objects.
 
 ### template object model
 
 The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
 
 `request [METHOD ][PATH]`
-: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
+: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed.
 
 `template`
 : (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
@@ -292,11 +295,14 @@ The template objects are used by Newt Mustache template engine. If you're not us
 `partials`
 : (optional, newtmustache only) A list of paths to partial Mustache templates used by `.template`.
 
+`vocabularies`
+: This is a YAML file containing "vocabulary" items that can be incorporated into the output of your Mustache template. It is read at Newt Mustache startup along with the template.
+
 `options`
-: (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template
+: (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template.
 
 `debug`
-: (optional) this turns on debugging output for this template
+: (optional) this turns on debugging output for this template.
 
 Example of newtmustache YAML:
 

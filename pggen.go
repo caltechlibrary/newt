@@ -341,6 +341,87 @@ grant execute on function {{namespace}}.list_{{model}} to {{namespace}}_anonymou
 	return nil
 }
 
-func pgModelsTest(out io.Writer, models []*NewtModel) error {
-	return fmt.Errorf("pgModelsTest() not implemented yet")
+func pgModelsTest(out io.Writer, namespace string, models []*NewtModel) error {
+	txt := `--
+-- {{namespace}}_test.sql tests the models described in {{namespace}}.yaml
+--
+-- WARNING: It is only an approximate test as it DOES NOT use your actual models!!!
+--
+-- You should modify this file to meat the needs of testing your Postgres models.
+--
+-- \c {{namespace}}
+
+select 'Testing {{namespace}}.create_{{model}}' as msg limit 1;
+--
+-- Test {{namespace}}.create_{{model}} can execute.
+--
+select {{namespace}}.create_{{model}}(jsonb_build_object(
+   'test_number', {{test_no}},
+   'test_notes', 'Initial Object Creation'
+));
+
+select 'Testing {{namespace}}.read_{{model}}' as msg limit 1;
+--
+-- Test if {{namespace}}.read_{{model}} can execute.
+--
+with t as (
+  select oid
+  from {{namespace}}.{{model}}
+  order by created desc
+  limit 1
+) select {{namespace}}.read_{{model}}(t.oid) from t limit 1;
+
+
+select 'Testing {{namespace}}.update_{{model}}' as msg limit 1;
+-- 
+-- Test if {{namespace}}.update_{{model}} can execute.
+-- 
+with t as (
+  select oid
+  from {{namespace}}.{{model}}
+  order by created desc
+  limit 1
+) select {{namespace}}.update_{{model}}(t.oid, jsonb_build_object(
+   'test_number', {{test_no}},
+   'test_notes', 'Updated Object Action'
+)) from t limit 1;
+
+
+--
+-- Test listing all records created and updated.
+--
+select {{namespace}}.list_{{model}}();
+
+select 'Testing {{namespace}}.delete_{{model}}' as msg limit 1;
+-- 
+-- Test if {{namespace}}.delete_{{model}} can execute.
+-- 
+with t as (
+  select oid
+  from {{namespace}}.{{model}}
+  order by updated desc
+  limit 1
+) select {{namespace}}.delete_{{model}}(t.oid) from t;
+
+--
+-- Test listing all records after delete.
+--
+select {{namespace}}.list_{{model}}();
+
+`
+	tmpl, err := mustache.ParseString(txt)
+	if err != nil {
+		return err
+	}
+	for i, m := range models {
+		data := map[string]string{
+			"namespace": namespace,
+			"model":     m.Id,
+			"test_no": fmt.Sprintf("%d", i),
+		}
+		if err := tmpl.FRender(out, data); err != nil {
+			return err
+		}
+	}
+	return nil
 }

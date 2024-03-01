@@ -7,19 +7,20 @@
 
 ## Next for the second prototype 
 
-NOTE: X is completed, P is partial completion, S is skipping for now (there's something preventing it)
+NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
-- [ ] Nail down the second prototype YAML syntax
+- [P] Nail down the second prototype YAML syntax
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
     - [X] setup.sql
     - [X] models.sql
+    - [ ] models\_test.sql
     - [ ] postgrest.conf
     - [ ] create mustache template
     - [ ] read mustache template
     - [ ] update mustache template
     - [ ] delete mustache template
     - [ ] list mustache template
-- [ ] Should `newt` runner be able to manage a postgrest instance?
+- [ ] `newt` runner should be able to manage a postgrest instance. This will simplify using Newt in the development setting
   - [ ] `newt` would need to respond SIGTERM, SIGHUP and SIGKILL
   - [ ] `newt` need to track the pid of the external process, then folder that into the signal handlers
 - [ ] `newtinit`, an interactive Newt YAML file generator, need to decide on approach
