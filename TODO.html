@@ -32,23 +32,16 @@ the pipeline</label></li>
 </ul>
 <h2 id="next-for-the-second-prototype">Next for the second
 prototype</h2>
-<p>NOTE: X is completed, P is partial completion, S is skipping for
-now</p>
+<p>NOTE: X is completed, P is partial completion, S is skipping for now
+(there’s something preventing it)</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Nail down the second prototype YAML
 syntax</label></li>
 <li><label><input type="checkbox" />I need to implement the second
 prototype code generator once I’ve debugged the Newt YAML syntax</label>
-<ul>
-<li><label><input type="checkbox" checked="" />setup.sql</label></li>
-<li>[P] models.sql
 <ul class="task-list">
-<li><label><input type="checkbox" />a URL friendly uuid encoding is
-needed, see
-https://www.postgresql.org/docs/current/functions-binarystring.html and
-the function <code>encode()</code> and <code>decode()</code>, they
-support base64 encoding.</label></li>
-</ul></li>
+<li><label><input type="checkbox" checked="" />setup.sql</label></li>
+<li><label><input type="checkbox" checked="" />models.sql</label></li>
 <li><label><input type="checkbox" />postgrest.conf</label></li>
 <li><label><input type="checkbox" />create mustache
 template</label></li>
@@ -140,6 +133,9 @@ meetup, July 14, 2023</label></li>
 </ul>
 <h2 id="someday-maybe">Someday, maybe</h2>
 <ul class="task-list">
+<li><label><input type="checkbox" />Explore alternatives to a uuid for
+object identifiers, some sort of short id like RDM would be very
+nice.</label></li>
 <li><label><input type="checkbox" />seeing the data past thru a pipeline
 will be an important part in debugging problems. Newt Inspector could
 address that as a pass thru web service that output debugging info to
