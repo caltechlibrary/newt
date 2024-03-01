@@ -11,8 +11,8 @@ man/*
 pdf/*
 epub/*
 old_code/*
-ornothology_*.sql
-ornothology_*.conf
+ornothology*.sql
+ornothology*.conf
 *_sighting.tmpl
 t.txt
 t.json
