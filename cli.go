@@ -433,7 +433,7 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 
 // RunMustacheCLI this provides a cli for checking your templates using static JSON files and
 // displaying results to stdout.
-func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
+func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string, pageElements map[string]interface{}) int {
 	const (
 		OK = iota
 		ERROR
@@ -479,12 +479,16 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string) 
 		fmt.Fprintf(eout, "failed decoding %q, %s\n", dataFName, err)
 		return DECODE_ERROR
 	}
+	if pageElements == nil || len(pageElements) == 0 {
+		pageElements = map[string]interface{}{}
+	}
+	pageElements["body"] = data
 	tmpl, err := mustache.ParseString(fmt.Sprintf("%s", txt))
 	if err != nil {
 		fmt.Fprintf(eout, "failed template parse error %q, %s\n", dataFName, err)
 		return TEMPLATE_ERROR
 	}
-	if err = tmpl.FRender(out, data); err != nil {
+	if err = tmpl.FRender(out, pageElements); err != nil {
 		fmt.Fprintf(eout, "failed render error %q, %s\n", dataFName, err)
 		return TEMPLATE_ERROR
 	}

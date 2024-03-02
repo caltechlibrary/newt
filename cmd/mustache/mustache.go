@@ -8,6 +8,9 @@ import (
 
 	// Caltech Library Packages
 	"github.com/caltechlibrary/newt"
+
+	// 3rd Party packages
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -48,6 +51,9 @@ The following options are supported by **{app_name}**.
 -version
 : display version information
 
+-page
+: points at a YAML file that will be used as elements in the Mustache template.
+
 # EXAMPLE
 
 In this example there is a JSON file called "data.json" and a template called "page.tmpl"
@@ -83,6 +89,8 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "display version")
 	
 	// App option(s)
+	fNames := ""
+	flag.StringVar(&fNames, "page", "", "YAML file containing elements to pass to the Mustache template")
 
 	// We're ready to process args
 	flag.Parse()
@@ -104,5 +112,17 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunMustacheCLI(in, out, eout, args))
+	pageElements := map[string]interface{}{}
+	if fNames != "" {
+		src, err := os.ReadFile(fNames)
+		if err != nil {
+			fmt.Fprintf(eout, "failed to read %s, %s\n", fNames, err)
+			os.Exit(1)
+		}
+		if err = yaml.Unmarshal(src, &pageElements); err != nil {
+			fmt.Fprintf(eout, "failed to decode %s, %s\n", fNames, err)
+			os.Exit(1)
+		}
+	}
+	os.Exit(newt.RunMustacheCLI(in, out, eout, args, pageElements))
 }

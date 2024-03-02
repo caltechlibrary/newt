@@ -1,5 +1,5 @@
 ---
-title: "mustache(1) user manual | 0.0.7-dev a9868d9"
+title: "mustache(1) user manual | 0.0.7-dev 7343528"
 pubDate: 2024-03-02
 author: "R. S. Doiel"
 ---
@@ -34,6 +34,9 @@ The following options are supported by **mustache**.
 
 -version
 : display version information
+
+-page
+: points at a YAML file that will be used as elements in the Mustache template.
 
 # EXAMPLE
 
