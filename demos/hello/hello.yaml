@@ -1,0 +1,11 @@
+applications:
+  newtmustache:
+    port: 8011
+  options:
+    default_name: There
+    place: Planet Earth!
+templates:
+  - request: /hello
+    template: hello.tmpl
+  - request: "/hello/{someplace_else}"
+    template: hello.tmpl

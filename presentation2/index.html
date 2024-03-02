@@ -7,25 +7,15 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="R. S. Doiel, rsdoiel@caltech.edu" />
-  <meta name="keywords" content="web service, micro
-service, Postgres, PostgREST, Mustache" />
+  <meta name="keywords" content="web service, micro service, Postgres, PostgREST, Mustache" />
   <title>Newt, the second prototype</title>
   <style type="text/css">
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    ul.task-list{list-style: none;}
   </style>
   <link rel="stylesheet" type="text/css" media="screen, projection, print"
     href="https://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
@@ -36,11 +26,7 @@ service, Postgres, PostgREST, Mustache" />
 <div class="slide titlepage">
   <h1 class="title">Newt, the second prototype</h1>
   <p class="author">
-R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu"
-class="email">rsdoiel@caltech.edu</a>
-  </p>
-  <p class="institute">
-<p>Caltech Library, Digital Library Development</p>
+R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu" class="email">rsdoiel@caltech.edu</a>
   </p>
 </div>
 <div class="slide" id="TOC">
@@ -50,8 +36,7 @@ class="email">rsdoiel@caltech.edu</a>
 <h1>Goal: Second Prototype</h1>
 <p>Is Newt and “off the shelf” enough?</p>
 </div>
-<div id="choose-wisely-pick-your-abstractions"
-class="slide section level1">
+<div id="choose-wisely-pick-your-abstractions" class="slide section level1">
 <h1>Choose wisely: pick your abstractions</h1>
 <ul>
 <li>Simple = (No coding) + (Less code)</li>
@@ -62,15 +47,13 @@ class="slide section level1">
 <div id="off-the-shelf-no-coding" class="slide section level1">
 <h1>Off the shelf (no coding)</h1>
 <ul>
-<li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a> =&gt; JSON data source</li>
+<li><a href="https://postgresql.org">Postgres</a> + <a href="https://postgrest.org">PostgREST</a> =&gt; JSON data source</li>
 <li>Newt Mustache =&gt; Transform JSON into web pages</li>
 <li>Newt Router, ties it all together</li>
 <li>YAML can express routes, pipelines and data models</li>
 </ul>
 </div>
-<div id="assembling-it-with-yaml-less-code"
-class="slide section level1">
+<div id="assembling-it-with-yaml-less-code" class="slide section level1">
 <h1>Assembling it with YAML (less code)</h1>
 <ul>
 <li>Newt’s Second Prototype has a new YAML syntax
@@ -98,23 +81,20 @@ class="slide section level1">
 <li>text editor</li>
 </ul>
 </div>
-<div id="step-three-implement-our-json-data-source"
-class="slide section level1">
+<div id="step-three-implement-our-json-data-source" class="slide section level1">
 <h1>Step three implement our JSON data source</h1>
 <ul>
 <li>psql</li>
 <li>postgrest</li>
 </ul>
 </div>
-<div id="step-four-define-routes-and-map-templates"
-class="slide section level1">
+<div id="step-four-define-routes-and-map-templates" class="slide section level1">
 <h1>Step four define routes and map templates</h1>
 <ul>
 <li>text editor</li>
 </ul>
 </div>
-<div id="step-five-fire-everything-up-and-test"
-class="slide section level1">
+<div id="step-five-fire-everything-up-and-test" class="slide section level1">
 <h1>Step five, fire everything up and test</h1>
 <ul>
 <li>PostgREST</li>
@@ -152,8 +132,7 @@ class="slide section level1">
 <div id="newt-has-weaknesses" class="slide section level1">
 <h1>Newt has weaknesses</h1>
 <ul>
-<li>Newt is <strong>an experimental working prototype</strong> (February
-2024)</li>
+<li>Newt is <strong>an experimental working prototype</strong> (February 2024)</li>
 <li>Pipeline delays accumulate</li>
 <li>Many routes are hard to maintain</li>
 <li>Newt is missing file upload support</li>
@@ -171,8 +150,7 @@ class="slide section level1">
 </ul></li>
 <li>21st Century tech
 <ul>
-<li>JSON (2001), YAML (2001), Mustache templates (2009), PostgREST
-(2014)</li>
+<li>JSON (2001), YAML (2001), Mustache templates (2009), PostgREST (2014)</li>
 </ul></li>
 </ul>
 </div>
@@ -196,30 +174,19 @@ class="slide section level1">
 <div id="related-resources" class="slide section level1">
 <h1>Related resources</h1>
 <ul>
-<li>Newt <a href="https://github.com/caltechlibrary/newt"
-class="uri">https://github.com/caltechlibrary/newt</a></li>
-<li>Postgres <a href="https://postgres.org"
-class="uri">https://postgres.org</a> + PostgREST <a
-href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
-<li><a href="https://mustache.github.io">Mustache</a> programming
-languages support</li>
-<li><a href="https://github.com/cbroglie/mustache">Go Mustache
-package</a>, provides a mustache cli</li>
-<li>Go 1.22, pattern language in HTTP handlers, see <a
-href="https://pkg.go.dev/net/http#hdr-Patterns"
-class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a></li>
+<li>Newt <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Postgres <a href="https://postgres.org" class="uri">https://postgres.org</a> + PostgREST <a href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
+<li><a href="https://mustache.github.io">Mustache</a> programming languages support</li>
+<li><a href="https://github.com/cbroglie/mustache">Go Mustache package</a>, provides a mustache cli</li>
+<li>Go 1.22, pattern language in HTTP handlers, see <a href="https://pkg.go.dev/net/http#hdr-Patterns" class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a></li>
 </ul>
 </div>
 <div id="thank-you" class="slide section level1">
 <h1>Thank you!</h1>
 <ul>
-<li>This Presentation <a
-href="https://caltechlibrary.github.io/newt/presentation2/"
-class="uri">https://caltechlibrary.github.io/newt/presentation2/</a></li>
-<li>Newt Documentation <a href="https://caltechlibrary.github.io/newt"
-class="uri">https://caltechlibrary.github.io/newt</a></li>
-<li>Project: <a href="https://github.com/caltechlibrary/newt"
-class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>This Presentation <a href="https://caltechlibrary.github.io/newt/presentation2/" class="uri">https://caltechlibrary.github.io/newt/presentation2/</a></li>
+<li>Newt Documentation <a href="https://caltechlibrary.github.io/newt" class="uri">https://caltechlibrary.github.io/newt</a></li>
+<li>Project: <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
 <li>Email: rsdoiel@caltech.edu</li>
 </ul>
 </div>

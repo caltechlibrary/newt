@@ -28,185 +28,126 @@
 <h1 id="synopsis">SYNOPSIS</h1>
 <p>newtmustache <a href="#options">OPTIONS</a> YAML_CONFIG_FILE</p>
 <h1 id="description">DESCRIPTION</h1>
-<p><strong>newtmustache</strong> is a web service that provides a
-Mustache template rendering engine inspired by Pandoc server.</p>
-<p>Unlike Pandoc web server, <code>newtmustache</code> expects a
-YAML_CONFIG_FILE. The format is described below. That file specifics the
-request path to template mapping along with any ancillary information to
-merge into the submitted object for the template to process. The
-Mustache template engine listens for a POST request and then checks to
-see if that matches the request path described in the YAML file. It then
-processes the request returning the template results matched with any
-data found in the POST. <code>newtmustache</code> doesn’t respond to any
-other HTTP methods.</p>
-<p>The content of the POST is passed to the template as
-<code>.body</code>, options are passed to the template as
-<code>.options</code>, any vocabulary content read in at startup is
-passed to the template as <code>.vocabulary</code>.</p>
-<p>Like Pandoc web service <code>newtmustache</code> does not normally
-log requests. It’s a quick transaction. If you want to debug your
-templates use the verbose option or turn on debug for specific
-requests.</p>
+<p><strong>newtmustache</strong> is a web service that provides a Mustache template rendering engine inspired by Pandoc server.</p>
+<p>Unlike Pandoc web server, <code>newtmustache</code> expects a YAML_CONFIG_FILE. The format is described below. That file specifies the runtime configuration. It specifies the request path to template mapping. It can also specify ancillary information made available to the Mustache template associated with the request path and template.</p>
+<p>The <code>newtmustache</code> template engine listens for a POST requests of JSON encoded data. It checks requested path to see if that matches the request path described in the Newt YAML file. If there is a match it processes the request returning the template results matched with any data found in the POST. <code>newtmustache</code> doesn’t respond to any other HTTP methods.</p>
+<p>The content of the POST is passed to the template as <code>.body</code>, applications options are passed to the template as <code>.options</code>, any vocabulary content read in at startup is passed to the template as <code>.vocabulary</code>. Finally if you’ve defined a variable in your request path those will be available to your template as <code>.vars</code>.</p>
+<p>Like Pandoc web service <code>newtmustache</code> does not normally log requests. It’s a quick transaction. If you want to debug your templates use the verbose command line option ot turn on debug output.</p>
 <h1 id="options">OPTIONS</h1>
-<p>The following options are supported by
-<strong>newtmustache</strong>.</p>
+<p>The following options are supported by <strong>newtmustache</strong>.</p>
 <dl>
-<dt>-h, -help</dt>
-<dd>
-display this help message
+<dt><code>-h</code></dt>
+<dd>display this help message
 </dd>
-<dt>-license</dt>
-<dd>
-display the software license
+<dt><code>-license</code></dt>
+<dd>display the software license
 </dd>
-<dt>-version</dt>
-<dd>
-display version information
+<dt><code>-version</code></dt>
+<dd>display version information
 </dd>
-<dt>-port NUMBER</dt>
-<dd>
-(default is port is 3032) Set the port number to listen on
+<dt><code>-port NUMBER</code></dt>
+<dd>(default is port is 3032) Set the port number to listen on
 </dd>
-<dt>-timeout SECONDS</dt>
-<dd>
-Timeout in seconds, after which a template rendering is aborted.
-Default: 3.
+<dt><code>-timeout SECONDS</code></dt>
+<dd>Timeout in seconds, after which a template rendering is aborted. Default: 3.
 </dd>
-<dt>-verbose</dt>
-<dd>
-If set provide verbose debugging output for requests
+<dt><code>-verbose</code></dt>
+<dd>If set provide verbose debugging output for requests
 </dd>
 </dl>
 <h1 id="the-templates">The templates</h1>
-<p>Mustache templates are documented at <a
-href="https://mustache.github.io"
-class="uri">https://mustache.github.io</a>. The template engine used is
-based on Go package <a href="https://github.com/cbroglie/mustache"
-class="uri">https://github.com/cbroglie/mustache</a>.</p>
+<p>Mustache templates are documented at <a href="https://mustache.github.io" class="uri">https://mustache.github.io</a>. The template engine used is based on Go package <a href="https://github.com/cbroglie/mustache" class="uri">https://github.com/cbroglie/mustache</a>.</p>
 <h2 id="features">Features</h2>
 <ul>
-<li>Newt Mustache only runs on localhost at the designated port (default
-is 8011).</li>
-<li>Templates are read in at startup and are retained in memory bound to
-the request path.</li>
-<li>Vocabulary files are read in at startup and bound to the request
-path.</li>
-<li>Options are set at startup and bound to the request path.</li>
-<li>No addition reads are performed once the web service starts
-listening.</li>
-<li>Variables found expressed in the request path are available in the
-<code>.options</code> passed to the template.</li>
+<li>Newt Mustache only runs on localhost at the designated port (default is 8011).</li>
+<li>Templates are read in at startup and are retained in memory bound to the request path.</li>
+<li>Vocabulary files are read in at startup and bound to the request path.</li>
+<li>Options are set at startup and mapped into the request path.</li>
+<li>No addition reads are performed once the web service starts listening.</li>
+<li>Variables found expressed in the request path are available in the <code>.vars</code> passed to the template.</li>
 </ul>
 <h1 id="yaml_config_file">YAML_CONFIG_FILE</h1>
-<p>This is a list of the Newt YAML syntax relevant to
-<strong>newtmustache</strong>.</p>
+<p>This is a list of the Newt YAML syntax relevant to <strong>newtmustache</strong>.</p>
 <h2 id="top-level-properties">Top level properties</h2>
 <p>These are the top level properties in YAML files.</p>
 <dl>
 <dt>applications</dt>
-<dd>
-(optional) holds the run time configuration used by the Newt
-applications.
+<dd>(optional) holds the run time configuration used by the Newt applications.
 </dd>
 <dt>templates</dt>
-<dd>
-(required by newtmustache)
+<dd>(required by newtmustache)
 </dd>
 </dl>
 <h2 id="the-applications-property">The applications property</h2>
-<p>The applications properties are optional. Some maybe set via command
-line. See Newt application’s manual page for specific ones. These
-properties lets you override the default settings of Newt programs.</p>
+<p>The applications properties are optional. Some maybe set via command line. See Newt application’s manual page for specific ones. These properties lets you override the default settings of Newt programs.</p>
 <dl>
 <dt>newtmustache</dt>
-<dd>
-this contains configuration for Newt Mustache, i.e. port
+<dd>this contains configuration for Newt Mustache, i.e. port
 </dd>
 <dt>options</dt>
-<dd>
-holds key value pairs of which can be referenced in the values of
-models, routes and templates.
+<dd>holds key value pairs of which can be referenced in the values of models, routes and templates.
 </dd>
 </dl>
 <h3 id="newtmustache-settings">newtmustache settings</h3>
 <dl>
 <dt>port</dt>
-<dd>
-(all) Port number to used for Newt web service running on localhost
+<dd>(all) Port number to used for Newt web service running on localhost
 </dd>
 </dl>
 <h3 id="the-routes-property">the “routes” property</h3>
-<p>Routes hosts a list of request descriptions and their data pipelines.
-This property is only used by Newt router and Newt code generator.</p>
+<p>Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.</p>
 <h2 id="templates-property">templates property</h2>
-<p>This property is used by Newt Mustache. It is ignore by Newt router
-and code generator.</p>
+<p>This property is used by Newt Mustache. It is ignore by Newt router and code generator.</p>
 <dl>
 <dt>templates</dt>
-<dd>
-(optional: newtmustache) this holds a list of template objects
+<dd>(optional: newtmustache) this holds a list of template objects
 </dd>
 </dl>
 <h3 id="template-object-model">template object model</h3>
-<p>The template objects are used by Newt Mustache template engine. If
-you’re not using it you can skip these.</p>
+<p>The template objects are used by Newt Mustache template engine. If you’re not using it you can skip these.</p>
 <dl>
-<dt><code>request [PATH]</code></dt>
-<dd>
-(required) This holds the request URL’s path. <code>newtmustache</code>
-only listens for POST method.
+<dt><code>request PATH</code></dt>
+<dd>(required) This holds the request URL’s path. <code>newtmustache</code> only listens for POST method.
 </dd>
 <dt><code>template</code></dt>
-<dd>
-(required: newtmustache only) This is the path to the template
-associated with request. NOTE: Pandoc web service does not support
-partial templates. Mustache does support partial templates
+<dd>(required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 </dd>
 <dt><code>partials</code></dt>
-<dd>
-(optional, newtmustache only) A list of paths to partial Mustache
-templates used by <code>.template</code>.
+<dd>(optional, newtmustache only) A list of paths to partial Mustache templates used by <code>.template</code>.
 </dd>
 <dt><code>options</code></dt>
-<dd>
-(optional, newtmustache only) An object is passed to the template as
-<code>.options</code>.
+<dd>(optional, newtmustache only) An object is passed to the template as <code>.options</code>.
 </dd>
 <dt><code>vocabulary</code></dt>
-<dd>
-(optional, newtmustache only) This is the filename for a YAML file which
-is exposed inside the template as <code>.vocabulary</code>. You can
-think of this as options maintained outside the Newt YAML file.
+<dd>(optional, newtmustache only) This is the filename for a YAML file which is exposed inside the template as <code>.vocabulary</code>. You can think of this as options maintained outside the Newt YAML file.
 </dd>
 <dt><code>debug</code></dt>
-<dd>
-(optional) this turns on debugging output for this template
+<dd>(optional) this turns on debugging output for this template
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>
 <p>Example of newtmustache YAML:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtmustache</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8011</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hello/{name}</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hello</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hi/{name}</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hi</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">applications</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">newtmustache</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8011</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello/{name}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hi/{name}</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hi</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span></code></pre></div>
 </section>
 
 <footer>

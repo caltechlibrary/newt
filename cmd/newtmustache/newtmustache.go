@@ -27,42 +27,48 @@ author: "R. S. Doiel"
 
 # DESCRIPTION
 
-**{app_name}** is a web service that provides a Mustache template rendering engine inspired by Pandoc server.
+**{app_name}** is a web service that provides a Mustache template rendering engine inspired
+by Pandoc server.
 
 Unlike Pandoc web server, `+"`"+`{app_name}`+"`"+` expects a YAML_CONFIG_FILE. The format is
-described below. That file specifics the request path to template mapping along with any ancillary
-information to merge into the submitted object for the template to process. The Mustache template engine
-listens for a POST request and then checks to see if that matches the request path described in the YAML
-file. It then processes the request returning the template results matched with any data found in the POST.
-`+"`"+`{app_name}`+"`"+` doesn't respond to any other HTTP methods.
+described below. That file specifies the runtime configuration. It specifies the request path
+to template mapping. It can also specify ancillary information made available to the Mustache
+template associated with the request path and template.
 
-The content of the POST is passed to the template as `+"`"+`.body`+"`"+`, options are passed to the
-template as `+"`"+`.options`+"`"+`, any vocabulary content read in at startup is passed to the template
-as `+"`"+`.vocabulary`+"`"+`.
+The `+"`"+`{app_name}`+"`"+` template engine listens for a POST requests of JSON encoded data.
+It  checks requested path to see if that matches the request path described in the Newt YAML
+file. If there is a match it processes the request returning the template results matched with
+ any data found in the POST. `+"`"+`{app_name}`+"`"+` doesn't respond to any other HTTP methods.
 
-Like Pandoc web service `+"`"+`{app_name}`+"`"+` does not normally log requests. It's a quick transaction.
-If you want to debug your templates use the verbose option or turn on debug for specific requests.
+The content of the POST is passed to the template as `+"`"+`.body`+"`"+`, applications options
+are passed to the template as `+"`"+`.options`+"`"+`, any vocabulary content read in at startup
+is passed to the template as `+"`"+`.vocabulary`+"`"+`. Finally if you've defined a variable
+in your request path those will be available to your template as `+"`"+`.vars`+"`"+`.
+
+Like Pandoc web service `+"`"+`{app_name}`+"`"+` does not normally log requests. It's a quick
+transaction. If you want to debug your templates use the verbose command line option ot turn on
+debug output.
 
 # OPTIONS
 
 The following options are supported by **{app_name}**.
 
--h, -help
+`+"`"+`-h`+"`"+`
 : display this help message
 
--license
+`+"`"+`-license`+"`"+`
 : display the software license
 
--version
+`+"`"+`-version`+"`"+`
 : display version information
 
--port NUMBER
+`+"`"+`-port NUMBER`+"`"+`
 : (default is port is 3032) Set the port number to listen on
 
--timeout SECONDS
+`+"`"+`-timeout SECONDS`+"`"+`
 : Timeout in seconds, after which a template rendering is aborted.  Default: 3.
 
--verbose
+`+"`"+`-verbose`+"`"+`
 : If set provide verbose debugging output for requests
 
 # The templates
@@ -75,9 +81,9 @@ used is based on Go package <https://github.com/cbroglie/mustache>.
 - Newt Mustache only runs on localhost at the designated port (default is 8011).
 - Templates are read in at startup and are retained in memory bound to the request path.
 - Vocabulary files are read in at startup and bound to the request path.
-- Options are set at startup and bound to the request path.
+- Options are set at startup and mapped into the request path.
 - No addition reads are performed once the web service starts listening.
-- Variables found expressed in the request path are available in the `+"`"+`.options`+"`"+`
+- Variables found expressed in the request path are available in the `+"`"+`.vars`+"`"+`
 passed to the template.
 
 # YAML_CONFIG_FILE
@@ -124,7 +130,7 @@ templates
 
 The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
 
-`+"`"+`request [PATH]`+"`"+`
+`+"`"+`request PATH`+"`"+`
 : (required) This holds the request URL's path. `+"`"+`{app_name}`+"`"+` only listens for POST method.
 
 `+"`"+`template`+"`"+`
@@ -151,18 +157,18 @@ applications:
   newtmustache:
     port: 8011
 templates:
-  - request: GET /hello/{name}
+  - request: /hello/{name}
     template: testdata/simple.mustache
-  - request: GET /hello
+  - request: /hello
     template: testdata/simple.mustache
     options:
       name: Universe
-  - request: GET /hi/{name}
+  - request: /hi/{name}
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache
     debug: true
-  - request: GET /hi
+  - request: /hi
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache

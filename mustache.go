@@ -20,9 +20,19 @@ import (
 
 // NewtMustache defines the `newtmustache` application configuration YAML
 type NewtMustache struct {
+	// Port number to run the web service on
 	Port      string
+	
+	// Templates defined for the service
 	Templates []*MustacheTemplate
+	
+	// Timeout setting for the web service
 	Timeout   time.Duration
+	
+	// Options hold the a map of values passed into it from the Newt YAML file in the applications
+	// property. These are a way to map in environment or application wide values. These are exposed in
+	// the Newt Mustache template as `options`.
+	Options map[string]string
 }
 
 // MustacheTemplate hold the request to template mapping for NewtMustache struct
@@ -41,10 +51,6 @@ type MustacheTemplate struct {
 	// partials are not supported. The goal is to facilate including sub templates.
 	Partials []string `json:"partials,omitempty" yaml:"partials"`
 
-	// Options hold the JSON object that will be resolve by `newtmustache`. The values `.text` and `.template`
-	// will be replaced by the contents specified in Bundles and received in the request.
-	Options map[string]interface{} `json:"options,omitempty" yaml:"options"`
-
 	// Debug logs more verbosely if true
 	Debug bool `json:"debug,omitempty" yaml:"debug"`
 
@@ -58,9 +64,14 @@ type MustacheTemplate struct {
 	// file.
 	Voc map[string]interface{}
 
-    // Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
-    // the output object.
-    Vars []string
+	// Options hold the a map of values passed into it from the Newt YAML file in the applications
+	// property. These are a way to map in environment or application wide values. These are exposed in
+	// the Newt Mustache template as `options`.
+	Options map[string]string
+
+	// Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
+	// the output object.
+	Vars []string
 }
 
 // NewNewtMustache create a new NewtMustache struct. If a filename
@@ -74,6 +85,12 @@ func NewNewtMustache(cfg *Config) (*NewtMustache, error) {
 	}
 	if cfg.Applications.NewtMustache.Timeout != 0 {
 		nm.Timeout = cfg.Applications.NewtMustache.Timeout * time.Second
+	}
+	if len(cfg.Applications.Options) > 0 {
+		nm.Options = map[string]string{}
+		for k, v := range cfg.Applications.Options {
+			nm.Options[k] = v
+		}
 	}
 	return nm, nil
 }
@@ -208,7 +225,7 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	options := map[string]interface{}{}
+	options := map[string]string{}
 	vocabulary := map[string]interface{}{}
 	vars := map[string]string{}
 	// Copy in the options into page objcet's options.
@@ -251,10 +268,10 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	obj := map[string]interface{}{
-		"body": body,
-		"options": options,
+		"body":       body,
+		"options":    options,
 		"vocabulary": vocabulary,
-		"vars": vars,
+		"vars":       vars,
 	}
 	if mt.Debug {
 		log.Printf("obj after processing options -> %+v", obj)
@@ -289,13 +306,20 @@ func (nm *NewtMustache) ListenAndServe() error {
 	// Setup our handlers, POST for process data with the template and GET to retreive the template
 	// source.
 	for _, mt := range nm.Templates {
+		//FIXME: Need to map in the options passed in from the Newt Applications property
 		if err := mt.LoadVocabulary(); err != nil {
 			log.Fatal(err)
 		}
+		if len(nm.Options) > 0 {
+			mt.Options = map[string]string{}
+			for k, v := range nm.Options {
+				mt.Options[k] = v
+			}
+		}
 		// Process the data with template if a POST.
-		mux.HandleFunc("POST " + mt.Pattern, func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("POST "+mt.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			if mt.Debug {
-				log.Printf("mux.HandleFunc(%q, mt.Handler)", "POST " + mt.Pattern)
+				log.Printf("mux.HandleFunc(%q, mt.Handler)", "POST "+mt.Pattern)
 				log.Printf(".vars -> %+v", mt.Vars)
 			}
 			mt.Handler(w, r)

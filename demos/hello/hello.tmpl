@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <body>
+    {{#body.name}}Hi {{body.name}}{{/body.name}}    
+    {{^body.name}}Hi {{options.default_name}}{{/body.name}}
+    {{#vars.someplace_else}}from {{vars.someplace_else}}!{{/vars.someplace_else}}
+    {{^vars.someplace_else}}from {{options.place}}!{{/vars.someplace_else}}
+  </body>
+</html>

@@ -10,15 +10,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
-	"log"
+	"os/signal"
 	"path"
 	"strings"
 	"time"
 
 	// 3rd Party Templates
-    "github.com/cbroglie/mustache"
+	"github.com/cbroglie/mustache"
 )
 
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
@@ -263,7 +264,7 @@ func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []stri
 	return OK
 }
 
-// RunNewt is a runner for Newt Router and Newt Mustache.
+// RunNewt is a runner that can run Newt Mustache, Newt Router and PostgREST if defined in the Newt YAML file.
 func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
 	const (
 		// These constants are used for exit code. FIXME: look up the POSIX recommendation on exit
@@ -293,124 +294,140 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 		cfg.Applications.PostgREST.ConfPath != "" && cfg.Applications.PostgREST.AppPath != "" {
 		postgREST := cfg.Applications.PostgREST
 		cwd, err := os.Getwd()
-    	if err != nil {
+		if err != nil {
 			log.Println(err)
-       		return POSTGREST
-    	}
+			return POSTGREST
+		}
 		cmd := exec.Command(postgREST.AppPath, postgREST.ConfPath)
 		cmd.Dir = cwd
 		// Setup the stdin and stdout to be visible from Newt
 		cmd.Stdout = out
 		cmd.Stderr = eout
 		log.Printf("Starting %s %s on port :%d", postgREST.AppPath, postgREST.ConfPath, postgREST.Port)
-    	err = cmd.Start()
-    	if err != nil {
+		err = cmd.Start()
+		if err != nil {
 			log.Println(err)
-       		return POSTGREST
-    	}
+			return POSTGREST
+		}
 		log.Printf("%s running with pid %d in the backround", postgREST.AppPath, cmd.Process.Pid)
-    	cmd.Process.Release()
+		cmd.Process.Release()
 	}
 	// Setup and start Newt Mustache first
-	go func() {
-		const (
-			PORT    = ":8011"
-			TIMEOUT = 3 * time.Second
-		)
-		// Instantiate the specific application with the filename and Config object
-		mt, err := NewNewtMustache(cfg)
-		if err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return
-		}
-		// If port is not set in the config, set it to the default port.
-		if mt.Port == "" {
-			mt.Port = PORT
-		}
-		if verbose {
-			fmt.Fprintf(out, "port set to %q\n", mt.Port)
-		}
-		// Onelast check to make sure the port number as the colon prefix
-		if !strings.HasPrefix(mt.Port, ":") {
-			mt.Port = fmt.Sprintf(":%s", mt.Port)
-		}
-		if mt.Timeout == 0 {
-			mt.Timeout = TIMEOUT
-		}
-		if len(mt.Templates) == 0 {
-			fmt.Fprintf(eout, "no templates in configuration\n")
-			return
-		}
-		fmt.Printf("starting %s\n", path.Base(os.Args[0]))
-		// Create mux for http service
-		// Resolve partial templates and build handlers
-		for _, tmpl := range mt.Templates {
+	if cfg.Applications != nil && cfg.Applications.NewtMustache != nil {
+		go func() {
+			const (
+				PORT    = ":8011"
+				TIMEOUT = 3 * time.Second
+			)
+			// Instantiate the specific application with the filename and Config object
+			mt, err := NewNewtMustache(cfg)
+			if err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return
+			}
+			// If port is not set in the config, set it to the default port.
+			if mt.Port == "" {
+				mt.Port = PORT
+			}
 			if verbose {
-				tmpl.Debug = true
+				fmt.Fprintf(out, "port set to %q\n", mt.Port)
 			}
-			if err := tmpl.ResolveTemplate(); err != nil {
-				fmt.Fprintf(eout, "%s failed to resolve, %s\n", tmpl.Template, err)
+			// Onelast check to make sure the port number as the colon prefix
+			if !strings.HasPrefix(mt.Port, ":") {
+				mt.Port = fmt.Sprintf(":%s", mt.Port)
+			}
+			if mt.Timeout == 0 {
+				mt.Timeout = TIMEOUT
+			}
+			if len(mt.Templates) == 0 {
+				fmt.Fprintf(eout, "no templates in configuration\n")
 				return
 			}
-			if err := tmpl.ResolvePath(); err != nil {
-				fmt.Fprintf(eout, "failed to build handler for %q, %s\n", tmpl.Pattern, err)
+			fmt.Printf("starting %s\n", path.Base(os.Args[0]))
+			// Create mux for http service
+			// Resolve partial templates and build handlers
+			for _, tmpl := range mt.Templates {
+				if verbose {
+					tmpl.Debug = true
+				}
+				if err := tmpl.ResolveTemplate(); err != nil {
+					fmt.Fprintf(eout, "%s failed to resolve, %s\n", tmpl.Template, err)
+					return
+				}
+				if err := tmpl.ResolvePath(); err != nil {
+					fmt.Fprintf(eout, "failed to build handler for %q, %s\n", tmpl.Pattern, err)
+					return
+				}
+			}
+			// Launch web service
+			fmt.Printf("%s Newt Mustache listening on port %s\n", appName, mt.Port)
+			if err := mt.ListenAndServe(); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
 				return
 			}
-		}
-		// Launch web service
-		fmt.Printf("%s Newt Mustache listening on port %s\n", appName, mt.Port)
-		if err := mt.ListenAndServe(); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return
-		}
-	}()
+		}()
+	}
 
 	// The router starts up second and is what prevents service from falling through.
-	func() {
-		const (
-			// Default port number for tmplbnld
-			PORT = ":8010"
-		)
-		// Finally Instantiate the router from fName and Config object
-		router, err := NewNewtRouter(cfg)
-		if err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return
-		}
-
-		if router.Port == "" {
-			router.Port = PORT
-		}
-		// Prefix the port number with a colon
-		if !strings.HasPrefix(router.Port, ":") {
-			router.Port = fmt.Sprintf(":%s", router.Port)
-		}
-
-		// Are we ready to run service?
-		if router.Routes == nil && router.Htdocs == "" {
-			fmt.Fprintf(eout, "nether routes or htdocs are set.")
-			return
-		}
-
-		if router.Port == "" || router.Port == ":" {
-			fmt.Fprintf(eout, "port is not set, default is not available\n")
-			return
-		}
-
-		if verbose && router.Routes != nil {
-			for _, route := range router.Routes {
-				route.Debug = true
+	if cfg.Applications != nil && cfg.Applications.NewtRouter != nil {
+		func() {
+			const (
+				// Default port number for tmplbnld
+				PORT = ":8010"
+			)
+			// Finally Instantiate the router from fName and Config object
+			router, err := NewNewtRouter(cfg)
+			if err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return
 			}
-		}
 
-		// Launch web service
-		fmt.Fprintf(out, "%s Newt Router listening on port %s\n", appName, router.Port)
-		if err := router.ListenAndServe(); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
+			if router.Port == "" {
+				router.Port = PORT
+			}
+			// Prefix the port number with a colon
+			if !strings.HasPrefix(router.Port, ":") {
+				router.Port = fmt.Sprintf(":%s", router.Port)
+			}
+
+			// Are we ready to run service?
+			if router.Routes == nil && router.Htdocs == "" {
+				fmt.Fprintf(eout, "nether routes or htdocs are set.")
+				return
+			}
+
+			if router.Port == "" || router.Port == ":" {
+				fmt.Fprintf(eout, "port is not set, default is not available\n")
+				return
+			}
+
+			if verbose && router.Routes != nil {
+				for _, route := range router.Routes {
+					route.Debug = true
+				}
+			}
+
+			// Launch web service
+			fmt.Fprintf(out, "%s Newt Router listening on port %s\n", appName, router.Port)
+			if err := router.ListenAndServe(); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return
+			}
 			return
-		}
-		return
-	}()
+		}()
+	}
+
+	// NOTE: we need to wait for a signal so that our external process and Go routines aan run.
+
+	// Set up channel on which to send signal notifications.
+	c := make(chan os.Signal, 1)
+
+	// We're listening for all signals, probably should narrow this down.
+	signal.Notify(c)
+
+	// Block until any signal is received.
+	s := <-c
+	fmt.Println("Got signal:", s)
 	return OK
 }
 
@@ -427,10 +444,10 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string) 
 	var (
 		tmplFName string
 		dataFName string
-		txt []byte
-		src []byte
-		data *interface{}
-		err error
+		txt       []byte
+		src       []byte
+		data      *interface{}
+		err       error
 	)
 	if len(args) == 1 {
 		tmplFName, dataFName = args[0], "-"
@@ -446,7 +463,7 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string) 
 		return READ_ERROR
 	}
 
-	if dataFName == "" || dataFName == "-" { 
+	if dataFName == "" || dataFName == "-" {
 		dataFName = "stdin"
 		src, err = io.ReadAll(in)
 	} else {
@@ -462,15 +479,14 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string) 
 		fmt.Fprintf(eout, "failed decoding %q, %s\n", dataFName, err)
 		return DECODE_ERROR
 	}
-    tmpl, err := mustache.ParseString(fmt.Sprintf("%s", txt))
-    if err != nil {
+	tmpl, err := mustache.ParseString(fmt.Sprintf("%s", txt))
+	if err != nil {
 		fmt.Fprintf(eout, "failed template parse error %q, %s\n", dataFName, err)
 		return TEMPLATE_ERROR
-    }
-    if err = tmpl.FRender(out, data); err != nil {
+	}
+	if err = tmpl.FRender(out, data); err != nil {
 		fmt.Fprintf(eout, "failed render error %q, %s\n", dataFName, err)
 		return TEMPLATE_ERROR
 	}
 	return OK
 }
-

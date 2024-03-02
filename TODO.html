@@ -26,144 +26,111 @@
 <h1 id="action-items">Action Items</h1>
 <h2 id="bugs">Bugs</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" checked="" />Newt Router needs to
-bubble up the HTTP error code from the last retrieved HTTP response in
-the pipeline</label></li>
+<li><input type="checkbox" disabled="" checked="" />
+Newt Router needs to bubble up the HTTP error code from the last retrieved HTTP response in the pipeline</li>
 </ul>
-<h2 id="next-for-the-second-prototype">Next for the second
-prototype</h2>
-<p>NOTE: X is completed, P is partial completion, D (dropped) is
-skipping implementation</p>
+<h2 id="next-for-the-second-prototype">Next for the second prototype</h2>
+<p>NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation</p>
 <ul>
 <li>[P] Nail down the second prototype YAML syntax</li>
-<li><label><input type="checkbox" />I need to implement the second
-prototype code generator once I’ve debugged the Newt YAML syntax</label>
-<ul class="task-list">
-<li><label><input type="checkbox" checked="" />setup.sql</label></li>
-<li><label><input type="checkbox" checked="" />models.sql</label></li>
-<li><label><input type="checkbox"
-checked="" />models_test.sql</label></li>
-<li><label><input type="checkbox"
-checked="" />postgrest.conf</label></li>
-<li><label><input type="checkbox" />create mustache
-template</label></li>
-<li><label><input type="checkbox" />read mustache template</label></li>
-<li><label><input type="checkbox" />update mustache
-template</label></li>
-<li><label><input type="checkbox" />delete mustache
-template</label></li>
-<li><label><input type="checkbox" />list mustache template</label></li>
+<li><input type="checkbox" disabled="" />
+I need to implement the second prototype code generator once I’ve debugged the Newt YAML syntax<ul class="task-list">
+<li><input type="checkbox" disabled="" checked="" />
+setup.sql</li>
+<li><input type="checkbox" disabled="" checked="" />
+models.sql</li>
+<li><input type="checkbox" disabled="" checked="" />
+models_test.sql</li>
+<li><input type="checkbox" disabled="" checked="" />
+postgrest.conf</li>
+<li><input type="checkbox" disabled="" />
+create mustache template</li>
+<li><input type="checkbox" disabled="" />
+read mustache template</li>
+<li><input type="checkbox" disabled="" />
+update mustache template</li>
+<li><input type="checkbox" disabled="" />
+delete mustache template</li>
+<li><input type="checkbox" disabled="" />
+list mustache template</li>
 </ul></li>
-<li><label><input type="checkbox" /><code>newt</code> runner should be
-able to manage a postgrest instance. This will simplify using Newt in
-the development setting</label>
-<ul>
-<li>[D] <code>newt</code> would need to respond SIGTERM, SIGHUP and
-SIGKILL (if I use Go’s exec I don’t need to explicitly handle
-these)</li>
-<li><label><input type="checkbox" checked="" /><code>newt</code> need to
-track the pid of the external process, then folder that into the signal
-handlers (using a go routine to start it don’t think I need to track
-this, though it would be nice to log it.</label></li>
+<li><input type="checkbox" disabled="" />
+<code>newt</code> runner should be able to manage a postgrest instance. This will simplify using Newt in the development setting<ul>
+<li>[D] <code>newt</code> would need to respond SIGTERM, SIGHUP and SIGKILL (if I use Go’s exec I don’t need to explicitly handle these)</li>
+<li><input type="checkbox" disabled="" checked="" />
+<code>newt</code> need to track the pid of the external process, then folder that into the signal handlers (using a go routine to start it don’t think I need to track this, though it would be nice to log it.</li>
 </ul></li>
-<li><label><input type="checkbox" /><code>newtinit</code>, an
-interactive Newt YAML file generator, need to decide on approach</label>
-<ul class="task-list">
-<li><label><input type="checkbox" />could be done as a cli interactive
-tool</label></li>
-<li><label><input type="checkbox" />could be done as part of the Newt
-website, like the Codemeta generator, but using a web component to
-render the Newt YAML contents</label></li>
-<li><label><input type="checkbox" />could be done as a GUI form based
-application</label></li>
+<li><input type="checkbox" disabled="" />
+<code>newtinit</code>, an interactive Newt YAML file generator, need to decide on approach<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+could be done as a cli interactive tool</li>
+<li><input type="checkbox" disabled="" />
+could be done as part of the Newt website, like the Codemeta generator, but using a web component to render the Newt YAML contents</li>
+<li><input type="checkbox" disabled="" />
+could be done as a GUI form based application</li>
 </ul></li>
-<li><label><input type="checkbox" />A “newt object manager” takes a
-model, validates it and if OK sends the result to the next stage in the
-pipeline for storage. It should deal with things like unpacking
-shortened uuids using a base encoding scheme</label></li>
-<li><label><input type="checkbox" />Present to DLD and interested
-staff</label></li>
-<li><label><input type="checkbox" />Present/announce via SoCal Code4Lib
-(recorded or in person presentation)</label></li>
-<li><label><input type="checkbox" />Create birds demo for 2nd Prototype
-(using Postgres+PostgREST, Newt Router and Newt Mustache)</label></li>
-<li><label><input type="checkbox" />Create postcards demo, armchair
-archive example</label></li>
-<li><label><input type="checkbox" />Implement Thesis Management System
-core in Newt (not email features)</label></li>
-<li><label><input type="checkbox" />Implement COLD core</label></li>
-<li><label><input type="checkbox" checked="" />There should be a “newt”
-command that wraps the router, generator and mustache engine in the way
-the go command wraps govet, gofmt, etc. This will be convenient for
-development</label></li>
-<li><label><input type="checkbox" checked="" />(rethought the
-application concept in favor of a single YAML file) Should Application
-metadata really be it’s own top level attribute? Wouldn’t having a
-service that reads a codemeta.json or CITATION.cff make more sense in a
-service oriented architecture?</label></li>
-<li><label><input type="checkbox" checked="" />(one configuration used
-by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator
-use separate YAML files? or a combined file?</label>
-<ul class="task-list">
-<li><label><input type="checkbox" checked="" />(future prototype can do
-OS level suggested conf files) Using a combined file would make it easy
-to generate startup scripts or systemd configurations</label></li>
+<li><input type="checkbox" disabled="" />
+A “newt object manager” takes a model, validates it and if OK sends the result to the next stage in the pipeline for storage. It should deal with things like unpacking shortened uuids using a base encoding scheme</li>
+<li><input type="checkbox" disabled="" />
+Present to DLD and interested staff</li>
+<li><input type="checkbox" disabled="" />
+Present/announce via SoCal Code4Lib (recorded or in person presentation)</li>
+<li><input type="checkbox" disabled="" />
+Create birds demo for 2nd Prototype (using Postgres+PostgREST, Newt Router and Newt Mustache)</li>
+<li><input type="checkbox" disabled="" />
+Create postcards demo, armchair archive example</li>
+<li><input type="checkbox" disabled="" />
+Implement Thesis Management System core in Newt (not email features)</li>
+<li><input type="checkbox" disabled="" />
+Implement COLD core</li>
+<li><input type="checkbox" disabled="" checked="" />
+There should be a “newt” command that wraps the router, generator and mustache engine in the way the go command wraps govet, gofmt, etc. This will be convenient for development</li>
+<li><input type="checkbox" disabled="" checked="" />
+(rethought the application concept in favor of a single YAML file) Should Application metadata really be it’s own top level attribute? Wouldn’t having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?</li>
+<li><input type="checkbox" disabled="" checked="" />
+(one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?<ul class="task-list">
+<li><input type="checkbox" disabled="" checked="" />
+(future prototype can do OS level suggested conf files) Using a combined file would make it easy to generate startup scripts or systemd configurations</li>
 </ul></li>
-<li><label><input type="checkbox" checked="" />Decide what is logged by
-default for Newt Mustache and Newt Router</label></li>
-<li><label><input type="checkbox" checked="" />Decide what is logged in
-“debug” or “verbose” model by Newt Mustache and Newt Router</label></li>
-<li><label><input type="checkbox" checked="" />Generate SQL confirming
-to the style suggestion in “The Art of Postgres” (link as a reference in
-Newt documentation)</label></li>
-<li><label><input type="checkbox" checked="" />(options and environment
-can solve this) Writing the URL for a localhost service can be tedious
-and obscure what is happening, create an example where you use a
-environment variable or application option to express the service name
-to a variable that can then be reference in the URL pattern</label></li>
-<li><label><input type="checkbox" checked="" />Adopt GitHub’s YAML Issue
-Syntax for describing models</label>
-<ul class="task-list">
-<li><label><input type="checkbox" checked="" />evaluate the DSL that
-Newt’s existing has to see if it still makes sense (probably
-doesn’t)</label></li>
-<li><label><input type="checkbox" checked="" />Can the model/type DSL be
-made compatible with <a
-href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema">GitHub
-YAML issue template schema</a>? Or should it be replaced by
-it?</label></li>
+<li><input type="checkbox" disabled="" checked="" />
+Decide what is logged by default for Newt Mustache and Newt Router</li>
+<li><input type="checkbox" disabled="" checked="" />
+Decide what is logged in “debug” or “verbose” model by Newt Mustache and Newt Router</li>
+<li><input type="checkbox" disabled="" checked="" />
+Generate SQL confirming to the style suggestion in “The Art of Postgres” (link as a reference in Newt documentation)</li>
+<li><input type="checkbox" disabled="" checked="" />
+(options and environment can solve this) Writing the URL for a localhost service can be tedious and obscure what is happening, create an example where you use a environment variable or application option to express the service name to a variable that can then be reference in the URL pattern</li>
+<li><input type="checkbox" disabled="" checked="" />
+Adopt GitHub’s YAML Issue Syntax for describing models<ul class="task-list">
+<li><input type="checkbox" disabled="" checked="" />
+evaluate the DSL that Newt’s existing has to see if it still makes sense (probably doesn’t)</li>
+<li><input type="checkbox" disabled="" checked="" />
+Can the model/type DSL be made compatible with <a href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema">GitHub YAML issue template schema</a>? Or should it be replaced by it?</li>
 </ul></li>
-<li><label><input type="checkbox" checked="" />Present at Code4Lib
-meetup, July 14, 2023</label></li>
+<li><input type="checkbox" disabled="" checked="" />
+Present at Code4Lib meetup, July 14, 2023</li>
 </ul>
 <h2 id="someday-maybe">Someday, maybe</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Explore alternatives to a uuid for
-object identifiers, some sort of short id like RDM would be very
-nice.</label></li>
-<li><label><input type="checkbox" />seeing the data past thru a pipeline
-will be an important part in debugging problems. Newt Inspector could
-address that as a pass thru web service that output debugging info to
-the log output.</label></li>
-<li><label><input type="checkbox" />An OCFL service would allow Newt to
-support building repository like applications. U. C. Santa Barbara has
-some Go packages related to this.</label></li>
-<li><label><input type="checkbox" />Newt should support development with
-SQLite 3 databases</label>
-<ul class="task-list">
-<li><label><input type="checkbox" />Look at sqlite2rest (a Python
-project, automatic REST API for SQLite databases), work up a demo using
-it with Newt server</label></li>
-<li><label><input type="checkbox" />Should Newt supply a newtsqlite
-service?</label></li>
+<li><input type="checkbox" disabled="" />
+Explore alternatives to a uuid for object identifiers, some sort of short id like RDM would be very nice.</li>
+<li><input type="checkbox" disabled="" />
+seeing the data past thru a pipeline will be an important part in debugging problems. Newt Inspector could address that as a pass thru web service that output debugging info to the log output.</li>
+<li><input type="checkbox" disabled="" />
+An OCFL service would allow Newt to support building repository like applications. U. C. Santa Barbara has some Go packages related to this.</li>
+<li><input type="checkbox" disabled="" />
+Newt should support development with SQLite 3 databases<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+Look at sqlite2rest (a Python project, automatic REST API for SQLite databases), work up a demo using it with Newt server</li>
+<li><input type="checkbox" disabled="" />
+Should Newt supply a newtsqlite service?</li>
 </ul></li>
-<li><label><input type="checkbox" />Can I extend Newt to support file
-uploads?</label>
-<ul class="task-list">
-<li><label><input type="checkbox" />Should this be a separate service, a
-stage in the pipeline?</label></li>
-<li><label><input type="checkbox" />Should I integrate S3 protocol
-support to allow file upload handling?</label></li>
+<li><input type="checkbox" disabled="" />
+Can I extend Newt to support file uploads?<ul class="task-list">
+<li><input type="checkbox" disabled="" />
+Should this be a separate service, a stage in the pipeline?</li>
+<li><input type="checkbox" disabled="" />
+Should I integrate S3 protocol support to allow file upload handling?</li>
 </ul></li>
 </ul>
 </section>
