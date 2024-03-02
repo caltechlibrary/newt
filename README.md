@@ -10,9 +10,9 @@ You can think of a web application as a sequence of requests and responses. In a
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples.
 
 - Postgres and PostgREST provides a JSON API for data management
-- MySQL or MariaDB combined with MySQL REST Service provides a web API for data management
-- Solr provides full text search as a web service
-- Elasticsearch and Opensearch provide a full text search engine as a web service
+- MySQL and MySQL REST Service can provide a JSON API for data management
+- Solr can provide full text search as a JSON web service
+- Elasticsearch and Opensearch provide a full text search engine as a JSON web service
 - ArchiveSpace provides a JSON API web service
 - Invenio RDM provides a JSON API web service
 - Cantaloupe IIIF Image server has integration points
