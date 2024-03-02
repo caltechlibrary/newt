@@ -45,8 +45,8 @@ A Newt application encourages the following.
 In 2024 there is allot of off the self software to build on. Newt provides a few tools to fill in the gaps.
 
 - `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web request through a data pipeline built from other web services
-- `newtgenerator` is a code generator understands the data models described in Newt's YAML configuration file. Newt targets generating code to setup Postgres and PostgREST or generate Mustache templates
-- `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language
+- `newtgenerator` is a code generator that understands the data models described in Newt's YAML configuration file. Newt can generate code to setup and model data in Postgres, configure PostgREST and generate Mustache templates to take the PostgREST output and turn it into a web page.
+- `newtmustache` is a simple stateless template engine inspired by Pandoc server that supports the Mustache template language and is designed to process data from a JSON data source.
 
 Newt's 2nd prototype is being tested building applications based on
 
