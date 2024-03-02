@@ -15,6 +15,7 @@ import (
 
 	// 3rd Party Templates
 	"github.com/cbroglie/mustache"
+	"gopkg.in/yaml.v3"
 )
 
 // NewtMustache defines the `newtmustache` application configuration YAML
@@ -26,10 +27,9 @@ type NewtMustache struct {
 
 // MustacheTemplate hold the request to template mapping for NewtMustache struct
 type MustacheTemplate struct {
-	// Pattern holds a request pattern, e.g. `POST /blog_post`. If the METHOD is not specified a POST is assumed.
-	// A request is associated with a template to be bundled into
-	// an JSON object. The pattern conforms to Go 1.22 or later's
-	// HTTP handler function pattern, see <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns>
+	// Pattern holds a request path, e.g. `/blog_post`. NOTE: the method is ignored. A POST
+	// is presumed to hold data that will be processed by the template engine. A GET retrieves the
+	// unresolved template.
 	Pattern string `json:"request,required" yaml:"request"`
 
 	// Template holds a path to the primary template file for this route. Path can be relative
@@ -51,9 +51,16 @@ type MustacheTemplate struct {
 	// Tmpl holds the parsed template
 	Tmpl *mustache.Template
 
-	// Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
-	// the output object.
-	Vars []string
+	// Vocabulary holds the path to a YAML file used to populate Vocabulary at startup.
+	Vocabulary string `json:"vocabulary,omitempty" yaml:"vocabulary"`
+
+	// Voc holds a map of variable names to values. It is read in when NewtMustache starts from a separate YAML
+	// file.
+	Voc map[string]interface{}
+
+    // Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
+    // the output object.
+    Vars []string
 }
 
 // NewNewtMustache create a new NewtMustache struct. If a filename
@@ -69,6 +76,25 @@ func NewNewtMustache(cfg *Config) (*NewtMustache, error) {
 		nm.Timeout = cfg.Applications.NewtMustache.Timeout * time.Second
 	}
 	return nm, nil
+}
+
+// LoadVocabary retrieves the YAML file contents found in .VocabularFName and builds the map[string]interface{} that
+// holds .Vocabulary
+func (mt *MustacheTemplate) LoadVocabulary() error {
+	voc := map[string]interface{}{}
+	if mt.Vocabulary != "" {
+		src, err := os.ReadFile(mt.Vocabulary)
+		if err != nil {
+			return err
+		}
+		if err := yaml.Unmarshal(src, &voc); err != nil {
+			return err
+		}
+	}
+	if len(voc) > 0 {
+		mt.Voc = voc
+	}
+	return nil
 }
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
@@ -148,8 +174,7 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 	if mt.Debug {
 		log.Printf(".Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
-	// FIXME: Think about what it means if a GET, HEAD, PUT, DELETE are to be handled.
-	obj := map[string]interface{}{}
+
 	src, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		if mt.Debug {
@@ -159,10 +184,13 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If we have src to decode, let's decode it.
+	var (
+		body *interface{}
+	)
 	if len(src) > 0 {
 		dec := json.NewDecoder(bytes.NewBuffer(src))
 		dec.UseNumber()
-		if err := dec.Decode(&obj); err != nil && err != io.EOF {
+		if err := dec.Decode(&body); err != nil && err != io.EOF {
 			if mt.Debug {
 				log.Printf("failed to decode JSON Response body, %s", err)
 			}
@@ -170,41 +198,43 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if mt.Debug {
-			log.Printf("obj populated from request body, %+v", obj)
+			log.Printf("obj populated from request body, %+v", body)
 		}
-	}
-	params := r.URL.Query()
-	if len(params) > 0 {
-		// Let's check if data came in as query paramters and add it to our object.
-		if mt.Debug {
-			log.Printf("URL Query parameters -> %+v", params)
-		}
-		for k, v := range params {
-			if k != "" {
-				// Take the first value set (e.g. in POST or GET QUERY parameters)
-				if _, conflict := obj[k]; !conflict {
-					obj[k] = v
-				}
+		if body == nil {
+			if mt.Debug {
+				log.Printf("no data for template processing")
 			}
-		}
-		if mt.Debug {
-			log.Printf("obj after processing query parameters, %+v", obj)
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
+			return
 		}
 	}
-	// Merge (without overwriting our POST content) in our options into obj
+	options := map[string]interface{}{}
+	vocabulary := map[string]interface{}{}
+	vars := map[string]string{}
+	// Copy in the options into page objcet's options.
 	if mt.Options != nil {
 		if mt.Debug {
 			log.Printf("options -> %+v\n", mt.Options)
 		}
 		for k, v := range mt.Options {
-			// Options take presidence over POST or GET QUERY parameters.
-			obj[k] = v
+			options[k] = v
 		}
 		if mt.Debug {
-			log.Printf("obj after processing options -> %+v", obj)
+			log.Printf("obj after processing options -> %+v", options)
 		}
 	}
-	// Merge in path values into obj
+	if mt.Voc != nil {
+		if mt.Debug {
+			log.Printf("vocabulary -> %+v\n", mt.Voc)
+		}
+		for k, v := range mt.Voc {
+			vocabulary[k] = v
+		}
+		if mt.Debug {
+			log.Printf("obj after processing vocabulary -> %+v", vocabulary)
+		}
+	}
+	// Merge in path values into .vars
 	if len(mt.Vars) > 0 {
 		if mt.Debug {
 			log.Printf("varnames -> %+v\n", mt.Vars)
@@ -213,19 +243,21 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 			val := r.PathValue(varname)
 			if val != "" {
 				// val presidence over mt.Options
-				obj[varname] = val
+				vars[varname] = val
 			}
 		}
 		if mt.Debug {
-			log.Printf("obj after processing varnames -> %+v", obj)
+			log.Printf("obj after processing varnames -> %+v", vars)
 		}
 	}
-	if obj == nil {
-		if mt.Debug {
-			log.Printf("no data attribute defined for template processing")
-		}
-		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
-		return
+	obj := map[string]interface{}{
+		"body": body,
+		"options": options,
+		"vocabulary": vocabulary,
+		"vars": vars,
+	}
+	if mt.Debug {
+		log.Printf("obj after processing options -> %+v", obj)
 	}
 	// Handle case where some how the service was started before setting up template processing
 	if mt.Tmpl == nil {
@@ -235,15 +267,35 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 	if mt.Debug {
 		log.Printf("mt.Tmpl -> %+v", mt.Tmpl)
 	}
-	mt.Tmpl.FRender(w, obj)
+	// We want to write to a buffer so we can do content detection and set the headers correctly.
+	buf := bytes.NewBuffer([]byte{})
+	mt.Tmpl.FRender(buf, obj)
+	src = buf.Bytes()
+	contentType := http.DetectContentType(src)
+	if bytes.HasPrefix(src, []byte("<!DOC")) {
+		contentType = "text/html; charset=utf-8"
+	}
+	if mt.Debug {
+		log.Printf("content type: %q -> %q", contentType, src)
+	}
+	if contentType != "" {
+		w.Header().Set("Content-Type", contentType)
+	}
+	w.Write(src)
 }
 
 func (nm *NewtMustache) ListenAndServe() error {
 	mux := http.NewServeMux()
+	// Setup our handlers, POST for process data with the template and GET to retreive the template
+	// source.
 	for _, mt := range nm.Templates {
-		mux.HandleFunc(mt.Pattern, func(w http.ResponseWriter, r *http.Request) {
+		if err := mt.LoadVocabulary(); err != nil {
+			log.Fatal(err)
+		}
+		// Process the data with template if a POST.
+		mux.HandleFunc("POST " + mt.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			if mt.Debug {
-				log.Printf("mux.HandleFunc(%q, mt.Handler)", mt.Pattern)
+				log.Printf("mux.HandleFunc(%q, mt.Handler)", "POST " + mt.Pattern)
 				log.Printf(".vars -> %+v", mt.Vars)
 			}
 			mt.Handler(w, r)

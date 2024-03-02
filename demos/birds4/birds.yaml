@@ -1,0 +1,39 @@
+# Birds 4 is a demonstration of the 2nd Newt Prototype. The YAML
+# file has gone through quite a transformation now.
+applications:
+  newtrouter:
+    port: 8010
+  newtmustache:
+    port: 8011
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
+    port: 3000
+routes:
+  - id: bird_view
+    request: GET /{$}
+    description: Newt home page, show the bird view results
+    pipeline:
+      - service: GET http://localhost:3000/bird_view
+        description: retrieve the JSON of the bird view
+      - service: POST http://localhost:8011/page.tmpl
+        description: Transform the JSON into HTML
+  - id: record_bird
+    request: POST /{$}
+    description: Record a bird sighting
+    pipeline:
+      - service: POST http://localhost:3000/rpc/record_bird
+        description: Send the form data to PostgREST
+      - service: POST http://localhost:8011/post_result.tmpl
+        description: Display the HTML results of POST to PostgREST
+  - id: api_bird_views
+    request: GET /api/{$}
+    description: Display the PostgREST API end point for bird_view
+    pipeline:
+      - service: GET http://localhost:3000/bird_view
+        description: Return the raw JSON result
+templates:
+  - request: /post_result.tmpl
+    template: post_result.tmpl
+  - request: /page.tmpl
+    template: page.tmpl

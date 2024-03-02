@@ -1,0 +1,36 @@
+<!DOCTYPE html lang="en">
+<html>
+  <head></head>
+  <body>
+    <h1>Welcome to the bird list!</h1>
+    <div id="bird-list">
+	<table>
+		<thead>
+			<tr class="header"> <th>bird</th> <th>place</th> <th>sighted</th> </tr>
+		</thead>
+		<tbody>
+{{#body}}
+			<tr> <td>{{bird}}</td> <td>{{place}}</td> <td>{{sighted}}</td> </tr>
+{{/body}}
+		</tbody>
+	</table>
+	</div>
+
+    <h2>Add a bird</h2>
+    <div><form name="add_bird" method="POST" action="/">
+      <div>
+        <label for="bird">Bird</label>
+                <input id="bird" name="bird" type="text" value="">
+      </div>
+      <div>
+        <label for="place">Place</label>
+                <input id="place" name="place" type="text" value="">
+      </div>
+      <div>
+        <label for="sighted">Sighted on</label>
+                <input id="sighted" name="sighted" type="date">
+      </div>
+      <button id="record-bird" type="submit">Add Bird Sighting</button>
+    </form></div>
+  </body>
+</html>

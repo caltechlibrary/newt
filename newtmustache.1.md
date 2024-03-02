@@ -1,5 +1,5 @@
 ---
-title: "newtmustache(1) user manual | 0.0.7-dev 4b9ad33"
+title: "newtmustache(1) user manual | 0.0.7-dev 012a9af"
 pubDate: 2024-03-01
 author: "R. S. Doiel"
 ---
@@ -14,21 +14,18 @@ newtmustache [OPTIONS] YAML_CONFIG_FILE
 
 # DESCRIPTION
 
-**newtmustache** is a web service that provides a Mustache template rendering inspired by Pandoc server.
+**newtmustache** is a web service that provides a Mustache template rendering engine inspired by Pandoc server.
 
 Unlike Pandoc web server, `newtmustache` expects a YAML_CONFIG_FILE. The format is
-described below. That file specifics the request to template mapping along with any ancillary information
-to merge into the submitted object for the template to process. In additional to options expressed in
-the configuration the pattern describing the request can also be merged into the JSON objects the template
-will process.
+described below. That file specifics the request path to template mapping along with any ancillary
+information to merge into the submitted object for the template to process. The Mustache template engine
+listens for a POST request and then checks to see if that matches the request path described in the YAML
+file. It then processes the request returning the template results matched with any data found in the POST.
+`newtmustache` doesn't respond to any other HTTP methods.
 
-`newtmustache` expects a JSON object to process. This means you should normally use a POST
-in defining your request pattern to be match.  If no method is specified then a POST method will be
-assumed.
-
-The request expression is based on the Go 1.22 patterns used in it's `http` package.
-<https://pkg.go.dev/net/http@master#hdr-Patterns>. The only modification is if not method is included
-a POST instead of a GET will be assumed.
+The content of the POST is passed to the template as `.body`, options are passed to the
+template as `.options`, any vocabulary content read in at startup is passed to the template
+as `.vocabulary`.
 
 Like Pandoc web service `newtmustache` does not normally log requests. It's a quick transaction.
 If you want to debug your templates use the verbose option or turn on debug for specific requests.
@@ -62,10 +59,13 @@ used is based on Go package <https://github.com/cbroglie/mustache>.
 
 ## Features
 
-- Newt Mustache only runs on localhost at the designated port (default is 3032).
+- Newt Mustache only runs on localhost at the designated port (default is 8011).
 - Templates are read in at startup and are retained in memory bound to the request path.
+- Vocabulary files are read in at startup and bound to the request path.
+- Options are set at startup and bound to the request path.
 - No addition reads are performed once the web service starts listening.
-- Patterns expressed in the request definitions are available in the object passed to the template
+- Variables found expressed in the request path are available in the `.options`
+passed to the template.
 
 # YAML_CONFIG_FILE
 
@@ -111,8 +111,8 @@ templates
 
 The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
 
-`request [METHOD ][PATH]`
-: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
+`request [PATH]`
+: (required) This holds the request URL's path. `newtmustache` only listens for POST method.
 
 `template`
 : (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
@@ -121,7 +121,10 @@ The template objects are used by Newt Mustache template engine. If you're not us
 : (optional, newtmustache only) A list of paths to partial Mustache templates used by `.template`.
 
 `options`
-: (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template
+: (optional, newtmustache only) An object is passed to the template as `.options`.
+
+`vocabulary`
+: (optional, newtmustache only) This is the filename for a YAML file which is exposed inside the template as `.vocabulary`. You can think of this as options maintained outside the Newt YAML file.
 
 `debug`
 : (optional) this turns on debugging output for this template
@@ -133,7 +136,7 @@ Example of newtmustache YAML:
 ~~~yaml
 applications:
   newtmustache:
-    port: 8012
+    port: 8011
 templates:
   - request: GET /hello/{name}
     template: testdata/simple.mustache

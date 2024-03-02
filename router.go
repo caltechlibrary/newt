@@ -74,7 +74,7 @@ func (nr *NewtRoute) ResolveRoute() error {
 
 // Request a service, sending any import if provided.
 // Returns a byte splice of results and an error value
-func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) ([]byte, int, string, error) {
+func (s *Service) MakeRequest(env map[string]string, input []byte, contentType string, debug bool) ([]byte, int, string, error) {
 	// The default method for a service is POST, it can be overwritten by what is supplied in the .Service's pattern.
 	method := http.MethodPost
 	uri := s.Service
@@ -104,6 +104,9 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 	if err != nil {
 		return nil, http.StatusInternalServerError, "", err
 	}
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
+	}
 	client := http.Client{
 		Timeout: timeout,
 	}
@@ -119,7 +122,6 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, debug bool) (
 		}
 		return nil, response.StatusCode, "", err
 	}
-	contentType := ""
 	if response.Header != nil {
 		contentType = response.Header.Get("Content-Type")
 	}
@@ -151,8 +153,20 @@ func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map
 	}
 	contentType := ""
 	statusCode := http.StatusOK
+	// Set up the initial input into the pipeline ...
+	if r.Method == http.MethodPost {
+		contentType = r.Header.Get("Content-Type")
+		// Now we need tp decide if we need convert POST data into JSON
+		input, err = io.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("failed to read posted data, %s %s, %s error %s", r.Method, r.URL.Path, err)
+		}
+		if nr.Debug {
+			log.Printf("request was %s %s, content-type %q", r.Method, r.URL.Path, contentType)
+		}
+	}
 	for i, service := range nr.Pipeline {
-		output, statusCode, contentType, err = service.MakeRequest(env, input, nr.Debug)
+		output, statusCode, contentType, err = service.MakeRequest(env, input, contentType, nr.Debug)
 		if err != nil {
 			if nr.Debug {
 				log.Printf("service %d, %s error %s", i, service.Service, err)
@@ -160,8 +174,12 @@ func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map
 			// We stop processing there was a problem.
 			return nil, statusCode, contentType, err
 		}
+		if nr.Debug {
+			log.Printf("service %d, %s statusCode %d, contentType %s", i, service.Service, statusCode, contentType)
+		}
 		input = output
 	}
+	log.Printf("DEBUG content is ? %q", contentType)
 	return output, statusCode, contentType, nil
 }
 

@@ -57,12 +57,14 @@ template</label></li>
 <li><label><input type="checkbox" /><code>newt</code> runner should be
 able to manage a postgrest instance. This will simplify using Newt in
 the development setting</label>
-<ul class="task-list">
-<li><label><input type="checkbox" /><code>newt</code> would need to
-respond SIGTERM, SIGHUP and SIGKILL</label></li>
-<li><label><input type="checkbox" /><code>newt</code> need to track the
-pid of the external process, then folder that into the signal
-handlers</label></li>
+<ul>
+<li>[D] <code>newt</code> would need to respond SIGTERM, SIGHUP and
+SIGKILL (if I use Go’s exec I don’t need to explicitly handle
+these)</li>
+<li><label><input type="checkbox" checked="" /><code>newt</code> need to
+track the pid of the external process, then folder that into the signal
+handlers (using a go routine to start it don’t think I need to track
+this, though it would be nice to log it.</label></li>
 </ul></li>
 <li><label><input type="checkbox" /><code>newtinit</code>, an
 interactive Newt YAML file generator, need to decide on approach</label>

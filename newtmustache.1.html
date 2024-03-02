@@ -29,24 +29,20 @@
 <p>newtmustache <a href="#options">OPTIONS</a> YAML_CONFIG_FILE</p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>newtmustache</strong> is a web service that provides a
-Mustache template rendering inspired by Pandoc server.</p>
+Mustache template rendering engine inspired by Pandoc server.</p>
 <p>Unlike Pandoc web server, <code>newtmustache</code> expects a
 YAML_CONFIG_FILE. The format is described below. That file specifics the
-request to template mapping along with any ancillary information to
-merge into the submitted object for the template to process. In
-additional to options expressed in the configuration the pattern
-describing the request can also be merged into the JSON objects the
-template will process.</p>
-<p><code>newtmustache</code> expects a JSON object to process. This
-means you should normally use a POST in defining your request pattern to
-be match. If no method is specified then a POST method will be
-assumed.</p>
-<p>The request expression is based on the Go 1.22 patterns used in it’s
-<code>http</code> package. <a
-href="https://pkg.go.dev/net/http@master#hdr-Patterns"
-class="uri">https://pkg.go.dev/net/http@master#hdr-Patterns</a>. The
-only modification is if not method is included a POST instead of a GET
-will be assumed.</p>
+request path to template mapping along with any ancillary information to
+merge into the submitted object for the template to process. The
+Mustache template engine listens for a POST request and then checks to
+see if that matches the request path described in the YAML file. It then
+processes the request returning the template results matched with any
+data found in the POST. <code>newtmustache</code> doesn’t respond to any
+other HTTP methods.</p>
+<p>The content of the POST is passed to the template as
+<code>.body</code>, options are passed to the template as
+<code>.options</code>, any vocabulary content read in at startup is
+passed to the template as <code>.vocabulary</code>.</p>
 <p>Like Pandoc web service <code>newtmustache</code> does not normally
 log requests. It’s a quick transaction. If you want to debug your
 templates use the verbose option or turn on debug for specific
@@ -90,13 +86,16 @@ class="uri">https://github.com/cbroglie/mustache</a>.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>Newt Mustache only runs on localhost at the designated port (default
-is 3032).</li>
+is 8011).</li>
 <li>Templates are read in at startup and are retained in memory bound to
 the request path.</li>
+<li>Vocabulary files are read in at startup and bound to the request
+path.</li>
+<li>Options are set at startup and bound to the request path.</li>
 <li>No addition reads are performed once the web service starts
 listening.</li>
-<li>Patterns expressed in the request definitions are available in the
-object passed to the template</li>
+<li>Variables found expressed in the request path are available in the
+<code>.options</code> passed to the template.</li>
 </ul>
 <h1 id="yaml_config_file">YAML_CONFIG_FILE</h1>
 <p>This is a list of the Newt YAML syntax relevant to
@@ -152,10 +151,10 @@ and code generator.</p>
 <p>The template objects are used by Newt Mustache template engine. If
 you’re not using it you can skip these.</p>
 <dl>
-<dt><code>request [METHOD ][PATH]</code></dt>
+<dt><code>request [PATH]</code></dt>
 <dd>
-(required) This holds the request HTTP method and path. If the HTTP
-method is missing a POST is assumed
+(required) This holds the request URL’s path. <code>newtmustache</code>
+only listens for POST method.
 </dd>
 <dt><code>template</code></dt>
 <dd>
@@ -170,8 +169,14 @@ templates used by <code>.template</code>.
 </dd>
 <dt><code>options</code></dt>
 <dd>
-(optional, newtmustache only) An object that can be merged in with JSON
-received for processing by your Mustache template
+(optional, newtmustache only) An object is passed to the template as
+<code>.options</code>.
+</dd>
+<dt><code>vocabulary</code></dt>
+<dd>
+(optional, newtmustache only) This is the filename for a YAML file which
+is exposed inside the template as <code>.vocabulary</code>. You can
+think of this as options maintained outside the Newt YAML file.
 </dd>
 <dt><code>debug</code></dt>
 <dd>
@@ -183,7 +188,7 @@ received for processing by your Mustache template
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtmustache</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8012</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8011</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hello/{name}</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>

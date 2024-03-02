@@ -112,6 +112,8 @@ func ConfigUnmarshal(src []byte, cfg *Config) error {
 			NewtRouter:    &Application{},
 			NewtMustache:  &Application{},
 			NewtGenerator: &Application{},
+			Postgres:      &Application{},
+			PostgREST:     &Application{},
 			Options:       map[string]string{},
 			Environment:   []string{},
 		}

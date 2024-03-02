@@ -1,5 +1,5 @@
 ---
-title: "newt(1) user manual | 0.0.7-dev 4b9ad33"
+title: "newt(1) user manual | 0.0.7-dev 012a9af"
 pubDate: 2024-03-01
 author: "R. S. Doiel"
 ---

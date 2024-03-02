@@ -6,12 +6,19 @@
 package newt
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
+	"log"
 	"path"
 	"strings"
 	"time"
+
+	// 3rd Party Templates
+    "github.com/cbroglie/mustache"
 )
 
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
@@ -266,6 +273,7 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 		RESOLVE
 		HANDLER
 		WEBSERVICE
+		POSTGREST
 	)
 	appName := path.Base(os.Args[0])
 	fName := ""
@@ -279,6 +287,29 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	if err != nil {
 		fmt.Fprintf(eout, "%s failed to load %q, %s", appName, fName, err)
 		return CONFIG
+	}
+	// Startup PostgREST if configured in the Newt YAML file.
+	if cfg.Applications != nil && cfg.Applications.PostgREST != nil &&
+		cfg.Applications.PostgREST.ConfPath != "" && cfg.Applications.PostgREST.AppPath != "" {
+		postgREST := cfg.Applications.PostgREST
+		cwd, err := os.Getwd()
+    	if err != nil {
+			log.Println(err)
+       		return POSTGREST
+    	}
+		cmd := exec.Command(postgREST.AppPath, postgREST.ConfPath)
+		cmd.Dir = cwd
+		// Setup the stdin and stdout to be visible from Newt
+		cmd.Stdout = out
+		cmd.Stderr = eout
+		log.Printf("Starting %s %s on port :%d", postgREST.AppPath, postgREST.ConfPath, postgREST.Port)
+    	err = cmd.Start()
+    	if err != nil {
+			log.Println(err)
+       		return POSTGREST
+    	}
+		log.Printf("%s running with pid %d in the backround", postgREST.AppPath, cmd.Process.Pid)
+    	cmd.Process.Release()
 	}
 	// Setup and start Newt Mustache first
 	go func() {
@@ -334,7 +365,7 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 		}
 	}()
 
-	// The router starts up and is what prevents service from falling through.
+	// The router starts up second and is what prevents service from falling through.
 	func() {
 		const (
 			// Default port number for tmplbnld
@@ -382,3 +413,64 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	}()
 	return OK
 }
+
+// RunMustacheCLI this provides a cli for checking your templates using static JSON files and
+// displaying results to stdout.
+func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
+	const (
+		OK = iota
+		ERROR
+		READ_ERROR
+		DECODE_ERROR
+		TEMPLATE_ERROR
+	)
+	var (
+		tmplFName string
+		dataFName string
+		txt []byte
+		src []byte
+		data *interface{}
+		err error
+	)
+	if len(args) == 1 {
+		tmplFName, dataFName = args[0], "-"
+	} else if len(args) == 2 {
+		tmplFName, dataFName = args[0], args[1]
+	} else {
+		fmt.Fprintf(eout, "expected a JSON data file and template filename\n")
+		return ERROR
+	}
+	txt, err = os.ReadFile(tmplFName)
+	if err != nil {
+		fmt.Fprintf(eout, "failed reading %q, %s\n", tmplFName, err)
+		return READ_ERROR
+	}
+
+	if dataFName == "" || dataFName == "-" { 
+		dataFName = "stdin"
+		src, err = io.ReadAll(in)
+	} else {
+		src, err = os.ReadFile(dataFName)
+	}
+	if err != nil {
+		fmt.Fprintf(eout, "failed reading data %q, %s\n", dataFName, err)
+		return READ_ERROR
+	}
+	decoder := json.NewDecoder(bytes.NewBuffer(src))
+	decoder.UseNumber()
+	if err = decoder.Decode(&data); err != nil {
+		fmt.Fprintf(eout, "failed decoding %q, %s\n", dataFName, err)
+		return DECODE_ERROR
+	}
+    tmpl, err := mustache.ParseString(fmt.Sprintf("%s", txt))
+    if err != nil {
+		fmt.Fprintf(eout, "failed template parse error %q, %s\n", dataFName, err)
+		return TEMPLATE_ERROR
+    }
+    if err = tmpl.FRender(out, data); err != nil {
+		fmt.Fprintf(eout, "failed render error %q, %s\n", dataFName, err)
+		return TEMPLATE_ERROR
+	}
+	return OK
+}
+

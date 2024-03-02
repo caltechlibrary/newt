@@ -21,8 +21,8 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
     - [ ] delete mustache template
     - [ ] list mustache template
 - [ ] `newt` runner should be able to manage a postgrest instance. This will simplify using Newt in the development setting
-  - [ ] `newt` would need to respond SIGTERM, SIGHUP and SIGKILL
-  - [ ] `newt` need to track the pid of the external process, then folder that into the signal handlers
+  - [D] `newt` would need to respond SIGTERM, SIGHUP and SIGKILL (if I use Go's exec I don't need to explicitly handle these)
+  - [X] `newt` need to track the pid of the external process, then folder that into the signal handlers (using a go routine to start it don't think I need to track this, though it would be nice to log it.
 - [ ] `newtinit`, an interactive Newt YAML file generator, need to decide on approach
     - [ ] could be done as a cli interactive tool
     - [ ] could be done as part of the Newt website, like the Codemeta generator, but using a web component to render the Newt YAML contents

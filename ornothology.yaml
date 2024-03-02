@@ -10,6 +10,10 @@ applications:
     port: 8030
   newtgenerator:
     namespace: ornothology
+  postgrest:
+    port: 3000
+    app_path: postgrest
+    conf_path: ornothology.conf
 models:
   - id: sighting
     name: Bird Sightings
