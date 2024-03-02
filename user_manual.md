@@ -10,7 +10,7 @@
   - [newt](newt.1.md), this program runs both Newt Router and Mustache as one process
   - [ws](ws.1.md), provides a localhost static file server on port 8000, including a verbose model for debugging POST, PUT and PATCH
 
-## Newt Project YAML syntax
+## Newt YAML syntax
 
 - [Newt YAML Syntax](newt_yaml_syntax.md)
 
@@ -23,8 +23,8 @@
 
 ## Demos
 
-- [Birds 4](demo/birds4/), a demo of a hand built simple Newt application
-- [Ornothology](ornothology.md), a demo of Newt Generator building a web applicaation using Newt, Postgres and PostgREST
+- [Birds 4](https://github.com/caltechlibrary/newt/tree/main/demos/birds4) source files
+- [Ornothology](ornothology.md), a demo of using the Newt Generator to build a web applicaation based on Newt, Postgres and PostgREST
 
 ## Presentations
 
@@ -43,8 +43,8 @@
 
 ## From the past
 
-These documents are a historic picture of Newt's development. They do not
-present the current prototype. They represent how it was arrived at.
+These documents provide back ground material for Newt's current development state. They do not
+represent the current prototype. They represent how that prototype was informed.
 
 - [Origin Story](origin_story.md), Feb 7, 2024
 - [Improving Newt's YAML DSL](improving_the_type_dsl.md), January 26, 2024
