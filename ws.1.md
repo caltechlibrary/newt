@@ -1,6 +1,6 @@
 ---
-title: "ws(1) user manual | 0.0.7-dev d0faa52"
-pubDate: 2024-03-02
+title: "ws(1) user manual | 0.0.7-dev 76de1cf"
+pubDate: 2024-03-03
 author: "R. S. Doiel"
 ---
 

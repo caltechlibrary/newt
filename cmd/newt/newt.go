@@ -23,14 +23,22 @@ author: "R. S. Doiel"
 
 # SYNOPSIS
 
-{app_name} [OPTIONS] YAML_CONFIG_FILE
+{app_name} [OPTIONS] ACTION YAML_CONFIG_FILE 
 
 # DESCRIPTION
 
-**{app_name}** is an application runner. If both Newt Router and Mustache are
-defined in the YAML_CONFIG_FILE then **{app_name}** will run them each on their
-own port. This allows you to have your Newt programs under one process which can
-be convenient during development.
+**{app_name}** sets up up and can run your Newt application during development.
+**{app_name}** supports the "init", "generate" and "run" actions. The "init"
+command is used when you are starting a Newt Project. It will guide you through
+creating your initial Newt YAML file and also optionally make additions to your
+`+"`"+`.gitignore`+"`"+`. "generate" will run the Newt Generator to create the
+SQL, PostgREST configuration and Mustache templates based on the contents of the
+Newt YAML file. The third action is "run". It is used to run your Newt based
+application. For the applications you have defined in your Newt YAML_CONFIG_FILE
+it's start them up. These include the Newt Router, Newt Mustache and PostgREST.
+This allows you to quick run and stop the services are you craft your
+Newt YAML file for your project.
+
 
 # OPTIONS
 
@@ -47,6 +55,16 @@ The following options are supported by **{app_name}**.
 
 -verbose
 : If set provide verbose debugging output for requests
+
+# ACTION
+
+init
+: this will create your initial Newt YAML file based on a set of interactive
+questions. It can also update your `+"`"+`.gitignore`+"`"+` file too.
+
+generate
+: this is used to generate your SQL, PostgREST configuration and Mustache templates
+based on the contents of your Newt YAML file.
 
 # YAML_CONFIG_FILE 
 
@@ -98,7 +116,6 @@ port
 
 htdocs
 : (newtrouter) Directory that holds your application's static content
-
 
 ## the "routes" property
 

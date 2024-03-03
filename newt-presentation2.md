@@ -82,7 +82,6 @@ A second prototype Newt application
 - "Off the shelf" is simpler
 - SQL turns people off, use a code generator
 - Mustache templates, simple but not too simple
-- Two YAML syntaxes is too many
 - Unexpected encounters ...
 
 # Unexpected encounters
@@ -90,13 +89,12 @@ A second prototype Newt application
 - Web services' cognitive price
 - Containers add to complexity
 - Web services need a "developer" mode for debugging
-- Newt, **a static site generator platform?**
 
 # Newt has weaknesses
 
-- Newt is **an experimental working prototype** (February 2024)
-- Pipeline delays accumulate
+- Newt is **an working prototype** (February/March 2024)
 - Many routes are hard to maintain
+- Pipeline delays accumulate
 - Newt is missing file upload support
 
 # Newt has strengths
@@ -116,17 +114,16 @@ A second prototype Newt application
 
 # My wish list ...
 
-- simple web service with S3 protocol implementing current OCFL
 - SQLite 3 database support
 - Visually programming for Newt YAML files
 - Web components for LAM metadata types
+- A simple S3 protocol web service that implements storing object using OCFL
 
 # Related resources
 
 - Newt <https://github.com/caltechlibrary/newt>
 - Postgres <https://postgres.org> + PostgREST <https://postgrest.org>
 - [Mustache](https://mustache.github.io) programming languages support
-- [Go Mustache package](https://github.com/cbroglie/mustache), provides a mustache cli
 - Go 1.22, pattern language in HTTP handlers, see <https://pkg.go.dev/net/http#hdr-Patterns>
 
 # Thank you!
