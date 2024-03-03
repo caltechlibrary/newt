@@ -24,6 +24,9 @@ type NewtRouter struct {
 
 // This holds the route definitions, e.g. request, description, pipeline, debug
 type NewtRoute struct {
+	// Id holds an id for the route. This should be unique. It is useful in debugging.
+	Id string `json:"id,omitempty" yaml:"id"`
+	
 	// Pattern holds the HTTP Method and URL path, may include Go 1.22 patterns
 	Pattern string `json:"request,required" yaml:"request"`
 

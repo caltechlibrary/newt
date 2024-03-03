@@ -51,6 +51,9 @@ type MustacheTemplate struct {
 	// partials are not supported. The goal is to facilate including sub templates.
 	Partials []string `json:"partials,omitempty" yaml:"partials"`
 
+	// Description describes the purpose of the tempalte mapping. It is used to debug Newt YAML files.
+	Description string `json:"description,omitempty" yaml:"description"`
+
 	// Debug logs more verbosely if true
 	Debug bool `json:"debug,omitempty" yaml:"debug"`
 

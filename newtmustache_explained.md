@@ -5,12 +5,12 @@
 
 Newt Mustache is a simple, light weight template engine. It supports the [Mustache](https://mustache.github.io) template language. The way it works is you send data encoded as JSON via a POST to the Newt Mustache service. Newt Mustache then takes that data, processes it via a Mustache template and returns the result.
 
-Newt Mustache does this through Newt's YAML configuration file. In that file there is a `templates` property where you map the request paths to a template. You may also define variables embedded in the request path that will be made available to the related template.  Similarly Newt YAML's `.applications.options` is made available to your tempalte. Finally you can can also define "vocabulary" in an other YAML file that can be made available for processing with your template.
+Newt Mustache does this through Newt's YAML configuration file. In that file there is a `templates` property where you map the request paths to templates. The templates are provided a set of objects that can be used int he template.  They include the "body" of the POST, a set of "options" defined for the applications listed in your Newt YAML file. They can also include "vocabulary" taken from an external YAML file and variables defined in the request path for the template.
 
-In the Mustache template you have the following objects availabe.
+The Mustache templates have the following objects available.
 
 `body`
-: Holds the JSON described object recieved from the POST and encoded as content type `application/json`.
+: Holds the JSON described object received from the POST and encoded as content type `application/json`.
 
 `options`
 : Holds a key/value map of strings set in the Newt YAML file in the applications property.
@@ -21,19 +21,21 @@ In the Mustache template you have the following objects availabe.
 `vars`
 : Holds any path variables found in the request URL path
 
-This provides a flexible set of properties for use in creating an HTML page (or other type of text document) from the output of the Newt Mustache service.
+These provide a flexible set of properties for use in creating an HTML page (or other type of text content) from the output of the Newt Mustache service.
 
-Aside from `vars` and `body` the rest of the information (e.g. templates, options, vocabulary) are read in when Newt Mustache is started. It does not read from disk after that and doesn't write to disk either. Newt Mustache only communicates via HTTP on localhost. If you change the options, update your vocabulary file you will need to restart Newt Mustache (or `newt`) to see those changes.
+The `vars` and `body` values are determined when a POST request is maid. `options`, `vocabulary` are set when the Newt Mustache service starts up.  If either `options` or `vocabulary` changes you will not see the changes until you restart the Newt Mustache service.
 
 ## Two ways to run Newt Mustache
 
-Newt provides two options for running Newt Mustache.  Newt comes with the Newt Mustache web service, `newtmustache` or `newtmustache.exe`. This is a standalone web service suitable to be run from init or systemd on your POSIX system. A second more convient way is to run Newt Mustache with the `newt` command. This is what I use when developing a Newt application. With `newt` you can run Newt Router, Newt Mustache and PostgREST if configured in your Newt YAML's applications properties.
+Newt provides two options for running Newt Mustache.  Newt comes with the Newt Mustache web service, `newtmustache` (`newtmustache.exe` on Windows). This is a standalone web service suitable suitable for running from the command line or via your POSIX systems' init or systemd services. A second more convenient way is to run Newt Mustache is with the `newt` command (`newt.exe` on Windows). The `newt` command is provided to support a fluid development experience. The one command can perform several actions, e.g. "init", "generate" and "run".  In the following documentation I'll be using the `newt` command to run our Newt Mustache service.
 
-In this document we will assume you are running Newt Mustache using the `newt` command.
+## Getting started with Newt Mustache
 
-## Step 1, you need a Newt YAML file
+In this short tutorial we are going to create a web application that says hello. Only Newt Mustache will be used to implement this service.
 
-We want to start with configuration. We need to configure both the applications property and templates property to run Newt Mustache. Here's a simple example you should type in as save as "hello.yaml".
+### Step 1, create a Newt YAML file
+
+Since I am just focusing on Newt Mustache I recommend typing in the YAML content below and saving it to a file called "hello.yaml".
 
 ~~~yaml
 applications:
@@ -49,7 +51,25 @@ templates:
     template: hello.tmpl
 ~~~
 
-This simple YAML file descriptions how to run Newt Mustache, as a web service on port 8011. It also describes the path Newt will listen on to run the "hello.tmpl".
+This simple YAML file describes how to run Newt Mustache, as a web service on port 8011. It also describes the path Newt will listen on to run the "hello.tmpl".
+
+You can use `newt check hello.yaml` to verify you've entered the Newt YAML correctly. Here's an example of the running the command and it's output.
+
+~~~shell
+newt check hello.yaml
+~~~
+
+The output should look something like
+
+~~~text
+WARNING: hello.yaml has no models defined
+Newt Mustache configured, port set to 8011
+2 Mustache Templates are defined
+http://localhost8011/hello points at hello.tmpl
+http://localhost8011/hello/{someplace_else} points at hello.tmpl
+~~~
+
+### Step 2, create our "hello.tmpl" template file
 
 Let's look at a simple hello world template in Mustache configured to work with the Newt Mustache service.
 
@@ -65,10 +85,12 @@ Let's look at a simple hello world template in Mustache configured to work with 
 </html>
 ~~~
 
-If you have these typed in then we're ready to run `newt`.
+### Step 3, run our web application
+
+Now we are ready to use `newt` to "run" our hello application.
 
 ~~~shell
-newt hello.yaml
+newt run hello.yaml
 ~~~
 
 Open another terminal or shell session to test[^1].  
@@ -81,7 +103,7 @@ I use [cURL](https://curl.se) to test my templates. Let's see what happens when 
 curl --data '{}' 'http://localhost:8011/hello'
 ~~~
 
-The curl command above sends a POST (implied by the `--data` option) using a content type of "application/json". Newt Mustache only knows how to work with JSON data. curl takes care of setting that content type using the `--data`. Normally a POST from a web form is encluded using urlencoding. But the web has evolved since the 1990s and most API now produce output encoded as JSON (or have the option to do so). Newt Mustache is designed to support this behavior when it processes requests.
+The curl command above sends a POST (implied by the `--data` option) using a content type of "application/json". Newt Mustache only knows how to work with JSON data. curl takes care of setting that content type using the `--data`. Normally a POST from a web form is included using urlencoding. But the web has evolved since the 1990s and most API now produce output encoded as JSON (or have the option to do so). Newt Mustache is designed to support this behavior when it processes requests.
 
 When you run the curl command you above should get back the HTML markup from the template and in the body element see the message "Hi There from Planet Earth!".
 

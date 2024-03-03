@@ -31,6 +31,7 @@ const (
 
 	// General failure of a command or service
 	INIT_FAIL
+	CHECK_FAIL
 	GENERATOR_FAIL
 	ROUTER_FAIL
 	MUSTACHE_FAIL
@@ -262,6 +263,99 @@ func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []stri
 	return OK
 }
 
+// NewtRunCheckYAML will load a Newt YAML fiel and make sure it can parse the configuration.
+func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
+	if len(args) == 0 {
+		fmt.Fprintf(eout, "missing Newt YAML filename to check\n")
+		return CHECK_FAIL
+	}
+	fName := args[0]
+	cfg, err := LoadConfig(fName)
+	if err != nil {
+		fmt.Fprintf(eout, "%s error: %s\n", fName, err)
+		return CHECK_FAIL
+	}
+	if cfg.Applications == nil {
+		fmt.Fprintf(eout, "%s has no applications defined\n", fName)	
+		return CHECK_FAIL
+	} 
+	if cfg.Models == nil || len(cfg.Models) == 0 {
+		if cfg.Applications.PostgREST != nil {
+			fmt.Fprintf(eout, "WARNING: %s has no models defined\n", fName)	
+		} else if cfg.Applications.NewtMustache != nil {
+			fmt.Fprintf(eout, "WARNING: %s has no models defined\n", fName)	
+		}
+	}
+	if cfg.Routes == nil || len(cfg.Routes) == 0 {
+		if cfg.Applications.NewtRouter != nil {
+			fmt.Fprintf(eout, "%s has no routes defined for Newt Router\n", fName)	
+			return CHECK_FAIL
+		}
+	}
+	if cfg.Templates == nil || len(cfg.Templates) == 0 {
+		if cfg.Applications.NewtMustache != nil {
+			fmt.Fprintf(eout, "%s has no templates defined for Newt Mustache\n", fName)	
+			return CHECK_FAIL
+		}
+	}
+	if verbose {
+		if cfg.Applications.PostgREST != nil {
+			fmt.Fprintf(out, "PostgREST configuration is %s\n", cfg.Applications.PostgREST.ConfPath)
+			fmt.Fprintf(out, "PostgREST will be run with the command %q\n", strings.Join([]string{
+				cfg.Applications.PostgREST.AppPath,
+				cfg.Applications.PostgREST.ConfPath,
+			}, " "))
+		}
+		if cfg.Models != nil {
+			for _, m := range cfg.Models {
+				fmt.Printf("models %s defined, %d elements\n", m.Id, len(m.Body))
+				if m.Description != "" {
+					fmt.Fprintf(out, "\t%s\n\n", m.Description)
+				}
+			}
+		}
+		if cfg.Applications.NewtRouter != nil {
+			port := ROUTER_PORT
+			if cfg.Applications.NewtRouter.Port != 0 {
+				port = fmt.Sprintf(":%d", cfg.Applications.NewtRouter.Port)
+			}
+			fmt.Fprintf(out, "Newt Router configured, port set to %s\n", port)
+			if cfg.Applications.NewtRouter.Htdocs != "" {
+				fmt.Fprintf(out, "Static content will be served from %s\n", cfg.Applications.NewtRouter.Htdocs)
+			}
+			if cfg.Routes != nil {
+				for _, r := range cfg.Routes {
+					fmt.Fprintf(out, "route %s defined, request path %s, pipeline size %d\n", r.Id, r.Pattern, len(r.Pipeline))
+					if r.Description != "" {
+						fmt.Fprintf(out, "\t%s\n\n", r.Description)
+					}
+				}
+			}
+		}
+		if cfg.Applications.NewtMustache != nil {
+			port := fmt.Sprintf("%d", cfg.Applications.NewtMustache.Port)
+			if port == "" {
+				port = fmt.Sprintf(":%d", MUSTACHE_PORT)
+			}
+			fmt.Fprintf(out, "Newt Mustache configured, port set to %s\n", port)
+			fmt.Fprintf(out, "%d Mustache Templates are defined\n", len(cfg.Templates))
+			for _, mt := range cfg.Templates {
+				tList := []string{
+					mt.Template,
+				}
+				if len(mt.Partials) > 0 {
+					tList = append(tList, mt.Partials...)
+				}
+				fmt.Fprintf(out, "http://localhost%s%s points at %s\n", port, mt.Pattern, strings.Join(tList, ", "))
+				if mt.Description != "" {
+						fmt.Fprintf(out, "\t%s\n\n", mt.Description)
+				}
+			}
+		}
+	}
+	return OK
+}
+
 // RunNewt is a runner that can run Newt Mustache, Newt Router and PostgREST if defined in the Newt YAML file.
 func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
 	appName := path.Base(os.Args[0])
@@ -280,6 +374,8 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 		case "init":
 			fmt.Fprintf(eout, "%s init action is not implemented\n", appName)
 			return INIT_FAIL
+		case "check":
+			return RunNewtCheckYAML(in, out, eout, args, verbose)
 		case "generate":
 			fmt.Fprintf(eout, "%s init action is not implemented\n", appName)
 			return INIT_FAIL
