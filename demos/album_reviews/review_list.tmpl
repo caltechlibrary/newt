@@ -1,0 +1,38 @@
+<!DOCTYPE html lang="en">
+<html>
+  <head>
+  	<title>Welcome to the Album Review Demo!</title>
+  </head>
+  <body>
+    <h1>Welcome to the Album Review Demo!</h1>
+    <div id="bird-list">
+	<table>
+		<thead>
+			<tr class="header"> <th>Album Name</th> <th>Review</th> <th>Rating</th> <th>Review Date</th> </tr>
+		</thead>
+		<tbody>
+{{#body}}
+			<tr> <td>{{name}}</td> <td>{{review}}</td> <td>{{rating}}</td> <td>{{created}}</td> </tr>
+{{/body}}
+		</tbody>
+	</table>
+    </div>
+
+    <h2>Add a bird</h2>
+    <div><form name="add_a_review" method="POST" action="/add_a_review">
+      <div>
+        <label for="name">Album Name</label>
+                <input id="name" name="name" type="text" value="" placeholdertext="ex. FreehandFagile by Gentle Giant">
+      </div>
+      <div>
+        <label for="review">Review</label>
+                <input id="review" name="review" type="review" value="" placeholdertext="ex. I really likes this album">
+      </div>
+      <div>
+        <label for="rating">Rating</label>
+                <input id="rating" name="rating" type="number" min="1" max="5" value="3">
+      </div>
+      <button id="add-review" type="submit">Add your album review</button>
+    </form></div>
+  </body>
+</html>

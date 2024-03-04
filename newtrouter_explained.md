@@ -16,13 +16,18 @@ Let's say we have a database of music albums and reviews.  Each album includes a
 ### Prep work
 
 Before we can run through the tutorial somethings need to be up and running.
-Postgres 16 and PostgREST 12 needs to be installed. The Postgres database for the demo needs to be installed along with configuration for allowing PostgREST to provide the database content. Here's an example SQL file you can run to create your Postgres database configured for using with PostgREST. 
+Postgres 16 and PostgREST 12 needs to be installed. The Postgres database for the demo needs to be installed along with configuration for allowing PostgREST to provide the database content. Here's an example SQL file you can run to create your Postgres database configured for using with PostgREST. You can retrieve the SQL code to set things up from <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/setup_album_reviews_demo.sql>. You need to change the password in the file before running the following commands.
 
 ~~~shell
+createdb album_reviews
+psql < setup_album_reviews_demo.sql
 ~~~
 
+Similarly you can get an example "postgrest.conf" from <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/postgrest.conf>. You'll need to set the password to match the one you used in the SQL file setting up the Postgres and PostgREST.
 
-Let's create a Newt YAML file called "album_review.yaml". Type in the following.
+### Building our application
+
+Let's create a Newt YAML file called "album_reviews.yaml". Type in the following using your favorite text editor.
 
 ~~~yaml
 applications:
@@ -42,7 +47,7 @@ routes:
 You can check to make sure you've typed in everything correctly using the command.
 
 ~~~shell
-newt -verbose check album_review.yaml
+newt -verbose check album_reviews.yaml
 ~~~
 
 That should show some output like
@@ -55,8 +60,13 @@ Newt Router configured, port set to :8010
 route interesting_album_view defined, request path GET /interesting_albums_list, pipeline size 1
 ~~~
 
-For now you can ignore the "WARNING" about models because I've assumed you've already setup your Postgres database with the table and views.
+You can ignore the "WARNING" about models because we've already set that up in our Postgres database.  
 
+Low let's run the Newt Router and test with our web browsers.
+
+~~~shell
+newt run album_reviews.yaml
+~~~
 
 If you are happy with the results you can run PostgREST and Newt Router using the newt command, `newt run album_review.yaml`.
 
