@@ -1,0 +1,12 @@
+applications:
+  newtrouter:
+    port: 8010
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
+routes:
+  - id: interesting_album_view
+    request: GET /interesting_albums_list
+    pipeline:
+      - service: GET http://localhost:3000/interesting_albums_list
+        description: Contact PostgREST and get back the intersting album list

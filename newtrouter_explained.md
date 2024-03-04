@@ -3,35 +3,78 @@
 
 ## Overview
 
-In the first Newt prototype supported a two stage pipeline for routing request through return a web page. It supported either Postgres+PostgREST through Pandoc web service or JSON API like Solr through Pandoc web service round trip. With the second prototype the Newt router has been generalized. Rather than two stages the second prototype implements a pipeline. This allows for several services to be tied together each sending a request to the next. This allows the web services to be more focused in much the same way that Unix programs can be chained together to form pipelines.  Using a route selector the generalized pipeline become steps indicated by a list of HTTP methods, URLs and content types. The YAML notation used has been significantly changed to support this generalization. Let's focus on the individual route setup[^31].
+The Newt Router is a data router. A data router takes a request then pass it on to a list one or more services returning the final result. The sequence of contecting one service and using the result as input to another service is called a pipeline. The Unix family of operating systems shells support this concept of piping the output of one program into another program. The Newt router provides a similar service but for routine between one or more web services. Newt was created to be able to route request between PostgREST and a template engine. The second Newt prototype supports this concept for any web service that is reachable via localhost. Typically this is still PostgREST and the Newt Mustache template engine. PostgREST returns JSON data and Newt Mustache can take the JSON data and render an HTML page using a Mustache template. You could swap PostgREST out for Solr and do the same thing. Newt Router supports pipelines of one or more services. The last service to respond has its results passed back to the requesting web browser.
 
-[^31]: See [Newt YAML syntax](newt_yaml_sentax.md) for complete description of the supported YAML. 
+Newt Router does using to concepts, "routes" and "pipelines". A "route" describes the HTTP method and URL path of a request. The Newt Router using the Newt YAML file can map a requets to a pipeline. Using this approach of defines routes and their pipelines you can compose your web application.
 
-It is easy to start with a specific example then show it would be notated.
+Newt Router can also function as a static web server. This is helpful where your final output is HTML and you wish to also include any related static assets like CSS, images or JavaScript.
 
 ## A simple example
 
-Let's say we have a database of music albums and reviews.  Each album includes a rating of "interesting". The range is a zero (uninteresting) to five star rating (most interesting). Previously we've modeled this in our Postgres database using a `view`.  How do we create a page that lists albums in descending order of interest? Since we're building with Newt we can assume there is a template to list albums available. That using that template will be the "last stage" in our pipeline. We need to feed the view into that template. The `view` statement is implemented in SQL in Postgres. That is exposed as a JSON API by PostgREST. That's our first stage, a JSON data source.
+Let's say we have a database of music albums and reviews.  Each album includes a rating of "interesting". The range is a zero (uninteresting) to five star rating (most interesting). This information is stored in a Postgres database and made available to the Newt Router via PostgREST. Our web application needs to be able to use the PostgREST JSON API to manage our list of albums and reviews. I am going to assume you have a Postgres "view" called "interesting_album_view" defined and that is available via PostgREST via a GET request at the URL "http://localhost:3000/interesting_albums_list".
 
-How do you representing a route with two stages?
+### Prep work
 
-```yaml
+Before we can run through the tutorial somethings need to be up and running.
+Postgres 16 and PostgREST 12 needs to be installed. The Postgres database for the demo needs to be installed along with configuration for allowing PostgREST to provide the database content. Here's an example SQL file you can run to create your Postgres database configured for using with PostgREST. 
+
+~~~shell
+~~~
+
+
+Let's create a Newt YAML file called "album_review.yaml". Type in the following.
+
+~~~yaml
+applications:
+  newtrouter:
+    port: 8010
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
 routes:
-    - id: interesting_album_view
-      request: GET /interesting_albums_list
-      pipeline:
-         - description: Contact PostgREST and get back the intersting album list
-           service: GET http://localhost:3000/rpc/album_view
-           content_type: application/json
-           timeout: 15
-         - description: |
-             Take the results from PostgREST and run them through 
-             the newtmustache using the template "ablum_list_view.tmpl"
-           service: POST http://localhost:3032/album_list_view.tmpl
-           content_type: application/json
-           timeout: 10
+  - id: interesting_album_view
+    request: GET /interesting_albums_list
+    pipeline:
+      - service: GET http://localhost:3000/interesting_albums_list
+        description: Contact PostgREST and get back the intersting album list
+~~~
+
+You can check to make sure you've typed in everything correctly using the command.
+
+~~~shell
+newt -verbose check album_review.yaml
+~~~
+
+That should show some output like
+
+~~~text
+WARNING: demos/album_reviews/album_reviews.yaml has no models defined
+PostgREST configuration is postgrest.conf
+PostgREST will be run with the command "postgrest postgrest.conf"
+Newt Router configured, port set to :8010
+route interesting_album_view defined, request path GET /interesting_albums_list, pipeline size 1
+~~~
+
+For now you can ignore the "WARNING" about models because I've assumed you've already setup your Postgres database with the table and views.
+
+
+If you are happy with the results you can run PostgREST and Newt Router using the newt command, `newt run album_review.yaml`.
+
+
+NOTE: You can check to see if you types in the YAML correctly with `newt check albums.yaml`
+
+This Newt YAML file describes how to run PostgREST and the Newt Router. It then defines the routers that the Newt Router will respond to. Right now we only are responding to request from one route. That's a GET request to the URL "http://localhost:8010/interesting_albums_list". When that request is recieved it'll be pased on to PostgREST running on at "http://localhost:3000/interesting_albums_list". PostgREST will hand back it's results to your web browser.
+
+
+      - description: |
+          Take the results from PostgREST and run them through 
+          the newtmustache using the template "ablum_list_view.tmpl"
+          service: POST http://localhost:3032/album_list_view.tmpl
+          content_type: application/json
+          timeout: 10
       debug: true
 ```
+
 
 What is being described?  First we have routes defined in our application. Our route is `interesting_album_view`. When a web browser contacts Newt via a GET at the designated path it triggers our pipeline property to start processing the request. In this case it is a two stage pipeline.
 
