@@ -56,27 +56,40 @@ set search_path to album_reviews, public;
 drop table if exists album_reviews.albums;
 create table album_reviews.albums
 (
-  name varchar(255),
-  review text,
-  rating integer,
+  album_name varchar(255),
+  album_review text,
+  album_rating integer,
   created timestamp default now()
 );
+
+--
+-- We are loading some test data to start with.
+--
+insert into album_reviews.albums (
+  album_name, album_review, album_rating, created
+) values (
+  'King Oliver''s "Chimes Blues," April 5, 1923',
+  'Man it''s Jazz!',
+  '5',
+  now()
+);
+  
 
 --
 -- Data Views and Behaviors.
 --
 
--- interesting_albums_list will become an end point in PostgREST, '/interestting_albums_list'
+-- interesting_albums_list will become an end point in PostgREST, '/interesting_albums_list'
 create or replace view album_reviews.interesting_albums_list as
-  select name, review, rating
-  from album_reviews.albums order by rating desc, name asc;
+  select album_name, album_review, album_rating
+  from album_reviews.albums order by album_rating desc, album_name asc;
 
 -- add_a_review is a stored procedure and will save a new album review.
 -- It becomes the end point '/rpc/add_a_review'
 create or replace function album_reviews.add_a_review(
-  new_album varchar, 
+  new_name varchar, 
   new_review text, 
-  newt_rating integer
+  new_rating integer
 ) returns jsonb
 language plpgsql
 as $$
@@ -84,18 +97,19 @@ declare
   new_object jsonb;
 begin
   -- insert our new review
-  insert into album_reviews.albums (name, review, rating)
-         values (new_album, new_review, new_rating);
+  insert into album_reviews.albums (album_name, album_review, album_rating, created)
+         values (new_name, new_review, new_rating, now());
   -- retrieve our new review and return it.
   select 
     jsonb_build_object(
-        'album', album,
-        'review', review,
-        'rating', rating)
+        'album', album_name,
+        'review', album_review,
+        'rating', album_rating,
+        'reviewed', created)
     into new_object
     from album_reviews.albums
-    where name = new_album
-    order by created desc, name asc
+    where album_name = new_name
+    order by created desc, album_name asc
     limit 1;
   return new_object;
 end; 

@@ -12,7 +12,7 @@
 		</thead>
 		<tbody>
 {{#body}}
-			<tr> <td>{{name}}</td> <td>{{review}}</td> <td>{{rating}}</td> <td>{{created}}</td> </tr>
+			<tr> <td>{{album_name}}</td> <td>{{album_review}}</td> <td>{{album_rating}}</td> <td>{{created}}</td> </tr>
 {{/body}}
 		</tbody>
 	</table>
@@ -21,16 +21,16 @@
     <h2>Add a bird</h2>
     <div><form name="add_a_review" method="POST" action="/add_a_review">
       <div>
-        <label for="name">Album Name</label>
-                <input id="name" name="name" type="text" value="" placeholdertext="ex. FreehandFagile by Gentle Giant">
+        <label for="album_name">Album Name</label>
+                <input id="album_name" name="album_name" type="text" value="" placeholdertext="ex. FreehandFagile by Gentle Giant">
       </div>
       <div>
-        <label for="review">Review</label>
-                <input id="review" name="review" type="review" value="" placeholdertext="ex. I really likes this album">
+        <label for="album_review">Review</label>
+                <input id="album_review" name="album_review" type="text" value="" placeholdertext="ex. I really likes this album">
       </div>
       <div>
-        <label for="rating">Rating</label>
-                <input id="rating" name="rating" type="number" min="1" max="5" value="3">
+        <label for="album_rating">Rating</label>
+                <input id="album_rating" name="album_rating" type="number" min="1" max="5" value="3">
       </div>
       <button id="add-review" type="submit">Add your album review</button>
     </form></div>
