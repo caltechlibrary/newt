@@ -1,5 +1,5 @@
 ---
-title: "mustache(1) user manual | 0.0.7-dev 27028f3"
+title: "mustache(1) user manual | 0.0.7-dev 79c6a11"
 pubDate: 2024-03-03
 author: "R. S. Doiel"
 ---

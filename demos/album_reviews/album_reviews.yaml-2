@@ -1,0 +1,33 @@
+applications:
+  newtrouter:
+    port: 8010
+  newtmustache:
+    port: 8011
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
+routes:
+  - id: interesting_album_view
+    request: GET /api/{$}
+    pipeline:
+      - service: GET http://localhost:3000/interesting_albums_list
+        description: Contact PostgREST and get back the intersting album list
+  - id: add_a_review
+    request: POST /add_a_review
+    pipeline:
+      - service: POST http://localhost:3000/rpc/add_a_review
+        description: Add a review via PostgREST function album_reviews.add_a_review
+      - service: POST http://localhost:8011/review_submitted
+        description: Display the submitted review with link back to list
+  - id: show_reviews
+    request: GET /{$}
+    pipeline:
+      - service: GET http://localhost:3000/interesting_albums_list
+        description: Contact PostgREST and get back the intersting album list
+      - service: POST http://localhost:8011/review_list
+        description: Convert the JSON into HTML, show the list and web form
+templates:
+  - request: /review_list
+    template: review_list.tmpl
+  - request: /review_submitted
+    template: review_submitted.tmpl
