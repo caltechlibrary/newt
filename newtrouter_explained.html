@@ -41,27 +41,29 @@ psql &lt; setup_album_reviews_demo.sql</code></pre>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">newtrouter</span><span class="kw">:</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8010</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">postgrest</span><span class="kw">:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">app_path</span><span class="kw">:</span><span class="at"> postgrest</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">conf_path</span><span class="kw">:</span><span class="at"> postgrest.conf</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="fu">routes</span><span class="kw">:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/interesting_albums_list</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span></code></pre></div>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">3000</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">app_path</span><span class="kw">:</span><span class="at"> postgrest</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="at">    </span><span class="fu">conf_path</span><span class="kw">:</span><span class="at"> postgrest.conf</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /api/{$}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/interesting_albums_list</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span></code></pre></div>
 <p>You can check to make sure you’ve typed in everything correctly using the command.</p>
 <pre class="shell"><code>newt -verbose check album_reviews.yaml</code></pre>
 <p>That should show some output like</p>
-<pre class="text"><code>WARNING: demos/album_reviews/album_reviews.yaml has no models defined
+<pre class="text"><code>WARNING: album_reviews.yaml has no models defined
 PostgREST configuration is postgrest.conf
 PostgREST will be run with the command &quot;postgrest postgrest.conf&quot;
 Newt Router configured, port set to :8010
-route interesting_album_view defined, request path GET /interesting_albums_list, pipeline size 1</code></pre>
+route interesting_album_view defined, request path GET /api/{$}, pipeline size 1</code></pre>
 <p>You can ignore the “WARNING” about models because we’ve already set that up in our Postgres database.</p>
 <p>Low let’s run the Newt Router.</p>
 <pre class="shell"><code>newt run album_reviews.yaml</code></pre>
-<p>Point your web browser at the url <a href="http://localhost:8010/" class="uri">http://localhost:8010/</a>.</p>
-<p>You should get back a JSON response that originated from Postgres+PostgREST. It’s not very useful yet. It would be much better if it displayed some HTML.</p>
+<p>Point your web browser at the url <a href="http://localhost:8010/api/" class="uri">http://localhost:8010/api/</a>.</p>
+<p>You should get back a JSON response that originated from Postgres+PostgREST. It’s not very useful yet so we have more todo.</p>
+<p>You should press “ctrl-c” to exit the newt command before continuing. This will stop both the Newt Router and the PostgREST service since we will be making changes in the second part.</p>
 <h2 id="improving-our-application-by-adding-routes-and-pipelines">Improving our application by adding routes and pipelines</h2>
 <p>We can do improve our web application by creating a Mustache templates and setting up Newt Mustache as part of our pipelines.</p>
 <p>Add these two Mustache templates from <a href="https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_list.tmpl" class="uri">https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_list.tmpl</a> and <a href="https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_submitted.tmpl" class="uri">https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_submitted.tmpl</a>.</p>
@@ -76,26 +78,29 @@ route interesting_album_view defined, request path GET /interesting_albums_list,
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="at">    </span><span class="fu">conf_path</span><span class="kw">:</span><span class="at"> postgrest.conf</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="fu">routes</span><span class="kw">:</span></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /api/{$}</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/interesting_albums_list</span></span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:8011/review_list</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Convert the JSON into HTML, show the list and web form</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> add_a_review</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /add_a_review</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3000/rpc/add_a_review</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true"></a><span class="fu">        description</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true"></a>           Add a review via PostgRETS function </span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true"></a>           album_reviews.add_a_review</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:8011/review_submitted</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display the submitted review with link back to list</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true"></a><span class="fu">templates</span><span class="kw">:</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /review_list</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> review_list.tmpl</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /review_submitted</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> review_submitted.tmpl</span></span></code></pre></div>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> add_a_review</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /add_a_review</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3000/rpc/add_a_review</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Add a review via PostgREST function album_reviews.add_a_review</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:8011/review_submitted</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display the submitted review with link back to list</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> show_reviews</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /{$}</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/interesting_albums_list</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:8011/review_list</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Convert the JSON into HTML, show the list and web form</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /review_list</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> review_list.tmpl</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /review_submitted</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> review_submitted.tmpl</span></span></code></pre></div>
 <p>You can check your updated Newt YAML file with the following command.</p>
 <pre class="shell"><code>newt -verbose check album_reviews.yaml</code></pre>
 <p>This time you should see results like the following.</p>
@@ -103,8 +108,9 @@ route interesting_album_view defined, request path GET /interesting_albums_list,
 PostgREST configuration is postgrest.conf
 PostgREST will be run with the command &quot;postgrest postgrest.conf&quot;
 Newt Router configured, port set to :8010
-route interesting_album_view defined, request path GET /interesting_albums_list, pipeline size 2
+route interesting_album_view defined, request path GET /api/{$}, pipeline size 1
 route add_a_review defined, request path POST /add_a_review, pipeline size 2
+route show_reviews defined, request path GET /{$}, pipeline size 2
 Newt Mustache configured, port set to 8011
 2 Mustache Templates are defined
 http://localhost8011/review_list points at review_list.tmpl
