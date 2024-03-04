@@ -1,5 +1,5 @@
 ---
-title: "newtmustache(1) user manual | 0.0.7-dev 7d40b53"
+title: "newtmustache(1) user manual | 0.0.7-dev 8b8197f"
 pubDate: 2024-03-04
 author: "R. S. Doiel"
 ---
@@ -33,7 +33,7 @@ is passed to the template as `.vocabulary`. Finally if you've defined a variable
 in your request path those will be available to your template as `.vars`.
 
 Like Pandoc web service `newtmustache` does not normally log requests. It's a quick
-transaction. If you want to debug your templates use the verbose command line option ot turn on
+transaction. If you want to debug your templates use the verbose command line option to turn on
 debug output.
 
 # OPTIONS

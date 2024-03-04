@@ -46,7 +46,7 @@ is passed to the template as `+"`"+`.vocabulary`+"`"+`. Finally if you've define
 in your request path those will be available to your template as `+"`"+`.vars`+"`"+`.
 
 Like Pandoc web service `+"`"+`{app_name}`+"`"+` does not normally log requests. It's a quick
-transaction. If you want to debug your templates use the verbose command line option ot turn on
+transaction. If you want to debug your templates use the verbose command line option to turn on
 debug output.
 
 # OPTIONS

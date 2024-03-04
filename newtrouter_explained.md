@@ -3,29 +3,49 @@
 
 ## Overview
 
-The Newt Router is a data router. A data router takes a request then pass it on to a list one or more services returning the final result. The sequence of contecting one service and using the result as input to another service is called a pipeline. The Unix family of operating systems shells support this concept of piping the output of one program into another program. The Newt router provides a similar service but for routine between one or more web services. Newt was created to be able to route request between PostgREST and a template engine. The second Newt prototype supports this concept for any web service that is reachable via localhost. Typically this is still PostgREST and the Newt Mustache template engine. PostgREST returns JSON data and Newt Mustache can take the JSON data and render an HTML page using a Mustache template. You could swap PostgREST out for Solr and do the same thing. Newt Router supports pipelines of one or more services. The last service to respond has its results passed back to the requesting web browser.
+The Newt Router is a data router. A data router takes a request then pass it on to a list one or more services returning the final result. The sequence of contacting one service and using the result as input to another service is called a pipeline. The Unix family of operating systems shells support this concept of piping the output of one program into another program. The Newt router provides a similar service but for connecting one or more web services[^1]. Newt was created to be able to route request between PostgREST and a template engine. The second Newt prototype supports this concept for any web service that is reachable via localhost. Typically this is still PostgREST and the Newt Mustache template engine. PostgREST returns JSON data and Newt Mustache can take the JSON data and render an HTML page using a Mustache template. You could swap PostgREST out for Solr and do the same thing. Newt Router supports pipelines of one or more services. The last service to respond has its results passed back to the requesting web browser.
 
-Newt Router does using to concepts, "routes" and "pipelines". A "route" describes the HTTP method and URL path of a request. The Newt Router using the Newt YAML file can map a requets to a pipeline. Using this approach of defines routes and their pipelines you can compose your web application.
+[^1]: Newt Router was inspired by [Yahoo Pipes!](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
-Newt Router can also function as a static web server. This is helpful where your final output is HTML and you wish to also include any related static assets like CSS, images or JavaScript.
+Newt Router is organized round two concepts, "routes" and "pipelines". A "route" describes the HTTP method and URL path of a web browser sends to the service. The pipeline is the sequence of services that process that request. The Newt Router uses a YAML file to describe the mapping of requests to pipelines.
 
-## A simple example
+The Newt Router can also function as a static web server. If you're pipeline results in HTML output, the static assets (e.g. CSS, JavaScript, image files) can add the polish to your human facing interface.
 
-Let's say we have a database of music albums and reviews.  Each album includes a rating of "interesting". The range is a zero (uninteresting) to five star rating (most interesting). This information is stored in a Postgres database and made available to the Newt Router via PostgREST. Our web application needs to be able to use the PostgREST JSON API to manage our list of albums and reviews. I am going to assume you have a Postgres "view" called "interesting_album_view" defined and that is available via PostgREST via a GET request at the URL "http://localhost:3000/interesting_albums_list".
+## A brief tour, albums and reviews
 
-### Prep work
+Let's say we have a database of music albums and reviews.  Each database entry includes the album name, the review and a rating of "interesting". The range is a zero (uninteresting) to five star rating (most interesting). This information is stored in a Postgres database and made available to the Newt Router via PostgREST. Our web application needs to be able to use the PostgREST JSON API to manage our list of albums and reviews. I am going to assume you have a Postgres "view" called "interesting_album_view" defined and that is available via PostgREST via a GET request at the URL "http://localhost:3000/interesting_albums_list".
 
-Before we can run through the tutorial somethings need to be up and running.
-Postgres 16 and PostgREST 12 needs to be installed. The Postgres database for the demo needs to be installed along with configuration for allowing PostgREST to provide the database content. Here's an example SQL file you can run to create your Postgres database configured for using with PostgREST. You can retrieve the SQL code to set things up from <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/setup_album_reviews_demo.sql>. You need to change the password in the file before running the following commands.
+### Step 1. Prep work
+
+Before we can run through the tutorial somethings need to be up and running.  We need Postgres 16 and PostgREST installed. Information about installing [Postgres](https://postgres.org) and [PostgREST](https://postgrest.org) can be found on their respective websites.
+
+The Postgres database needs to be created for our demo and it needs to be configured to allow PostgREST to access it. That can be accomplished by downloading this SQL file <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/setup_album_reviews_demo.sql>.
+
+Here's the steps.
+
+1. Download the SQL file (I use curl for this)
+2. Edit the SQL file and change the line with "my_secret_password" to something more appropriate
+3. Create the "album_reviews" database
+4. Run the SQL program to do the setup.
 
 ~~~shell
+curl -L -o https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/setup_album_reviews_demo.sql
+nano setup_album_reviews_demo.sql
 createdb album_reviews
-psql < setup_album_reviews_demo.sql
+psql album_reviews < setup_album_reviews_demo.sql
 ~~~
 
 Similarly you can get an example "postgrest.conf" from <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/postgrest.conf>. You'll need to set the password to match the one you used in the SQL file setting up the Postgres and PostgREST.
 
-### Building our application
+~~~shell
+curl -L -o https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/postgrest.conf
+nano postgrest.conf
+~~~
+
+Remember when you edit the "postgrest.conf" file you need to have the password match the one you used
+in the "setup_album_reviews_demo.sql" file.
+
+### Step 2. Building our application
 
 Let's create a Newt YAML file called "album_reviews.yaml". Type in the following using your favorite text editor.
 
@@ -45,7 +65,7 @@ routes:
         description: Contact PostgREST and get back the intersting album list
 ~~~
 
-You can check to make sure you've typed in everything correctly using the command.
+This file is going to define a single "route" with a one stage pipeline that proxies to PostgREST returning the results of our "interesting_albums_list" SQL view. You can check your YAML and to make sure you've typed in everything correctly using the command.
 
 ~~~shell
 newt -verbose check album_reviews.yaml
@@ -61,28 +81,26 @@ Newt Router configured, port set to :8010
 route interesting_album_view defined, request path GET /api/{$}, pipeline size 1
 ~~~
 
-You can ignore the "WARNING" about models because we've already set that up in our Postgres database.  
+For now ignore the "WARNING" about models. The SQL program "setup_album_reviews_demo.sql" already created the database, table and functions to the models are not necessary for this demo.
 
-Low let's run the Newt Router.
+Now let's run the Newt Router.
 
 ~~~shell
 newt run album_reviews.yaml
 ~~~
 
-Point your web browser at the url <http://localhost:8010/api/>.
+Point your web browser at the URL <http://localhost:8010/api/>.
 
-You should get back a JSON response that originated from Postgres+PostgREST. It's not very useful yet so 
-we have more todo.
+You should get back a JSON response that originated from Postgres+PostgREST. It's not very useful yet.
+We have more to do.  You should press "ctrl-c" to exit the newt command before continuing. This will stop both the Newt Router and the PostgREST service since we will be making changes in the second part.
 
-You should press "ctrl-c" to exit the newt command before continuing. This will stop both the
-Newt Router and the PostgREST service since we will be making changes in the second part.
+It is important to realize that the Newt Router loads it's configuration at startup only. This means if the Newt Router is running and you change the YAML file the running router will not act on those changes.
 
+## Step 3. Improving our application by adding routes and pipelines
 
-## Improving our application by adding routes and pipelines
+We can improve our web application by expanding our pipelines to include generating HTML for the web browser. This can be done with Mustache templates run from Newt Mustache as part of our pipelines.
 
-We can do improve our web application by creating a Mustache templates and setting up Newt Mustache as part of our pipelines.
-
-Add these two Mustache templates from <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_list.tmpl> and <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_submitted.tmpl>.
+Download the Mustache templates from <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_list.tmpl> and <https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_submitted.tmpl>. Save them in your directory.
 
 Update the album_reviews.yaml to look like this.
 
@@ -122,7 +140,7 @@ templates:
     template: review_submitted.tmpl
 ~~~
 
-You can check your updated Newt YAML file with the following command.
+This is allot of YAML. Check your updated Newt YAML file with the following command.
 
 ~~~shell
 newt -verbose check album_reviews.yaml
@@ -147,15 +165,15 @@ http://localhost8011/review_submitted points at review_submitted.tmpl
 If this matches what you've see we're ready to run Newt again with our updated templates and YAML file.
 
 ~~~shell
-newt run album_reviews.yaml
+newt -verbose run album_reviews.yaml
 ~~~
 
-Point your web browser at <http://localhost:8010>. You should see an empty album list. You can add a review in the form and that should take you to a page showing the added review. Click the link to return to the list and see the revised results.
+Point your web browser at <http://localhost:8010>. You should see an album list with one entry. You can add a review using the web form at the bottom of the page. Then you complete the web form and press the submit button it should take you to a page showing the review you just submitted. You can click the link to return to the list and see it has been updated.
 
 ## What have we done exactly?
 
-First we've built up a simple web appliction through defining some routes with data pipelines. In our first iteration we just verified that we could conntect to PostgREST in our first pipeline. It was uninstesting because what is returned in a JSON and specifically an empty JSON list. Not very exciting.
+First we've built up a simple web application through defining some routes using data pipelines. In our first iteration we just verified that we could connect to PostgREST using a simple one stage pipeline. It nice but not really compelling for must of us humnas.
 
-In the second iteration we use the Newt Router to run two routes. The first one listed our review list like before but this time the results were displayed as a web page (i.e. HTML markup). This was accomplished by adding Newt Mustache to our first router as the last stage of our pipeline.
+In the second iteration we use the Newt Router to run two additional routes. The first one listed our review list like before but this time the results were displayed as a web page (i.e. HTML markup). This was accomplished by adding Newt Mustache in our pipleines. We use one route to display our list and include a web form for submitting another review. The second route we added displays the results from the submission.
 
-We also added support for a second route that handled the web form submission then returned and displayed the results.
+By typing in the Newt YAML file, adding some Mustache templates we have a functional web application that is built on what is provided by Postgres and PostgREST.

@@ -15,7 +15,7 @@ into the next. This is conceptually similar to Unix pipes. Newt works
 well with software that can produce and consume JSON data such as
 Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a
 few. The data router also provides support for serving static files in
-additional to the content generated from a data pipepline."
+additional to the content generated from a data pipeline."
 authors:
   - family-names: Doiel
     given-names: R. S.
@@ -55,7 +55,7 @@ into the next. This is conceptually similar to Unix pipes. Newt works
 well with software that can produce and consume JSON data such as
 Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a
 few. The data router also provides support for serving static files in
-additional to the content generated from a data pipepline.
+additional to the content generated from a data pipeline.
 
 
 - GitHub: <git+https://github.com/caltechlibrary/newt>
@@ -74,7 +74,7 @@ additional to the content generated from a data pipepline.
 - Windows
 - macOS
 
-### Software Requiremets
+### Software Requirements
 
 - Postgres ≥ 16
 - PostgREST ≥ 12

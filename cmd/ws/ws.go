@@ -32,9 +32,9 @@ is 8000 and the current working directory is the default document root. There is
 configuration aside from providing a directory path, optionally changing the port and
 setting a verbose mode useful for debugging requests.
 
-This is a minimal web server. No http, no embedded programming languages. No remapping
+This is a minimal web server. No HTTP, no embedded programming languages. No remapping
 content types, redirect or other fancy stuff. It provides a quick way to allow your
-static content to be available to your web browser over http for development purposes.
+static content to be available to your web browser over HTTP for development purposes.
 
 Dot files are not served out.
 

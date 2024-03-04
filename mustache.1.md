@@ -1,5 +1,5 @@
 ---
-title: "mustache(1) user manual | 0.0.7-dev 7d40b53"
+title: "mustache(1) user manual | 0.0.7-dev 8b8197f"
 pubDate: 2024-03-04
 author: "R. S. Doiel"
 ---
@@ -19,7 +19,7 @@ you can debug your mustache templates without resorting to using cURL. It uses
 the same template library that Newt's Mustache uses so the results should
 match. **mustache}** can read JSON data from a file or from standard 
 input. The template name needs to be provided on the command line.
-In this way **mustache** can be used to process JSON in a Posix style
+In this way **mustache** can be used to process JSON in a POSIX style
 pipe line.
 
 # OPTIONS

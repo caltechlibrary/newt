@@ -28,84 +28,166 @@
 <h1 id="synopsis">SYNOPSIS</h1>
 <p>newtrouter YAML_CONFIG_FILE</p>
 <h1 id="description">DESCRIPTION</h1>
-<p><strong>newtrouter</strong> is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. <strong>newtrouter</strong> accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It’s just a data router that manages a pipeline of services for each defined request pattern.</p>
-<p>In additional content routing newtrouter can also service out static resources. This is handy during development but less useful if you are using a front end web server such as a production setting.</p>
-<p><strong>newtrouter</strong>’s configuration uses a declarative model expressed in YAML. It can also allow environment variables read at start up to be part of the data for mapping JSON data source requests. This is particularly helpful for supplying access credentials. You do not express secrets in the <strong>newtrouter</strong> YAML configuration file. This follows the best practice used when working with container services and Lambda like systems.</p>
+<p><strong>newtrouter</strong> is a web service designed to work along
+side JSON API like that form with Postgres + PostgREST, and a template
+engine like Newt Mustache. <strong>newtrouter</strong> accepts a
+request, if it finds a matching route description it runs the request
+through a data pipeline of web services returning the results of the
+last one executed to the web browser or requester. It’s just a data
+router that manages a pipeline of services for each defined request
+pattern.</p>
+<p>In additional content routing newtrouter can also service out static
+resources. This is handy during development but less useful if you are
+using a front end web server such as a production setting.</p>
+<p><strong>newtrouter</strong>’s configuration uses a declarative model
+expressed in YAML. It can also allow environment variables read at start
+up to be part of the data for mapping JSON data source requests. This is
+particularly helpful for supplying access credentials. You do not
+express secrets in the <strong>newtrouter</strong> YAML configuration
+file. This follows the best practice used when working with container
+services and Lambda like systems.</p>
 <h1 id="options">OPTIONS</h1>
 <dl>
 <dt>-help</dt>
-<dd>display help
+<dd>
+display help
 </dd>
 <dt>-license</dt>
-<dd>display license
+<dd>
+display license
 </dd>
 <dt>-version</dt>
-<dd>display version
+<dd>
+display version
 </dd>
 <dt>-dry-run</dt>
-<dd>Load YAML configuration and report any errors found
+<dd>
+Load YAML configuration and report any errors found
 </dd>
 </dl>
 <h1 id="yaml_config_file">YAML_CONFIG_FILE</h1>
-<p><strong>newtrouter</strong> is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the environment variables identified the <code>.appliction.environment</code> property. Here’s a summary of the Newt YAML syntax that <strong>newtrouter</strong> uses.</p>
+<p><strong>newtrouter</strong> is configured from a YAML file. The YAML
+should not include secrets. Instead you can pass these in via the
+environment variables identified the
+<code>.appliction.environment</code> property. Here’s a summary of the
+Newt YAML syntax that <strong>newtrouter</strong> uses.</p>
 <p>Top level properties for <strong>newtrouter</strong> YAML.</p>
 <dl>
 <dt>application</dt>
-<dd>(optional: newtrouter, newtgenerator, newtmustache) holds the run time configuration used by the Newt web service and metadata about the application you’re creating.
+<dd>
+(optional: newtrouter, newtgenerator, newtmustache) holds the run time
+configuration used by the Newt web service and metadata about the
+application you’re creating.
 </dd>
 <dt>routes</dt>
-<dd>(optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
+<dd>
+(optional: newtrouter, newtgenerator) This holds the routes for the data
+pipeline (e.g. JSON API and template engine sequence)
 </dd>
 </dl>
 <h2 id="the-application-property">the “application” property</h2>
 <p>The application properties are optional.</p>
 <dl>
 <dt>port</dt>
-<dd>(optional: newtrouter, newtmustache) default is This port number the Newt web services uses to listen for request on localhost
+<dd>
+(optional: newtrouter, newtmustache) default is This port number the
+Newt web services uses to listen for request on localhost
 </dd>
 <dt>htdocs</dt>
-<dd>(optional: newtrouter only) Directory that holds your application’s static content
+<dd>
+(optional: newtrouter only) Directory that holds your application’s
+static content
 </dd>
 <dt>environment</dt>
-<dd>(optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+<dd>
+(optional: newtrouter, newtmustache) this is a list of operating system
+environment that will be available to routes. This is used to pass in
+secrets (e.g. credentials) need in the pipeline
 </dd>
 </dl>
-<p>Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.</p>
+<p>Routes hosts a list of request descriptions and their data pipelines.
+This property is only used by Newt router and Newt code generator.</p>
 <h3 id="a-route-object">a route object</h3>
 <dl>
 <dt><code>id</code></dt>
-<dd>(required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]
+<dd>
+(required) This identifies the pipeline. It maybe used in code
+generation. It must conform to variable name rules[^21]
 </dd>
 <dt><code>description</code></dt>
-<dd>(optional, encouraged) This is a human readable description of what you’re trying to accomplish in this specific route. It may be used in comments or by documentation generators.
+<dd>
+(optional, encouraged) This is a human readable description of what
+you’re trying to accomplish in this specific route. It may be used in
+comments or by documentation generators.
 </dd>
 <dt><code>request [METHOD ][PATH]</code></dt>
-<dd>(required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. <code>GET /items/{item_id}</code> would make <code>item_id</code> available in building your service paths in the pipeline. The pattern takes up a whole path segment so <code>/blog/{year}-{month}-{day}</code> would not work but <code>/blog/{year}/{month}/{day}</code> would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <a href="https://tip.golang.org/doc/go1.22#enhanced_routing_patterns" class="uri">https://tip.golang.org/doc/go1.22#enhanced_routing_patterns</a> and <a href="https://pkg.go.dev/net/http#hdr-Patterns" class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a> for explanations.
+<dd>
+(required) This is a string that expresses the HTTP method and URL path
+to used to trigger running the data pipeline. If METHOD is not provided
+it will match using just the path. This is probably NOT what you want.
+You can express embedded variables in the PATH element. This is done by
+using single curl braces around a variable name. E.g.
+<code>GET /items/{item_id}</code> would make <code>item_id</code>
+available in building your service paths in the pipeline. The pattern
+takes up a whole path segment so <code>/blog/{year}-{month}-{day}</code>
+would not work but <code>/blog/{year}/{month}/{day}</code> would capture
+the individual elements. The Newt router sits closely on top of the Go
+1.22 HTTP package route handling. For the details on how Go 1.22 and
+above request handlers and patterns form see See <a
+href="https://tip.golang.org/doc/go1.22#enhanced_routing_patterns"
+class="uri">https://tip.golang.org/doc/go1.22#enhanced_routing_patterns</a>
+and <a href="https://pkg.go.dev/net/http#hdr-Patterns"
+class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a> for
+explanations.
 </dd>
 <dt><code>pipeline</code></dt>
-<dd>(required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail will abort the pipeline returning an HTTP error status. If done fail then the result of the last stage it returned to the requesting browser.
+<dd>
+(required) this is a list of URLs to one or more web services visible on
+localhost. The first stage to fail will abort the pipeline returning an
+HTTP error status. If done fail then the result of the last stage it
+returned to the requesting browser.
 </dd>
 <dt><code>debug</code></dt>
-<dd>(optional) if set to true the <code>newtrouter</code> service will log verbose results to standard out for this specific pipeline
+<dd>
+(optional) if set to true the <code>newtrouter</code> service will log
+verbose results to standard out for this specific pipeline
 </dd>
 </dl>
 <h4 id="a-pipeline-object">a pipeline object</h4>
-<p>A pipeline is a list of web services containing a type, URL, method and content types</p>
+<p>A pipeline is a list of web services containing a type, URL, method
+and content types</p>
 <dl>
 <dt><code>service [METHOD ][URL]</code></dt>
-<dd>(required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through <code>.application.environment</code>. All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL.
+<dd>
+(required) The HTTP method is included in the URL The URL to be used to
+contact the web service, may contain embedded variable references drawn
+from the request path as well as those passed in through
+<code>.application.environment</code>. All the elements extracted from
+the elements derived from the request path are passed through strings.
+These are then used to construct a simple key-value object of variable
+names and objects which are then passed through the Mustache template
+representing the target service URL.
 </dd>
 <dt><code>description</code></dt>
-<dd>(optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
+<dd>
+(optional, encouraged) This is a description of what this stage of the
+pipe does. It is used when debug is true in the log output and in
+program documentation.
 </dd>
 <dt><code>timeout</code></dt>
-<dd>(optional) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
+<dd>
+(optional) Set the timeout in seconds for receiving a response from the
+web server. Remember the time spent at each stage is the cumulative time
+your browser is waiting for a response. For this reason you may want to
+set the timeout to a small number.
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>
-<p>Running <strong>newtrouter</strong> with a YAML configuration file called “blog.yaml”</p>
+<p>Running <strong>newtrouter</strong> with a YAML configuration file
+called “blog.yaml”</p>
 <pre><code>newtrouter blog.yaml</code></pre>
-<p>An example of a YAML file describing blog like application based on Postgres+PostgREST.</p>
+<p>An example of a YAML file describing blog like application based on
+Postgres+PostgREST.</p>
 <pre><code>application:
   htdocs: htdocs
   environment:

@@ -35,7 +35,7 @@ you can debug your mustache templates without resorting to using cURL. It uses
 the same template library that Newt's Mustache uses so the results should
 match. **{app_name}}** can read JSON data from a file or from standard 
 input. The template name needs to be provided on the command line.
-In this way **{app_name}** can be used to process JSON in a Posix style
+In this way **{app_name}** can be used to process JSON in a POSIX style
 pipe line.
 
 # OPTIONS

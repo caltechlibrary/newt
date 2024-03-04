@@ -9,6 +9,12 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
+- [ ] Port attributes in the struct need to all be either string or int (probably int), it'll make the code read better to be consistent
+- [ ] The cli.go runners should handle options rather than `cmd/*/*.go`. This may allow a much more consistent interface between the tools. The source for processing the options could be all in one file like what I did with exit codes.
+- [ ] I still think the string representation of uuid is problematic in the model generation, I need to decide how to deal with this
+  - [X] Include Python functions in Postgres to support shorter unique identifiers
+  - [D] Implement an "object manager" that will sit in front of PostgREST that will wrap the objects with their object id, created and updated timestamps, this could enforce REST method behaviors but I would need to tie models to routes to do so
+- [ ] Need to document how the web form input "names" attributes need to match the SQL functions, it is obvious if you understand PostgREST but not so obvious if you are unfamiliar with either Postgres functions or PostgREST
 - [P] Nail down the second prototype YAML syntax
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
     - [X] setup.sql

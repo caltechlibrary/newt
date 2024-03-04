@@ -15,11 +15,11 @@ Newt's niche is as a rapid web application development platform for libraries, a
 
 ## Proposed Solution
 
-If I adopt GitHub YAML issue template syntax[^53] (abbr: GHYTS) I gain the advantage of our staff already being familiar with the GHYTS DSL. GHYTS appears sufficient to render both SQL models and HTML 5 forms. Adding the SQL support is a matter of mapping GHYTS input types to both general purpose HTML and their respective SQL data types.
+If I adopt GitHub YAML issue template syntax[^53] (abbr: GHYITS) I gain the advantage of our staff already being familiar with the GHYITS DSL. GHYITS appears sufficient to render both SQL models and HTML 5 forms. Adding the SQL support is a matter of mapping GHYITS input types to both general purpose HTML and their respective SQL data types.
 
-There is room for further enhancement without breaking GHYTS.  Libraries, archives and museums work with structured metadata. The metadata attributes often conform to a known data type. This is particularly true of identifiers (e.g. ORCID, DOI, ROR, arXiv). Using the existing GitHub YAML issue template syntax I could support a wider diversity of types through the value associated in the type attribute of the input element. 
+There is room for further enhancement without breaking GHYITS.  Libraries, archives and museums work with structured metadata. The metadata attributes often conform to a known data type. This is particularly true of identifiers (e.g. ORCID, DOI, ROR, arXiv). Using the existing GitHub YAML issue template syntax I could support a wider diversity of types through the value associated in the type attribute of the input element. 
 
-This would require replacing original prototype DSL defined in a Go struct found in [type_dsl.go](type_dsl.go) with a new series of struct that map out GHYTS. The current[^54] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to the rest of the Newt router.  I can also improve the code generation ability with this simpler structure for mapping data and representations.
+This would require replacing original prototype DSL defined in a Go struct found in [type_dsl.go](type_dsl.go) with a new series of struct that map out GHYITS. The current[^54] prototype's ModelDSL struct is minimal. If I enhance the ModelDSL struct to match the syntax described in the GitHub YAML issue schema documentation then I should be able to support the GitHub YAML syntax with minimal modifications to the rest of the Newt router.  I can also improve the code generation ability with this simpler structure for mapping data and representations.
 
 ### Advantages of adopting a common syntax
 

@@ -25,7 +25,8 @@
 <section>
 <h1 id="goal-second-prototype">Goal: Second Prototype</h1>
 <p>Is Newt and “off the shelf” enough?</p>
-<h1 id="choose-wisely-pick-your-abstractions">Choose wisely: pick your abstractions</h1>
+<h1 id="choose-wisely-pick-your-abstractions">Choose wisely: pick your
+abstractions</h1>
 <ul>
 <li>Simple = (No coding) + (Less code)</li>
 <li>Compose applications, use data pipelines</li>
@@ -33,12 +34,14 @@
 </ul>
 <h1 id="off-the-shelf-no-coding">Off the shelf (no coding)</h1>
 <ul>
-<li><a href="https://postgresql.org">Postgres</a> + <a href="https://postgrest.org">PostgREST</a> =&gt; JSON data source</li>
+<li><a href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a> =&gt; JSON data source</li>
 <li>Newt Mustache =&gt; Transform JSON into web pages</li>
 <li>Newt Router, ties it all together</li>
 <li>YAML can express routes, pipelines and data models</li>
 </ul>
-<h1 id="assembling-it-with-yaml-less-code">Assembling it with YAML (less code)</h1>
+<h1 id="assembling-it-with-yaml-less-code">Assembling it with YAML (less
+code)</h1>
 <ul>
 <li>Newt’s Second Prototype has a new YAML syntax
 <ul>
@@ -49,7 +52,8 @@
 </ul>
 <h1 id="demo-time">Demo time</h1>
 <p>A second prototype Newt application</p>
-<h1 id="step-one-create-our-yaml-file">Step one create our YAML file</h1>
+<h1 id="step-one-create-our-yaml-file">Step one create our YAML
+file</h1>
 <ul>
 <li>text editor</li>
 </ul>
@@ -58,16 +62,19 @@
 <li>newtgenerator</li>
 <li>text editor</li>
 </ul>
-<h1 id="step-three-implement-our-json-data-source">Step three implement our JSON data source</h1>
+<h1 id="step-three-implement-our-json-data-source">Step three implement
+our JSON data source</h1>
 <ul>
 <li>psql</li>
 <li>postgrest</li>
 </ul>
-<h1 id="step-four-define-routes-and-map-templates">Step four define routes and map templates</h1>
+<h1 id="step-four-define-routes-and-map-templates">Step four define
+routes and map templates</h1>
 <ul>
 <li>text editor</li>
 </ul>
-<h1 id="step-five-fire-everything-up-and-test">Step five, fire everything up and test</h1>
+<h1 id="step-five-fire-everything-up-and-test">Step five, fire
+everything up and test</h1>
 <ul>
 <li>PostgREST</li>
 <li>newt</li>
@@ -79,7 +86,8 @@
 <li>Data pipelines and a bunch-o-services</li>
 <li>Minimal browser expectations</li>
 </ul>
-<h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp; 2</h1>
+<h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp;
+2</h1>
 <ul>
 <li>“Off the shelf” is simpler</li>
 <li>SQL turns people off, use a code generator</li>
@@ -94,7 +102,8 @@
 </ul>
 <h1 id="newt-has-weaknesses">Newt has weaknesses</h1>
 <ul>
-<li>Newt is <strong>an working prototype</strong> (February/March 2024)</li>
+<li>Newt is <strong>an working prototype</strong> (February/March
+2024)</li>
 <li>Many routes are hard to maintain</li>
 <li>Pipeline delays accumulate</li>
 <li>Newt is missing file upload support</li>
@@ -110,7 +119,8 @@
 </ul></li>
 <li>21st Century tech
 <ul>
-<li>JSON (2001), YAML (2001), Mustache templates (2009), PostgREST (2014)</li>
+<li>JSON (2001), YAML (2001), Mustache templates (2009), PostgREST
+(2014)</li>
 </ul></li>
 </ul>
 <h1 id="questions-guiding-next-steps">Questions guiding next steps</h1>
@@ -124,20 +134,31 @@
 <li>SQLite 3 database support</li>
 <li>Visually programming for Newt YAML files</li>
 <li>Web components for LAM metadata types</li>
-<li>A simple S3 protocol web service that implements storing object using OCFL</li>
+<li>A simple S3 protocol web service that implements storing object
+using OCFL</li>
 </ul>
 <h1 id="related-resources">Related resources</h1>
 <ul>
-<li>Newt <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
-<li>Postgres <a href="https://postgres.org" class="uri">https://postgres.org</a> + PostgREST <a href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
-<li><a href="https://mustache.github.io">Mustache</a> programming languages support</li>
-<li>Go 1.22, pattern language in HTTP handlers, see <a href="https://pkg.go.dev/net/http#hdr-Patterns" class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a></li>
+<li>Newt <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Postgres <a href="https://postgres.org"
+class="uri">https://postgres.org</a> + PostgREST <a
+href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
+<li><a href="https://mustache.github.io">Mustache</a> programming
+languages support</li>
+<li>Go 1.22, pattern language in HTTP handlers, see <a
+href="https://pkg.go.dev/net/http#hdr-Patterns"
+class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a></li>
 </ul>
 <h1 id="thank-you">Thank you!</h1>
 <ul>
-<li>This Presentation <a href="https://caltechlibrary.github.io/newt/presentation2/" class="uri">https://caltechlibrary.github.io/newt/presentation2/</a></li>
-<li>Newt Documentation <a href="https://caltechlibrary.github.io/newt" class="uri">https://caltechlibrary.github.io/newt</a></li>
-<li>Project: <a href="https://github.com/caltechlibrary/newt" class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>This Presentation <a
+href="https://caltechlibrary.github.io/newt/presentation2/"
+class="uri">https://caltechlibrary.github.io/newt/presentation2/</a></li>
+<li>Newt Documentation <a href="https://caltechlibrary.github.io/newt"
+class="uri">https://caltechlibrary.github.io/newt</a></li>
+<li>Project: <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
 <li>Email: rsdoiel@caltech.edu</li>
 </ul>
 </section>
