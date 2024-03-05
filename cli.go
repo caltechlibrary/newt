@@ -4,14 +4,15 @@
  * @author R. S. Doiel
  */
 package newt
-	
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -21,6 +22,7 @@ import (
 
 	// 3rd Party Templates
 	"github.com/cbroglie/mustache"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -50,11 +52,12 @@ const (
 	TEMPLATE_ERROR
 
 	// Default service settings
-	ROUTER_PORT = ":8010"
-	MUSTACHE_PORT    = ":8011"
+	ROUTER_PORT      = 8010
+	MUSTACHE_PORT    = 8011
 	MUSTACHE_TIMEOUT = 3 * time.Second
-	SWS_PORT   = 8000
-	SWS_HTDOCS = "."
+	SWS_PORT         = 8000
+	SWS_HTDOCS       = "."
+	POSTGREST_PORT   = 3000
 )
 
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
@@ -124,19 +127,15 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		return CONFIG
 	}
 	// If port is not set in the config, set it to the default port.
-	if mt.Port == "" {
+	if mt.Port == 0 {
 		mt.Port = MUSTACHE_PORT
 	}
 	// See if we have a command line option for port to process.
 	if port != 0 {
-		mt.Port = fmt.Sprintf(":%d", port)
+		mt.Port = port
 	}
 	if verbose {
 		fmt.Fprintf(out, "port set to %q\n", mt.Port)
-	}
-	// Onelast check to make sure the port number as the colon prefix
-	if !strings.HasPrefix(mt.Port, ":") {
-		mt.Port = fmt.Sprintf(":%s", mt.Port)
 	}
 	if timeout != 0 {
 		mt.Timeout = time.Duration(timeout) * time.Second
@@ -200,15 +199,11 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 			return CONFIG
 		}
 	}
-	if router.Port == "" {
+	if router.Port == 0 {
 		router.Port = ROUTER_PORT
 	}
 	if port != 0 {
-		router.Port = fmt.Sprintf(":%d", port)
-	}
-	// Prefix the port number with a colon
-	if !strings.HasPrefix(router.Port, ":") {
-		router.Port = fmt.Sprintf(":%s", router.Port)
+		router.Port = port
 	}
 	if htdocs != "" {
 		router.Htdocs = htdocs
@@ -220,7 +215,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		return CONFIG
 	}
 
-	if router.Port == "" || router.Port == ":" {
+	if router.Port == 0 {
 		fmt.Fprintf(eout, "port is not set, default is not available\n")
 		return CONFIG
 	}
@@ -276,25 +271,25 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		return CHECK_FAIL
 	}
 	if cfg.Applications == nil {
-		fmt.Fprintf(eout, "%s has no applications defined\n", fName)	
+		fmt.Fprintf(eout, "%s has no applications defined\n", fName)
 		return CHECK_FAIL
-	} 
+	}
 	if cfg.Models == nil || len(cfg.Models) == 0 {
 		if cfg.Applications.PostgREST != nil {
-			fmt.Fprintf(eout, "WARNING: %s has no models defined\n", fName)	
+			fmt.Fprintf(eout, "WARNING: %s has no models defined\n", fName)
 		} else if cfg.Applications.NewtMustache != nil {
-			fmt.Fprintf(eout, "WARNING: %s has no models defined\n", fName)	
+			fmt.Fprintf(eout, "WARNING: %s has no models defined\n", fName)
 		}
 	}
 	if cfg.Routes == nil || len(cfg.Routes) == 0 {
 		if cfg.Applications.NewtRouter != nil {
-			fmt.Fprintf(eout, "%s has no routes defined for Newt Router\n", fName)	
+			fmt.Fprintf(eout, "%s has no routes defined for Newt Router\n", fName)
 			return CHECK_FAIL
 		}
 	}
 	if cfg.Templates == nil || len(cfg.Templates) == 0 {
 		if cfg.Applications.NewtMustache != nil {
-			fmt.Fprintf(eout, "%s has no templates defined for Newt Mustache\n", fName)	
+			fmt.Fprintf(eout, "%s has no templates defined for Newt Mustache\n", fName)
 			return CHECK_FAIL
 		}
 	}
@@ -317,9 +312,9 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		if cfg.Applications.NewtRouter != nil {
 			port := ROUTER_PORT
 			if cfg.Applications.NewtRouter.Port != 0 {
-				port = fmt.Sprintf(":%d", cfg.Applications.NewtRouter.Port)
+				port = cfg.Applications.NewtRouter.Port
 			}
-			fmt.Fprintf(out, "Newt Router configured, port set to %s\n", port)
+			fmt.Fprintf(out, "Newt Router configured, port set to :%d\n", port)
 			if cfg.Applications.NewtRouter.Htdocs != "" {
 				fmt.Fprintf(out, "Static content will be served from %s\n", cfg.Applications.NewtRouter.Htdocs)
 			}
@@ -333,11 +328,11 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 			}
 		}
 		if cfg.Applications.NewtMustache != nil {
-			port := fmt.Sprintf("%d", cfg.Applications.NewtMustache.Port)
-			if port == "" {
-				port = fmt.Sprintf(":%d", MUSTACHE_PORT)
+			port := cfg.Applications.NewtMustache.Port
+			if port == 0 {
+				port = MUSTACHE_PORT
 			}
-			fmt.Fprintf(out, "Newt Mustache configured, port set to %s\n", port)
+			fmt.Fprintf(out, "Newt Mustache configured, port set to :%d\n", port)
 			fmt.Fprintf(out, "%d Mustache Templates are defined\n", len(cfg.Templates))
 			for _, mt := range cfg.Templates {
 				tList := []string{
@@ -346,9 +341,9 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				if len(mt.Partials) > 0 {
 					tList = append(tList, mt.Partials...)
 				}
-				fmt.Fprintf(out, "http://localhost%s%s points at %s\n", port, mt.Pattern, strings.Join(tList, ", "))
+				fmt.Fprintf(out, "http://localhost:%s%s points at %s\n", port, mt.Pattern, strings.Join(tList, ", "))
 				if mt.Description != "" {
-						fmt.Fprintf(out, "\t%s\n\n", mt.Description)
+					fmt.Fprintf(out, "\t%s\n\n", mt.Description)
 				}
 			}
 		}
@@ -362,36 +357,35 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	action := ""
 	// Extract our actions from the args
 	switch len(args) {
-		case 0:
-			return NEWT_FAIL
-		case 1:
-			action, args = args[0], []string{}
-		default:
-			action, args = args[0], args[1:]
+	case 0:
+		return NEWT_FAIL
+	case 1:
+		action, args = args[0], []string{}
+	default:
+		action, args = args[0], args[1:]
 	}
 
 	switch action {
-		case "init":
-			fmt.Fprintf(eout, "%s init action is not implemented\n", appName)
-			return INIT_FAIL
-		case "check":
-			return RunNewtCheckYAML(in, out, eout, args, verbose)
-		case "generate":
-			fmt.Fprintf(eout, "%s init action is not implemented\n", appName)
-			return INIT_FAIL
-		case "run":
-			return RunNewtApplications(in, out, eout, args, verbose)
-		case "sws":
-			return RunStaticWebServer(in, out, eout, args, 0, verbose)	
-		default:
-			fmt.Fprintf(eout, "%s does %q is an unsupported action, see %s -help\n", appName, action, appName)
-			return UNSUPPORTED_ACTION
+	case "init":
+		return RunNewtInit(in, out, eout, args, verbose)
+	case "check":
+		return RunNewtCheckYAML(in, out, eout, args, verbose)
+	case "generate":
+		fmt.Fprintf(eout, "%s init action is not implemented\n", appName)
+		return INIT_FAIL
+	case "run":
+		return RunNewtApplications(in, out, eout, args, verbose)
+	case "sws":
+		return RunStaticWebServer(in, out, eout, args, 0, verbose)
+	default:
+		fmt.Fprintf(eout, "%s does %q is an unsupported action, see %s -help\n", appName, action, appName)
+		return UNSUPPORTED_ACTION
 	}
 	return OK
 }
 
 // RunNewtApplications will run the applictions defined in your Newt YAML file.
-func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {	
+func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
 	var fName string
 	appName := path.Base(os.Args[0])
 	// get the Newt YAML filename.
@@ -499,10 +493,10 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 		fmt.Fprintf(eout, "failed decoding %q, %s\n", dataFName, err)
 		return DECODE_ERROR
 	}
-	if pageElements == nil || len(pageElements) ==10 {
+	if pageElements == nil || len(pageElements) == 10 {
 		pageElements = map[string]interface{}{}
 	}
-	
+
 	tmpl, err := mustache.ParseString(fmt.Sprintf("%s", txt))
 	if err != nil {
 		fmt.Fprintf(eout, "failed template parse error %q, %s\n", dataFName, err)
@@ -511,6 +505,357 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 	if err = tmpl.FRender(out, pageElements); err != nil {
 		fmt.Fprintf(eout, "failed render error %q, %s\n", dataFName, err)
 		return TEMPLATE_ERROR
+	}
+	return OK
+}
+
+func getAnswer(buf *bufio.Reader, lower bool) string {
+	answer, err := buf.ReadString('\n')
+	if err != nil {
+		return ""
+	}
+	answer = strings.TrimSpace(answer)
+	if lower {
+		return strings.ToLower(answer)
+	}
+	return answer
+}
+
+// appendToPipeline will append a Newt Mustache to the end of the pipeline for routeID and objName
+func appendToPipeline(routes []*NewtRoute, routeId string, objName string, method string, port int, servicePath string) error {
+	for _, r := range routes {
+		if r.Id == routeId {
+			r.Pipeline = append(r.Pipeline, &Service{
+				Service: fmt.Sprintf("%s http://localhost:%d/%s", method, port, servicePath),
+				Description: fmt.Sprintf("Example of %s service for %s", routeId, objName),
+			})
+			return nil
+		}
+	}
+	return fmt.Errorf("failed to find route %q", routeId)
+}
+
+func setupNewtRouter(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+	fmt.Fprintf(out, "Will %s use Newt Router (Y/n)? ", appFName)
+	answer := getAnswer(buf, true)
+	if answer != "n" {
+		if cfg.Applications == nil {
+			cfg.Applications = &Applications{}
+		}
+		if cfg.Applications.NewtRouter == nil {
+			cfg.Applications.NewtRouter = &Application{
+				Port:   ROUTER_PORT,
+				Htdocs: "htdocs",
+			}
+		}
+		if cfg.Routes == nil {
+			cfg.Routes = []*NewtRoute{}
+		}
+	}
+}
+
+func setupPostgREST(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+		fmt.Fprintf(out, "Will %s use PostgREST (y/N)? ", appFName)
+		answer := getAnswer(buf, true)
+		if answer == "y" {
+			if cfg.Applications.PostgREST == nil {
+				cfg.Applications.PostgREST = &Application{
+					Port: 3000,
+					AppPath:  "postgrest",
+					ConfPath: "postgrest.conf",
+				}
+			}
+			// We create our restful actions for interacting with the PostgREST JSON API.
+			// NOTE: If Newt Mustache is used then the Mustache setup will add routes for retrieving editor forms and will append
+			// result templates the routes defined here.
+			for action, method := range map[string]string{"create": http.MethodPost, "read": http.MethodGet, "update": http.MethodPut, "delete": http.MethodDelete, "list": http.MethodGet} {
+				routeId := fmt.Sprintf("%s_%s", objName, action)
+				request := fmt.Sprintf("%s /%s", method, objName)
+				if action == "read" || action == "update" || action == "delete" {
+					request = fmt.Sprintf("%s /%s/{oid}", method, routeId)
+				}
+				servicePath := fmt.Sprintf("rpc/%s_%s", objName, action)
+				cfg.Routes = append(cfg.Routes, &NewtRoute{
+						Id: routeId,
+						Pattern: request,
+				})
+				appendToPipeline(cfg.Routes, routeId, objName, method, cfg.Applications.PostgREST.Port, servicePath)
+			}
+		}
+}
+
+func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+		fmt.Fprintf(out, "Will %s use Newt Mustache (Y/n)? ", appFName)
+		answer := getAnswer(buf, true)
+		if answer != "n" {
+			if cfg.Applications.NewtMustache == nil {
+				cfg.Applications.NewtMustache = &Application{
+					Port: MUSTACHE_PORT,
+				}
+			}
+			if cfg.Templates == nil {
+				cfg.Templates = []*MustacheTemplate{}
+
+				// Handle the special cases of routes for retrieving forms for create, update and delete.
+				action := "create"
+				method := http.MethodGet
+				routeId := fmt.Sprintf("%s_%s_form", objName, action)
+				request := fmt.Sprintf("%s /%s/{$}", method, objName)
+				pattern := fmt.Sprintf("/%s_%s_form", objName, action)
+				tName := fmt.Sprintf("%s_%s_form.tmpl", objName, action)
+				cfg.Routes = append(cfg.Routes, &NewtRoute{
+					Id: routeId,
+					Pattern: request,
+					Description: "Example display a create web form",
+				})
+				cfg.Templates = append(cfg.Templates, &MustacheTemplate{
+					Pattern: pattern,
+					Template: tName,
+					Description: "Example display an create web from",
+				})
+				appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
+
+				action = "update"
+				routeId = fmt.Sprintf("%s_%s_form", objName, action)
+				request = fmt.Sprintf("%s /%s/{oid}", method, objName)
+				pattern = fmt.Sprintf("/%s_%s_form", objName, action)
+				tName = fmt.Sprintf("%s_%s_form.tmpl", objName, action)
+				cfg.Routes = append(cfg.Routes, &NewtRoute{
+					Id: routeId,
+					Pattern: request,
+					Description: "Example display a update web form",
+				})
+				cfg.Templates = append(cfg.Templates, &MustacheTemplate{
+					Pattern: pattern,
+					Template: tName,
+					Description: "Example display an update web from",
+				})
+				appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
+
+				action = "delete"
+				routeId = fmt.Sprintf("%s_%s_form", objName, action)
+				request = fmt.Sprintf("%s /%s/{oid}", method, objName)
+				pattern = fmt.Sprintf("/%s_%s_form", objName, action)
+				tName = fmt.Sprintf("%s_%s_form.tmpl", objName, action)
+				cfg.Routes = append(cfg.Routes, &NewtRoute{
+					Id: routeId,
+					Pattern: request,
+					Description: "Example display a delete web form",
+				})
+				cfg.Templates = append(cfg.Templates, &MustacheTemplate{
+					Pattern: pattern,
+					Template: tName,
+					Description: "Example display a delete web from",
+				})
+				appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
+
+				// Now add the mappings for templates that return results.
+				for _, action := range []string{ "create", "read", "update", "delete", "list" } {
+					routeId := fmt.Sprintf("%s_%s", objName, action)
+					pattern = fmt.Sprintf("/%s_%s", objName, action)
+					tName := fmt.Sprintf("%s_%s.tmpl", objName, action)
+					cfg.Templates = append(cfg.Templates, &MustacheTemplate{
+						Pattern: pattern,
+						Template: tName,
+						Description: "This is an example of defining a template handler",
+					})
+					appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
+				}
+			}
+		}
+}
+
+func setupNewtGenerator(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+		fmt.Fprintf(out, "Will %s use Newt Generator (Y/n)? ", appFName)
+		answer := getAnswer(buf, true)
+		if answer != "n" {
+			if cfg.Applications.NewtGenerator == nil {
+				cfg.Applications.NewtGenerator = &Application{
+					Namespace: objName,
+				}
+			}
+			if cfg.Models == nil {
+				cfg.Models = []*NewtModel{}
+				cfg.Models = append(cfg.Models, &NewtModel{
+					Id: objName,
+					Description: "This is where you would model your application data",
+					Body: []*Element{
+						&Element{
+							Id: "data_attribute",
+							Type: "input",
+							Attributes: map[string]string{
+								"name": "data_attribute",
+								"description": "This is an example input element",
+								"placeholdertext": "ex. of placeholder text",
+								"title": "this is an example element in your model",
+							},
+							Validations: map[string]interface{}{
+								"required": true,
+							},
+						},
+					},
+				})
+			}
+		}
+}
+
+func setupEnvironment(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+		fmt.Fprintf(out, "Will %s need to import environment variables (y/N)? ", appFName)
+		answer := getAnswer(buf, true)
+		if answer == "y" {
+			if cfg.Applications.Environment == nil {
+				cfg.Applications.Environment = []string{}
+			}
+			if len(cfg.Applications.Environment) > 0 {
+				fmt.Fprintf(out, "You currently have the following environment defined:\n\t%s\n",
+					strings.Join(cfg.Applications.Environment, "\n\t"))
+			}
+			fmt.Fprintf(out, "Enter the environment variable name (one per line, enter empty line when complete):\n")
+			answer = " "
+			for answer != "" {
+				answer = getAnswer(buf, false)
+				if answer != "" {
+					cfg.Applications.Environment = append(cfg.Applications.Environment, answer)
+				}
+			}
+		}
+}
+
+func setupOptions(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objFName string) {
+		fmt.Fprintf(out, "Will %s provide options to the services (y/N)? ", appFName)
+		answer := getAnswer(buf, true)
+		if answer == "y" {
+			if cfg.Applications.Options == nil {
+				cfg.Applications.Options = map[string]string{}
+			}
+			if len(cfg.Applications.Options) > 0 {
+				fmt.Fprintf(out, "You currently have the following options defined:\n")
+				for k, v := range cfg.Applications.Options {
+					fmt.Fprintf(out, "\t%s -> %q\n", k, v)
+				}
+			}
+			fmt.Fprintf(out, "Enter the options (separated key/value by colon, enter empty line when complete):\n")
+			answer = " "
+			for answer != "" {
+				answer = getAnswer(buf, false)
+				if strings.Contains(answer, ":") {
+					parts := strings.SplitN(answer, ":", 2)
+					k := strings.ReplaceAll(strings.TrimSpace(parts[0]), " ", "_")
+					v := strings.TrimSpace(parts[1])
+					cfg.Applications.Options[k] = v
+				} else if answer != "" {
+					fmt.Fprintf(out, "%q is missing a colon, can't tell key from value, try again\n", answer)
+				}
+			}
+		}
+}
+
+// RunNewtInit will initialize a Newt project by creating a Newt YAML file interactively.
+func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
+	var (
+		answer   string
+		mkBackUp bool
+	)
+	cfg := &Config{}
+	readBuffer := bufio.NewReader(in)
+	// Step 1. Figure out what we're going to call our generated Newt YAML file.
+	appFName := ""
+	if len(args) > 0 {
+		appFName = args[0]
+	}
+	if appFName == "" {
+		s, err := os.Getwd()
+		if err == nil {
+			s = path.Base(s)
+		}
+		if s != "" {
+			appFName = strings.ToLower(strings.ReplaceAll(s, " ", "_")) + ".yaml"
+		} else {
+			appFName = "app.yaml"
+		}
+	}
+	if _, err := os.Stat(appFName); err == nil {
+		mkBackUp = true
+		cfg, err = LoadConfig(appFName)
+		fmt.Fprintf(out, "found %q, continue (y/N)? ", appFName)
+		answer = getAnswer(readBuffer, true)
+		if answer != "y" {
+			fmt.Fprintf(eout, "aborting init, %q already exists\n", appFName)
+			return INIT_FAIL
+		}
+	}
+	// objName is used to gererate example elements in the Newt YAML file.
+	objName := strings.TrimSuffix(appFName, ".yaml")
+	// Step 2. Figure out which applications will be running
+	if cfg.Applications == nil {
+		cfg.Applications = &Applications{}
+	}
+	for {
+		setupNewtRouter(cfg, readBuffer, out, appFName, objName)
+		setupPostgREST(cfg, readBuffer, out, appFName, objName)
+		setupNewtMustache(cfg, readBuffer, out, appFName, objName)
+		setupNewtGenerator(cfg, readBuffer, out, appFName, objName)
+		setupEnvironment(cfg, readBuffer, out, appFName, objName)
+		setupOptions(cfg, readBuffer, out, appFName, objName)
+
+		// Now output the YAML
+		/*
+		src, err := yaml.Marshal(cfg)
+		if err != nil {
+			fmt.Fprintf(eout, "Failed to generate %s, %s\n", appFName, err)
+			return INIT_FAIL
+		}
+		*/
+		data := bytes.NewBuffer([]byte{})
+	    encoder := yaml.NewEncoder(data)
+		encoder.SetIndent(2)
+		if err := encoder.Encode(cfg); err != nil {
+			fmt.Fprintf(eout, "Failed to generate %s, %s\n", appFName, err)
+			return INIT_FAIL
+		}
+		src := data.Bytes()
+
+		fmt.Fprintf(out, "%s\n", src)
+		fmt.Fprintf(out, "Save and exit (y/N)? ")
+		answer = getAnswer(readBuffer, true)
+		if answer == "y" {
+			// We're ready to write out result.
+			// If file exists make a back up copy
+			if mkBackUp {
+				buf, err := os.ReadFile(appFName)
+				if err != nil {
+					fmt.Fprintf(eout, "failed to back up %s, aborting write\n", appFName)
+					return INIT_FAIL
+				}
+				if err := os.WriteFile(appFName+".bak", buf, 0666); err != nil {
+					fmt.Fprintf(eout, "failed to write back up %s, aborting write, %s\n", appFName, err)
+					return INIT_FAIL
+				}
+			}
+			if err := os.WriteFile(appFName, src, 0666); err != nil {
+				fmt.Fprintf(eout, "failed to write %s, %s\n", appFName, err)
+				return INIT_FAIL
+			}
+			break
+		} else {
+			fmt.Fprintf(out, "Exit without saving (y/N)? ")
+			answer = getAnswer(readBuffer, true)
+			if answer == "y" {
+				fmt.Fprintf(out, "aborting write of %q\n", appFName)
+				return INIT_FAIL
+			}
+		}
+	}
+	if _, err := os.Stat(".git"); err == nil {
+		fmt.Fprintf(out, `It appears your are using the git revision control system.
+You should make sure that generated code containing secrets is NOT included in your
+repository. It is recommented that add the following to your .gitignore file.
+
+    # Newt Project ignore list.
+    %s_setup*.sql
+    %s.conf
+    postgrest.conf
+`, objName, objName)
 	}
 	return OK
 }

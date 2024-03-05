@@ -12,12 +12,6 @@ import (
 // This file contains code for generating PostgreSQL dialect of SQL.
 //
 
-var (
-	ModelToPgSQLType = map[string]string{}
-
-	ModelToPgSQLFuncType = map[string]string{}
-)
-
 // pgSetup renders setup SQL for namespace.
 func pgSetup(out io.Writer, namespace string) error {
 	txt := `--

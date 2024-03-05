@@ -21,7 +21,7 @@ import (
 // NewtMustache defines the `newtmustache` application configuration YAML
 type NewtMustache struct {
 	// Port number to run the web service on
-	Port      string
+	Port      int
 	
 	// Templates defined for the service
 	Templates []*MustacheTemplate
@@ -40,41 +40,41 @@ type MustacheTemplate struct {
 	// Pattern holds a request path, e.g. `/blog_post`. NOTE: the method is ignored. A POST
 	// is presumed to hold data that will be processed by the template engine. A GET retrieves the
 	// unresolved template.
-	Pattern string `json:"request,required" yaml:"request"`
+	Pattern string `json:"request,required" yaml:"request,omitempty"`
 
 	// Template holds a path to the primary template file for this route. Path can be relative
 	// to the current working directory.
-	Template string `json:"template,required" yaml:"template"`
+	Template string `json:"template,required" yaml:"template,omitempty"`
 
 	// Partials holds a list of path to partial templates used by the primary template. `newtmustache` will
 	// attempt to replace references in the primary template with the content of the partials. Recursive
 	// partials are not supported. The goal is to facilate including sub templates.
-	Partials []string `json:"partials,omitempty" yaml:"partials"`
+	Partials []string `json:"partials,omitempty" yaml:"partials,omitempty"`
 
 	// Description describes the purpose of the tempalte mapping. It is used to debug Newt YAML files.
-	Description string `json:"description,omitempty" yaml:"description"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Debug logs more verbosely if true
-	Debug bool `json:"debug,omitempty" yaml:"debug"`
+	Debug bool `json:"debug,omitempty" yaml:"debug,omitempty"`
 
 	// Tmpl holds the parsed template
-	Tmpl *mustache.Template
+	Tmpl *mustache.Template `json:"-" yaml:"-"`
 
 	// Vocabulary holds the path to a YAML file used to populate Vocabulary at startup.
-	Vocabulary string `json:"vocabulary,omitempty" yaml:"vocabulary"`
+	Vocabulary string `json:"vocabulary,omitempty" yaml:"vocabulary,omitempty"`
 
 	// Voc holds a map of variable names to values. It is read in when NewtMustache starts from a separate YAML
 	// file.
-	Voc map[string]interface{}
+	Voc map[string]interface{}  `json:"-" yaml:"-"`
 
 	// Options hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
 	// the Newt Mustache template as `options`.
-	Options map[string]string
+	Options map[string]string `json:"-" yaml:"-"`
 
 	// Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
 	// the output object.
-	Vars []string
+	Vars []string `json:"-" yaml:"-"`
 }
 
 // NewNewtMustache create a new NewtMustache struct. If a filename
@@ -84,7 +84,7 @@ func NewNewtMustache(cfg *Config) (*NewtMustache, error) {
 		Templates: cfg.Templates,
 	}
 	if cfg.Applications.NewtMustache.Port != 0 {
-		nm.Port = fmt.Sprintf(":%d", cfg.Applications.NewtMustache.Port)
+		nm.Port = cfg.Applications.NewtMustache.Port
 	}
 	if cfg.Applications.NewtMustache.Timeout != 0 {
 		nm.Timeout = cfg.Applications.NewtMustache.Timeout * time.Second
@@ -330,7 +330,7 @@ func (nm *NewtMustache) ListenAndServe() error {
 	}
 	// Now create my http server
 	svr := new(http.Server)
-	svr.Addr = nm.Port
+	svr.Addr = fmt.Sprintf(":%d", nm.Port)
 	svr.Handler = mux
 	if err := svr.ListenAndServe(); err != nil {
 		log.Fatal(err)

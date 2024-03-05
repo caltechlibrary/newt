@@ -14,31 +14,31 @@ import (
 // Code generation will need to render to SQL, HTML, Mustache and Pandoc templates.
 type NewtModel struct {
 	// Id is a required field for Newt, it is an extension and isn't part of GHYITS.
-	Id string `json:"id,required" yaml:"id"`
+	Id string `json:"id,required" yaml:"id,omitempty"`
 
 	// This is a Newt specifc set of attributes to place in the form element of HTML. I.e. it could
 	// be form "class", "method", "action", "encoding". It is not defined in the GitHub YAML issue template syntax
 	// (optional)
-	Attributes map[string]interface{} `json:"attributes,omitempty" yaml:"attributes"`
+	Attributes map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
 
 	// Name, A name for the issue form template. Must be unique from all other templates, including Markdown templates.
 	//
 	// For Newt this should conform to the variable naming conventions, starts with an alphabetical character, may be
 	// alpha number without spaces or punctuation other than '_'.
 	// (required)
-	Name string `json:"name,required" yaml:"name"`
+	Name string `json:"name,required" yaml:"name,omitempty"`
 
 	// Description, A description for the issue form template, which appears in the template chooser interface.
 	// (required)
-	Description string `json:"description,required" yaml:"description"`
+	Description string `json:"description,required" yaml:"description,omitempty"`
 
 	// Body, Definition of the input types in the form.
 	// (required)
-	Body []*Element `json:"body,required" yaml:"body"`
+	Body []*Element `json:"body,required" yaml:"body,omitempty"`
 
 	// Title, A default title that will be pre-populated in the issue submission form.
 	// (optional)
-	Title string `json:"title,omitempty" yaml:"title"`
+	Title string `json:"title,omitempty" yaml:"title,omitempty"`
 
 	//
 	// The following are included in the struct for compatibilty with GitHub YAML issue template syntax.
@@ -47,12 +47,12 @@ type NewtModel struct {
 
 	// Assignees, People who will be automatically assigned to issues created with this template.
 	// (ignored)
-	Assignees []string `json:"assignees,omitempty" yaml:"assignees"`
+	Assignees []string `json:"assignees,omitempty" yaml:"assignees,omitempty"`
 
 	// Labels, Labels that will automatically be added to issues created with this template. If a label does not
 	// already exist in the repository, it will not be automatically added to the issue.
 	// (ignored)
-	Labels []string `json:"labels,omitempty" yaml:"labels"`
+	Labels []string `json:"labels,omitempty" yaml:"labels,omitempty"`
 
 	// Projects, Projects that any issues created with this template will automatically be added to. The format
 	// of this key is PROJECT-OWNER/PROJECT-NUMBER.
@@ -61,7 +61,7 @@ type NewtModel struct {
 	// expect people using this template to have write access, consider enabling your project's auto-add workflow.
 	// For more information, see "Adding items automatically."
 	// (ignored)
-	Projects []string `json:"projects,omitempty" yaml:"projects"`
+	Projects []string `json:"projects,omitempty" yaml:"projects,omitempty"`
 }
 
 // GetElementIds returns a slice of element ids found in the model's .Body
@@ -100,17 +100,17 @@ type Element struct {
 	// many other HTML form elements using the input notation. E.g. A button can be expressed as
 	// `input[type=button]` where the attribute `value` becomes the inner HTML of `<button></button>`.
 	// See MDN developer docs for input, <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input>
-	Type string `json:"type,required" yaml:"type"`
+	Type string `json:"type,required" yaml:"type,omitempty"`
 
 	// Id for the element, except when type is set to markdown. Can only use alpha-numeric characters,
 	//  -, and _. Must be unique in the form definition. If provided, the id is the canonical identifier
 	//  for the field in URL query parameter prefills.
-	Id string `json:"id,omitempty" yaml:"id"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Attributes, a set of key-value pairs that define the properties of the element.
 	// This is a required element as it holds the "value" attribute when expressing
 	// HTML content. Other commonly use attributes
-	Attributes map[string]interface{} `json:"attributes,omitempty" yaml:"attributes"`
+	Attributes map[string]string `json:"attributes,omitempty" yaml:"attributes,omitempty"`
 
 	// Validations, A set of key-value pairs that set constraints on the element.
 	// Optional, key-value pair example expressed in HTML include
@@ -125,6 +125,6 @@ type Element struct {
 	//
 	// See MDN documentation for RegExp,
 	// <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet>
-	Validations map[string]interface{} `json:"validations,omitempty" yaml:"validations"`
+	Validations map[string]interface{} `json:"validations,omitempty" yaml:"validations,omitempty"`
 }
 

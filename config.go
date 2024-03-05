@@ -19,7 +19,7 @@ import (
 // Config holds a configuration for Newt for the data router and code generator.
 type Config struct {
 	// Application holds the application specific settings and metadata
-	Applications *Applications `json:"applications,omitempty" yaml:"applications"`
+	Applications *Applications `json:"applications,omitempty" yaml:"applications,omitempty"`
 
 	// Models holds a list of data models. It is used by
 	// both the data router and code generator.
@@ -38,37 +38,37 @@ type Config struct {
 // template engine.
 type Applications struct {
 	// Newt Router runtime config
-	NewtRouter *Application `json:"newtrouter,omitempty" yaml:"newtrouter"`
+	NewtRouter *Application `json:"newtrouter,omitempty" yaml:"newtrouter,omitempty"`
 
 	// Newt Mustache runtime config
-	NewtMustache *Application `json:"newtmustache,omitempty" yaml:"newtmustache"`
+	NewtMustache *Application `json:"newtmustache,omitempty" yaml:"newtmustache,omitempty"`
 
 	// Newt Generator runtime config
-	NewtGenerator *Application `json:"newtgenerator,omitempty" yaml:"newtgenerator"`
+	NewtGenerator *Application `json:"newtgenerator,omitempty" yaml:"newtgenerator,omitempty"`
 
 	// Postgres runtime config, e.g. port number to use for connecting.
 	Postgres *Application `json:"postgres,omitempty" yaml:"postgres,omitempty"`
 
 	// PostgREST runtime config
-	PostgREST *Application `json:"postgrest,omitempty" yaml:"postgrest"`
+	PostgREST *Application `json:"postgrest,omitempty" yaml:"postgrest,omitempty"`
 
 	// Environment holds a list of OS environment variables that can be made
 	// available to the web services.
-	Environment []string `json:"enviroment,omitempty" yaml:"enviroment"`
+	Environment []string `json:"enviroment,omitempty" yaml:"enviroment,omitempty"`
 
 	// Options is a map of name to string values, it is where the
 	// environment variables values are stored.
-	Options map[string]string `json:"options,omitempty" yaml:"options"`
+	Options map[string]string `json:"options,omitempty" yaml:"options,omitempty"`
 }
 
 // Application implements runtime config for Newt programs
 type Application struct {
 	// AppPath holds the path to the binary application, e.g. PostgREST
 	// This property provides the location of the service to run.
-	AppPath string `json:"app_path,omitempty" yaml:"app_path"`
+	AppPath string `json:"app_path,omitempty" yaml:"app_path,omitempty"`
 
 	// ConfPath holds teh path to the configuration file (e.g. PostgREST configuration file)
-	ConfPath string `json:"conf_path,omitempty" yaml:"conf_path"`
+	ConfPath string `json:"conf_path,omitempty" yaml:"conf_path,omitempty"`
 
 	// Namespace holds the Postgres Schema name It is used to generate
 	// a setup.sql file using the -pg-setup option in newt cli.

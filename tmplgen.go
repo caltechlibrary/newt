@@ -96,7 +96,7 @@ func (e *Element) ToHTMLInput(prefix string, suffix string) string {
 	}
 	sort.Strings(keys)
 	for _, k := range keys {
-		val := e.Attributes[k].(string)
+		val := e.Attributes[k]
 		// Possible special handling
 		if renderAsTemplate && k == "value" {
 			// Substitue "value" value with variable reference in a the template language

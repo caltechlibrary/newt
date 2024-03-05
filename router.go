@@ -13,7 +13,7 @@ import (
 // NewtRouter is used to implement the Newt Router
 type NewtRouter struct {
 	// Port is the port the router will listen on
-	Port string
+	Port int
 
 	// Routes holds a list of route
 	Routes []*NewtRoute
@@ -25,37 +25,37 @@ type NewtRouter struct {
 // This holds the route definitions, e.g. request, description, pipeline, debug
 type NewtRoute struct {
 	// Id holds an id for the route. This should be unique. It is useful in debugging.
-	Id string `json:"id,omitempty" yaml:"id"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	
 	// Pattern holds the HTTP Method and URL path, may include Go 1.22 patterns
-	Pattern string `json:"request,required" yaml:"request"`
+	Pattern string `json:"request,required" yaml:"request,omitempty"`
 
 	// Description holds a human describe of the purpose of this route.
-	Description string `json:"description,omitempty" yaml:"description"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Pipeline holds the series of http services context with the output of one sent to another.
-	Pipeline []*Service `json:"pipeline,omitempty" yaml:"pipeline"`
+	Pipeline []*Service `json:"pipeline,omitempty" yaml:"pipeline,omitempty"`
 
 	// Debug if true log verbosely
-	Debug bool `json:"debug,omitempty" yaml:"debug"`
+	Debug bool `json:"debug,omitempty" yaml:"debug,omitempty"`
 
 	// Env holds a map of defaults that are available from the environment and from path values in the url
-	Options map[string]string `json:"options,omitempty" yaml:"options"`
+	Options map[string]string `json:"options,omitempty" yaml:"options,omitempty"`
 
 	// Vars holds the variables defined in the route
-	Vars []string
+	Vars []string `json:"-" yaml:"-"`
 }
 
 // Service holds the necessary information to contact a data source and retrieve the results for use in a pipeline.
 type Service struct {
 	// Service holds the http Request Pattern to request a resource from a service
-	Service string `json:"service,required" yaml:"service"`
+	Service string `json:"service,required" yaml:"service,omitempty"`
 
 	// Description describes the service and purpose of contact. Human readable.
-	Description string `json:"description,omitempty" yaml:"description"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Timeout sets a timeout value to recieve a response from the service.
-	Timeout time.Duration `json:"timeout,omitempty" yaml:"timeout"`
+	Timeout time.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
 }
 
 // ResolveRoute reviews the `.Request` attribute and updates the Vars using PatternKeys()
@@ -241,7 +241,7 @@ func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
 		router.Htdocs = cfg.Applications.NewtRouter.Htdocs
 	}
 	if cfg.Applications.NewtRouter.Port != 0 {
-		router.Port = fmt.Sprintf(":%d", cfg.Applications.NewtRouter.Port)
+		router.Port = cfg.Applications.NewtRouter.Port
 	}
 	// Populate an env from our allowed environment variables
 	for _, route := range router.Routes {
@@ -253,10 +253,6 @@ func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
 				route.Options[k] = v
 			}
 		}
-	}
-	// Prefix the port number with a colon
-	if !strings.HasPrefix(router.Port, ":") {
-		router.Port = fmt.Sprintf(":%s", router.Port)
 	}
 	return router, nil
 }
@@ -285,7 +281,7 @@ func (rtr *NewtRouter) ListenAndServe() error {
 	}
 	// Now create my http server
 	svr := new(http.Server)
-	svr.Addr = rtr.Port
+	svr.Addr = fmt.Sprintf(":%d", rtr.Port)
 	svr.Handler = NewLogger(mux)
 	if err := svr.ListenAndServe(); err != nil {
 		log.Fatal(err)

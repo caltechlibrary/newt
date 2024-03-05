@@ -4,17 +4,25 @@
 ## Bugs
 
 - [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
+- [ ] Newt Init should not add routes or templates if they are already defined in the previously read in YAML
+- [ ] decide if it is object name then action or action then object name, I've seem to have flipped flopped around on this in the code.
 
 ## Next for the second prototype 
 
 NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
-- [ ] Port attributes in the struct need to all be either string or int (probably int), it'll make the code read better to be consistent
-- [ ] The cli.go runners should handle options rather than `cmd/*/*.go`. This may allow a much more consistent interface between the tools. The source for processing the options could be all in one file like what I did with exit codes.
+- [ ] If you run Newt Generator from the `newt` command it should assign predictable filenames for SQL files, PostgREST config and Mustache templates. This could insure the turn key operation of a bare prototype. It needs to align with what `newt init` generators.
+- [ ] Verify we have a simple developer workflow
+    - [ ] `newt init` generate a default YAML for project
+        - [ ] `newt init` allow automatic generation of the project code base?
+    - [ ] `newt generator` generated the code for the project
+    - [ ] `newt run PROJECT_YAML` should be able to run the rendered project.
+- [ ] Newt Check should detect mis-aligned form names when paired with a Postgres function.
+    - [ ] Need to document how the web form input "names" attributes need to match the SQL functions, it is obvious if you understand PostgREST but not so obvious if you are unfamiliar with either Postgres functions or PostgREST
 - [ ] I still think the string representation of uuid is problematic in the model generation, I need to decide how to deal with this
   - [X] Include Python functions in Postgres to support shorter unique identifiers
+    - [ ] Add Python short object id via Newt Generator SQL for models.
   - [D] Implement an "object manager" that will sit in front of PostgREST that will wrap the objects with their object id, created and updated timestamps, this could enforce REST method behaviors but I would need to tie models to routes to do so
-- [ ] Need to document how the web form input "names" attributes need to match the SQL functions, it is obvious if you understand PostgREST but not so obvious if you are unfamiliar with either Postgres functions or PostgREST
 - [P] Nail down the second prototype YAML syntax
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
     - [X] setup.sql
@@ -40,6 +48,7 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
 - [ ] Create postcards demo, armchair archive example
 - [ ] Implement Thesis Management System core in Newt (not email features)
 - [ ] Implement COLD core
+- [X] Port attributes in the struct need to all be either string or int (probably int), it'll make the code read better to be consistent
 - [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go command wraps govet, gofmt, etc. This will be convenient for development
 - [X] (rethought the application concept in favor of a single YAML file) Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
 - [X] (one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
@@ -52,9 +61,11 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
   - [X] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
   - [X] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
 - [X] Present at Code4Lib meetup, July 14, 2023
+- [D] The cli.go runners should handle options rather than `cmd/*/*.go`. This may allow a much more consistent interface between the tools. The source for processing the options could be all in one file like what I did with exit codes.
 
 ## Someday, maybe
 
+- [ ] `newt build` would generate a stand alone Go based program for the application described by the Newt YAML file (think OBNC/Ofront/Ofront+ generating C then compiling the C to rendering an executable or library).
 - [ ] Explore alternatives to a uuid for object identifiers, some sort of short id like RDM would be very nice.
 - [ ] seeing the data past thru a pipeline will be an important part in debugging problems. Newt Inspector could address that as a pass thru web service that output debugging info to the log output.
 - [ ] An OCFL service would allow Newt to support building repository like applications. U. C. Santa Barbara has some Go packages related to this.

@@ -16,5 +16,6 @@ ornothology*.conf
 *_sighting.tmpl
 t.txt
 t.json
+t.yaml
 t.tmpl
 t.sql
