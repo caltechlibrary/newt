@@ -25,13 +25,101 @@ models:
   - id: tms
     description: This is where you would model your application data
     body:
-      - type: input
-        id: data_attribute
+      - id: author
+        type: input
         attributes:
-          description: This is an example input element
-          name: data_attribute
-          placeholdertext: ex. of placeholder text
-          title: this is an example element in your model
+          description: Name of the student submitting the thesis/disertation
+          label: (required) Enter the thesis/disertation author's name
+          name: author
+          placeholdertext: ex. Doiel, Robert S.
+        validations:
+          required: true
+      - id: title
+        type: input
+        attributes:
+          description: This should be the title of the thesis or disertation
+          label: (required) Title
+          placeholdertext: ex. Automatic application generation from library, archives and museums
+        validations:
+          required: true
+      - id: abstract
+        type: textarea
+        attributes:
+          description: The thesis or disertation abstract
+          label: (required) Abstract
+          placeholdertext: ex. The Abstract from thesis or disertation goes here
+        validations:
+          required: true
+      - id: division
+        type: input
+        attributes:
+          description: This is the division that is approving the thesis or disertation
+          label: (required) Division
+          placeholdertext: ex. Humanities and Social Sciences
+        validations:
+          required: true
+      - id: major_option
+        type: input
+        attributes:
+          description: This is the major option of the graduating student
+          label: (required) Major
+          placeholdertext: ex. History of Applied Computation and Algorithms
+        validations:
+          required: true
+      - id: minor_option
+        type: input 
+        attributes:
+          description: This is the minor option, if chosen, of the graduating student
+          label: (optional) Minor
+          placeholdertext: ex. Technological Impacts on Society
+        validations:
+          required: false
+      - id: submission_date
+        type: input[type=date]
+        attributes:
+          description: Date thesis was submitted
+          label: (required) submission date
+          placeholdertext: 2025-05-01
+        validations:
+          required: true
+      - id: status
+        type: input
+        attributes:
+          description: Workflow Status
+          label: (required) status
+          placeholdertext: submitted
+        validations:
+          required: true
+      - id: final_flag
+        type: input[type=checkbox]
+        attributes:
+          description: Indicate the thesis deposit is finallized
+          label: (optional) Is this thesis ready for release?
+      - id: status_history
+        type: textarea
+        attributes:
+          description: A list status values and date set
+          label: (generated) Status History
+          readonly: true
+        validations:
+          trigger: status_change
+      - id: comments
+        type: textarea
+        attributes:
+          description: Internal processing notes
+          label: (optional) Internal Notes
+      - id: comment_history
+        type: textarea
+        attributes:
+          description: Generated comment history
+          label: (generative) comment history
+        validations:
+          trigger: comment_entry
+      - id: repository_id
+        type: input
+        attributes: 
+          description: the repository record id for the submitted thesis
+          label: (generative) record id
         validations:
           required: true
 routes:
