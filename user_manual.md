@@ -20,6 +20,7 @@
 - [Newt Mustache Explained](newtmustache_explained.md)
 - [Newt Generator Explained](newtgenerator_explained.md)
 - [Reference Material](reference_material.md), started on January 26, 2024, links to prior art and documentation
+- [More questions?](more_questions.md)
 
 ## Demos
 
