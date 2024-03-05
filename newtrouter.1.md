@@ -1,5 +1,5 @@
 ---
-title: "newtrouter(1) user manual | 0.0.7-dev 1316be2"
+title: "newtrouter(1) user manual | 0.0.7-dev 3a3bb9d"
 pubDate: 2024-03-04
 author: "R. S. Doiel"
 ---
