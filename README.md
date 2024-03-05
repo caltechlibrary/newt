@@ -21,17 +21,21 @@ This is not an exhaustive list. These types of applications can all be integrate
 
 > Wait, what about my custom metadata needs?
 
-That role can be filled by a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as that JSON data source. Newt's code generator lends a hand here. Using Newt's YAML file the code generator can generate SQL for setting up Postgres+PostgREST, the SQL for managing your objects and the configuration file for PostgREST. Additionally Newt's code generator can render Mustache templates too. Between the SQL and Mustache templates you have the basic CRUD-L[^12] operations used to manage data. Off the self software with the Newt generator, router and template service provides the core features for building LAM applications.
+That role can be filled by a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as that JSON data source. Newt's code generator lends a hand here. Using Newt's YAML file the code generator can generate SQL for setting up Postgres+PostgREST, the SQL for managing your objects and the configuration file for PostgREST. Additionally Newt's code generator can render Mustache templates too. Between the SQL and Mustache templates you have the basic CRUD-L[^12] operations used to manage metadata. Off the self software with the Newt generator, router and template service provides the core features for building LAM applications.
 
-Newt is a narrowly focused rapid application development toolbox.  It does not support the class of web applications that handle file uploads. It's not a replacement for Drupal, WordPress, or Islandora. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use another software system.
+## Does Newt clean my house or make cocktails?
+
+Newt is a narrowly focused rapid application development toolbox. Newt will not clean your house or make a cocktail. Additionally it does not support the class of web applications that handle file uploads. That means it is not a replacement for Drupal, WordPress, Islandora, etc. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support you can either build that as a web service or use another software system.
 
 Newt applications are well suited to interacting with other applications that provide a JSON API. A service with a JSON API can be treated as a JSON data source. A JSON data source can easily be run through a pipeline. Many LAM applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach.
 
-What if those systems aren't available on localhost? In that case you need to provide a proxy to those services on localhost (e.g. via Apache 2 or NGINX). You would write your Newt YAML file but point at the proxied localhost URL instead of the remote system. You can use this approach to integrate your external services like ORCID, ROR, CrossRef, DataCite, Pub Med Central.
+What if those systems aren't available on localhost? In that case you need to provide a proxy from these services to localhost (e.g. via Apache 2 or NGINX). You would write your Newt YAML file pointing at the localhost end point. This approach can be used to integrated external systems like ORCID, ROR, CrossRef, DataCite, Pub Med Central.
 
 [^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
 [^12]: CRUD-L, acronym meaning, "Create, Read, Update, Delete and List". These are the basic actions used to manage metadata or objects.
+
+## How does Newt impact web application development?
 
 A Newt application encourages the following.
 
@@ -39,8 +43,10 @@ A Newt application encourages the following.
 - modeling your data simply
 - use a database management system for managing your data
 - prefer software that can function as a JSON data source
-- transformation data representations (if needed) using a light weight web service
+- transforming data representations (if needed) by using a light weight template engine
 - code generation where appropriate
+
+## If Newt doesn't make cocktails, what is it bringing to the table?
 
 In 2024 there is allot of off the self software to build on. Newt provides a few tools to fill in the gaps.
 
@@ -67,7 +73,7 @@ Most LAM applications are focused on managing and curating some sort of metadata
 
 ## Motivation
 
-Over the last several decades web applications became very complex. This complexity is expensive in terms of reliability, enhancement, bug fixes and software sustainability.
+Over the last several decades web applications became very complex. This complexity is expensive in terms of reliability, enhancement, bug fixes and software sustainability. Newt address this by reducing the code you right and focusing your efforts on declaring what you want.
 
 > A brief historic detour to set context
 
@@ -89,19 +95,15 @@ Much of the back end of web applications can largely be assemble from off the sh
 
 I think a radical simplification is due.  Newt in part is intended to spark that conversation. My observation is most software doesn't need to scale large. Even in the research and LAM communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software. A better human experience is an intended side effect of Newt.
 
-> OK, a little more context
-
-Back in the day whether we were writing in PHP, Python or Perl we were creating middleware. Even Drupal and WordPress are really middleware. Middleware sits between a data source (e.g. a database) and the web server (e.g. Apache 2, NGINX). It might be run inside Apache 2 or proxied like with NGINX. It's still middleware.
-
-A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. Is this approach familiar? It is the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. A catalog system imports data from trusted sources. Creating a repository record might start by pulling in data from CrossRef or ORCID.  What if doing that was as easy as using Unix pipes? I think it can be. I'm using a little YAML notation to represent the pipe.
+A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.  What if middleware was narrowly focus? Conceptually simpler? Did one or two things really well?. Is this approach familiar? It is the old Unix philosophy of writing a single tool that does one thing really well and can be chained together to form a data processing pipeline. If you step back and look at the web today that is what happening. You create a website, Google Bing and friends spider it, someone looks up some information and they find your sight. That is a data pipeline. Unfortunately it is not working for you or organization. Lots of "bots" roam the web interacting with web systems because the web can be viewed as a data source and services can be chained together to form a pipeline. Newt provides that on the small scale of your specific application.
 
 Here is a description of one implementation of that idea.
 
 1. Apache 2 with Shibboleth provides access control and helps us communicate with a web browser (e.g. SSL support in the public URL)
-2. Apache 2 proxies to a Newt Router. Newt Router either maps the request to a data pipeline or provides static content
-3. The data pipeline performs our processing. It can include any number of web services running on localhost. Which services depend on what we want to do. If we're managing data then Postgres+PostgREST is a good choice. The pipeline first stage might start there.  Eventually we'll want to turn that JSON into HTML so Newt Mustache provides a reliable means of doing that.
+2. Apache 2 proxies to a Newt Router. Newt Router either maps the requests to a appropriate data pipeline or provides static content
+3. The data pipeline performs our processing. It can include any number of web services running on localhost. Which services depend on what we want to do. If we're managing custom metadata then Postgres+PostgREST is a good choice. The first stage of the pipeline might start there.  Eventually we'll want to turn resulting JSON into HTML so Newt Mustache provides a reliable means of doing that. It can be added to the end of your pipeline.
 
-This example is pretty generalized. We could mix and match database with a JSON API or search engines. It can be easy because we can map requests to the right pipeline. In effect "mashing up" our local services to provide the data management and content we need for our application.
+This example is pretty generalized. We could mix and match database with a JSON API or search engines. It can be easily changed in the future by adjusting the YAML file that describes the requests and their pipelines.  Newt gives us the flexibility to "mashing up" our local services to provide the data management and content we need for our application.
 
 ## Working with off the shelf deliverables
 

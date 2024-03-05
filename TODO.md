@@ -65,6 +65,9 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
 
 ## Someday, maybe
 
+- [ ] The generate could generating an Apache include conf file or an NGINX configuration file
+- [ ] Solr could bespecified like PostgREST in the `.applications` property, this could easy integrating Solr
+- [ ] If Newt Router supported multipart encoding it could proxy to a web service that provided file upload managment
 - [ ] `newt build` would generate a stand alone Go based program for the application described by the Newt YAML file (think OBNC/Ofront/Ofront+ generating C then compiling the C to rendering an executable or library).
 - [ ] Explore alternatives to a uuid for object identifiers, some sort of short id like RDM would be very nice.
 - [ ] seeing the data past thru a pipeline will be an important part in debugging problems. Newt Inspector could address that as a pass thru web service that output debugging info to the log output.
