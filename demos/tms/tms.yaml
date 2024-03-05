@@ -1,0 +1,115 @@
+#
+# This is the Newt Project description for the Thesis Management System.
+# It will run in a single table modeling the current state of the Thesis workflow.
+#
+# Postgres PL/Python will be used to trigger emails when status change
+# An external process will query the model table and then make adjustments in the
+# RDM review queie or published record, (assuming RDM v12 or later).
+#
+applications:
+  newtrouter:
+    port: 8010
+    htdocs: htdocs
+  newtmustache:
+    port: 8011
+  newtgenerator:
+    namespace: tms
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
+    port: 3000
+  enviroment:
+    - DB_USER
+    - DB_PASSWORD
+models:
+  - id: tms
+    description: This is where you would model your application data
+    body:
+      - type: input
+        id: data_attribute
+        attributes:
+          description: This is an example input element
+          name: data_attribute
+          placeholdertext: ex. of placeholder text
+          title: this is an example element in your model
+        validations:
+          required: true
+routes:
+  - id: tms_list
+    request: GET /tms
+    pipeline:
+      - service: GET http://localhost:3000/rpc/tms_list
+        description: Example of tms_list service for tms
+      - service: POST http://localhost:8011/tms_list
+        description: Example of tms_list service for tms
+  - id: tms_create
+    request: POST /tms
+    pipeline:
+      - service: POST http://localhost:3000/rpc/tms_create
+        description: Example of tms_create service for tms
+      - service: POST http://localhost:8011/tms_create
+        description: Example of tms_create service for tms
+  - id: tms_read
+    request: GET /tms_read/{oid}
+    pipeline:
+      - service: GET http://localhost:3000/rpc/tms_read
+        description: Example of tms_read service for tms
+      - service: POST http://localhost:8011/tms_read
+        description: Example of tms_read service for tms
+  - id: tms_update
+    request: PUT /tms_update/{oid}
+    pipeline:
+      - service: PUT http://localhost:3000/rpc/tms_update
+        description: Example of tms_update service for tms
+      - service: POST http://localhost:8011/tms_update
+        description: Example of tms_update service for tms
+  - id: tms_delete
+    request: DELETE /tms_delete/{oid}
+    pipeline:
+      - service: DELETE http://localhost:3000/rpc/tms_delete
+        description: Example of tms_delete service for tms
+      - service: POST http://localhost:8011/tms_delete
+        description: Example of tms_delete service for tms
+  - id: tms_create_form
+    request: GET /tms/{$}
+    description: Example display a create web form
+    pipeline:
+      - service: POST http://localhost:8011/tms_create_form
+        description: Example of tms_create_form service for tms
+  - id: tms_update_form
+    request: GET /tms/{oid}
+    description: Example display a update web form
+    pipeline:
+      - service: POST http://localhost:8011/tms_update_form
+        description: Example of tms_update_form service for tms
+  - id: tms_delete_form
+    request: GET /tms/{oid}
+    description: Example display a delete web form
+    pipeline:
+      - service: POST http://localhost:8011/tms_delete_form
+        description: Example of tms_delete_form service for tms
+templates:
+  - request: /tms_create_form
+    template: tms_create_form.tmpl
+    description: Example display an create web from
+  - request: /tms_update_form
+    template: tms_update_form.tmpl
+    description: Example display an update web from
+  - request: /tms_delete_form
+    template: tms_delete_form.tmpl
+    description: Example display a delete web from
+  - request: /tms_create
+    template: tms_create.tmpl
+    description: This is an example of defining a template handler
+  - request: /tms_read
+    template: tms_read.tmpl
+    description: This is an example of defining a template handler
+  - request: /tms_update
+    template: tms_update.tmpl
+    description: This is an example of defining a template handler
+  - request: /tms_delete
+    template: tms_delete.tmpl
+    description: This is an example of defining a template handler
+  - request: /tms_list
+    template: tms_list.tmpl
+    description: This is an example of defining a template handler

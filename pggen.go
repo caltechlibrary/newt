@@ -122,14 +122,14 @@ create table {{namespace}}.{{model}}
 -- {{namespace}}.{{model}} CRUD-L operations (functions and views)
 --
 
--- {{namespace}}.create_{{model}} is a stored function to create a new object
+-- {{namespace}}.{{model}}_create is a stored function to create a new object
 -- It takes the new object without oid, created, updated. It will return the
 -- assigned uuid.
 --
--- This becomes the end point '/rpc/create_{{model}}' in PostgREST
+-- This becomes the end point '/rpc/{{model}}_create' in PostgREST
 --
---drop function if exists {{namespace}}.create_{{model}} (new_object jsonb);
-create or replace function {{namespace}}.create_{{model}} (
+--drop function if exists {{namespace}}.{{model}}_create (new_object jsonb);
+create or replace function {{namespace}}.{{model}}_create (
     new_object jsonb
 ) returns jsonb
 language plpgsql
@@ -161,17 +161,17 @@ $$
 ;
 
 --
--- {{namespace}}.update_{{model}} is a stored function to update an object.
+-- {{namespace}}.{{model}}_update is a stored function to update an object.
 -- NOTE: It replaces the whole object!
 --
 -- It takes the UUID of the object to update and the model's content. You do
 -- not need to provide created and updated attributes as those are managed by
 -- this function.  The value returned is the revised JSON including all attributes.
 --
--- It becomes the end point '/rpc/update_{{model}}'
+-- It becomes the end point '/rpc/{{model}}_update'
 --
---drop function if exists {{namespace}}.update_{{model}} (id uuid, new_object jsonb);
-create or replace function {{namespace}}.update_{{model}} (
+--drop function if exists {{namespace}}.{{model}}_update (id uuid, new_object jsonb);
+create or replace function {{namespace}}.{{model}}_update (
     id uuid,
     new_object jsonb
 )
@@ -200,13 +200,13 @@ $$
 ;
 
 --
--- {{namespace}}.read_{{model}} will retrieve the object stored flattening it to include
+-- {{namespace}}.{{model}}_read will retrieve the object stored flattening it to include
 -- the fields modelled but also include the attributes oid, created, updated enforce by these procedures.
 --
--- It become an end point in PostgREST, '/rpc/read_{{model}}'
+-- It become an end point in PostgREST, '/rpc/{{model}}_read'
 --
---drop function if exists {{namespace}}.read_{{model}} (IN id uuid, OUT obj jsonb);
-create or replace function {{namespace}}.read_{{model}} (
+--drop function if exists {{namespace}}.{{model}}_read (IN id uuid, OUT obj jsonb);
+create or replace function {{namespace}}.{{model}}_read (
   IN id uuid,
   OUT obj jsonb
 )
@@ -224,14 +224,14 @@ $$
 ;
 
 --
--- {{namespace}}.delete_{{model}} is a stored function to delete an object.
+-- {{namespace}}.{{model}}_delete is a stored function to delete an object.
 -- It takes the object UUID (oid) as a parameter. If successful it returns the
 -- oid deleted.
 --
--- It becomes the end point '/rpc/delete_{{model}}'
+-- It becomes the end point '/rpc/{{model}}_delete'
 --
---drop function if exists {{namespace}}.delete_{{model}} (id uuid);
-create or replace function {{namespace}}.delete_{{model}} (
+--drop function if exists {{namespace}}.{{model}}_delete (id uuid);
+create or replace function {{namespace}}.{{model}}_delete (
     id uuid
 ) returns uuid
 language plpgsql
@@ -248,10 +248,10 @@ $$
 -- {{namespace}}.list_{{model}} lists object by descending updated timestamp.
 -- It does not take any parameters.
 --
--- It will become an end point in PostgREST, '/rpc/list_{{model}}'
+-- It will become an end point in PostgREST, '/rpc/{{model}}_list'
 --
---drop function if exists {{namespace}}.list_{{model}} ();
-create or replace function {{namespace}}.list_{{model}} ()
+--drop function if exists {{namespace}}.{{model}}_list ();
+create or replace function {{namespace}}.{{model}}_list ()
 returns table (
   obj jsonb
 )
@@ -272,7 +272,6 @@ $$
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(out, "-- DEBUG Code generated for for %d models\n", len(models))
 	data = map[string]string{}
 	for _, m := range models {
 		data["namespace"] = namespace
@@ -312,11 +311,11 @@ grant usage on schema {{namespace}} to {{namespace}}_anonymous;
 
 	txt = `
 grant select, insert, update, delete on {{namespace}}.{{model}} to {{namespace}}_anonymous;
-grant execute on function {{namespace}}.create_{{model}} to {{namespace}}_anonymous;
-grant execute on function {{namespace}}.update_{{model}} to {{namespace}}_anonymous;
-grant execute on function {{namespace}}.delete_{{model}} to {{namespace}}_anonymous;
-grant execute on function {{namespace}}.read_{{model}} to {{namespace}}_anonymous;
-grant execute on function {{namespace}}.list_{{model}} to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.{{model}}_create to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.{{model}}_read to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.{{model}}_update to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.{{model}}_delete to {{namespace}}_anonymous;
+grant execute on function {{namespace}}.{{model}}_list to {{namespace}}_anonymous;
 
 `
 	tmpl, err = mustache.ParseString(txt)
@@ -345,62 +344,65 @@ func pgModelsTest(out io.Writer, namespace string, models []*NewtModel) error {
 --
 -- \c {{namespace}}
 
-select 'Testing {{namespace}}.create_{{model}}' as msg limit 1;
+select 'Testing {{namespace}}.{{model}}_create' as msg limit 1;
 --
--- Test {{namespace}}.create_{{model}} can execute.
+-- Test {{namespace}}.{{model}}_create can execute.
 --
-select {{namespace}}.create_{{model}}(jsonb_build_object(
+select {{namespace}}.{{model}}_create(jsonb_build_object(
    'test_number', {{test_no}},
    'test_notes', 'Initial Object Creation'
 ));
 
-select 'Testing {{namespace}}.read_{{model}}' as msg limit 1;
+select 'Testing {{namespace}}.{{model}}_read' as msg limit 1;
 --
--- Test if {{namespace}}.read_{{model}} can execute.
+-- Test if {{namespace}}.{{model}}_read can execute.
 --
 with t as (
   select oid
   from {{namespace}}.{{model}}
   order by created desc
   limit 1
-) select {{namespace}}.read_{{model}}(t.oid) from t limit 1;
+) select {{namespace}}.{{model}}_read(t.oid) from t limit 1;
 
 
-select 'Testing {{namespace}}.update_{{model}}' as msg limit 1;
+select 'Testing {{namespace}}.{{model}}_update' as msg limit 1;
 -- 
--- Test if {{namespace}}.update_{{model}} can execute.
+-- Test if {{namespace}}.{{model}}_update can execute.
 -- 
 with t as (
   select oid
   from {{namespace}}.{{model}}
   order by created desc
   limit 1
-) select {{namespace}}.update_{{model}}(t.oid, jsonb_build_object(
+) select {{namespace}}.{{model}}_update(t.oid, jsonb_build_object(
    'test_number', {{test_no}},
    'test_notes', 'Updated Object Action'
 )) from t limit 1;
 
 
 --
--- Test listing all records created and updated.
+-- Test listing all records created, read and updated.
 --
-select {{namespace}}.list_{{model}}();
+select {{namespace}}.{{model}}_list();
 
-select 'Testing {{namespace}}.delete_{{model}}' as msg limit 1;
+--
+-- Test listing all records delete and list records.
+--
+select 'Testing {{namespace}}.{{model}}_delete' as msg limit 1;
 -- 
--- Test if {{namespace}}.delete_{{model}} can execute.
+-- Test if {{namespace}}.{{model}}_delete can execute.
 -- 
 with t as (
   select oid
   from {{namespace}}.{{model}}
   order by updated desc
   limit 1
-) select {{namespace}}.delete_{{model}}(t.oid) from t;
+) select {{namespace}}.{{model}}_delete(t.oid) from t;
 
 --
 -- Test listing all records after delete.
 --
-select {{namespace}}.list_{{model}}();
+select {{namespace}}.{{model}}_list();
 
 `
 	tmpl, err := mustache.ParseString(txt)
