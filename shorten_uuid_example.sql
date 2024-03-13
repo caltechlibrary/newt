@@ -3,7 +3,7 @@
 --
 with t as (
 	select oid
-	from ornothology.sighting
+	from ornithology.sighting
 	order by created desc
 	limit 1
 ) select encode(uuid_send(t.oid::uuid), 'base64') as short_uuid from t;
@@ -11,7 +11,7 @@ with t as (
 --
 -- shorten_uuid
 --
-create or replace function ornothology.shorten_uuid(id uuid)
+create or replace function ornithology.shorten_uuid(id uuid)
 returns varchar
 language plpgsql
 as $$
@@ -29,15 +29,15 @@ $$
 --
 with t as (
 	select oid
-    from ornothology.sighting
+    from ornithology.sighting
     order by created desc
     limit 1
-) select ornothology.shorten_uuid(t.oid) from t;
+) select ornithology.shorten_uuid(t.oid) from t;
 
 --
 -- unshorten_uuid
 --
-create or replace function ornothology.unshorten_uuid(short_id varchar)
+create or replace function ornithology.unshorten_uuid(short_id varchar)
 returns uuid
 language plpgsql
 as $$
@@ -57,13 +57,13 @@ with t as (
 	select 
 		oid::uuid AS long_id,
 		encode(uuid_send(oid::uuid),'base64')::varchar as short_id
-    from ornothology.sighting
+    from ornithology.sighting
     order by created desc
     limit 1
 ) select 
 	t.long_id,
-	ornothology.shorten_uuid(t.long_id::uuid)::varchar AS r1,
+	ornithology.shorten_uuid(t.long_id::uuid)::varchar AS r1,
 	t.short_id,
-	ornothology.unshorten_uuid(t.short_id::varchar)::uuid AS r2
+	ornithology.unshorten_uuid(t.short_id::varchar)::uuid AS r2
 from t;
 

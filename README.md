@@ -9,13 +9,12 @@ You can think of a web application as a sequence of requests and responses. In a
 
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples.
 
-- Postgres and PostgREST provides a JSON API for data management
+- [Postgres](https://postgres.org) and [PostgREST](https://postgrest.org) provides a JSON API for data management
 - MySQL and MySQL REST Service can provide a JSON API for data management
-- Solr can provide full text search as a JSON web service
-- Elasticsearch and Opensearch provide a full text search engine as a JSON web service
-- ArchiveSpace provides a JSON API web service
-- Invenio RDM provides a JSON API web service
-- Cantaloupe IIIF Image server has integration points
+- [Solr](https://solr.apache.org), Elasticsearch, OpenSearch can provide full text search as a JSON web service
+- [ArchivesSpace](https://archivesspace.org) provides a JSON API web service
+- [Invenio RDM](https://inveniordm.docs.cern.ch/) provides a JSON API web service
+- [Cantaloupe IIIF Image server](https://cantaloupe-project.github.io/) an IIIF [API](https://iiif.io/api/image/3.0/)
 
 This is not an exhaustive list. These types of applications can all be integrated into your application through configuring the connection in Newt's YAML file. Newt Router runs the data pipelines.
 
@@ -29,7 +28,7 @@ Newt is a narrowly focused rapid application development toolbox. Newt will not 
 
 Newt applications are well suited to interacting with other applications that provide a JSON API. A service with a JSON API can be treated as a JSON data source. A JSON data source can easily be run through a pipeline. Many LAM applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach.
 
-What if those systems aren't available on localhost? In that case you need to provide a proxy from these services to localhost (e.g. via Apache 2, NGINX or Python script). You would write your Newt YAML file pointing at the localhost end point. This approach can be used to integrated external systems like ORCID, ROR, CrossRef, DataCite, Pub Med Central.
+What if those systems aren't available on localhost? In that case you need to provide a proxy from these services to localhost (e.g. via Apache 2, NGINX or Python script). You would write your Newt YAML file pointing at the localhost end point. This approach can be used to integrated external systems like ORCID, ROR, CrossRef, DataCite, Open Alex, Pub Med Central.
 
 [^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
@@ -108,15 +107,15 @@ Take the following as a "for instance".
 - (access control) Apache 2 or NGINX combined with Shibboleth for access control and communicating with the web browser
 - (rich client) Web browsers now provide a rich software platform in their own right
 
-With the above list we can build capable applications relying on the sophisticated features of our web browsers. This is true even without using Newt. There is a problem though.  If we only the above software to build our application we will need to rely on JavaScript (or WASM module) running in the web browser to interact with the server. This sounds simpler. In practice this is a terrible idea[^17].
+With the above list we can build capable applications relying on the sophisticated features of our web browsers. This is true even without using Newt. There is a problem though.  If we only use the above software to build our application we must rely on JavaScript (or WASM module) running in the web browser to interact with the server. This sounds simpler. In practice this is a terrible idea[^17].
 
 [^17]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
-What we should do is use Newt to tie those JSON services together, render the results using a template engine and hand HTML back to the web browser. Newt Router provides a means to tie the services together. Newt Mustache provides a template engine as web service. The Newt Router can serve our static content. It can also get take the results of a data pipeline and run them through Newt Mustache to return HTML. Newt provides the missing bits so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The web browser knows how to quickly display HTML and CSS, a Newt application can provide those easily. It's a big step forward without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
+What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt Router provides static file systems and a means of pipelining our JSON data source through a template engine. Newt Mustache provides a template engine. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
 
 ### A Newt baseline
 
-Web services talk to other web services all the time. This isn't new. It isn't exotic. Will the small scale version of this work for you application?
+Web services talk to other web services all the time. This isn't new. It isn't exotic. Newt scales down this approach to the single application.
 
 - Can we align access control with our front end web server?
 - Can we insist on our database management system providing a JSON API?
@@ -124,7 +123,7 @@ Web services talk to other web services all the time. This isn't new. It isn't e
 - Can we aggregate these into data pipelines?
 - Will that be enough to define our web application?
 
-In 2024 for metadata curation apps I think the answer is "yes we can". Here's an example.
+In Spring 2024 for metadata curation apps I think the answer is "yes we can".
 
 ## What comes with the Newt Project?
 
@@ -145,5 +144,5 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 **The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is most likely broken. At a stretch it could be considered a working prototype. You should not use it for production systems.  However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in mind it remains an **experiment** as of February 2024.
 
-> Newt, a type of salamander. It doesn't seek attention. It does its own thing. You only notice it if you look carefully.
+> Newt, a type of salamander. Newts don't seek attention. They do their own thing. You only notice them if you look very carefully.
 
