@@ -11,7 +11,16 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
+- [ ] Need a way to assign a sql trigger from a form element, could use the `x-pgsql-*` as an element attribute then when I write the HTML I skip those attributes
+- [ ] Explore the idea of "complex models", these would be composed by either combining or aggregating lists of other models. This would let me mimic RDM/ArchivesSpace rich data models from Newt
+- [ ] Newt needs a web hook service that can be placed in the pipeline to trigger a non-pipeline action, sorta of like the Unix tee command
+    - use cases
+        - the webhook would recieve the JSON data from the previous service in the pipeline
+        - it could trigger another URL pipeline
+        - it could trigger running a program on the local system (e.g. trigger search engine indexing run after record change)
+        - it could insert an action into an event/job queue
 - [ ] If you run Newt Generator from the `newt` command it should assign predictable filenames for SQL files, PostgREST config and Mustache templates. This could insure the turn key operation of a bare prototype. It needs to align with what `newt init` generators.
+    - SQL generated should organize files by function, e.g. `{{model_name}}_{{action_name}}.sql`, `*_setup.sql` would create database, schema, roles, tables, `*_access_control.sql` would be regenerated and map roles and permissions for any functions found created by `{{model_name}}_{{action_name}}.sql`. I need to figure out which tables to query to identify the functions that are available in the metadata schema so that the mapping can be complete. 
 - [ ] Verify we have a simple developer workflow
     - [ ] `newt init` generate a default YAML for project
         - [ ] `newt init` allow automatic generation of the project code base?

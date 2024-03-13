@@ -41,11 +41,43 @@ prototype</h2>
 <p>NOTE: X is completed, P is partial completion, D (dropped) is
 skipping implementation</p>
 <ul>
+<li><label><input type="checkbox" />Need a way to assign a sql trigger
+from a form element, could use the <code>x-pgsql-*</code> as an element
+attribute then when I write the HTML I skip those
+attributes</label></li>
+<li><label><input type="checkbox" />Explore the idea of “complex
+models”, these would be composed by either combining or aggregating
+lists of other models. This would let me mimic RDM/ArchivesSpace rich
+data models from Newt</label></li>
+<li><label><input type="checkbox" />Newt needs a web hook service that
+can be placed in the pipeline to trigger a non-pipeline action, sorta of
+like the Unix tee command</label>
+<ul>
+<li>use cases
+<ul>
+<li>the webhook would recieve the JSON data from the previous service in
+the pipeline</li>
+<li>it could trigger another URL pipeline</li>
+<li>it could trigger running a program on the local system (e.g. trigger
+search engine indexing run after record change)</li>
+<li>it could insert an action into an event/job queue</li>
+</ul></li>
+</ul></li>
 <li><label><input type="checkbox" />If you run Newt Generator from the
 <code>newt</code> command it should assign predictable filenames for SQL
 files, PostgREST config and Mustache templates. This could insure the
 turn key operation of a bare prototype. It needs to align with what
-<code>newt init</code> generators.</label></li>
+<code>newt init</code> generators.</label>
+<ul>
+<li>SQL generated should organize files by function,
+e.g. <code>{{model_name}}_{{action_name}}.sql</code>,
+<code>*_setup.sql</code> would create database, schema, roles, tables,
+<code>*_access_control.sql</code> would be regenerated and map roles and
+permissions for any functions found created by
+<code>{{model_name}}_{{action_name}}.sql</code>. I need to figure out
+which tables to query to identify the functions that are available in
+the metadata schema so that the mapping can be complete.</li>
+</ul></li>
 <li><label><input type="checkbox" />Verify we have a simple developer
 workflow</label>
 <ul class="task-list">

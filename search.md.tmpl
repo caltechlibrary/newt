@@ -10,9 +10,10 @@
 <script>
     window.addEventListener('DOMContentLoaded', (event) => {
         new PagefindUI({ 
-            element: "#search"
+            element: "#search"${if(base_url)}, baseUrl: "${base_url}"${endif}
         });
     });
 </script>
+
 
 
