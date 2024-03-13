@@ -10,7 +10,7 @@
 <script>
     window.addEventListener('DOMContentLoaded', (event) => {
         new PagefindUI({ 
-            element: "#search"
+            element: "#search", baseUrl: "/newt"
         });
     });
 </script>
