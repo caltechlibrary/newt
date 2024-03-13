@@ -14,7 +14,7 @@ applications:
   newtmustache:
     port: 8002
   newtgenerator:
-    namespace: ornothology
+    namespace: ornithology
 routes:
   - id: birds_1_index
     request: GET /birds1/

@@ -49,15 +49,20 @@ which returns the result to the web browser.</p>
 already available as off the shelf software. Here is a short list of
 examples.</p>
 <ul>
-<li>Postgres and PostgREST provides a JSON API for data management</li>
+<li><a href="https://postgres.org">Postgres</a> and <a
+href="https://postgrest.org">PostgREST</a> provides a JSON API for data
+management</li>
 <li>MySQL and MySQL REST Service can provide a JSON API for data
 management</li>
-<li>Solr can provide full text search as a JSON web service</li>
-<li>Elasticsearch and Opensearch provide a full text search engine as a
-JSON web service</li>
-<li>ArchiveSpace provides a JSON API web service</li>
-<li>Invenio RDM provides a JSON API web service</li>
-<li>Cantaloupe IIIF Image server has integration points</li>
+<li><a href="https://solr.apache.org">Solr</a>, Elasticsearch,
+OpenSearch can provide full text search as a JSON web service</li>
+<li><a href="https://archivesspace.org">ArchivesSpace</a> provides a
+JSON API web service</li>
+<li><a href="https://inveniordm.docs.cern.ch/">Invenio RDM</a> provides
+a JSON API web service</li>
+<li><a href="https://cantaloupe-project.github.io/">Cantaloupe IIIF
+Image server</a> an IIIF <a
+href="https://iiif.io/api/image/3.0/">API</a></li>
 </ul>
 <p>This is not an exhaustive list. These types of applications can all
 be integrated into your application through configuring the connection
@@ -96,8 +101,8 @@ is well suited to this “development at the edges” approach.</p>
 need to provide a proxy from these services to localhost (e.g. via
 Apache 2, NGINX or Python script). You would write your Newt YAML file
 pointing at the localhost end point. This approach can be used to
-integrated external systems like ORCID, ROR, CrossRef, DataCite, Pub Med
-Central.</p>
+integrated external systems like ORCID, ROR, CrossRef, DataCite, Open
+Alex, Pub Med Central.</p>
 <h2 id="how-does-newt-impact-web-application-development">How does Newt
 impact web application development?</h2>
 <p>A Newt application encourages the following.</p>
@@ -229,29 +234,28 @@ their own right</li>
 </ul>
 <p>With the above list we can build capable applications relying on the
 sophisticated features of our web browsers. This is true even without
-using Newt. There is a problem though. If we only the above software to
-build our application we will need to rely on JavaScript (or WASM
-module) running in the web browser to interact with the server. This
-sounds simpler. In practice this is a terrible idea<a href="#fn7"
+using Newt. There is a problem though. If we only use the above software
+to build our application we must rely on JavaScript (or WASM module)
+running in the web browser to interact with the server. This sounds
+simpler. In practice this is a terrible idea<a href="#fn7"
 class="footnote-ref" id="fnref7"
 role="doc-noteref"><sup>7</sup></a>.</p>
-<p>What we should do is use Newt to tie those JSON services together,
-render the results using a template engine and hand HTML back to the web
-browser. Newt Router provides a means to tie the services together. Newt
-Mustache provides a template engine as web service. The Newt Router can
-serve our static content. It can also get take the results of a data
-pipeline and run them through Newt Mustache to return HTML. Newt
-provides the missing bits so we don’t need to send JavaScript down the
-wire to the web browser. The Newt approach uses less bandwidth, fewer
-network accesses and less computations cycles on your viewing device.
-The web browser knows how to quickly display HTML and CSS, a Newt
-application can provide those easily. It’s a big step forward without
-writing much code. Maybe without writing any code if Newt’s code
-generator does a sufficient job for your needs.</p>
+<p>What we should do is use Newt to tie those JSON services together and
+send rendered HTML back to the web browser. Newt Router provides static
+file systems and a means of pipelining our JSON data source through a
+template engine. Newt Mustache provides a template engine. Newt provides
+the missing bits from my original list so we don’t need to send
+JavaScript down the wire to the web browser. The Newt approach uses less
+bandwidth, fewer network accesses and less computations cycles on your
+viewing device. The Newt approach takes advantage of what the web
+browser is really good at without turning your web pages into a web
+service. Newt YAML describes the system you want. You get the Newt
+capabilities without writing much code. Maybe without writing any code
+if Newt’s code generator does a sufficient job for your needs.</p>
 <h3 id="a-newt-baseline">A Newt baseline</h3>
 <p>Web services talk to other web services all the time. This isn’t new.
-It isn’t exotic. Will the small scale version of this work for you
-application?</p>
+It isn’t exotic. Newt scales down this approach to the single
+application.</p>
 <ul>
 <li>Can we align access control with our front end web server?</li>
 <li>Can we insist on our database management system providing a JSON
@@ -261,8 +265,8 @@ next?</li>
 <li>Can we aggregate these into data pipelines?</li>
 <li>Will that be enough to define our web application?</li>
 </ul>
-<p>In 2024 for metadata curation apps I think the answer is “yes we
-can”. Here’s an example.</p>
+<p>In Spring 2024 for metadata curation apps I think the answer is “yes
+we can”.</p>
 <h2 id="what-comes-with-the-newt-project">What comes with the Newt
 Project?</h2>
 <p>The primary tools are.</p>
@@ -311,8 +315,8 @@ class="uri">https://github.com/caltechlibrary/newt/issues</a>. Just keep
 in mind it remains an <strong>experiment</strong> as of February
 2024.</p>
 <blockquote>
-<p>Newt, a type of salamander. It doesn’t seek attention. It does its
-own thing. You only notice it if you look carefully.</p>
+<p>Newt, a type of salamander. Newts don’t seek attention. They do their
+own thing. You only notice them if you look very carefully.</p>
 </blockquote>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">

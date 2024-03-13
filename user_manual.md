@@ -3,18 +3,18 @@
 
 ## What is in the Newt toolbox?
 
-- [Newt](newt.1.md), a development tool that will generate a basic Newt YAML file, allow you to generate SQL, PostgREST configuration and Mustache templates as well as run Newt Router and Mustache as one process and also manage PostgREST in another process
+- [Newt](newt.1.md), a development tool that will generate a basic Newt YAML file; allow you to generate SQL, PostgREST configuration and Mustache templates; runs Newt Router and Mustache as one process; can manage PostgREST in another process
 - [Newt Router](newtrouter.1.md), manages your requests and data pipelines
-- [Newt Generator](newtgenerator.1.md), bootstraps your SQL and Mustache templates
 - [Newt Mustache](newtmustache.1.md), a light weight template engine
+- [Newt Generator](newtgenerator.1.md), bootstraps your SQL and Mustache templates (being written)
 
 ## Newt YAML syntax
 
 - [Newt YAML Syntax](newt_yaml_syntax.md)
 
-## Turtorials and refernce materials
+## Tutorials and reference materials
 
-- Getting Started with Newt
+- Getting Started with Newt (being written)
 - [Newt Routing Explained](newtrouter_explained.md)
 - [Newt Mustache Explained](newtmustache_explained.md)
 - [Newt Generator Explained](newtgenerator_explained.md)
@@ -25,7 +25,7 @@
 
 - [Birds 4](https://github.com/caltechlibrary/newt/tree/main/demos/birds4) source files
 - [Album Reviews](https://github.com/caltechlibrary/newt/tree/main/demos/album_reviews) source files
-- [Ornothology](ornothology.md), a demo of using the Newt Generator to build a web applicaation based on Newt, Postgres and PostgREST
+- [Ornithology](ornithology.md), a demo of using the Newt Generator to build a web application based on Newt, Postgres and PostgREST
 
 ## Presentations
 
