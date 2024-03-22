@@ -135,8 +135,9 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		mt.Port = port
 	}
 	if verbose {
-		fmt.Fprintf(out, "port set to %q\n", mt.Port)
+		fmt.Fprintf(out, "port set to %d\n", mt.Port)
 	}
+
 	if timeout != 0 {
 		mt.Timeout = time.Duration(timeout) * time.Second
 	}
@@ -163,7 +164,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		}
 	}
 	// Launch web service
-	fmt.Printf("starting %s listening on port %s (press Ctrl-c to exit)\n", appName, mt.Port)
+	fmt.Printf("starting %s listening on port :%d (press Ctrl-c to exit)\n", appName, mt.Port)
 	if err := mt.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return MUSTACHE_FAIL
@@ -232,7 +233,7 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 	}
 
 	// Launch web service
-	fmt.Fprintf(out, "starting %s listening on port %s (use Ctr-c to exit)\n", appName, router.Port)
+	fmt.Fprintf(out, "starting %s listening on port :%d (use Ctr-c to exit)\n", appName, router.Port)
 	if err := router.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return ROUTER_FAIL

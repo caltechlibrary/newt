@@ -208,6 +208,9 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 		body *interface{}
 	)
 	if len(src) > 0 {
+		if mt.Debug {
+			log.Printf(".body -> %s", src)
+		}
 		dec := json.NewDecoder(bytes.NewBuffer(src))
 		dec.UseNumber()
 		if err := dec.Decode(&body); err != nil && err != io.EOF {
@@ -216,9 +219,6 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 			}
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
-		}
-		if mt.Debug {
-			log.Printf("obj populated from request body, %+v", body)
 		}
 		if body == nil {
 			if mt.Debug {
