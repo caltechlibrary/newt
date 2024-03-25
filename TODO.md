@@ -6,6 +6,7 @@
 - [ ] Newt Init should not add routes or templates if they are already defined in the previously read in YAML
 - [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
 - [X] decide if it is object name then action or action then object name, I've seem to have flipped flopped around on this in the code.
+- [ ] When using Newt to run services, each services needs to display the port it is running on.
 
 ## Next for the second prototype 
 
