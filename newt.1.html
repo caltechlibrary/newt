@@ -74,6 +74,17 @@ file too.
 this is used to generate your SQL, PostgREST configuration and Mustache
 templates based on the contents of your Newt YAML file.
 </dd>
+<dt>run</dt>
+<dd>
+this will run the defined services in the application attribute of the
+Newt YAML file. This is intended for use in development. In a production
+setting you’d setup the individual services to run from systemd or init
+as services.
+</dd>
+<dt>sws</dt>
+<dd>
+this will run Newt’s static web server.
+</dd>
 </dl>
 <h1 id="yaml_config_file">YAML_CONFIG_FILE</h1>
 <p><strong>newt</strong> is configured in a YAML file. What is described
