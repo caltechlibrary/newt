@@ -6,11 +6,14 @@
 - [ ] Newt Init should not add routes or templates if they are already defined in the previously read in YAML
 - [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
 - [X] decide if it is object name then action or action then object name, I've seem to have flipped flopped around on this in the code.
+- [ ] When using Newt to run services, each services needs to display the port it is running on.
 
 ## Next for the second prototype 
 
 NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
+- [ ] Newt Router currently should restrict POST to urlencoded or application/json encoded but explicitly disallow multipart form encoding since Newt Router doesn't support file uploads yet.
+- [ ] Newt Router needs to validate it's inputs for POST, PUT, PATCH against a specific data model
 - [ ] Need a way to assign a sql trigger from a form element, could use the `x-pgsql-*` as an element attribute then when I write the HTML I skip those attributes
 - [ ] Explore the idea of "complex models", these would be composed by either combining or aggregating lists of other models. This would let me mimic RDM/ArchivesSpace rich data models from Newt
 - [ ] Newt needs a web hook service that can be placed in the pipeline to trigger a non-pipeline action, sorta of like the Unix tee command
@@ -74,6 +77,7 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
 
 ## Someday, maybe
 
+- [ ] If the Newt Router is going to proxy file uploads it will need to specify the route as multipart encoded, if Newt Router can generate object ids when creating new objects along with the file upload then you could automagically map the object into an S3 prototocol path for file storage and further processing
 - [ ] The generate could generating an Apache include conf file or an NGINX configuration file
 - [ ] Solr could bespecified like PostgREST in the `.applications` property, this could easy integrating Solr
 - [ ] If Newt Router supported multipart encoding it could proxy to a web service that provided file upload managment

@@ -17,6 +17,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -135,8 +136,9 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		mt.Port = port
 	}
 	if verbose {
-		fmt.Fprintf(out, "port set to %q\n", mt.Port)
+		fmt.Fprintf(out, "port set to %d\n", mt.Port)
 	}
+
 	if timeout != 0 {
 		mt.Timeout = time.Duration(timeout) * time.Second
 	}
@@ -163,7 +165,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		}
 	}
 	// Launch web service
-	fmt.Printf("starting %s listening on port %s (press Ctrl-c to exit)\n", appName, mt.Port)
+	fmt.Printf("starting %s listening on port :%d (press Ctrl-c to exit)\n", appName, mt.Port)
 	if err := mt.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return MUSTACHE_FAIL
@@ -231,8 +233,16 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 		return OK
 	}
 
-	// Launch web service
-	fmt.Fprintf(out, "starting %s listening on port %s (use Ctr-c to exit)\n", appName, router.Port)
+	// Launch web services
+	fmt.Fprintf(out, "starting %s listening on port :%d (use Ctr-c to exit)\n", appName, router.Port)
+	if router.Htdocs != "" {
+		dir, err := filepath.Abs(router.Htdocs)
+		if err == nil {
+			fmt.Fprintf(out, "\tstatic content %s\n", dir)
+		} else {
+			fmt.Fprintf(out, "\tstatic content %s (warning: %s)\n", router.Htdocs, err)
+		}
+	}
 	if err := router.ListenAndServe(); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return ROUTER_FAIL
@@ -436,7 +446,7 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 
 	// The router starts up second and is what prevents service from falling through.
 	if cfg.Applications != nil && cfg.Applications.NewtRouter != nil {
-		func() {
+		go func() {
 			RunNewtRouter(in, out, eout, args, false, 0, "", verbose)
 		}()
 	}
@@ -446,7 +456,7 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 	c := make(chan os.Signal, 1)
 
 	// We're listening for all signals, probably should narrow this down.
-	signal.Notify(c)
+	signal.Notify(c, os.Interrupt, os.Kill)
 
 	// Block until any signal is received.
 	s := <-c

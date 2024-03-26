@@ -1,6 +1,6 @@
 ---
-title: "newt(1) user manual | 0.0.7-dev fc5e455"
-pubDate: 2024-03-13
+title: "newt(1) user manual | 0.0.7 d87045e"
+pubDate: 2024-03-26
 author: "R. S. Doiel"
 ---
 
@@ -52,6 +52,14 @@ questions. It can also update your `.gitignore` file too.
 generate
 : this is used to generate your SQL, PostgREST configuration and Mustache templates
 based on the contents of your Newt YAML file.
+
+run
+: this will run the defined services in the application attribute of the Newt YAML file.
+This is intended for use in development. In a production setting you'd setup the individual
+services to run from systemd or init as services.
+
+sws
+: this will run Newt's static web server.
 
 # YAML_CONFIG_FILE 
 

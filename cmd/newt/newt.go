@@ -66,6 +66,14 @@ generate
 : this is used to generate your SQL, PostgREST configuration and Mustache templates
 based on the contents of your Newt YAML file.
 
+run
+: this will run the defined services in the application attribute of the Newt YAML file.
+This is intended for use in development. In a production setting you'd setup the individual
+services to run from systemd or init as services.
+
+sws
+: this will run Newt's static web server.
+
 # YAML_CONFIG_FILE 
 
 **{app_name}** is configured in a YAML file. What is described below is the complete

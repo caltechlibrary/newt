@@ -35,12 +35,20 @@ the pipeline</label></li>
 <li><label><input type="checkbox" checked="" />decide if it is object
 name then action or action then object name, I’ve seem to have flipped
 flopped around on this in the code.</label></li>
+<li><label><input type="checkbox" />When using Newt to run services,
+each services needs to display the port it is running on.</label></li>
 </ul>
 <h2 id="next-for-the-second-prototype">Next for the second
 prototype</h2>
 <p>NOTE: X is completed, P is partial completion, D (dropped) is
 skipping implementation</p>
 <ul>
+<li><label><input type="checkbox" />Newt Router currently should
+restrict POST to urlencoded or application/json encoded but explicitly
+disallow multipart form encoding since Newt Router doesn’t support file
+uploads yet.</label></li>
+<li><label><input type="checkbox" />Newt Router needs to validate it’s
+inputs for POST, PUT, PATCH against a specific data model</label></li>
 <li><label><input type="checkbox" />Need a way to assign a sql trigger
 from a form element, could use the <code>x-pgsql-*</code> as an element
 attribute then when I write the HTML I skip those
@@ -225,6 +233,11 @@ one file like what I did with exit codes.</li>
 </ul>
 <h2 id="someday-maybe">Someday, maybe</h2>
 <ul class="task-list">
+<li><label><input type="checkbox" />If the Newt Router is going to proxy
+file uploads it will need to specify the route as multipart encoded, if
+Newt Router can generate object ids when creating new objects along with
+the file upload then you could automagically map the object into an S3
+prototocol path for file storage and further processing</label></li>
 <li><label><input type="checkbox" />The generate could generating an
 Apache include conf file or an NGINX configuration file</label></li>
 <li><label><input type="checkbox" />Solr could bespecified like
