@@ -64,7 +64,7 @@ const (
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
 func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
 	//appName := "Newt Generator"
-	fName, target, codeType := "", "", ""
+	fName, generatorName, action, modelName := "", "", "", ""
 	if len(args) > 0 {
 		fName = args[0]
 	} else {
@@ -72,13 +72,16 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 		return CONFIG
 	}
 	if len(args) > 1 {
-		target = args[1]
+		generatorName = args[1]
 	} else {
 		fmt.Fprintf(eout, "missing generator name, e.g. postgres, postgrest, mustache\n")
 		return CONFIG
 	}
 	if len(args) > 2 {
-		codeType = args[2]
+		action = args[2]
+	}
+	if len(args) > 3 {
+		modelName = args[3]
 	}
 	cfg, err := LoadConfig(fName)
 	if err != nil {
@@ -96,7 +99,7 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 	}
 	generator.out = out
 	generator.eout = eout
-	if err := generator.Generate(target, codeType); err != nil {
+	if err := generator.Generate(generatorName, action, modelName); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return GENERATOR_FAIL
 	}

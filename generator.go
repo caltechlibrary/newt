@@ -6,15 +6,14 @@ import (
 )
 
 // NewtGenerator holds our Newt Generator structures for rendering code.
-// FIXME: Not implemented yet.
 type NewtGenerator struct {
 	// Namespace is used when generating the SQL/conf for setting up Postgres+PostgREST
 	Namespace string
 
-	// Models holds the models used to generator code
+	// Models holds the models used to generator specific code
 	Models []*NewtModel
 
-	// Options holds the result environment variables and options that can be usedd in generator code
+	// Options holds the result environment variables and options that can be used in generator code
 	Options map[string]string
 
 	// internal this is the output for code generation, usually resolves to stdout
@@ -67,8 +66,8 @@ func NewGenerator(cfg *Config) (*NewtGenerator, error) {
 //
 // The "models_test" contains SQL to test your models and ensure they
 // were created successfully.
-func (g *NewtGenerator) renderPostgreSQL(codeType string) error {
-	switch codeType {
+func (g *NewtGenerator) renderPostgreSQL(action string) error {
+	switch action {
 	case "setup":
 		return pgSetup(g.out, g.Namespace)
 	case "models":
@@ -76,13 +75,13 @@ func (g *NewtGenerator) renderPostgreSQL(codeType string) error {
 	case "models_test":
 		return pgModelsTest(g.out, g.Namespace, g.Models)
 	default:
-		return fmt.Errorf("%q not supported at this time", codeType)
+		return fmt.Errorf("%q not supported at this time", action)
 	}
 }
 
 // renderPostgREST does what its name implies. It the configuration
 // file used when starting up PostgREST.
-func (g *NewtGenerator) renderPostgREST(codeType string) error {
+func (g *NewtGenerator) renderPostgREST() error {
 	port := "5432"
 	if g.Postgres != nil && g.Postgres.Port != 0 {
 		port = fmt.Sprintf("%s", g.Postgres.Port)
@@ -91,27 +90,74 @@ func (g *NewtGenerator) renderPostgREST(codeType string) error {
 }
 
 
-func (g *NewtGenerator) renderMustache(codeType string) error {
-	return fmt.Errorf("g.renderMustache(%q) not implemented", codeType)
+// renderMustache will render a mustache template for a given model. The action corresponds
+// to the model name.
+func (g *NewtGenerator) renderMustache(action string, modelName string) error {
+	return fmt.Errorf("g.renderMustache(%q, %q) not implemented", action, modelName)
 }
 
-func (g *NewtGenerator) renderHtml(codeType string) error {
-	return fmt.Errorf("g.renderHtml(%q) not implemented", codeType)
+// renderHtml will render HTML forms for given action and model name.
+func (g *NewtGenerator) renderHtml(action string, modelName string) error {
+	return fmt.Errorf("g.renderHtml(%q, %q) not implemented", action, modelName)
 }
 
-// Generator generates the code based on the contents of Generator struct.
-// FIXME: Not implemented yet.
-func (g *NewtGenerator) Generate(target string, codeType string) error {
-	switch target {
+// validate action from list of actions.
+func validateAction(action string, supportedActions []string) error {
+	if action == "" {
+		return fmt.Errorf("missing action")
+	}
+	for _, supportedAction := range supportedActions {
+		if action == supportedAction {
+			return nil
+		}
+	}
+	return fmt.Errorf("%q is not a supported action")
+}
+
+// validateModelName
+func validateModelName(modelName string, models []*NewtModel) error {
+	for _, model := range models {
+		if modelName == model.Name {
+			return nil
+		}
+	}
+	return fmt.Errorf("%q is not a valid model name")
+}
+
+// Generator generates the code based on the contents of Generator struct. It will also verify that the
+// needed parameters are provided.
+//
+// - generatorName is the generator to use
+// - action is a parameter that the selected generator can use (e.g. PostgreSQL has setup as well as )
+// - modelName holds the name of the model needing code generation
+func (g *NewtGenerator) Generate(generatorName string, action string, modelName string) error {
+	pgActions := []string{ "setup", "models", "models_test" }
+	modelActions := []string{ "create", "read", "update", "delete", "list" }
+	switch generatorName {
 	case "postgres":
-		return g.renderPostgreSQL(codeType)
+		if err := validateAction(action, pgActions); err != nil {
+			return err
+		}
+		return g.renderPostgreSQL(action)
 	case "postgrest":
-		return g.renderPostgREST(codeType)
+		return g.renderPostgREST()
 	case "mustache":
-		return g.renderMustache(codeType)
+		if err := validateAction(action, modelActions); err != nil  {
+			return err
+		}
+		if err := validateModelName(modelName, g.Models);  err != nil {
+			return err
+		}
+		return g.renderMustache(action, modelName)
 	case "html":
-		return g.renderHtml(codeType)
+		if err := validateAction(action, modelActions); err != nil  {
+			return err
+		}
+		if err := validateModelName(modelName, g.Models);  err != nil {
+			return err
+		}
+		return g.renderHtml(action, modelName)
 	default:
-		return fmt.Errorf("%q is not supported at this time", target)
+		return fmt.Errorf("%q is not supported at this time", generatorName)
 	}
 }

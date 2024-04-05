@@ -26,8 +26,8 @@
 <h1 id="name">NAME</h1>
 <p>newtgenerator</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p>newtgenerator <a href="#options">OPTIONS</a> CONFIG_FILE GENERATOR
-[MODEL] [ACTION]</p>
+<p>newtgenerator <a href="#options">OPTIONS</a> CONFIG_FILE GENERATOR <a
+href="#action">ACTION</a> <a href="#model">MODEL</a></p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>newtgenerator</strong> is a command line tool for generate
 Postgres SQL, PostgREST configuration, Mustache templates and html. It
@@ -199,26 +199,30 @@ Newt Prototype. This parameter lets you set which one you are using. It
 is required. Each generator type may accept more options. The Postgres
 SQL generator, “postgres”, can generate three different SQL files,
 setup.sql, models.sql and models_test.sql.</p>
-<h1 id="models-and-action">MODELS and ACTION</h1>
+<h1 id="action">ACTION</h1>
 <p>The Mustache generator needs to know which model and for what CRUD-L
 operation you require a template generated. MODEL should match on of the
 model id values in the models property of the Newt YAML. The ACTION
 needs to be one of the following, “create”, “read”, “update”, “delete”,
 or “list”.</p>
+<h1 id="model">MODEL</h1>
+<p>This specifies the model that is the subject of the ACTION. The model
+is defined in the YAML and MODEL is referenced by the model’s
+<code>.name</code>.</p>
 <h1 id="examples">EXAMPLES</h1>
 <p>In this example we use the models described below to generate the
-configuration file and SQL file need to bootstrap
-Postgres+PostgREST.</p>
+configuration file and SQL file need to bootstrap Postgres+PostgREST.
+Then we need to generate our templates for the “people” model.</p>
 <pre><code>newtgenerator people.yaml postgres setup &gt;setup.sql
 newtgenerator people.yaml postgres models &gt;models.sql
 newtgenerator people.yaml postgres models_test &gt;models_test.sql
 newtgenerator people.yaml postgrest &gt;postgrest.conf
 
-newtgenerator people.yaml mustache create &gt;create_people.tmpl
-newtgenerator people.yaml mustache read &gt;read_people.tmpl
-newtgenerator people.yaml mustache update &gt;update_people.tmpl
-newtgenerator people.yaml mustache delete &gt;delete_people.tmpl
-newtgenerator people.yaml mustache list &gt;list_people.tmpl</code></pre>
+newtgenerator people.yaml mustache create people &gt;create_people.tmpl
+newtgenerator people.yaml mustache read people &gt;read_people.tmpl
+newtgenerator people.yaml mustache update people &gt;update_people.tmpl
+newtgenerator people.yaml mustache delete people &gt;delete_people.tmpl
+newtgenerator people.yaml mustache list people &gt;list_people.tmpl</code></pre>
 <p>This is an example YAML file used to generator Postgres SQL,
 PostgREST configuration and Mustache templates.</p>
 <div class="sourceCode" id="cb2"><pre

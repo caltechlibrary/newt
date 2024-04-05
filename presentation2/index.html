@@ -54,7 +54,7 @@ class="email">rsdoiel@caltech.edu</a>
 class="slide section level1">
 <h1>Choose wisely: pick your abstractions</h1>
 <ul>
-<li>Simple = (No coding) + (Less code)</li>
+<li>Simple = (No coding) + (Less coding)</li>
 <li>Compose applications, use data pipelines</li>
 <li>Align service and deliverables</li>
 </ul>
@@ -91,8 +91,8 @@ class="slide section level1">
 <li>text editor</li>
 </ul>
 </div>
-<div id="step-two-generate-our-files" class="slide section level1">
-<h1>Step two generate our files</h1>
+<div id="step-two-generate-our-sql-files" class="slide section level1">
+<h1>Step two generate our SQL files</h1>
 <ul>
 <li>newtgenerator</li>
 <li>text editor</li>
@@ -106,18 +106,23 @@ class="slide section level1">
 <li>postgrest</li>
 </ul>
 </div>
-<div id="step-four-define-routes-and-map-templates"
+<div id="step-four-write-some-mustache-templates"
 class="slide section level1">
-<h1>Step four define routes and map templates</h1>
+<h1>Step four write some Mustache templates</h1>
+<ul>
+<li>text editor</li>
+</ul>
+<p>(this step will eventually be replaced by generated code)</p>
+</div>
+<div id="step-five-define-routes" class="slide section level1">
+<h1>Step five define routes</h1>
 <ul>
 <li>text editor</li>
 </ul>
 </div>
-<div id="step-five-fire-everything-up-and-test"
-class="slide section level1">
-<h1>Step five, fire everything up and test</h1>
+<div id="time-to-test-fire-everything-up" class="slide section level1">
+<h1>Time to test, fire everything up</h1>
 <ul>
-<li>PostgREST</li>
 <li>newt</li>
 <li>web browser</li>
 </ul>
@@ -125,7 +130,7 @@ class="slide section level1">
 <div id="what-did-we-see" class="slide section level1">
 <h1>What did we see?</h1>
 <ul>
-<li>Code generation</li>
+<li>Code generation (SQL, PostgREST config)</li>
 <li>Data pipelines and a bunch-o-services</li>
 <li>Minimal browser expectations</li>
 </ul>
@@ -135,30 +140,34 @@ class="slide section level1">
 <ul>
 <li>“Off the shelf” is simpler</li>
 <li>SQL turns people off, use a code generator</li>
-<li>Mustache templates, simple but not too simple</li>
-<li>Unexpected encounters …</li>
+<li>HTML and Mustache need a code generator</li>
 </ul>
 </div>
-<div id="unexpected-encounters" class="slide section level1">
-<h1>Unexpected encounters</h1>
+<div id="lessons-learned" class="slide section level1">
+<h1>Lessons learned</h1>
 <ul>
-<li>Web services’ cognitive price</li>
+<li>Managing web services has a cognitive price</li>
 <li>Containers add to complexity</li>
+<li>Keep your pipelines short</li>
 <li>Web services need a “developer” mode for debugging</li>
 </ul>
 </div>
-<div id="newt-has-weaknesses" class="slide section level1">
-<h1>Newt has weaknesses</h1>
+<div id="whats-next" class="slide section level1">
+<h1>What’s next?</h1>
 <ul>
-<li>Newt is <strong>an working prototype</strong> (February/March
-2024)</li>
-<li>Many routes are hard to maintain</li>
-<li>Pipeline delays accumulate</li>
+<li>Mustache template generation</li>
+<li>HTML file generation</li>
+</ul>
+</div>
+<div id="newts-weaknesses" class="slide section level1">
+<h1>Newt’s weaknesses</h1>
+<ul>
+<li>Newt is <strong>a work in progress</strong> (April 2024)</li>
 <li>Newt is missing file upload support</li>
 </ul>
 </div>
-<div id="newt-has-strengths" class="slide section level1">
-<h1>Newt has strengths</h1>
+<div id="newts-strengths" class="slide section level1">
+<h1>Newt’s strengths</h1>
 <blockquote>
 <p>A very mature foundation</p>
 </blockquote>
@@ -174,12 +183,12 @@ class="slide section level1">
 </ul></li>
 </ul>
 </div>
-<div id="questions-guiding-next-steps" class="slide section level1">
-<h1>Questions guiding next steps</h1>
+<div id="unanswered-questions" class="slide section level1">
+<h1>Unanswered Questions</h1>
 <ul>
 <li>Should the router support non-localhost URLs?</li>
-<li>What tools should come from the Newt Project?</li>
-<li>How do we move Newt beyond a Caltech Library experiment?</li>
+<li>What tools should come with the Newt?</li>
+<li>Should Newt move beyond a Caltech Library experiment?</li>
 </ul>
 </div>
 <div id="my-wish-list" class="slide section level1">
@@ -187,7 +196,8 @@ class="slide section level1">
 <ul>
 <li>SQLite 3 database support</li>
 <li>Visually programming for Newt YAML files</li>
-<li>Web components for LAM metadata types</li>
+<li>Web components for gallery, library, archive and museum metadata
+types</li>
 <li>A simple S3 protocol web service that implements storing object
 using OCFL</li>
 </ul>

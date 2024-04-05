@@ -1,7 +1,7 @@
 
 # Newt Project
 
-Newt is an experimental set of tools for rapid application development. More specifically Newt can build metadata curation tools. These types of applications are commonly needed in libraries, archives and museums (abbr: LAM). Newt makes creating these type of applications easier.
+Newt is an experimental set of tools for rapid application development. Specifically Newt is focused on web based metadata curation tools. These types of applications are commonly needed in galleries, libraries, archives and museums (abbr: GLAM). Newt makes creating these type of applications easier.
 
 How does Newt do that? Newt implements a service oriented architecture to assemble web applications.
 
@@ -20,13 +20,13 @@ This is not an exhaustive list. These types of applications can all be integrate
 
 > Wait, what about my custom metadata needs?
 
-That role can be filled by a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as that JSON data source. Newt's code generator lends a hand here. Using Newt's YAML file the code generator can generate SQL for setting up Postgres+PostgREST, the SQL for managing your objects and the configuration file for PostgREST. Additionally Newt's code generator can render Mustache templates too. Between the SQL and Mustache templates you have the basic CRUD-L[^12] operations used to manage metadata. Off the self software with the Newt generator, router and template service provides the core features for building LAM applications.
+That role can be filled by a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as that JSON data source. Newt's code generator lends a hand here. Using Newt's YAML file the code generator can generate SQL for setting up Postgres+PostgREST, the SQL for managing your objects and the configuration file for PostgREST. Additionally Newt's code generator can render Mustache templates too. Between the SQL and Mustache templates you have the basic CRUD-L[^12] operations used to manage metadata. Off the self software with the Newt generator, router and template service provides the core features for building GLAM applications.
 
 ## Does Newt clean my house or make cocktails?
 
 Newt is a narrowly focused rapid application development toolbox. Newt will not clean your house or make a cocktail. Additionally it does not support the class of web applications that handle file uploads. That means it is not a replacement for Drupal, WordPress, Islandora, etc. Newt is for building applications more in line with ArchivesSpace but with simpler data models. If you need file upload support Newt is not the right solution at this time.
 
-Newt applications are well suited to interacting with other applications that provide a JSON API. A service with a JSON API can be treated as a JSON data source. A JSON data source can easily be run through a pipeline. Many LAM applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach.
+Newt applications are well suited to interacting with other applications that provide a JSON API. A service with a JSON API can be treated as a JSON data source. A JSON data source can easily be run through a pipeline. Many GLAM applications like ArchivesSpace and Invenio RDM provide JSON API. It is possible to extended those systems by creating simpler services that can talk to those JSON data sources. Newt is well suited to this "development at the edges" approach.
 
 What if those systems aren't available on localhost? In that case you need to provide a proxy from these services to localhost (e.g. via Apache 2, NGINX or Python script). You would write your Newt YAML file pointing at the localhost end point. This approach can be used to integrated external systems like ORCID, ROR, CrossRef, DataCite, Open Alex, Pub Med Central.
 
@@ -68,7 +68,7 @@ The Newt YAML ties this together expressing
 
 ## What type of applications are supported by Newt?
 
-Most LAM applications are focused on managing and curating some sort of metadata records. This is the primary target of Newt. This might be as simple as a controlled vocabulary or as complex as an archival or repository metadata record.
+Most GLAM applications are focused on managing and curating some sort of metadata records. This is the primary target of Newt. This might be as simple as a controlled vocabulary or as complex as an archival or repository metadata record.
 
 ## Motivation
 
@@ -92,7 +92,7 @@ By the mid 1990s the Open Source databases like MySQL and Postgres were popular 
 
 Much of the back end of web applications can largely be assemble from off the shelf software. Middleware however remains complex. I believe this to be a by product of inertia in software development practices and the assumption that what is good for "Google Scale" is good for everyone.
 
-I think a radical simplification is due.  **Newt is intended to spark that conversation**. My observation is most software doesn't need to scale large. Even in the research and LAM communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software. A better human experience is an intended side effect of Newt.
+I think a radical simplification is due.  **Newt is intended to spark that conversation**. My observation is most software doesn't need to scale large. Even in the research and GLAM communities we don't routinely write software that scales as large as [Zenodo](https://zenodo.org/).  We don't typically support tens of thousands of simultaneous users. If you accept that premise then we can focus our efforts around orchestrating off the shelf components and put our remaining development efforts into improving the human experience of using our software. A better human experience is an intended side effect of Newt.
 
 A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.
 

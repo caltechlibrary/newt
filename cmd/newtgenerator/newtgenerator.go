@@ -23,7 +23,7 @@ author: "R. S. Doiel"
 
 # SYNOPSIS
 
-{app_name} [OPTIONS] CONFIG_FILE GENERATOR [MODEL] [ACTION]
+{app_name} [OPTIONS] CONFIG_FILE GENERATOR [ACTION] [MODEL]
 
 # DESCRIPTION
 
@@ -144,16 +144,22 @@ lets you set which one you are using. It is required. Each generator type may ac
 The Postgres SQL generator, "postgres", can generate three different SQL files, setup.sql, models.sql and
 models_test.sql.  
 
-# MODELS and ACTION
+# ACTION 
 
 The Mustache generator needs to know which model and for what CRUD-L operation you require a template generated.
 MODEL should match on of the model id values in the models property of the Newt YAML. The ACTION needs to be
 one of the following, "create", "read", "update", "delete", or "list".
 
+# MODEL
+
+This specifies the model that is the subject of the ACTION. The model is defined in the YAML and MODEL
+is referenced by the model's `+"`"+`.name`+"`"+`.
+
 # EXAMPLES
 
 In this example we use the models described below to generate the configuration file and SQL
-file need to bootstrap Postgres+PostgREST.
+file need to bootstrap Postgres+PostgREST. Then we need to generate our templates for the
+"people" model.
 
 ~~~
 {app_name} people.yaml postgres setup >setup.sql
@@ -161,11 +167,11 @@ file need to bootstrap Postgres+PostgREST.
 {app_name} people.yaml postgres models_test >models_test.sql
 {app_name} people.yaml postgrest >postgrest.conf
 
-{app_name} people.yaml mustache create >create_people.tmpl
-{app_name} people.yaml mustache read >read_people.tmpl
-{app_name} people.yaml mustache update >update_people.tmpl
-{app_name} people.yaml mustache delete >delete_people.tmpl
-{app_name} people.yaml mustache list >list_people.tmpl
+{app_name} people.yaml mustache create people >create_people.tmpl
+{app_name} people.yaml mustache read people >read_people.tmpl
+{app_name} people.yaml mustache update people >update_people.tmpl
+{app_name} people.yaml mustache delete people >delete_people.tmpl
+{app_name} people.yaml mustache list people >list_people.tmpl
 ~~~
 
 This is an example YAML file used to generator Postgres SQL, PostgREST configuration and Mustache templates.

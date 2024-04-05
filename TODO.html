@@ -27,7 +27,7 @@
 <h2 id="bugs">Bugs</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Newt Init should not add routes or
-templates if they are already defined in the previously read in
+templates if they are already defined in the previously read
 YAML</label></li>
 <li><label><input type="checkbox" checked="" />Newt Router needs to
 bubble up the HTTP error code from the last retrieved HTTP response in
@@ -43,6 +43,9 @@ prototype</h2>
 <p>NOTE: X is completed, P is partial completion, D (dropped) is
 skipping implementation</p>
 <ul>
+<li><label><input type="checkbox" />Need to decide on how to vet
+submitted web forms, do I include a model in the route definition or
+should this be done as an independent part of the pipeline?</label></li>
 <li><label><input type="checkbox" />Newt Router currently should
 restrict POST to urlencoded or application/json encoded but explicitly
 disallow multipart form encoding since Newt Router doesn’t support file

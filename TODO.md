@@ -3,7 +3,7 @@
 
 ## Bugs
 
-- [ ] Newt Init should not add routes or templates if they are already defined in the previously read in YAML
+- [ ] Newt Init should not add routes or templates if they are already defined in the previously read YAML
 - [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
 - [X] decide if it is object name then action or action then object name, I've seem to have flipped flopped around on this in the code.
 - [ ] When using Newt to run services, each services needs to display the port it is running on.
@@ -12,6 +12,7 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
+- [ ] Need to decide on how to vet submitted web forms, do I include a model in the route definition or should this be done as an independent part of the pipeline?
 - [ ] Newt Router currently should restrict POST to urlencoded or application/json encoded but explicitly disallow multipart form encoding since Newt Router doesn't support file uploads yet.
 - [ ] Newt Router needs to validate it's inputs for POST, PUT, PATCH against a specific data model
 - [ ] Need a way to assign a sql trigger from a form element, could use the `x-pgsql-*` as an element attribute then when I write the HTML I skip those attributes

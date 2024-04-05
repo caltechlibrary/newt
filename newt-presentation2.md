@@ -25,7 +25,7 @@ Is Newt and "off the shelf" enough?
 
 # Choose wisely: pick your abstractions
 
-- Simple = (No coding) + (Less code)
+- Simple = (No coding) + (Less coding)
 - Compose applications, use data pipelines
 - Align service and deliverables
 
@@ -51,7 +51,7 @@ A second prototype Newt application
 
 - text editor
 
-# Step two generate our files
+# Step two generate our SQL files
 
 - newtgenerator
 - text editor
@@ -61,19 +61,24 @@ A second prototype Newt application
 - psql
 - postgrest
 
-# Step four define routes and map templates
+# Step four write some Mustache templates
 
 - text editor
 
-# Step five, fire everything up and test
+(this step will eventually be replaced by generated code)
 
-- PostgREST 
+# Step five define routes
+
+- text editor
+
+# Time to test, fire everything up
+
 - newt
 - web browser
 
 # What did we see?
 
-- Code generation
+- Code generation (SQL, PostgREST config)
 - Data pipelines and a bunch-o-services
 - Minimal browser expectations
 
@@ -81,23 +86,26 @@ A second prototype Newt application
 
 - "Off the shelf" is simpler
 - SQL turns people off, use a code generator
-- Mustache templates, simple but not too simple
-- Unexpected encounters ...
+- HTML and Mustache need a code generator
 
-# Unexpected encounters
+# Lessons learned
 
-- Web services' cognitive price
+- Managing web services has a cognitive price
 - Containers add to complexity
+- Keep your pipelines short
 - Web services need a "developer" mode for debugging
 
-# Newt has weaknesses
+# What's next?
 
-- Newt is **an working prototype** (February/March 2024)
-- Many routes are hard to maintain
-- Pipeline delays accumulate
+- Mustache template generation
+- HTML file generation
+
+# Newt's weaknesses
+
+- Newt is **a work in progress** (April 2024)
 - Newt is missing file upload support
 
-# Newt has strengths
+# Newt's strengths
 
 > A very mature foundation
 
@@ -106,17 +114,17 @@ A second prototype Newt application
 - 21st Century tech
   - JSON (2001), YAML (2001), Mustache templates (2009), PostgREST (2014)
 
-# Questions guiding next steps
+# Unanswered Questions
 
 - Should the router support non-localhost URLs?
-- What tools should come from the Newt Project?
-- How do we move Newt beyond a Caltech Library experiment?
+- What tools should come with the Newt?
+- Should Newt move beyond a Caltech Library experiment?
 
 # My wish list ...
 
 - SQLite 3 database support
 - Visually programming for Newt YAML files
-- Web components for LAM metadata types
+- Web components for gallery, library, archive and museum metadata types
 - A simple S3 protocol web service that implements storing object using OCFL
 
 # Related resources
