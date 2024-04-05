@@ -41,7 +41,7 @@ func TestInputElement(t *testing.T) {
 	}
 
 	input.Id = "the_question"
-	input.Attributes = map[string]interface{}{
+	input.Attributes = map[string]string{
 		"value": "hello world!",
 		"title": "this is how we ask questions of the world!",
 	}

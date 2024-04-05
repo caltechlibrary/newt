@@ -162,7 +162,7 @@ func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map
 		// Now we need tp decide if we need convert POST data into JSON
 		input, err = io.ReadAll(r.Body)
 		if err != nil {
-			log.Printf("failed to read posted data, %s %s, %s error %s", r.Method, r.URL.Path, err)
+			log.Printf("failed to read posted data, %s %s, content-type %s error %s", r.Method, r.URL.Path, contentType, err)
 		}
 		if nr.Debug {
 			log.Printf("request was %s %s, content-type %q", r.Method, r.URL.Path, contentType)

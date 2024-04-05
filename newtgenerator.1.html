@@ -37,6 +37,13 @@ be written to standard out containing the generated code. Mustache
 template generation you need to include MODEL and ACTION because the
 specific template code generator needs to apply to one model and one of
 the CRUD-L actions.</p>
+<p>When rendering Mustache templates the generator generates “partial”
+templates. This is because the model does not tell us how you might want
+to embed the specific content in the application user interface. This
+isn’t a particular problem because the Newt Mustache template engine
+full supports partials. Will will need to hand code the wrapping
+template but can use the rendered partial to complete the basic user
+interface.</p>
 <h1 id="options">OPTIONS</h1>
 <dl>
 <dt>-help</dt>
@@ -208,7 +215,7 @@ or “list”.</p>
 <h1 id="model">MODEL</h1>
 <p>This specifies the model that is the subject of the ACTION. The model
 is defined in the YAML and MODEL is referenced by the model’s
-<code>.name</code>.</p>
+<code>.id</code> attribute.</p>
 <h1 id="examples">EXAMPLES</h1>
 <p>In this example we use the models described below to generate the
 configuration file and SQL file need to bootstrap Postgres+PostgREST.

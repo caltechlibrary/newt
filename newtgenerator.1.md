@@ -1,5 +1,5 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7 3877598"
+title: "newtgenerator(1) user manual | 0.0.7 28dbbd3"
 pubDate: 2024-04-05
 author: "R. S. Doiel"
 ---
@@ -19,6 +19,11 @@ It generates content per model definition in Newt's YAML file. For SQL and confi
 are ignored. One file will be written to standard out containing the generated code. Mustache template generation you need
 to include MODEL and ACTION because the specific template code generator needs to apply to one model and one of the
 CRUD-L actions.
+
+When rendering Mustache templates the generator generates "partial" templates. This is because the model
+does not tell us how you might want to embed the specific content in the application user interface. This isn't
+a particular problem because the Newt Mustache template engine full supports partials. Will will need to hand code
+the wrapping template but can use the rendered partial to complete the basic user interface.
 
 # OPTIONS
 
@@ -140,7 +145,7 @@ one of the following, "create", "read", "update", "delete", or "list".
 # MODEL
 
 This specifies the model that is the subject of the ACTION. The model is defined in the YAML and MODEL
-is referenced by the model's `.name`.
+is referenced by the model's `.id` attribute.
 
 # EXAMPLES
 

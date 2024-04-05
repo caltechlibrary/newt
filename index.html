@@ -25,10 +25,10 @@
 <section>
 <h1 id="newt-project">Newt Project</h1>
 <p>Newt is an experimental set of tools for rapid application
-development. More specifically Newt can build metadata curation tools.
-These types of applications are commonly needed in libraries, archives
-and museums (abbr: LAM). Newt makes creating these type of applications
-easier.</p>
+development. Specifically Newt is focused on web based metadata curation
+tools. These types of applications are commonly needed in galleries,
+libraries, archives and museums (abbr: GLAM). Newt makes creating these
+type of applications easier.</p>
 <p>How does Newt do that? Newt implements a service oriented
 architecture to assemble web applications.</p>
 <p>You can think of a web application as a sequence of requests and
@@ -80,7 +80,7 @@ templates too. Between the SQL and Mustache templates you have the basic
 CRUD-L<a href="#fn2" class="footnote-ref" id="fnref2"
 role="doc-noteref"><sup>2</sup></a> operations used to manage metadata.
 Off the self software with the Newt generator, router and template
-service provides the core features for building LAM applications.</p>
+service provides the core features for building GLAM applications.</p>
 <h2 id="does-newt-clean-my-house-or-make-cocktails">Does Newt clean my
 house or make cocktails?</h2>
 <p>Newt is a narrowly focused rapid application development toolbox.
@@ -93,10 +93,10 @@ the right solution at this time.</p>
 <p>Newt applications are well suited to interacting with other
 applications that provide a JSON API. A service with a JSON API can be
 treated as a JSON data source. A JSON data source can easily be run
-through a pipeline. Many LAM applications like ArchivesSpace and Invenio
-RDM provide JSON API. It is possible to extended those systems by
-creating simpler services that can talk to those JSON data sources. Newt
-is well suited to this “development at the edges” approach.</p>
+through a pipeline. Many GLAM applications like ArchivesSpace and
+Invenio RDM provide JSON API. It is possible to extended those systems
+by creating simpler services that can talk to those JSON data sources.
+Newt is well suited to this “development at the edges” approach.</p>
 <p>What if those systems aren’t available on localhost? In that case you
 need to provide a proxy from these services to localhost (e.g. via
 Apache 2, NGINX or Python script). You would write your Newt YAML file
@@ -153,7 +153,7 @@ some other format such as an HTML document)</li>
 </ul>
 <h2 id="what-type-of-applications-are-supported-by-newt">What type of
 applications are supported by Newt?</h2>
-<p>Most LAM applications are focused on managing and curating some sort
+<p>Most GLAM applications are focused on managing and curating some sort
 of metadata records. This is the primary target of Newt. This might be
 as simple as a controlled vocabulary or as complex as an archival or
 repository metadata record.</p>
@@ -203,8 +203,8 @@ the assumption that what is good for “Google Scale” is good for
 everyone.</p>
 <p>I think a radical simplification is due. <strong>Newt is intended to
 spark that conversation</strong>. My observation is most software
-doesn’t need to scale large. Even in the research and LAM communities we
-don’t routinely write software that scales as large as <a
+doesn’t need to scale large. Even in the research and GLAM communities
+we don’t routinely write software that scales as large as <a
 href="https://zenodo.org/">Zenodo</a>. We don’t typically support tens
 of thousands of simultaneous users. If you accept that premise then we
 can focus our efforts around orchestrating off the shelf components and

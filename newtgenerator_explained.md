@@ -95,17 +95,17 @@ That should return a list of people. Since our database tables aren't populated 
 
 ## Generating some templates for a web UI
 
-Newt comes with a light weight template engine called Newt Mustache. It implements Mustache templates. The Newt generator knows how to generate those. Newt can generate a template for each of our CRUD-L operations for each model. To know what template you want to generate you need to tell the generator you want to generate mustache templates, which model you generating it for and what action the template will model. As mentioned previously Newt generator writes the generated code to standard output and errors if encountered to standard error. Like with generating SQL and a configuration file this allows for flexibility in scripting via shell or a Makefile. Here's an example of the commands I type to create the templates for our people model.
+Newt comes with a light weight template engine called Newt Mustache. It implements Mustache templates. The Newt generator knows how to generate partial Mustache templates suitable for using from Newt Mustache.  Newt can generate a partial template for each of our CRUD-L operations for each model. To know what template you want to generate you need to tell the generator you want to generate mustache templates, which model you generating it for and what action the template will model. As mentioned previously Newt generator writes the generated code to standard output and errors if encountered to standard error. Like with generating SQL and a configuration file this allows for flexibility in scripting via shell or a Makefile. Here's an example of the commands I type to create the templates for our people model.
 
 ```shell
-newtgenerator mustache people create >people_create.tmpl
-newtgenerator mustache people read >people_read.tmpl
-newtgenerator mustache people update >people_update.tmpl
-newtgenerator mustache people delete >people_delete.tmpl
-newtgenerator mustache people list >people_list.tmpl
+newtgenerator mustache create people >people_create.tmpl
+newtgenerator mustache read people >people_read.tmpl
+newtgenerator mustache update people >people_update.tmpl
+newtgenerator mustache delete people >people_delete.tmpl
+newtgenerator mustache list people >people_list.tmpl
 ```
 
-If you examine the resulting templates you'll notice that create, update and delete include webforms and use the model types you describe. On the other hand the templates for read and list do not include webforms just some standard markup elements.  I expect you'll want to enhance these to meet you applications need but they should function well enough to test your data pipelines and debug them.
+If you examine the resulting templates you'll notice that create, update and delete include webforms and use the model types you describe. On the other hand the templates for read and list do not include webforms instead they render other HTML elements with Mustache embedded values. This will likely need further editing. Some field you many not want or you may choose different HTML elements over the default "span" wrapping model values. 
 
 I usually get the back end setup and tested before moving to make the application pretty and enhancing the browser experience.
 

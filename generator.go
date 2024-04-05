@@ -84,21 +84,26 @@ func (g *NewtGenerator) renderPostgreSQL(action string) error {
 func (g *NewtGenerator) renderPostgREST() error {
 	port := "5432"
 	if g.Postgres != nil && g.Postgres.Port != 0 {
-		port = fmt.Sprintf("%s", g.Postgres.Port)
+		port = fmt.Sprintf("%d", g.Postgres.Port)
 	}
 	return prConfig(g.out, g.Namespace, port)
 }
 
 
-// renderMustache will render a mustache template for a given model. The action corresponds
-// to the model name.
-func (g *NewtGenerator) renderMustache(action string, modelName string) error {
-	return fmt.Errorf("g.renderMustache(%q, %q) not implemented", action, modelName)
+// renderMustache will render a mustache template for a given model id. The action corresponds
+// to the model id.
+func (g *NewtGenerator) renderMustache(action string, modelId string) error {
+	for _, model := range g.Models {
+		if modelId == model.Id {
+			return MTmplGen(g.out, action, model)
+		}
+	}
+	return fmt.Errorf("failed to find model id %q", modelId)
 }
 
-// renderHtml will render HTML forms for given action and model name.
-func (g *NewtGenerator) renderHtml(action string, modelName string) error {
-	return fmt.Errorf("g.renderHtml(%q, %q) not implemented", action, modelName)
+// renderHtml will render HTML forms for given action and model id.
+func (g *NewtGenerator) renderHtml(action string, modelId string) error {
+	return fmt.Errorf("g.renderHtml(%q, %q) not implemented", action, modelId)
 }
 
 // validate action from list of actions.
@@ -111,17 +116,17 @@ func validateAction(action string, supportedActions []string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("%q is not a supported action")
+	return fmt.Errorf("%q is not a supported action", action)
 }
 
-// validateModelName
-func validateModelName(modelName string, models []*NewtModel) error {
+// validateModelId
+func validateModelId(modelId string, models []*NewtModel) error {
 	for _, model := range models {
-		if modelName == model.Name {
+		if modelId == model.Id {
 			return nil
 		}
 	}
-	return fmt.Errorf("%q is not a valid model name")
+	return fmt.Errorf("%q is not a valid model id", modelId)
 }
 
 // Generator generates the code based on the contents of Generator struct. It will also verify that the
@@ -129,8 +134,9 @@ func validateModelName(modelName string, models []*NewtModel) error {
 //
 // - generatorName is the generator to use
 // - action is a parameter that the selected generator can use (e.g. PostgreSQL has setup as well as )
-// - modelName holds the name of the model needing code generation
-func (g *NewtGenerator) Generate(generatorName string, action string, modelName string) error {
+// - modelId references the `.id` attribute of the model needing code generation
+func (g *NewtGenerator) Generate(generatorName string, action string, modelId string) error {
+	fmt.Fprintf(g.out, "This is writing to g.out from Generate(%q, %q, %q)\n", generatorName, action, modelId)
 	pgActions := []string{ "setup", "models", "models_test" }
 	modelActions := []string{ "create", "read", "update", "delete", "list" }
 	switch generatorName {
@@ -145,18 +151,20 @@ func (g *NewtGenerator) Generate(generatorName string, action string, modelName 
 		if err := validateAction(action, modelActions); err != nil  {
 			return err
 		}
-		if err := validateModelName(modelName, g.Models);  err != nil {
+		if err := validateModelId(modelId, g.Models);  err != nil {
 			return err
 		}
-		return g.renderMustache(action, modelName)
+		return g.renderMustache(action, modelId)
+	/*
 	case "html":
 		if err := validateAction(action, modelActions); err != nil  {
 			return err
 		}
-		if err := validateModelName(modelName, g.Models);  err != nil {
+		if err := validateModelId(modelId, g.Models);  err != nil {
 			return err
 		}
-		return g.renderHtml(action, modelName)
+		return g.renderHtml(action, modelId)
+	*/
 	default:
 		return fmt.Errorf("%q is not supported at this time", generatorName)
 	}

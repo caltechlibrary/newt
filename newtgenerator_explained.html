@@ -203,7 +203,8 @@ how it is working and actually how you might want to use it!</p>
 templates for a web UI</h2>
 <p>Newt comes with a light weight template engine called Newt Mustache.
 It implements Mustache templates. The Newt generator knows how to
-generate those. Newt can generate a template for each of our CRUD-L
+generate partial Mustache templates suitable for using from Newt
+Mustache. Newt can generate a partial template for each of our CRUD-L
 operations for each model. To know what template you want to generate
 you need to tell the generator you want to generate mustache templates,
 which model you generating it for and what action the template will
@@ -212,17 +213,18 @@ to standard output and errors if encountered to standard error. Like
 with generating SQL and a configuration file this allows for flexibility
 in scripting via shell or a Makefile. Here’s an example of the commands
 I type to create the templates for our people model.</p>
-<pre class="shell"><code>newtgenerator mustache people create &gt;people_create.tmpl
-newtgenerator mustache people read &gt;people_read.tmpl
-newtgenerator mustache people update &gt;people_update.tmpl
-newtgenerator mustache people delete &gt;people_delete.tmpl
-newtgenerator mustache people list &gt;people_list.tmpl</code></pre>
+<pre class="shell"><code>newtgenerator mustache create people &gt;people_create.tmpl
+newtgenerator mustache read people &gt;people_read.tmpl
+newtgenerator mustache update people &gt;people_update.tmpl
+newtgenerator mustache delete people &gt;people_delete.tmpl
+newtgenerator mustache list people &gt;people_list.tmpl</code></pre>
 <p>If you examine the resulting templates you’ll notice that create,
 update and delete include webforms and use the model types you describe.
 On the other hand the templates for read and list do not include
-webforms just some standard markup elements. I expect you’ll want to
-enhance these to meet you applications need but they should function
-well enough to test your data pipelines and debug them.</p>
+webforms instead they render other HTML elements with Mustache embedded
+values. This will likely need further editing. Some field you many not
+want or you may choose different HTML elements over the default “span”
+wrapping model values.</p>
 <p>I usually get the back end setup and tested before moving to make the
 application pretty and enhancing the browser experience.</p>
 <p>There are two approaches to testing your templates. One is to use

@@ -354,7 +354,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				if len(mt.Partials) > 0 {
 					tList = append(tList, mt.Partials...)
 				}
-				fmt.Fprintf(out, "http://localhost:%s%s points at %s\n", port, mt.Pattern, strings.Join(tList, ", "))
+				fmt.Fprintf(out, "http://localhost:%d%s points at %s\n", port, mt.Pattern, strings.Join(tList, ", "))
 				if mt.Description != "" {
 					fmt.Fprintf(out, "\t%s\n\n", mt.Description)
 				}
@@ -862,7 +862,7 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 	if _, err := os.Stat(".git"); err == nil {
 		fmt.Fprintf(out, `It appears your are using the git revision control system.
 You should make sure that generated code containing secrets is NOT included in your
-repository. It is recommented that add the following to your .gitignore file.
+repository for %q. It is recommented that add the following to your .gitignore file.
 
     # Newt Project ignore list.
     *setup*.sql
