@@ -87,43 +87,67 @@ class="slide section level1">
 </div>
 <div id="step-one-create-our-yaml-file" class="slide section level1">
 <h1>Step one create our YAML file</h1>
+<pre><code>newt init people.yaml
+vi people.yaml</code></pre>
 <ul>
-<li>text editor</li>
+<li>generate people.yaml</li>
+<li>edit people.yaml</li>
 </ul>
 </div>
 <div id="step-two-generate-our-sql-files" class="slide section level1">
 <h1>Step two generate our SQL files</h1>
+<pre><code>newtgenerator people.yaml postgres setup &gt;setup.sql
+newtgenerator people.yaml postgres models &gt;models.sql
+newtgenerator people.yaml postgres models_test &gt;models_test.sql</code></pre>
 <ul>
 <li>newtgenerator</li>
-<li>text editor</li>
+<li>edit your SQL files as needed</li>
 </ul>
 </div>
-<div id="step-three-implement-our-json-data-source"
+<div id="step-three-generate-postgrest-config"
 class="slide section level1">
-<h1>Step three implement our JSON data source</h1>
+<h1>Step three generate PostgREST config</h1>
+<pre><code>newtgenerator people.yaml postgrest &gt;postgrest.conf</code></pre>
+<ul>
+<li>newtgenerator</li>
+</ul>
+</div>
+<div id="step-four-setup-your-data-sources"
+class="slide section level1">
+<h1>Step four, setup your data sources</h1>
+<pre><code>psql &lt;setup.sql
+psql &lt;models.sql
+psql &lt;models_test.sql</code></pre>
 <ul>
 <li>psql</li>
-<li>postgrest</li>
 </ul>
 </div>
-<div id="step-four-write-some-mustache-templates"
+<div id="step-five-mustache-templates" class="slide section level1">
+<h1>Step five, Mustache templates</h1>
+<pre><code>newtgenerator people.yaml mustache create people &gt;create_people.tmpl
+newtgenerator people.yaml mustache read people &gt;read_people.tmpl
+newtgenerator people.yaml mustache update people &gt;update_people.tmpl
+newtgenerator people.yaml mustache delete people &gt;delete_people.tmpl
+newtgenerator people.yaml mustache list people &gt;list_people.tmpl
+newtgenerator people.yaml mustache page people &gt;page_people.tmpl</code></pre>
+<ul>
+<li>newtgenerator</li>
+</ul>
+</div>
+<div id="step-six-edit-and-test-your-templates"
 class="slide section level1">
-<h1>Step four write some Mustache templates</h1>
+<h1>Step six, edit and test your templates</h1>
+<pre><code>newtmustache people.yaml</code></pre>
 <ul>
 <li>text editor</li>
-</ul>
-<p>(this step will eventually be replaced by generated code)</p>
-</div>
-<div id="step-five-define-routes" class="slide section level1">
-<h1>Step five define routes</h1>
-<ul>
-<li>text editor</li>
+<li>mocked up JSON data</li>
+<li>curl and newt</li>
 </ul>
 </div>
-<div id="time-to-test-fire-everything-up" class="slide section level1">
-<h1>Time to test, fire everything up</h1>
+<div id="step-secen-testing-your-app" class="slide section level1">
+<h1>Step secen, testing your app</h1>
 <ul>
-<li>newt</li>
+<li>fire it up, <code>newt run project.yaml</code></li>
 <li>web browser</li>
 </ul>
 </div>

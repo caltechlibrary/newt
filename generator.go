@@ -137,7 +137,7 @@ func validateModelId(modelId string, models []*NewtModel) error {
 // - modelId references the `.id` attribute of the model needing code generation
 func (g *NewtGenerator) Generate(generatorName string, action string, modelId string) error {
 	pgActions := []string{ "setup", "models", "models_test" }
-	modelActions := []string{ "create", "read", "update", "delete", "list" }
+	modelActions := []string{ "create", "read", "update", "delete", "list", "page" }
 	switch generatorName {
 	case "postgres":
 		if err := validateAction(action, pgActions); err != nil {

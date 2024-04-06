@@ -187,6 +187,32 @@ func mTmplGenList(out io.Writer, model *NewtModel) error {
 	return nil
 }
 
+// mTmplGenPage generates a wrapping page document for the partial templates
+func mTmplGenPage(out io.Writer, model *NewtModel) error {
+	fmt.Fprintf(out, `<DOCTYPE html>
+<html lang="en">
+  <head>
+     <title>%s</title>
+  </head>
+  <body>
+  <header>
+     <h1>%s</h2>
+  </header>
+  <section>
+	{{> create_%s}}
+	{{> read_%s}}
+	{{> update_%s}}
+	{{> delete_%s}}
+	{{> list_%s}}
+  </section>
+  <footer>
+  </footer>
+  </body>
+</html>
+`, model.Name, model.Name, model.Id, model.Id, model.Id, model.Id, model.Id)
+	return nil
+}
+
 // MTmplGen takes an io.Writer, an action string and model and renders
 // the contents of the model as a Newt Mustache template for the provided
 // action. It returns an error value when something goes wrong.
@@ -205,6 +231,8 @@ func MTmplGen(out io.Writer, action string, model *NewtModel) error {
 		return mTmplGenDelete(out, model)
 	case "list":
 		return mTmplGenList(out, model)
+	case "page":
+		return mTmplGenPage(out, model)
 	default:
 		return fmt.Errorf("%q generation is not supported", action)
 	}

@@ -614,10 +614,12 @@ func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName s
 			// Handle the special cases of routes for retrieving forms for create, update and delete.
 			action := "create"
 			method := http.MethodGet
-			routeId := fmt.Sprintf("%s_%s_form", objName, action)
+			routeId := fmt.Sprintf("%s_%s_form", action, objName)
 			request := fmt.Sprintf("%s /%s/{$}", method, objName)
-			pattern := fmt.Sprintf("/%s_%s_form", objName, action)
-			tName := fmt.Sprintf("%s_%s_form.tmpl", objName, action)
+			pattern := fmt.Sprintf("/%s_%s_form", action, objName)
+			tName := fmt.Sprintf("page_%s.tmpl", objName)
+			pName := fmt.Sprintf("%s_%s.tmpl", action, objName)
+			description := fmt.Sprintf("Example display a %s for %s", action, objName)
 			cfg.Routes = append(cfg.Routes, &NewtRoute{
 				Id:          routeId,
 				Pattern:     request,
@@ -626,15 +628,20 @@ func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName s
 			cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 				Pattern:     pattern,
 				Template:    tName,
-				Description: "Example display an create web from",
+				Partials: []string{
+					pName,
+				},
+				Description: description,
 			})
 			appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
 
 			action = "update"
-			routeId = fmt.Sprintf("%s_%s_form", objName, action)
+			routeId = fmt.Sprintf("%s_%s_form", action, objName)
 			request = fmt.Sprintf("%s /%s/{oid}", method, objName)
-			pattern = fmt.Sprintf("/%s_%s_form", objName, action)
-			tName = fmt.Sprintf("%s_%s_form.tmpl", objName, action)
+			pattern = fmt.Sprintf("/%s_%s_form", action, objName)
+			tName = fmt.Sprintf("page_%s.tmpl", objName)
+			pName = fmt.Sprintf("%s_%s.tmpl", action, objName)
+			description = fmt.Sprintf("Example display a %s for %s", action, objName)
 			cfg.Routes = append(cfg.Routes, &NewtRoute{
 				Id:          routeId,
 				Pattern:     request,
@@ -643,15 +650,20 @@ func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName s
 			cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 				Pattern:     pattern,
 				Template:    tName,
-				Description: "Example display an update web from",
+				Partials: []string{
+					pName,
+				},
+				Description: description,
 			})
 			appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
 
 			action = "delete"
-			routeId = fmt.Sprintf("%s_%s_form", objName, action)
+			routeId = fmt.Sprintf("%s_%s_form", action, objName)
 			request = fmt.Sprintf("%s /%s/{oid}", method, objName)
-			pattern = fmt.Sprintf("/%s_%s_form", objName, action)
-			tName = fmt.Sprintf("%s_%s_form.tmpl", objName, action)
+			pattern = fmt.Sprintf("/%s_%s_form", action, objName)
+			tName = fmt.Sprintf("page_%s.tmpl", objName)
+			pName = fmt.Sprintf("%s_%s.tmpl", action, objName)
+			description = fmt.Sprintf("Example display a %s for %s", action, objName)
 			cfg.Routes = append(cfg.Routes, &NewtRoute{
 				Id:          routeId,
 				Pattern:     request,
@@ -660,19 +672,27 @@ func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName s
 			cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 				Pattern:     pattern,
 				Template:    tName,
-				Description: "Example display a delete web from",
+				Partials: []string{
+					pName,
+				},
+				Description: description,
 			})
 			appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
 
 			// Now add the mappings for templates that return results.
 			for _, action := range []string{"create", "read", "update", "delete", "list"} {
-				routeId := fmt.Sprintf("%s_%s", objName, action)
-				pattern = fmt.Sprintf("/%s_%s", objName, action)
-				tName := fmt.Sprintf("%s_%s.tmpl", objName, action)
+				routeId := fmt.Sprintf("%s_%s", action, objName)
+				pattern = fmt.Sprintf("/%s_%s", action, objName)
+				tName := fmt.Sprintf("page_%s.tmpl", objName)
+				pName := fmt.Sprintf("read_%s.tmpl", objName)
+				description := fmt.Sprintf("This is an example of result template handler for %s %s", action, objName)
 				cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 					Pattern:     pattern,
 					Template:    tName,
-					Description: "This is an example of defining a template handler",
+					Partials: []string{
+						pName,
+					},
+					Description: description,
 				})
 				appendToPipeline(cfg.Routes, routeId, objName, http.MethodPost, cfg.Applications.NewtMustache.Port, pattern)
 			}

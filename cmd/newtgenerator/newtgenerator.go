@@ -177,6 +177,7 @@ file need to bootstrap Postgres+PostgREST. Then we need to generate our template
 {app_name} people.yaml mustache update people >update_people.tmpl
 {app_name} people.yaml mustache delete people >delete_people.tmpl
 {app_name} people.yaml mustache list people >list_people.tmpl
+{app_name} people.yaml mustache page people >page.tmpl
 ~~~
 
 This is an example YAML file used to generator Postgres SQL, PostgREST configuration and Mustache templates.

@@ -1,5 +1,5 @@
 ---
-title: "newtgenerator(1) user manual | 0.0.7 ce511f5"
+title: "newtgenerator(1) user manual | 0.0.7 2424fad"
 pubDate: 2024-04-05
 author: "R. S. Doiel"
 ---
@@ -164,6 +164,7 @@ newtgenerator people.yaml mustache read people >read_people.tmpl
 newtgenerator people.yaml mustache update people >update_people.tmpl
 newtgenerator people.yaml mustache delete people >delete_people.tmpl
 newtgenerator people.yaml mustache list people >list_people.tmpl
+newtgenerator people.yaml mustache page people >page.tmpl
 ~~~
 
 This is an example YAML file used to generator Postgres SQL, PostgREST configuration and Mustache templates.

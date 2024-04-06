@@ -49,31 +49,73 @@ A second prototype Newt application
 
 # Step one create our YAML file
 
-- text editor
+~~~
+newt init people.yaml
+vi people.yaml
+~~~
+
+- generate people.yaml
+- edit people.yaml
 
 # Step two generate our SQL files
 
-- newtgenerator
-- text editor
+~~~
+newtgenerator people.yaml postgres setup >setup.sql
+newtgenerator people.yaml postgres models >models.sql
+newtgenerator people.yaml postgres models_test >models_test.sql
+~~~
 
-# Step three implement our JSON data source
+- newtgenerator
+- edit your SQL files as needed
+
+# Step three generate PostgREST config
+
+~~~
+newtgenerator people.yaml postgrest >postgrest.conf
+~~~
+
+- newtgenerator
+
+# Step four, setup your data sources
+
+~~~
+psql <setup.sql
+psql <models.sql
+psql <models_test.sql
+~~~
 
 - psql
-- postgrest
 
-# Step four write some Mustache templates
+# Step five, Mustache templates
+
+~~~
+newtgenerator people.yaml mustache create people >create_people.tmpl
+newtgenerator people.yaml mustache read people >read_people.tmpl
+newtgenerator people.yaml mustache update people >update_people.tmpl
+newtgenerator people.yaml mustache delete people >delete_people.tmpl
+newtgenerator people.yaml mustache list people >list_people.tmpl
+newtgenerator people.yaml mustache page people >page_people.tmpl
+~~~
+
+- newtgenerator
+
+# Step six, edit and test your templates
+
+~~~
+newtmustache people.yaml
+~~~
 
 - text editor
+- mocked up JSON data
+- curl and newt
 
-(this step will eventually be replaced by generated code)
+# Step secen, testing your app
 
-# Step five define routes
+~~~
+newt run people.yaml
+~~~
 
-- text editor
-
-# Time to test, fire everything up
-
-- newt
+- fire it up, test and debug
 - web browser
 
 # What did we see?
