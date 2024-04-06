@@ -136,7 +136,6 @@ func validateModelId(modelId string, models []*NewtModel) error {
 // - action is a parameter that the selected generator can use (e.g. PostgreSQL has setup as well as )
 // - modelId references the `.id` attribute of the model needing code generation
 func (g *NewtGenerator) Generate(generatorName string, action string, modelId string) error {
-	fmt.Fprintf(g.out, "This is writing to g.out from Generate(%q, %q, %q)\n", generatorName, action, modelId)
 	pgActions := []string{ "setup", "models", "models_test" }
 	modelActions := []string{ "create", "read", "update", "delete", "list" }
 	switch generatorName {

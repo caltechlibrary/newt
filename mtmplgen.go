@@ -144,7 +144,7 @@ func mTmplGenUpdate(out io.Writer, model *NewtModel) error {
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
 			if s := MInputElemGen(elem); s != "" {
-				fmt.Fprint(out,"\t%s\n", s)
+				fmt.Fprintf(out, "\t%s\n", s)
 			}
 		}
 	}
@@ -154,7 +154,16 @@ func mTmplGenUpdate(out io.Writer, model *NewtModel) error {
 // mTmplGenDelete generations a Mustache partial for a delete object web form
 func mTmplGenDelete(out io.Writer, model *NewtModel) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
-	return fmt.Errorf("mTmplGenDelete(out, %q) not implemented", model.Id)
+	// Build a webform partial
+	for _, elemId := range model.GetElementIds() {
+		if elem, ok := model.GetElementById(elemId); ok {
+			elem.Attributes["disabled"] = "true"
+			if s := MInputElemGen(elem); s != "" {
+				fmt.Fprintf(out, "\t%s\n", s)
+			}
+		}
+	}
+	return nil
 }
 
 // mTmplGenList generations a Mustache partial to lists objects 
