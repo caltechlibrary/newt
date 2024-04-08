@@ -189,7 +189,7 @@ func mTmplGenList(out io.Writer, model *NewtModel) error {
 
 // mTmplGenPage generates a wrapping page document for the partial templates
 func mTmplGenPage(out io.Writer, model *NewtModel) error {
-	fmt.Fprintf(out, `<DOCTYPE html>
+	fmt.Fprintf(out, `<!DOCTYPE html>
 <html lang="en">
   <head>
      <title>%s</title>
@@ -199,11 +199,11 @@ func mTmplGenPage(out io.Writer, model *NewtModel) error {
      <h1>%s</h2>
   </header>
   <section>
-	{{> create_%s}}
+	{{> create_%sl}}
 	{{> read_%s}}
 	{{> update_%s}}
 	{{> delete_%s}}
-	{{> list_%s}}
+	{{> list_%sl}}
   </section>
   <footer>
   </footer>

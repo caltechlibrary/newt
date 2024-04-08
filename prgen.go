@@ -10,7 +10,7 @@ import (
 // prConfig renders a PostgREST configuration given a namespace value.
 func prConfig(out io.Writer, namespace string, port string) error {
 	txt := `
-db-uri = "postgres://authenticator:{{secret}}@localhost:{{port}}/postgres"
+db-uri = "postgres://{{namespace}}_authenticator:{{secret}}@localhost:{{port}}/postgres"
 db-schemas = "{{nampespace}}"
 db-anon-role = "{{namespace}}_anonymous"
 `

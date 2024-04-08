@@ -22,7 +22,7 @@ func pgSetup(out io.Writer, namespace string) error {
 -- would not be stored in the file!
 --
 
--- Uncomment these two lines if you have used Postgres' createdb yet.
+-- Uncomment these two lines if you have used not used Postgres' createdb yet.
 -- drop database if exists {{namespace}};
 -- create database {{namespace}};
 
@@ -49,8 +49,8 @@ create role {{namespace}}_anonymous nologin;
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
 drop role if exists {{namespace}};
-create role {{namespace}} noinherit login password '{{secret}}';
-grant {{namespace}}_anonymous to {{namespace}};
+create role {{namespace}}_authenticator noinherit login password '{{secret}}';
+grant {{namespace}}_anonymous to {{namespace}}_authenticator;
 `
 	tmpl, err := mustache.ParseString(txt)
 	if err != nil {

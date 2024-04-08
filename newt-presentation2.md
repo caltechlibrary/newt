@@ -62,7 +62,6 @@ vi people.yaml
 ~~~
 newtgenerator people.yaml postgres setup >setup.sql
 newtgenerator people.yaml postgres models >models.sql
-newtgenerator people.yaml postgres models_test >models_test.sql
 ~~~
 
 - newtgenerator
@@ -79,9 +78,9 @@ newtgenerator people.yaml postgrest >postgrest.conf
 # Step four, setup your data sources
 
 ~~~
+createdb people
 psql <setup.sql
 psql <models.sql
-psql <models_test.sql
 ~~~
 
 - psql
@@ -89,10 +88,13 @@ psql <models_test.sql
 # Step five, Mustache templates
 
 ~~~
-newtgenerator people.yaml mustache create people >create_people.tmpl
+newtgenerator people.yaml mustache create people >create_people_form.tmpl
+newtgenerator people.yaml mustache read people >create_people_response.tmpl
+newtgenerator people.yaml mustache update people >update_people_form.tmpl
+newtgenerator people.yaml mustache read people >update_people_response.tmpl
+newtgenerator people.yaml mustache delete people >delete_people_form.tmpl
+newtgenerator people.yaml mustache read people >delete_people_response.tmpl
 newtgenerator people.yaml mustache read people >read_people.tmpl
-newtgenerator people.yaml mustache update people >update_people.tmpl
-newtgenerator people.yaml mustache delete people >delete_people.tmpl
 newtgenerator people.yaml mustache list people >list_people.tmpl
 newtgenerator people.yaml mustache page people >page_people.tmpl
 ~~~

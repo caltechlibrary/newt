@@ -248,6 +248,9 @@ func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
 		// Copy in the applications options without overwriting the route specific
 		// defined options.  NOTE: Application options have already been resolved
 		// with the environment by cfg.LoadConfig()
+		if route.Options == nil && len(cfg.Applications.Options) > 0 {
+			route.Options = map[string]string{}
+		}
 		for k, v := range cfg.Applications.Options {
 			if _, conflict := route.Options[k]; !conflict {
 				route.Options[k] = v

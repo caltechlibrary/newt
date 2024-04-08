@@ -97,8 +97,7 @@ vi people.yaml</code></pre>
 <div id="step-two-generate-our-sql-files" class="slide section level1">
 <h1>Step two generate our SQL files</h1>
 <pre><code>newtgenerator people.yaml postgres setup &gt;setup.sql
-newtgenerator people.yaml postgres models &gt;models.sql
-newtgenerator people.yaml postgres models_test &gt;models_test.sql</code></pre>
+newtgenerator people.yaml postgres models &gt;models.sql</code></pre>
 <ul>
 <li>newtgenerator</li>
 <li>edit your SQL files as needed</li>
@@ -116,18 +115,20 @@ class="slide section level1">
 class="slide section level1">
 <h1>Step four, setup your data sources</h1>
 <pre><code>psql &lt;setup.sql
-psql &lt;models.sql
-psql &lt;models_test.sql</code></pre>
+psql &lt;models.sql</code></pre>
 <ul>
 <li>psql</li>
 </ul>
 </div>
 <div id="step-five-mustache-templates" class="slide section level1">
 <h1>Step five, Mustache templates</h1>
-<pre><code>newtgenerator people.yaml mustache create people &gt;create_people.tmpl
+<pre><code>newtgenerator people.yaml mustache create people &gt;create_people_form.tmpl
+newtgenerator people.yaml mustache read people &gt;create_people_response.tmpl
+newtgenerator people.yaml mustache update people &gt;update_people_form.tmpl
+newtgenerator people.yaml mustache read people &gt;update_people_response.tmpl
+newtgenerator people.yaml mustache delete people &gt;delete_people_form.tmpl
+newtgenerator people.yaml mustache read people &gt;delete_people_response.tmpl
 newtgenerator people.yaml mustache read people &gt;read_people.tmpl
-newtgenerator people.yaml mustache update people &gt;update_people.tmpl
-newtgenerator people.yaml mustache delete people &gt;delete_people.tmpl
 newtgenerator people.yaml mustache list people &gt;list_people.tmpl
 newtgenerator people.yaml mustache page people &gt;page_people.tmpl</code></pre>
 <ul>
@@ -146,8 +147,9 @@ class="slide section level1">
 </div>
 <div id="step-secen-testing-your-app" class="slide section level1">
 <h1>Step secen, testing your app</h1>
+<pre><code>newt run people.yaml</code></pre>
 <ul>
-<li>fire it up, <code>newt run project.yaml</code></li>
+<li>fire it up, test and debug</li>
 <li>web browser</li>
 </ul>
 </div>
