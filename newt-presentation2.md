@@ -19,15 +19,15 @@ keywords: [ "web service", "micro service", "Postgres", "PostgREST", "Mustache" 
 url: "https://caltechlibrary.github.io/newt/presentation2"
 ---
 
-# Goal: Second Prototype
+# Goal: Second Prototype Question
 
 Is Newt and "off the shelf" enough?
 
-# Choose wisely: pick your abstractions
+# Continue to choose wisely:
 
-- Simple = (No coding) + (Less coding)
-- Compose applications, use data pipelines
-- Align service and deliverables
+- Pick Simple = (No coding) + (Less coding)
+- Avoid inventing new things
+- Compose applications using data pipelines and templates
 
 # Off the shelf (no coding)
 
@@ -36,16 +36,23 @@ Is Newt and "off the shelf" enough?
 - Newt Router, ties it all together
 - YAML can express routes, pipelines and data models
 
-# Assembling it with YAML (less code)
+# Assembling it with YAML (less coding)
 
-- Newt's Second Prototype has a new YAML syntax
-  - GitHub YAML issue template syntax
-- Code generator, "look Mom, no AI!"
-- Newt Mustache, "YAML your templates in your pipeline"
+- GitHub YAML issue template syntax described data models
+- Template language is now Mustache
+- More Code generation, "look Mom, no AI!"
 
-# Demo time
+# Second prototype status
 
-A second prototype Newt application
+- Work in progress but coming together (as of 2024-04-08)
+- Hope to have a working prototype by June 2024
+- Implementing internal applications using prototype as test bead
+
+# Is there a Demo I can run?
+
+I'm somewhere between vaporware and working prototype
+
+# What would a demo look like?
 
 # Step one create our YAML file
 
@@ -54,15 +61,14 @@ newt init people.yaml
 vi people.yaml
 ~~~
 
-- generate people.yaml
-- edit people.yaml
+- generates people.yaml
+- edit people.yaml, replace models with models.txt
 
 # Step two generate our SQL files
 
 ~~~
 newtgenerator people.yaml postgres setup >setup.sql
 newtgenerator people.yaml postgres models >models.sql
-newtgenerator people.yaml postgres models_test >models_test.sql
 ~~~
 
 - newtgenerator
@@ -76,96 +82,85 @@ newtgenerator people.yaml postgrest >postgrest.conf
 
 - newtgenerator
 
-# Step four, setup your data sources
+# Step four, setup your data source in Postgres
 
 ~~~
-psql <setup.sql
-psql <models.sql
-psql <models_test.sql
+createdb people
+psql people
+\i setup.sql
+\i models.sql
+\dt
+\q
 ~~~
 
 - psql
 
-# Step five, Mustache templates
+# Step five, Generate Mustache templates
 
 ~~~
-newtgenerator people.yaml mustache create people >create_people.tmpl
+newtgenerator people.yaml mustache create_form people >create_people_form.tmpl
+newtgenerator people.yaml mustache create_response people >create_people_response.tmpl
+newtgenerator people.yaml mustache update_form people >update_people_form.tmpl
+newtgenerator people.yaml mustache update_response people >update_people_response.tmpl
+newtgenerator people.yaml mustache delete_form people >delete_people_form.tmpl
+newtgenerator people.yaml mustache delete_response people >delete_people_response.tmpl
 newtgenerator people.yaml mustache read people >read_people.tmpl
-newtgenerator people.yaml mustache update people >update_people.tmpl
-newtgenerator people.yaml mustache delete people >delete_people.tmpl
 newtgenerator people.yaml mustache list people >list_people.tmpl
-newtgenerator people.yaml mustache page people >page_people.tmpl
 ~~~
 
 - newtgenerator
 
-# Step six, edit and test your templates
-
-~~~
-newtmustache people.yaml
-~~~
-
-- text editor
-- mocked up JSON data
-- curl and newt
-
-# Step secen, testing your app
+# Finally, run newt and test
 
 ~~~
 newt run people.yaml
 ~~~
 
-- fire it up, test and debug
+- fire up newt, test and debug
 - web browser
 
 # What did we see?
 
-- Code generation (SQL, PostgREST config)
-- Data pipelines and a bunch-o-services
-- Minimal browser expectations
+- Code generation (SQL, PostgREST config, Mustache Templates)
+- Data pipelines (using PostgREST and Newt Mustache)
+- Minimally functional web app
 
 # Insights from prototypes 1 & 2
 
 - "Off the shelf" is simpler
 - SQL turns people off, use a code generator
 - HTML and Mustache need a code generator
+- Generating the "wiring up" of routes and templates is helpful
 
 # Lessons learned
 
-- Managing web services has a cognitive price
-- Containers add to complexity
+- Managing routes and pipelines has a cognitive price
 - Keep your pipelines short
 - Web services need a "developer" mode for debugging
 
 # What's next?
 
-- Mustache template generation
-- HTML file generation
+- Improve the generated code
+- Simplify using Newt (too many steps to type)
+- Can I simplify the Newt YAML further?
 
-# Newt's weaknesses
+# Newt's challenges
 
 - Newt is **a work in progress** (April 2024)
 - Newt is missing file upload support
 
-# Newt's strengths
-
-> A very mature foundation
-
-- 20th Century tech
-  - SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)
-- 21st Century tech
-  - JSON (2001), YAML (2001), Mustache templates (2009), PostgREST (2014)
-
 # Unanswered Questions
 
-- Should the router support non-localhost URLs?
-- What tools should come with the Newt?
-- Should Newt move beyond a Caltech Library experiment?
+- What is the minimum knowledge needed to use Newt?
+- What should come out of the box with Newt?
+    - GUI tools?
+    - Web components?
+    - Ready made apps?
 
 # My wish list ...
 
 - SQLite 3 database support
-- Visually programming for Newt YAML files
+- Visually programming would be easier than writing YAML files
 - Web components for gallery, library, archive and museum metadata types
 - A simple S3 protocol web service that implements storing object using OCFL
 

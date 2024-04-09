@@ -23,14 +23,14 @@
 </nav>
 
 <section>
-<h1 id="goal-second-prototype">Goal: Second Prototype</h1>
+<h1 id="goal-second-prototype-question">Goal: Second Prototype
+Question</h1>
 <p>Is Newt and “off the shelf” enough?</p>
-<h1 id="choose-wisely-pick-your-abstractions">Choose wisely: pick your
-abstractions</h1>
+<h1 id="continue-to-choose-wisely">Continue to choose wisely:</h1>
 <ul>
-<li>Simple = (No coding) + (Less coding)</li>
-<li>Compose applications, use data pipelines</li>
-<li>Align service and deliverables</li>
+<li>Pick Simple = (No coding) + (Less coding)</li>
+<li>Avoid inventing new things</li>
+<li>Compose applications using data pipelines and templates</li>
 </ul>
 <h1 id="off-the-shelf-no-coding">Off the shelf (no coding)</h1>
 <ul>
@@ -40,56 +40,79 @@ href="https://postgrest.org">PostgREST</a> =&gt; JSON data source</li>
 <li>Newt Router, ties it all together</li>
 <li>YAML can express routes, pipelines and data models</li>
 </ul>
-<h1 id="assembling-it-with-yaml-less-code">Assembling it with YAML (less
-code)</h1>
+<h1 id="assembling-it-with-yaml-less-coding">Assembling it with YAML
+(less coding)</h1>
 <ul>
-<li>Newt’s Second Prototype has a new YAML syntax
-<ul>
-<li>GitHub YAML issue template syntax</li>
-</ul></li>
-<li>Code generator, “look Mom, no AI!”</li>
-<li>Newt Mustache, “YAML your templates in your pipeline”</li>
+<li>GitHub YAML issue template syntax described data models</li>
+<li>Template language is now Mustache</li>
+<li>More Code generation, “look Mom, no AI!”</li>
 </ul>
-<h1 id="demo-time">Demo time</h1>
-<p>A second prototype Newt application</p>
+<h1 id="second-prototype-status">Second prototype status</h1>
+<ul>
+<li>Work in progress but coming together (as of 2024-04-08)</li>
+<li>Hope to have a working prototype by June 2024</li>
+<li>Implementing internal applications using prototype as test bead</li>
+</ul>
+<h1 id="is-there-a-demo-i-can-run">Is there a Demo I can run?</h1>
+<p>I’m somewhere between vaporware and working prototype</p>
+<h1 id="what-would-a-demo-look-like">What would a demo look like?</h1>
 <h1 id="step-one-create-our-yaml-file">Step one create our YAML
 file</h1>
+<pre><code>newt init people.yaml
+vi people.yaml</code></pre>
 <ul>
-<li>text editor</li>
+<li>generates people.yaml</li>
+<li>edit people.yaml, replace models with models.txt</li>
 </ul>
 <h1 id="step-two-generate-our-sql-files">Step two generate our SQL
 files</h1>
+<pre><code>newtgenerator people.yaml postgres setup &gt;setup.sql
+newtgenerator people.yaml postgres models &gt;models.sql</code></pre>
 <ul>
 <li>newtgenerator</li>
-<li>text editor</li>
+<li>edit your SQL files as needed</li>
 </ul>
-<h1 id="step-three-implement-our-json-data-source">Step three implement
-our JSON data source</h1>
+<h1 id="step-three-generate-postgrest-config">Step three generate
+PostgREST config</h1>
+<pre><code>newtgenerator people.yaml postgrest &gt;postgrest.conf</code></pre>
+<ul>
+<li>newtgenerator</li>
+</ul>
+<h1 id="step-four-setup-your-data-source-in-postgres">Step four, setup
+your data source in Postgres</h1>
+<pre><code>createdb people
+psql people
+\i setup.sql
+\i models.sql
+\dt
+\q</code></pre>
 <ul>
 <li>psql</li>
-<li>postgrest</li>
 </ul>
-<h1 id="step-four-write-some-mustache-templates">Step four write some
+<h1 id="step-five-generate-mustache-templates">Step five, Generate
 Mustache templates</h1>
+<pre><code>newtgenerator people.yaml mustache create_form people &gt;create_people_form.tmpl
+newtgenerator people.yaml mustache create_response people &gt;create_people_response.tmpl
+newtgenerator people.yaml mustache update_form people &gt;update_people_form.tmpl
+newtgenerator people.yaml mustache update_response people &gt;update_people_response.tmpl
+newtgenerator people.yaml mustache delete_form people &gt;delete_people_form.tmpl
+newtgenerator people.yaml mustache delete_response people &gt;delete_people_response.tmpl
+newtgenerator people.yaml mustache read people &gt;read_people.tmpl
+newtgenerator people.yaml mustache list people &gt;list_people.tmpl</code></pre>
 <ul>
-<li>text editor</li>
+<li>newtgenerator</li>
 </ul>
-<p>(this step will eventually be replaced by generated code)</p>
-<h1 id="step-five-define-routes">Step five define routes</h1>
+<h1 id="finally-run-newt-and-test">Finally, run newt and test</h1>
+<pre><code>newt run people.yaml</code></pre>
 <ul>
-<li>text editor</li>
-</ul>
-<h1 id="time-to-test-fire-everything-up">Time to test, fire everything
-up</h1>
-<ul>
-<li>newt</li>
+<li>fire up newt, test and debug</li>
 <li>web browser</li>
 </ul>
 <h1 id="what-did-we-see">What did we see?</h1>
 <ul>
-<li>Code generation (SQL, PostgREST config)</li>
-<li>Data pipelines and a bunch-o-services</li>
-<li>Minimal browser expectations</li>
+<li>Code generation (SQL, PostgREST config, Mustache Templates)</li>
+<li>Data pipelines (using PostgREST and Newt Mustache)</li>
+<li>Minimally functional web app</li>
 </ul>
 <h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp;
 2</h1>
@@ -97,49 +120,39 @@ up</h1>
 <li>“Off the shelf” is simpler</li>
 <li>SQL turns people off, use a code generator</li>
 <li>HTML and Mustache need a code generator</li>
+<li>Generating the “wiring up” of routes and templates is helpful</li>
 </ul>
 <h1 id="lessons-learned">Lessons learned</h1>
 <ul>
-<li>Managing web services has a cognitive price</li>
-<li>Containers add to complexity</li>
+<li>Managing routes and pipelines has a cognitive price</li>
 <li>Keep your pipelines short</li>
 <li>Web services need a “developer” mode for debugging</li>
 </ul>
 <h1 id="whats-next">What’s next?</h1>
 <ul>
-<li>Mustache template generation</li>
-<li>HTML file generation</li>
+<li>Improve the generated code</li>
+<li>Simplify using Newt (too many steps to type)</li>
+<li>Can I simplify the Newt YAML further?</li>
 </ul>
-<h1 id="newts-weaknesses">Newt’s weaknesses</h1>
+<h1 id="newts-challenges">Newt’s challenges</h1>
 <ul>
 <li>Newt is <strong>a work in progress</strong> (April 2024)</li>
 <li>Newt is missing file upload support</li>
 </ul>
-<h1 id="newts-strengths">Newt’s strengths</h1>
-<blockquote>
-<p>A very mature foundation</p>
-</blockquote>
-<ul>
-<li>20th Century tech
-<ul>
-<li>SQL (1974), HTTP (1991), HTML (1993), Postgres (1996)</li>
-</ul></li>
-<li>21st Century tech
-<ul>
-<li>JSON (2001), YAML (2001), Mustache templates (2009), PostgREST
-(2014)</li>
-</ul></li>
-</ul>
 <h1 id="unanswered-questions">Unanswered Questions</h1>
 <ul>
-<li>Should the router support non-localhost URLs?</li>
-<li>What tools should come with the Newt?</li>
-<li>Should Newt move beyond a Caltech Library experiment?</li>
+<li>What is the minimum knowledge needed to use Newt?</li>
+<li>What should come out of the box with Newt?
+<ul>
+<li>GUI tools?</li>
+<li>Web components?</li>
+<li>Ready made apps?</li>
+</ul></li>
 </ul>
 <h1 id="my-wish-list">My wish list …</h1>
 <ul>
 <li>SQLite 3 database support</li>
-<li>Visually programming for Newt YAML files</li>
+<li>Visually programming would be easier than writing YAML files</li>
 <li>Web components for gallery, library, archive and museum metadata
 types</li>
 <li>A simple S3 protocol web service that implements storing object

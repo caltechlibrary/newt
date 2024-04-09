@@ -3,6 +3,7 @@ package newt
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 )
 
@@ -112,8 +113,10 @@ func MInputElemGen(elem *Element) string {
 	return input
 }
 
-// mTmplGenCreate generations a Mustache partial for a create object web form
-func mTmplGenCreate(out io.Writer, model *NewtModel) error {
+// mTmplGenCreateForm generations a Mustache partial for a create object web form
+func mTmplGenCreateForm(out io.Writer, model *NewtModel) error {
+	formURL := fmt.Sprintf("/create_%s", model.Id)
+	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	// Build a webform partial
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
@@ -122,8 +125,17 @@ func mTmplGenCreate(out io.Writer, model *NewtModel) error {
 			}
 		}
 	}
+	fmt.Fprintf(out, `<input type="submit" value="create"> <input type="reset" value="reset">`)
+	fmt.Fprintf(out, "</form>\n")
 	return nil
 }
+
+// mTmplGenCreateResponse generations a Mustache partial for a create object web form
+func mTmplGenCreateResponse(out io.Writer, model *NewtModel) error {
+	// Build a response partial
+	return mTmplGenRead(out, model)
+}
+
 
 // mTmplGenRead generations a Mustache partial for a read object display element
 func mTmplGenRead(out io.Writer, model *NewtModel) error {
@@ -138,9 +150,11 @@ func mTmplGenRead(out io.Writer, model *NewtModel) error {
 	return nil
 }
 
-// mTmplGenUpdate generations a Mustache partial for a update object web form
-func mTmplGenUpdate(out io.Writer, model *NewtModel) error {
+// mTmplGenUpdateForm generations a Mustache partial for a update object web form
+func mTmplGenUpdateForm(out io.Writer, model *NewtModel) error {
 	// Build a webform partial
+	formURL := fmt.Sprintf("/update_%s", model.Id)
+	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
 			if s := MInputElemGen(elem); s != "" {
@@ -148,13 +162,24 @@ func mTmplGenUpdate(out io.Writer, model *NewtModel) error {
 			}
 		}
 	}
+	fmt.Fprintf(out, `<input type="submit" value="update"> <input type="reset" value="reset">`)
+	fmt.Fprintf(out, "</form>\n")
 	return nil
 }
 
-// mTmplGenDelete generations a Mustache partial for a delete object web form
-func mTmplGenDelete(out io.Writer, model *NewtModel) error {
+// mTmplGenUpdateResponse generations a Mustache partial for a update object web form
+func mTmplGenUpdateResponse(out io.Writer, model *NewtModel) error {
+	// Build a response partial
+	return mTmplGenRead(out, model)
+}
+
+
+// mTmplGenDeleteForm generations a Mustache partial for a delete object web form
+func mTmplGenDeleteForm(out io.Writer, model *NewtModel) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
 	// Build a webform partial
+	formURL := fmt.Sprintf("/delete_%s", model.Id)
+	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
 			elem.Attributes["disabled"] = "true"
@@ -163,6 +188,16 @@ func mTmplGenDelete(out io.Writer, model *NewtModel) error {
 			}
 		}
 	}
+	fmt.Fprintf(out, `<input type="submit" value="delete">`)
+	fmt.Fprintf(out, "</form>\n")
+	return nil
+}
+
+// mTmplGenDeleteResponse generations a Mustache partial for a delete object web form
+func mTmplGenDeleteResponse(out io.Writer, model *NewtModel) error {
+	//FIXME: what do we need to delete a record? Just the record id? other fields?
+	// Build a webform partial
+	fmt.Fprintf(out, "<b>object deleted goes here ...</b>\n")
 	return nil
 }
 
@@ -187,31 +222,23 @@ func mTmplGenList(out io.Writer, model *NewtModel) error {
 	return nil
 }
 
-// mTmplGenPage generates a wrapping page document for the partial templates
-func mTmplGenPage(out io.Writer, model *NewtModel) error {
-	fmt.Fprintf(out, `<DOCTYPE html>
-<html lang="en">
-  <head>
-     <title>%s</title>
-  </head>
-  <body>
-  <header>
-     <h1>%s</h2>
-  </header>
-  <section>
-	{{> create_%s}}
-	{{> read_%s}}
-	{{> update_%s}}
-	{{> delete_%s}}
-	{{> list_%s}}
-  </section>
-  <footer>
-  </footer>
-  </body>
-</html>
-`, model.Name, model.Name, model.Id, model.Id, model.Id, model.Id, model.Id)
-	return nil
+type PartialGen func(io.Writer, *NewtModel) error
+
+// mTmplPage takes an output buffer and a PartialGen with a function
+// signature `func(io.Writer,*NewtModel) error` and renders a webpage
+// using the passed in func.
+func mTmplPage(out io.Writer, model *NewtModel, fn PartialGen) error {
+	fmt.Fprintln(out, `<!DOCTYPE html>
+<html lang="en-us">
+	<body>
+`)
+	err := fn(out, model)
+	fmt.Fprintln(out, `
+	</body>
+</html>`)
+	return err
 }
+
 
 // MTmplGen takes an io.Writer, an action string and model and renders
 // the contents of the model as a Newt Mustache template for the provided
@@ -220,20 +247,28 @@ func MTmplGen(out io.Writer, action string, model *NewtModel) error {
 	if model == nil || model.Id == "" {
 		return fmt.Errorf("model appears incomplete, aborting")
 	}
+	var (
+		err error
+	)
 	switch action {
-	case "create":
-		return mTmplGenCreate(out, model)
+	case "create_form":
+		err = mTmplPage(out, model, mTmplGenCreateForm)
+	case "create_response":
+		err = mTmplPage(out, model, mTmplGenCreateResponse)
 	case "read":
-		return mTmplGenRead(out, model)
-	case "update":
-		return mTmplGenUpdate(out, model)
-	case "delete":
-		return mTmplGenDelete(out, model)
+		err = mTmplPage(out, model, mTmplGenRead)
+	case "update_form":
+		err = mTmplPage(out, model, mTmplGenUpdateForm)
+	case "update_response":
+		err = mTmplPage(out, model, mTmplGenUpdateResponse)
+	case "delete_form":
+		err = mTmplPage(out, model, mTmplGenDeleteForm)
+	case "delete_response":
+		err = mTmplPage(out, model, mTmplGenDeleteResponse)
 	case "list":
-		return mTmplGenList(out, model)
-	case "page":
-		return mTmplGenPage(out, model)
+		err = mTmplPage(out, model, mTmplGenList)
 	default:
 		return fmt.Errorf("%q generation is not supported", action)
 	}
+	return err
 }

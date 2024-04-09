@@ -137,7 +137,13 @@ func validateModelId(modelId string, models []*NewtModel) error {
 // - modelId references the `.id` attribute of the model needing code generation
 func (g *NewtGenerator) Generate(generatorName string, action string, modelId string) error {
 	pgActions := []string{ "setup", "models", "models_test" }
-	modelActions := []string{ "create", "read", "update", "delete", "list", "page" }
+	//modelActions := []string{ "create", "read", "update", "delete", "list", "page" }
+	templateActions := []string{ 
+		"create_form", "create_response", 
+		"update_form", "update_response",
+		"delete_form", "delete_response",
+		"read", "list",
+	}
 	switch generatorName {
 	case "postgres":
 		if err := validateAction(action, pgActions); err != nil {
@@ -147,23 +153,13 @@ func (g *NewtGenerator) Generate(generatorName string, action string, modelId st
 	case "postgrest":
 		return g.renderPostgREST()
 	case "mustache":
-		if err := validateAction(action, modelActions); err != nil  {
+		if err := validateAction(action, templateActions); err != nil  {
 			return err
 		}
 		if err := validateModelId(modelId, g.Models);  err != nil {
 			return err
 		}
 		return g.renderMustache(action, modelId)
-	/*
-	case "html":
-		if err := validateAction(action, modelActions); err != nil  {
-			return err
-		}
-		if err := validateModelId(modelId, g.Models);  err != nil {
-			return err
-		}
-		return g.renderHtml(action, modelId)
-	*/
 	default:
 		return fmt.Errorf("%q is not supported at this time", generatorName)
 	}
