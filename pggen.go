@@ -27,7 +27,7 @@ func pgSetup(out io.Writer, namespace string) error {
 -- create database {{namespace}};
 
 -- Make sure we are in the {{namespace}} namespace/database
-\c {{namespace}}
+-- \c {{namespace}}
 
 --
 -- Setup a Postgres "schema" (a.k.a. namespace) for
@@ -48,7 +48,7 @@ create role {{namespace}}_anonymous nologin;
 -- checking into your source control system. It contains a secret!
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
-drop role if exists {{namespace}};
+drop role if exists {{namespace}}_authenticator;
 create role {{namespace}}_authenticator noinherit login password '{{secret}}';
 grant {{namespace}}_anonymous to {{namespace}}_authenticator;
 `
@@ -85,9 +85,7 @@ func pgModels(out io.Writer, namespace string, models []*NewtModel) error {
 -- this is unnecessary in the prototype so skipped for now.
 --
 -- Make sure we are in the birds namespace/database
-\c {{namespace}}
--- Make sure our namespace is first in the search path
-set search_path to {{namespace}}, public;
+-- \c {{namespace}}
 
 --
 -- Data Models
@@ -106,6 +104,9 @@ set search_path to {{namespace}}, public;
 
 	// Now for the table definitions.
 	txt = `
+-- Make sure our namespace is first in the search path
+set search_path to {{namespace}}, public;
+
 --
 -- {{namespace}}.{{model}} table and index definitions
 --

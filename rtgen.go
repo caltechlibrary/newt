@@ -66,15 +66,11 @@ func setupWebFormHandling(cfg *Config, action string, objName string) {
 	}
 	// Setup templates, webform
 	tmplPattern := fmt.Sprintf("/%s_%s", action, objName)
-	tmplName := "page.tmpl" // fmt.Sprintf("page_%s.tmpl", objName)
-	partialName := fmt.Sprintf("%s_%s_form.tmpl", action, objName)
+	tmplName := fmt.Sprintf("%s_%s_form.tmpl", action, objName)
 	tmplDescription := fmt.Sprintf("Display a %s for %s", action, objName)
 	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
-		Partials: []string{
-			partialName,
-		},
 		Description: tmplDescription,
 	})
 	// Handle web form request
@@ -98,22 +94,18 @@ func setupWebFormHandling(cfg *Config, action string, objName string) {
 
 	// Setup template submit result
 	tmplPattern = fmt.Sprintf("/%s_%s_response", action, objName)
-	tmplName = "page.tmpl" // fmt.Sprintf("page_%s.tmpl", objName)
-	partialName = fmt.Sprintf("%s_%s_response.tmpl", action, objName)
+	tmplName = fmt.Sprintf("%s_%s_response.tmpl", action, objName)
 	tmplDescription = fmt.Sprintf("This is an result template for %s %s", action, objName)
 	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
-		Partials: []string{
-			partialName,
-		},
 		Description: tmplDescription,
 	})
 
 	// Handle submission routing 
 	routeId = fmt.Sprintf("%s_%s", action, objName)
 	routeDescription = fmt.Sprintf("Handle form submission for %s %s", action, objName)
-	request = fmt.Sprintf("%s /%s_%s_response", http.MethodPost, action, objName)
+	request = fmt.Sprintf("%s /%s_%s", http.MethodPost, action, objName)
 	route = &NewtRoute{
 		Id:          routeId,
 		Pattern:     request,
@@ -130,15 +122,11 @@ func setupWebFormHandling(cfg *Config, action string, objName string) {
 func setupReadHandling(cfg *Config, action string, objName string) {
 	// Setup template for results of read request
 	tmplPattern := fmt.Sprintf("/%s_%s", action, objName)
-	tmplName := "page.tmpl" // fmt.Sprintf("page_%s.tmpl", objName)
-	partialName := fmt.Sprintf("%s_%s.tmpl", action, objName)
+	tmplName := fmt.Sprintf("%s_%s.tmpl", action, objName)
 	tmplDescription := fmt.Sprintf("This template handles %s %s", action, objName)
 	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
-		Partials: []string{
-			partialName,
-		},
 		Description: tmplDescription,
 	})
 	// Handle requesting object or list of objects

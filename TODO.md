@@ -4,11 +4,12 @@
 ## Bugs
 
 - [ ] Newt Init should not add routes or templates if they are already defined in the previously read YAML
+- [ ] When using Newt to run services, each services needs to display the port it is running on.
+- [ ] Need to wrap the webforms in the appropriate form element and attributes
+- [ ] Newt Router currently should restrict POST to urlencoded or application/json encoded but explicitly disallow multipart form encoding since Newt Router doesn't support file uploads yet.
+- [X] Select partials in page.tmpl isn't viable the way I thought I could implemented it, need to figure out a better way, 
 - [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
 - [X] decide if it is object name then action or action then object name, I've seem to have flipped flopped around on this in the code.
-- [ ] When using Newt to run services, each services needs to display the port it is running on.
-- [ ] Select partials in page.tmpl isn't viable the way I thought I could implemented it, need to figure out a better way, 
-- [ ] Newt Router currently should restrict POST to urlencoded or application/json encoded but explicitly disallow multipart form encoding since Newt Router doesn't support file uploads yet.
 
 ## Next for the second prototype 
 
@@ -19,42 +20,42 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
 - [ ] Need a way to assign a sql trigger from a form element, could use the `x-pgsql-*` as an element attribute then when I write the HTML I skip those attributes
 - [ ] Explore the idea of "complex models", these would be composed by either combining or aggregating lists of other models. This would let me mimic RDM/ArchivesSpace rich data models from Newt
 - [ ] Newt needs a web hook service that can be placed in the pipeline to trigger a non-pipeline action, sorta of like the Unix tee command
-    - use cases
-        - the webhook would recieve the JSON data from the previous service in the pipeline
-        - it could trigger another URL pipeline
-        - it could trigger running a program on the local system (e.g. trigger search engine indexing run after record change)
-        - it could insert an action into an event/job queue
+  - use cases
+    - the webhook would recieve the JSON data from the previous service in the pipeline
+    - it could trigger another URL pipeline
+    - it could trigger running a program on the local system (e.g. trigger search engine indexing run after record change)
+    - it could insert an action into an event/job queue
 - [ ] If you run Newt Generator from the `newt` command it should assign predictable filenames for SQL files, PostgREST config and Mustache templates. This could insure the turn key operation of a bare prototype. It needs to align with what `newt init` generators.
-    - SQL generated should organize files by function, e.g. `{{model_name}}_{{action_name}}.sql`, `*_setup.sql` would create database, schema, roles, tables, `*_access_control.sql` would be regenerated and map roles and permissions for any functions found created by `{{model_name}}_{{action_name}}.sql`. I need to figure out which tables to query to identify the functions that are available in the metadata schema so that the mapping can be complete. 
+  - SQL generated should organize files by function, e.g. `{{model_name}}_{{action_name}}.sql`, `*_setup.sql` would create database, schema, roles, tables, `*_access_control.sql` would be regenerated and map roles and permissions for any functions found created by `{{model_name}}_{{action_name}}.sql`. I need to figure out which tables to query to identify the functions that are available in the metadata schema so that the mapping can be complete. 
 - [ ] Verify we have a simple developer workflow
-    - [ ] `newt init` generate a default YAML for project
-        - [ ] `newt init` allow automatic generation of the project code base?
-    - [ ] `newt generator` generated the code for the project
-    - [ ] `newt run PROJECT_YAML` should be able to run the rendered project.
+  - [ ] `newt init` generate a default YAML for project
+    - [ ] `newt init` allow automatic generation of the project code base?
+  - [ ] `newt generator` generated the code for the project
+  - [ ] `newt run PROJECT_YAML` should be able to run the rendered project.
 - [ ] Newt Check should detect mis-aligned form names when paired with a Postgres function.
-    - [ ] Need to document how the web form input "names" attributes need to match the SQL functions, it is obvious if you understand PostgREST but not so obvious if you are unfamiliar with either Postgres functions or PostgREST
+  - [ ] Need to document how the web form input "names" attributes need to match the SQL functions, it is obvious if you understand PostgREST but not so obvious if you are unfamiliar with either Postgres functions or PostgREST
 - [ ] I still think the string representation of uuid is problematic in the model generation, I need to decide how to deal with this
   - [X] Include Python functions in Postgres to support shorter unique identifiers
     - [ ] Add Python short object id via Newt Generator SQL for models.
   - [D] Implement an "object manager" that will sit in front of PostgREST that will wrap the objects with their object id, created and updated timestamps, this could enforce REST method behaviors but I would need to tie models to routes to do so
 - [P] Nail down the second prototype YAML syntax
 - [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
-    - [X] setup.sql
-    - [X] models.sql
-    - [X] models\_test.sql
-    - [X] postgrest.conf
-    - [ ] create mustache template
-    - [ ] read mustache template
-    - [ ] update mustache template
-    - [ ] delete mustache template
-    - [ ] list mustache template
+  - [X] setup.sql
+  - [X] models.sql
+  - [X] models\_test.sql
+  - [X] postgrest.conf
+  - [ ] create mustache template
+  - [ ] read mustache template
+  - [ ] update mustache template
+  - [ ] delete mustache template
+  - [ ] list mustache template
 - [ ] `newt` runner should be able to manage a postgrest instance. This will simplify using Newt in the development setting
   - [D] `newt` would need to respond SIGTERM, SIGHUP and SIGKILL (if I use Go's exec I don't need to explicitly handle these)
   - [X] `newt` need to track the pid of the external process, then folder that into the signal handlers (using a go routine to start it don't think I need to track this, though it would be nice to log it.
 - [ ] `newtinit`, an interactive Newt YAML file generator, need to decide on approach
-    - [ ] could be done as a cli interactive tool
-    - [ ] could be done as part of the Newt website, like the Codemeta generator, but using a web component to render the Newt YAML contents
-    - [ ] could be done as a GUI form based application
+  - [ ] could be done as a cli interactive tool
+  - [ ] could be done as part of the Newt website, like the Codemeta generator, but using a web component to render the Newt YAML contents
+  - [ ] could be done as a GUI form based application
 - [ ] A "newt object manager" takes a model, validates it and if OK sends the result to the next stage in the pipeline for storage. It should deal with things like unpacking shortened uuids using a base encoding scheme
 - [ ] Present to DLD and interested staff
 - [ ] Present/announce via SoCal Code4Lib (recorded or in person presentation)
