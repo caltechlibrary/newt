@@ -228,12 +228,12 @@ type PartialGen func(io.Writer, *NewtModel) error
 // signature `func(io.Writer,*NewtModel) error` and renders a webpage
 // using the passed in func.
 func mTmplPage(out io.Writer, model *NewtModel, fn PartialGen) error {
-	fmt.Fprintln(out, `<!DOCTYPE html>
+	fmt.Fprintf(out, `<!DOCTYPE html>
 <html lang="en-us">
 	<body>
 `)
 	err := fn(out, model)
-	fmt.Fprintln(out, `
+	fmt.Fprintf(out, `
 	</body>
 </html>`)
 	return err
