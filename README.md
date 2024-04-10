@@ -113,7 +113,7 @@ With the above list we can build capable applications relying on the sophisticat
 
 What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt Router provides static file service and a means of pipelining our JSON data source through a template engine. Newt Mustache provides a template engine. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
 
-### A Newt baseline
+### A new baseline
 
 Web services talk to other web services all the time. This isn't new. It isn't exotic. Newt scales down this approach to the single application.
 

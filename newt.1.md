@@ -1,5 +1,9 @@
 ---
+<<<<<<< HEAD
 title: "newt(1) user manual | 0.0.7 4fbf73d"
+=======
+title: "newt(1) user manual | 0.0.7 de38d63"
+>>>>>>> 3bb8022649fb9eaf8989c20f5995c328a4346a88
 pubDate: 2024-04-10
 author: "R. S. Doiel"
 ---
