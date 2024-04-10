@@ -46,12 +46,12 @@ class="email">rsdoiel@caltech.edu</a>
 <div class="slide" id="TOC">
 
 </div>
-<div id="goal-second-prototype-question" class="slide section level1">
-<h1>Goal: Second Prototype Question</h1>
+<div id="goal-answer-a-question." class="slide section level1">
+<h1>Goal: Answer a question.</h1>
 <p>Is Newt and “off the shelf” enough?</p>
 </div>
-<div id="continue-to-choose-wisely" class="slide section level1">
-<h1>Continue to choose wisely:</h1>
+<div id="how-i-am-proceeding" class="slide section level1">
+<h1>How I am proceeding</h1>
 <ul>
 <li>Pick Simple = (No coding) + (Less coding)</li>
 <li>Avoid inventing new things</li>
@@ -80,7 +80,7 @@ class="slide section level1">
 <div id="second-prototype-status" class="slide section level1">
 <h1>Second prototype status</h1>
 <ul>
-<li>Work in progress but coming together (as of 2024-04-08)</li>
+<li>Still a work in progress (as of 2024-04-08)</li>
 <li>Hope to have a working prototype by June 2024</li>
 <li>Implementing internal applications using prototype as test bead</li>
 </ul>
@@ -89,31 +89,59 @@ class="slide section level1">
 <h1>Is there a Demo I can run?</h1>
 <p>I’m somewhere between vaporware and working prototype</p>
 </div>
-<div id="what-would-a-demo-look-like" class="slide section level1">
-<h1>What would a demo look like?</h1>
+<div id="whats-working-whats-not" class="slide section level1">
+<h1>What’s working, what’s not?</h1>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Router is implemented and
+working</label></li>
+<li><label><input type="checkbox" checked="" />Mustache template engine
+is working</label></li>
+<li><label><input type="checkbox" />Generator is being debugged and
+improved</label></li>
+</ul>
+</div>
+<div id="how-do-i-think-things-will-work" class="slide section level1">
+<h1>How do I think things will work?</h1>
+<ol style="list-style-type: decimal">
+<li>Start by designing our data models</li>
+<li>Generate the rest of our Newt YAML</li>
+<li>Generate SQL and templates</li>
+<li>Refine generated code</li>
+</ol>
+</div>
+<div id="how-is-the-data-model-is-described"
+class="slide section level1">
+<h1>How is the data model is described?</h1>
+<ul>
+<li>GitHub YAML Issue Template Syntax
+<ul>
+<li>can render HTML</li>
+<li>can map to SQL</li>
+</ul></li>
+</ul>
 </div>
 <div id="step-one-create-our-yaml-file" class="slide section level1">
 <h1>Step one create our YAML file</h1>
-<pre><code>newt init people.yaml
-vi people.yaml</code></pre>
+<pre><code>newt init app.yaml
+vi app.yaml</code></pre>
 <ul>
-<li>generates people.yaml</li>
-<li>edit people.yaml, replace models with models.txt</li>
+<li>Interactively generate app.yaml</li>
+<li>Create a models description in YAML in app.yaml</li>
 </ul>
 </div>
 <div id="step-two-generate-our-sql-files" class="slide section level1">
 <h1>Step two generate our SQL files</h1>
-<pre><code>newtgenerator people.yaml postgres setup &gt;setup.sql
-newtgenerator people.yaml postgres models &gt;models.sql</code></pre>
+<pre><code>newtgenerator app.yaml postgres setup &gt;setup.sql
+newtgenerator app.yaml postgres models &gt;models.sql</code></pre>
 <ul>
 <li>newtgenerator</li>
-<li>edit your SQL files as needed</li>
+<li>edit your SQL files if needed</li>
 </ul>
 </div>
 <div id="step-three-generate-postgrest-config"
 class="slide section level1">
 <h1>Step three generate PostgREST config</h1>
-<pre><code>newtgenerator people.yaml postgrest &gt;postgrest.conf</code></pre>
+<pre><code>newtgenerator app.yaml postgrest &gt;postgrest.conf</code></pre>
 <ul>
 <li>newtgenerator</li>
 </ul>
@@ -121,8 +149,8 @@ class="slide section level1">
 <div id="step-four-setup-your-data-source-in-postgres"
 class="slide section level1">
 <h1>Step four, setup your data source in Postgres</h1>
-<pre><code>createdb people
-psql people
+<pre><code>createdb app
+psql app
 \i setup.sql
 \i models.sql
 \dt
@@ -134,28 +162,28 @@ psql people
 <div id="step-five-generate-mustache-templates"
 class="slide section level1">
 <h1>Step five, Generate Mustache templates</h1>
-<pre><code>newtgenerator people.yaml mustache create_form people &gt;create_people_form.tmpl
-newtgenerator people.yaml mustache create_response people &gt;create_people_response.tmpl
-newtgenerator people.yaml mustache update_form people &gt;update_people_form.tmpl
-newtgenerator people.yaml mustache update_response people &gt;update_people_response.tmpl
-newtgenerator people.yaml mustache delete_form people &gt;delete_people_form.tmpl
-newtgenerator people.yaml mustache delete_response people &gt;delete_people_response.tmpl
-newtgenerator people.yaml mustache read people &gt;read_people.tmpl
-newtgenerator people.yaml mustache list people &gt;list_people.tmpl</code></pre>
+<pre><code>newtgenerator app.yaml mustache create_form app &gt;create_app_form.tmpl
+newtgenerator app.yaml mustache create_response app &gt;create_app_response.tmpl
+newtgenerator app.yaml mustache update_form app &gt;update_app_form.tmpl
+newtgenerator app.yaml mustache update_response app &gt;update_app_response.tmpl
+newtgenerator app.yaml mustache delete_form app &gt;delete_app_form.tmpl
+newtgenerator app.yaml mustache delete_response app &gt;delete_app_response.tmpl
+newtgenerator app.yaml mustache read app &gt;read_app.tmpl
+newtgenerator app.yaml mustache list app &gt;list_app.tmpl</code></pre>
 <ul>
-<li>newtgenerator</li>
+<li>newtgenerator, needs to be made much simpler …</li>
 </ul>
 </div>
 <div id="finally-run-newt-and-test" class="slide section level1">
 <h1>Finally, run newt and test</h1>
-<pre><code>newt run people.yaml</code></pre>
+<pre><code>newt run app.yaml</code></pre>
 <ul>
 <li>fire up newt, test and debug</li>
 <li>web browser</li>
 </ul>
 </div>
-<div id="what-did-we-see" class="slide section level1">
-<h1>What did we see?</h1>
+<div id="what-would-these-steps-show-us" class="slide section level1">
+<h1>What would these steps show us?</h1>
 <ul>
 <li>Code generation (SQL, PostgREST config, Mustache Templates)</li>
 <li>Data pipelines (using PostgREST and Newt Mustache)</li>
@@ -166,13 +194,14 @@ newtgenerator people.yaml mustache list people &gt;list_people.tmpl</code></pre>
 <h1>Insights from prototypes 1 &amp; 2</h1>
 <ul>
 <li>“Off the shelf” is simpler</li>
+<li>Large YAML structures benefit from code generation</li>
 <li>SQL turns people off, use a code generator</li>
 <li>HTML and Mustache need a code generator</li>
 <li>Generating the “wiring up” of routes and templates is helpful</li>
 </ul>
 </div>
-<div id="lessons-learned" class="slide section level1">
-<h1>Lessons learned</h1>
+<div id="lessons-learned-so-far" class="slide section level1">
+<h1>Lessons learned, so far</h1>
 <ul>
 <li>Managing routes and pipelines has a cognitive price</li>
 <li>Keep your pipelines short</li>
@@ -182,7 +211,9 @@ newtgenerator people.yaml mustache list people &gt;list_people.tmpl</code></pre>
 <div id="whats-next" class="slide section level1">
 <h1>What’s next?</h1>
 <ul>
-<li>Improve the generated code</li>
+<li>Find nice way to bootstrap our data models</li>
+<li>Improve the generated code, figure out better way to bootstrap
+modeling</li>
 <li>Simplify using Newt (too many steps to type)</li>
 <li>Can I simplify the Newt YAML further?</li>
 </ul>
