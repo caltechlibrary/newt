@@ -80,7 +80,7 @@ Databases have been used to generate web pages since the early web.  Databases a
 
 By the mid 1990s the Open Source databases like MySQL and Postgres were popular choices for building web applications. It is important to note neither MySQL or Postgres spoke HTTP[^14]. To solve this problem many people wrote software in languages like Perl, PHP and Python that ran inside the popular Apache web server. It was a pain to setup but once setup relatively easy to build things that relied on databases.  This led the web to explode with bespoke systems. By the late 1990s and early 2000s practice of "mashing up" sites (i.e. content reuse) was the rage. Bespoke systems took advantage of content reuse too. [Yahoo Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) was a very interesting expression of the "mashup culture"[^15]. Yahoo Pipes inspired Newt's data pipelines.  Eventual the bespoke systems gave way to common use cases[^16]. A good example of a common use case is Apache's [Solr](https://solr.apache.org) search engine. Another example is how bespoke content management systems gave way to [Drupal](https://drupal.org) and [WordPress](https://wordpress.org).
 
-[^13]: Web applications proceeded to eat all the venerable green screen systems they could find. Today's web has become mired in the surveillance economy. It has drifted far from Sir. Tim's vision of sharing science documents. What we need to keep to remember is "good ideas" can have terrible consequences. Newt can be both part of a solution to problems but also be used to exacerbate human problems. Develop your Newt application with consideration for others.
+[^13]: Web applications proceeded to eat all the venerable green screen systems they could find. Today's web is mired in surveillance tech and complex solutions. It has drifted far from Sir. Tim's vision of sharing science documents. We need to refocus on the "good ideas" and jettison the complexity that came with the surveillance economy. Newt can be part of that solution. Develop your Newt application with consideration for others.
 
 [^14]: HTTP being the protocol the communicates with. Essentially at the time RDBMS spoke a dialect of SQL as the unifying language. The web of the time understood HTML and to a certain degree XML. By 2000 people were looking for something simpler than XML to move structured data about. [JSON](https://en.wikipedia.org/wiki/JSON) quickly became the answer.
 
@@ -142,7 +142,7 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 ## Getting help
 
-**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is a partially implemented as a prototype (April 2024). However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>.
+**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is a partially implemented prototype (April 2024). However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>.
 
 > Newt, a type of salamander. Newts don't seek attention. They do their own thing. You only notice them if you look very carefully.
 
