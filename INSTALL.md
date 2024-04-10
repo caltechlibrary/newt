@@ -21,7 +21,7 @@ Install from source
 
 ## Installation Requirements
 
-- Go ≥ 1.22.0
+- Go > 1.22
 - Pandoc ≥ 3.1 (to render Markdown content and some Go code)
 - Git compatible tool for retrieving the GitHub repository of Newt
 - GNU Make ≥ 4.3
