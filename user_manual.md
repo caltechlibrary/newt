@@ -8,11 +8,11 @@
 - [Newt Mustache](newtmustache.1.md), a light weight template engine
 - [Newt Generator](newtgenerator.1.md), bootstraps your SQL and Mustache templates (being written)
 
-## Newt YAML syntax
+## Newt YAML syntax (draft)
 
 - [Newt YAML Syntax](newt_yaml_syntax.md)
 
-## Tutorials and reference materials
+## Tutorials and reference materials (drafts)
 
 - Getting Started with Newt (being written)
 - [Newt Routing Explained](newtrouter_explained.md)
