@@ -1,5 +1,9 @@
 ---
+<<<<<<< HEAD
 title: "newtmustache(1) user manual | 0.0.7 f46634d"
+=======
+title: "newtmustache(1) user manual | 0.0.8 8f00277"
+>>>>>>> 95dbf8d68ad2f4215b407f7f4a9198ad2a13a22d
 pubDate: 2024-04-10
 author: "R. S. Doiel"
 ---
