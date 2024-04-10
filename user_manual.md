@@ -25,11 +25,14 @@
 
 - [Newt Prototype 2](presentation2/), (draft for April 19, 2024)
 
+<!-- 
 ## Demos
 
 - [Birds 4](https://github.com/caltechlibrary/newt/tree/main/demos/birds4) source files
 - [Album Reviews](https://github.com/caltechlibrary/newt/tree/main/demos/album_reviews) source files
 - [Ornithology](ornithology.md), a demo of using the Newt Generator to build a web application based on Newt, Postgres and PostgREST
+
+-->
 
 ## Installation
 
