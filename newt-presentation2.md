@@ -157,8 +157,7 @@ newt run app.yaml
 
 - Find nice way to bootstrap our data models
 - Improve the generated code, consolidate actions
-- Simplify using Newt (too many steps to type)
-- Can Newt be simpler?
+- Simplify how you use Newt (less typing)
 
 # Newt's challenges
 

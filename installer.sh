@@ -4,7 +4,7 @@
 # Set the package name and version to install
 #
 PACKAGE="Newt"
-VERSION="0.0.7"
+VERSION="0.0.8"
 GIT_GROUP="caltechlibrary"
 RELEASE="https://github.com/$GIT_GROUP/$PACKAGE/releases/tag/v$VERSION"
 
