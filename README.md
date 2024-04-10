@@ -142,7 +142,7 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 ## Getting help
 
-**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is partially implemented as a prototype (April 2024). However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in mind it remains an **experiment** as of April 2024.
+**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is a partially implemented as a prototype (April 2024). However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>.
 
 > Newt, a type of salamander. Newts don't seek attention. They do their own thing. You only notice them if you look very carefully.
 
