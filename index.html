@@ -78,9 +78,9 @@ the SQL for managing your objects and the configuration file for
 PostgREST. Additionally Newt’s code generator can render Mustache
 templates too. Between the SQL and Mustache templates you have the basic
 CRUD-L<a href="#fn2" class="footnote-ref" id="fnref2"
-role="doc-noteref"><sup>2</sup></a> operations used to manage metadata.
-Off the self software with the Newt generator, router and template
-service provides the core features for building GLAM applications.</p>
+role="doc-noteref"><sup>2</sup></a> operations covered. Off the self
+software with the Newt generator, router and template service provides
+the core features for building many GLAM applications.</p>
 <h2 id="does-newt-clean-my-house-or-make-cocktails">Does Newt clean my
 house or make cocktails?</h2>
 <p>Newt is a narrowly focused rapid application development toolbox.
@@ -161,7 +161,7 @@ repository metadata record.</p>
 <p>Over the last several decades web applications became very complex.
 This complexity is expensive in terms of reliability, enhancement, bug
 fixes and software sustainability. Newt address this by reducing the
-code you right and focusing your efforts on declaring what you want.</p>
+code you write and focusing your efforts on declaring what you want.</p>
 <blockquote>
 <p>A brief historic detour to set context</p>
 </blockquote>
@@ -216,8 +216,8 @@ When our middleware has to implement everything it becomes very complex.
 Look at Drupal and WordPress. They implement data modeling, data
 management, user accounts, access management, data transformation.</p>
 <p>I think our web services should be doing less, much less. Our web
-services should be narrowly focused. Conceptually simpler. Did one or
-two things really well. Newt enables using simpler discrete services to
+services should be narrowly focused. Conceptually simpler. Do one or two
+things really well. Newt enables using simpler discrete services to
 build our applications.</p>
 <h2 id="working-with-off-the-shelf-deliverables">Working with off the
 shelf deliverables</h2>
@@ -242,7 +242,7 @@ class="footnote-ref" id="fnref7"
 role="doc-noteref"><sup>7</sup></a>.</p>
 <p>What we should do is use Newt to tie those JSON services together and
 send rendered HTML back to the web browser. Newt Router provides static
-file systems and a means of pipelining our JSON data source through a
+file service and a means of pipelining our JSON data source through a
 template engine. Newt Mustache provides a template engine. Newt provides
 the missing bits from my original list so we don’t need to send
 JavaScript down the wire to the web browser. The Newt approach uses less
@@ -305,15 +305,12 @@ href="https://github.com/caltechlibrary/newt/issues"
 class="uri">https://github.com/caltechlibrary/newt/issues</a>.</p>
 <h2 id="getting-help">Getting help</h2>
 <p><strong>The Newt Project is an experiment!!</strong>. The source code
-for the project is supplied “as is”. Newt is most likely broken. At a
-stretch it could be considered a working prototype. You should not use
-it for production systems. However if you’d like to ask a question or
+for the project is supplied “as is”. Newt is a partially implemented as
+a prototype (April 2024). However if you’d like to ask a question or
 have something you’d like to contribute please feel free to file a
 GitHub issue, see <a
 href="https://github.com/caltechlibrary/newt/issues"
-class="uri">https://github.com/caltechlibrary/newt/issues</a>. Just keep
-in mind it remains an <strong>experiment</strong> as of February
-2024.</p>
+class="uri">https://github.com/caltechlibrary/newt/issues</a>.</p>
 <blockquote>
 <p>Newt, a type of salamander. Newts don’t seek attention. They do their
 own thing. You only notice them if you look very carefully.</p>

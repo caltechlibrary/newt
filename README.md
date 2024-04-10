@@ -20,7 +20,7 @@ This is not an exhaustive list. These types of applications can all be integrate
 
 > Wait, what about my custom metadata needs?
 
-That role can be filled by a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as that JSON data source. Newt's code generator lends a hand here. Using Newt's YAML file the code generator can generate SQL for setting up Postgres+PostgREST, the SQL for managing your objects and the configuration file for PostgREST. Additionally Newt's code generator can render Mustache templates too. Between the SQL and Mustache templates you have the basic CRUD-L[^12] operations used to manage metadata. Off the self software with the Newt generator, router and template service provides the core features for building GLAM applications.
+That role can be filled by a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as that JSON data source. Newt's code generator lends a hand here. Using Newt's YAML file the code generator can generate SQL for setting up Postgres+PostgREST, the SQL for managing your objects and the configuration file for PostgREST. Additionally Newt's code generator can render Mustache templates too. Between the SQL and Mustache templates you have the basic CRUD-L[^12] operations covered. Off the self software with the Newt generator, router and template service provides the core features for building many GLAM applications.
 
 ## Does Newt clean my house or make cocktails?
 
@@ -72,7 +72,7 @@ Most GLAM applications are focused on managing and curating some sort of metadat
 
 ## Motivation
 
-Over the last several decades web applications became very complex. This complexity is expensive in terms of reliability, enhancement, bug fixes and software sustainability. Newt address this by reducing the code you right and focusing your efforts on declaring what you want.
+Over the last several decades web applications became very complex. This complexity is expensive in terms of reliability, enhancement, bug fixes and software sustainability. Newt address this by reducing the code you write and focusing your efforts on declaring what you want.
 
 > A brief historic detour to set context
 
@@ -96,7 +96,7 @@ I think a radical simplification is due.  **Newt is intended to spark that conve
 
 A big key to simplification is narrowing the focus of our middleware. When our middleware has to implement everything it becomes very complex. Look at Drupal and WordPress. They implement data modeling, data management, user accounts, access management, data transformation.
 
-I think our web services should be doing less, much less. Our web services should be narrowly focused. Conceptually simpler. Did one or two things really well. Newt enables using simpler discrete services to build our applications.
+I think our web services should be doing less, much less. Our web services should be narrowly focused. Conceptually simpler. Do one or two things really well. Newt enables using simpler discrete services to build our applications.
 
 ## Working with off the shelf deliverables
 
@@ -111,7 +111,7 @@ With the above list we can build capable applications relying on the sophisticat
 
 [^17]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
-What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt Router provides static file systems and a means of pipelining our JSON data source through a template engine. Newt Mustache provides a template engine. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
+What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt Router provides static file service and a means of pipelining our JSON data source through a template engine. Newt Mustache provides a template engine. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
 
 ### A Newt baseline
 
@@ -142,7 +142,7 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 ## Getting help
 
-**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is most likely broken. At a stretch it could be considered a working prototype. You should not use it for production systems.  However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in mind it remains an **experiment** as of February 2024.
+**The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is a partially implemented as a prototype (April 2024). However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>.
 
 > Newt, a type of salamander. Newts don't seek attention. They do their own thing. You only notice them if you look very carefully.
 
