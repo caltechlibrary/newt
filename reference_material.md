@@ -47,6 +47,7 @@ These are links to prior art, related efforts and resources for consideration in
 
 ## Other approaches and background
 
+- [Doing More with Less: Orchestrating Serverless Applications without an Orchestrator. with David Liu, Shadi Noghabi, and Sebastian Burckhardt. (to appear) In proceedings of the 20th USENIX Symposium on Networked Systems Design and Implementation (NSDI) 2023. Paper](https://www.amitlevy.com/papers/2023-nsdi-unum.pdf)
 - [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
 - [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) at MDN
 - [URLPattern](https://developer.chrome.com/articles/urlpattern/) at Chrome Developer site

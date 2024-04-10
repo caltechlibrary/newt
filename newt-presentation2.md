@@ -139,12 +139,6 @@ newt run app.yaml
 - fire up newt, test and debug
 - web browser
 
-# What was done?
-
-- Code generation (YAML, SQL, PostgREST config, Mustache Templates)
-- Data pipelines (using PostgREST and Newt Mustache)
-- Minimally functional web app
-
 # Insights from prototypes 1 & 2
 
 - "Off the shelf" is simpler
