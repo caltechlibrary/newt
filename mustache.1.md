@@ -1,5 +1,5 @@
 ---
-title: "mustache(1) user manual | 0.0.7 de38d63"
+title: "mustache(1) user manual | 0.0.7 e6b5663"
 pubDate: 2024-04-10
 author: "R. S. Doiel"
 ---
