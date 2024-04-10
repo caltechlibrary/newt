@@ -22,7 +22,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.7
+version: 0.0.8
 
 keywords: [ "web development", "web service", "service oriented
 architecture", "micro service architecture", "micro
@@ -35,7 +35,7 @@ application development" ]
 About this software
 ===================
 
-## Newt 0.0.7
+## Newt 0.0.8
 
 ### Authors
 
@@ -76,8 +76,8 @@ additional to the content generated from a data pipeline.
 
 ### Software Requirements
 
-- Postgres ≥ 16
-- PostgREST ≥ 12
-- Pandoc ≥ 3.1
-- Golang ≥ 1.22
+- Postgres &gt; 16
+- PostgREST &gt; 12
+- Pandoc &gt; 3
+- Golang &gt; 1.22
 - A front end web server supporting reverse proxy (e.g. Apache2, NGINX)
