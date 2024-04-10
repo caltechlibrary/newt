@@ -33,88 +33,79 @@
 </ul>
 <h1 id="off-the-shelf-no-coding">Off the shelf (no coding)</h1>
 <ul>
-<li><a href="https://postgresql.org">Postgres</a> + <a
-href="https://postgrest.org">PostgREST</a> =&gt; JSON data source</li>
+<li><a href="https://postgresql.org">Postgres</a> or <a
+href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://solr.apache.org">Solr</a> or <a
+href="https://opensearch.org">OpenSearch</a></li>
 <li>Newt Mustache =&gt; Transform JSON into web pages</li>
 <li>Newt Router, ties it all together</li>
-<li>YAML can express routes, pipelines and data models</li>
 </ul>
 <h1 id="assembling-it-with-yaml-less-coding">Assembling it with YAML
 (less coding)</h1>
 <ul>
 <li>GitHub YAML issue template syntax described data models</li>
+<li>YAML describes configuration, routes, pipelines</li>
 <li>Template language is now Mustache</li>
-<li>More Code generation, “look Mom, no AI!”</li>
+<li>Code generation, “look Mom, no AI!”</li>
 </ul>
 <h1 id="second-prototype-status">Second prototype status</h1>
 <ul>
-<li>Still a work in progress (as of 2024-04-08)</li>
+<li>A work in progress (April 2024)</li>
 <li>Hope to have a working prototype by June 2024</li>
-<li>Implementing internal applications using prototype as test bead</li>
+<li>Internal applications will serve as test bed</li>
 </ul>
 <h1 id="is-there-a-demo-i-can-run">Is there a Demo I can run?</h1>
-<p>I’m somewhere between vaporware and working prototype</p>
+<p>Not yet, hopefully soon.</p>
 <h1 id="whats-working-whats-not">What’s working, what’s not?</h1>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" />Router is implemented and
 working</label></li>
 <li><label><input type="checkbox" checked="" />Mustache template engine
 is working</label></li>
-<li><label><input type="checkbox" />Generator is being debugged and
-improved</label></li>
+<li><label><input type="checkbox" />Generator developement, in
+progress</label></li>
 </ul>
 <h1 id="how-do-i-think-things-will-work">How do I think things will
 work?</h1>
 <ol type="1">
-<li>Start by designing our data models</li>
-<li>Generate the rest of our Newt YAML</li>
-<li>Generate SQL and templates</li>
-<li>Refine generated code</li>
+<li>Generate our app YAML</li>
+<li>Designing our data models</li>
+<li>Generate SQL, PostgREST config and templates</li>
+<li>Run generated SQL</li>
+<li>Run Newt and Test</li>
 </ol>
 <h1 id="how-is-the-data-model-is-described">How is the data model is
 described?</h1>
 <ul>
 <li>GitHub YAML Issue Template Syntax
 <ul>
-<li>can render HTML</li>
-<li>can map to SQL</li>
+<li>describes HTML</li>
+<li>implies SQL</li>
 </ul></li>
 </ul>
 <h1 id="step-one-create-our-yaml-file">Step one create our YAML
 file</h1>
-<pre><code>newt init app.yaml
-vi app.yaml</code></pre>
+<pre><code>newt init app.yaml</code></pre>
 <ul>
 <li>Interactively generate app.yaml</li>
-<li>Create a models description in YAML in app.yaml</li>
 </ul>
-<h1 id="step-two-generate-our-sql-files">Step two generate our SQL
-files</h1>
+<h1 id="step-two-define-our-data-models">Step two define our data
+models</h1>
+<pre><code>vi app.yaml</code></pre>
+<ul>
+<li>edit app.yaml</li>
+</ul>
+<h1 id="step-three-generate-our-sql-files-config">Step three, generate
+our SQL files, config</h1>
 <pre><code>newtgenerator app.yaml postgres setup &gt;setup.sql
-newtgenerator app.yaml postgres models &gt;models.sql</code></pre>
+newtgenerator app.yaml postgres models &gt;models.sql
+newtgenerator app.yaml postgrest &gt;postgrest.conf</code></pre>
 <ul>
 <li>newtgenerator</li>
 <li>edit your SQL files if needed</li>
 </ul>
-<h1 id="step-three-generate-postgrest-config">Step three generate
-PostgREST config</h1>
-<pre><code>newtgenerator app.yaml postgrest &gt;postgrest.conf</code></pre>
-<ul>
-<li>newtgenerator</li>
-</ul>
-<h1 id="step-four-setup-your-data-source-in-postgres">Step four, setup
-your data source in Postgres</h1>
-<pre><code>createdb app
-psql app
-\i setup.sql
-\i models.sql
-\dt
-\q</code></pre>
-<ul>
-<li>psql</li>
-</ul>
-<h1 id="step-five-generate-mustache-templates">Step five, Generate
-Mustache templates</h1>
+<h1 id="step-three-generate-templates">Step three, generate
+templates</h1>
 <pre><code>newtgenerator app.yaml mustache create_form app &gt;create_app_form.tmpl
 newtgenerator app.yaml mustache create_response app &gt;create_app_response.tmpl
 newtgenerator app.yaml mustache update_form app &gt;update_app_form.tmpl
@@ -124,18 +115,30 @@ newtgenerator app.yaml mustache delete_response app &gt;delete_app_response.tmpl
 newtgenerator app.yaml mustache read app &gt;read_app.tmpl
 newtgenerator app.yaml mustache list app &gt;list_app.tmpl</code></pre>
 <ul>
-<li>newtgenerator, needs to be made much simpler …</li>
+<li>newtgenerator</li>
+<li>this needs automation</li>
 </ul>
-<h1 id="finally-run-newt-and-test">Finally, run newt and test</h1>
+<h1 id="step-four-run-our-sql">Step four, run our SQL</h1>
+<pre><code>createdb app
+psql app
+\i setup.sql
+\i models.sql
+\dt
+\q</code></pre>
+<ul>
+<li>psql</li>
+<li>this could be automated</li>
+</ul>
+<h1 id="step-five-run-newt-and-test">Step five, run newt and test</h1>
 <pre><code>newt run app.yaml</code></pre>
 <ul>
 <li>fire up newt, test and debug</li>
 <li>web browser</li>
 </ul>
-<h1 id="what-would-these-steps-show-us">What would these steps show
-us?</h1>
+<h1 id="what-was-done">What was done?</h1>
 <ul>
-<li>Code generation (SQL, PostgREST config, Mustache Templates)</li>
+<li>Code generation (YAML, SQL, PostgREST config, Mustache
+Templates)</li>
 <li>Data pipelines (using PostgREST and Newt Mustache)</li>
 <li>Minimally functional web app</li>
 </ul>
@@ -145,8 +148,8 @@ us?</h1>
 <li>“Off the shelf” is simpler</li>
 <li>Large YAML structures benefit from code generation</li>
 <li>SQL turns people off, use a code generator</li>
-<li>HTML and Mustache need a code generator</li>
-<li>Generating the “wiring up” of routes and templates is helpful</li>
+<li>Mustache/HTML needs a code generator</li>
+<li>Automatic “wiring up” of routes and templates is helpful</li>
 </ul>
 <h1 id="lessons-learned-so-far">Lessons learned, so far</h1>
 <ul>
@@ -157,10 +160,9 @@ us?</h1>
 <h1 id="whats-next">What’s next?</h1>
 <ul>
 <li>Find nice way to bootstrap our data models</li>
-<li>Improve the generated code, figure out better way to bootstrap
-modeling</li>
+<li>Improve the generated code, consolidate actions</li>
 <li>Simplify using Newt (too many steps to type)</li>
-<li>Can I simplify the Newt YAML further?</li>
+<li>Can Newt be simpler?</li>
 </ul>
 <h1 id="newts-challenges">Newt’s challenges</h1>
 <ul>

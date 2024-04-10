@@ -9,10 +9,10 @@ urlcolor: blue
 linkstyle: bold
 aspectratio: 169
 createDate: 2024-02-14
-updateDate: 2024-02-15
-#pubDate: TBD
-#place: TBD
-#date: TBF
+updateDate: 2024-04-10
+pubDate: 2024-04-19
+place: SoCal Code4Lib Meetup at USC
+date: 2024-04-19
 section-titles: false
 toc: true
 keywords: [ "web service", "micro service", "Postgres", "PostgREST", "Mustache" ]
@@ -31,88 +31,76 @@ Is Newt and "off the shelf" enough?
 
 # Off the shelf (no coding)
 
-- [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org) =>  JSON data source
+- [Postgres](https://postgresql.org) or [PostgREST](https://postgrest.org)
+- [Solr](https://solr.apache.org) or [OpenSearch](https://opensearch.org)
 - Newt Mustache => Transform JSON into web pages
 - Newt Router, ties it all together
-- YAML can express routes, pipelines and data models
 
 # Assembling it with YAML (less coding)
 
 - GitHub YAML issue template syntax described data models
+- YAML describes configuration, routes, pipelines
 - Template language is now Mustache
-- More Code generation, "look Mom, no AI!"
+- Code generation, "look Mom, no AI!"
 
 # Second prototype status
 
-- Still a work in progress (as of 2024-04-08)
+- A work in progress (April 2024)
 - Hope to have a working prototype by June 2024
-- Implementing internal applications using prototype as test bead
+- Internal applications will serve as test bed
 
 # Is there a Demo I can run?
 
-I'm somewhere between vaporware and working prototype
+Not yet, hopefully soon.
 
 # What's working, what's not?
 
 - [X] Router is implemented and working
 - [X] Mustache template engine is working
-- [ ] Generator is being debugged and improved
+- [ ] Generator developement, in progress
 
 # How do I think things will work?
 
-1. Start by designing our data models
-2. Generate the rest of our Newt YAML
-3. Generate SQL and templates
-4. Refine generated code
+1. Generate our app YAML
+2. Designing our data models
+3. Generate SQL, PostgREST config and templates
+4. Run generated SQL
+5. Run Newt and Test
 
 # How is the data model is described?
 
 - GitHub YAML Issue Template Syntax
-  - can render HTML
-  - can map to SQL
+  - describes HTML
+  - implies SQL
 
 # Step one create our YAML file
 
 ~~~
 newt init app.yaml
-vi app.yaml
 ~~~
 
 - Interactively generate app.yaml
-- Create a models description in YAML in app.yaml
 
-# Step two generate our SQL files
+# Step two define our data models
+
+~~~
+vi app.yaml
+~~~
+
+- edit app.yaml
+
+# Step three, generate our SQL files, config
 
 ~~~
 newtgenerator app.yaml postgres setup >setup.sql
 newtgenerator app.yaml postgres models >models.sql
+newtgenerator app.yaml postgrest >postgrest.conf
 ~~~
 
 - newtgenerator
 - edit your SQL files if needed
 
-# Step three generate PostgREST config
-
-~~~
-newtgenerator app.yaml postgrest >postgrest.conf
-~~~
-
-- newtgenerator
-
-# Step four, setup your data source in Postgres
-
-~~~
-createdb app
-psql app
-\i setup.sql
-\i models.sql
-\dt
-\q
-~~~
-
-- psql
-
-# Step five, Generate Mustache templates
+# Step three, generate templates
 
 ~~~
 newtgenerator app.yaml mustache create_form app >create_app_form.tmpl
@@ -125,9 +113,24 @@ newtgenerator app.yaml mustache read app >read_app.tmpl
 newtgenerator app.yaml mustache list app >list_app.tmpl
 ~~~
 
-- newtgenerator, needs to be made much simpler ...
+- newtgenerator 
+- this needs automation
 
-# Finally, run newt and test
+# Step four, run our SQL
+
+~~~
+createdb app
+psql app
+\i setup.sql
+\i models.sql
+\dt
+\q
+~~~
+
+- psql
+- this could be automated
+
+# Step five, run newt and test
 
 ~~~
 newt run app.yaml
@@ -136,9 +139,9 @@ newt run app.yaml
 - fire up newt, test and debug
 - web browser
 
-# What would these steps show us?
+# What was done?
 
-- Code generation (SQL, PostgREST config, Mustache Templates)
+- Code generation (YAML, SQL, PostgREST config, Mustache Templates)
 - Data pipelines (using PostgREST and Newt Mustache)
 - Minimally functional web app
 
@@ -147,8 +150,8 @@ newt run app.yaml
 - "Off the shelf" is simpler
 - Large YAML structures benefit from code generation
 - SQL turns people off, use a code generator
-- HTML and Mustache need a code generator
-- Generating the "wiring up" of routes and templates is helpful
+- Mustache/HTML needs a code generator
+- Automatic "wiring up" of routes and templates is helpful
 
 # Lessons learned, so far
 
@@ -159,9 +162,9 @@ newt run app.yaml
 # What's next?
 
 - Find nice way to bootstrap our data models
-- Improve the generated code, figure out better way to bootstrap modeling
+- Improve the generated code, consolidate actions
 - Simplify using Newt (too many steps to type)
-- Can I simplify the Newt YAML further?
+- Can Newt be simpler?
 
 # Newt's challenges
 
