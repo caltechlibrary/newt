@@ -1,13 +1,5 @@
 ---
-<<<<<<< HEAD
-<<<<<<< HEAD
-title: "newtrouter(1) user manual | 0.0.7 4fbf73d"
-=======
-title: "newtrouter(1) user manual | 0.0.7 de38d63"
->>>>>>> 3bb8022649fb9eaf8989c20f5995c328a4346a88
-=======
-title: "newtrouter(1) user manual | 0.0.7 e6b5663"
->>>>>>> 0ab7817e8934da83ea6e80f46b27d94fa73eceaf
+title: "newtrouter(1) user manual | 0.0.7 f46634d"
 pubDate: 2024-04-10
 author: "R. S. Doiel"
 ---
