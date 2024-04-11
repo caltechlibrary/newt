@@ -58,55 +58,8 @@ const (
 	SWS_PORT         = 8000
 	SWS_HTDOCS       = "."
 	POSTGREST_PORT   = 3000
+	POSTGRES_PORT    = 5432
 )
-
-// getAnswer get a Y/N response from buffer
-func getAnswer(buf *bufio.Reader, lower bool) string {
-	answer, err := buf.ReadString('\n')
-	if err != nil {
-		return ""
-	}
-	answer = strings.TrimSpace(answer)
-	if lower {
-		return strings.ToLower(answer)
-	}
-	return answer
-}
-
-// setupNewtRouter prompt to configure the NewtRouter
-func setupNewtRouter(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
-	fmt.Fprintf(out, "Will %s use Newt Router (Y/n)? ", appFName)
-	answer := getAnswer(buf, true)
-	if answer != "n" {
-		if cfg.Applications == nil {
-			cfg.Applications = &Applications{}
-		}
-		if cfg.Applications.NewtRouter == nil {
-			cfg.Applications.NewtRouter = &Application{
-				Port:   ROUTER_PORT,
-				Htdocs: "htdocs",
-			}
-		}
-		if cfg.Routes == nil {
-			cfg.Routes = []*NewtRoute{}
-		}
-	}
-}
-
-// setupPostgREST prompt to configure PostgREST
-func setupPostgREST(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
-	fmt.Fprintf(out, "Will %s use PostgREST (Y/n)? ", appFName)
-	answer := getAnswer(buf, true)
-	if answer != "n" {
-		if cfg.Applications.PostgREST == nil {
-			cfg.Applications.PostgREST = &Application{
-				Port:     3000,
-				AppPath:  "postgrest",
-				ConfPath: "postgrest.conf",
-			}
-		}
-	}
-}
 
 
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
@@ -605,7 +558,7 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 		mkBackUp = true
 		cfg, err = LoadConfig(appFName)
 		fmt.Fprintf(out, "found %q, continue (y/N)? ", appFName)
-		answer = getAnswer(readBuffer, true)
+		answer = getAnswer(readBuffer, "y", true)
 		if answer != "y" {
 			fmt.Fprintf(eout, "aborting init, %q already exists\n", appFName)
 			return INIT_FAIL
@@ -614,11 +567,14 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 	// objName is used to gererate example elements in the Newt YAML file.
 	objName := strings.TrimSuffix(appFName, ".yaml")
 	// Step 2. Figure out which applications will be running
+	/*
 	if cfg.Applications == nil {
 		cfg.Applications = &Applications{}
 	}
+	*/
 	for {
 		setupNewtRouter(cfg, readBuffer, out, appFName, objName)
+		setupPostgres(cfg, readBuffer, out, appFName, objName)
 		setupPostgREST(cfg, readBuffer, out, appFName, objName)
 		setupNewtMustache(cfg, readBuffer, out, appFName, objName)
 		setupNewtGenerator(cfg, readBuffer, out, appFName, objName)
@@ -642,7 +598,7 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 
 		fmt.Fprintf(out, "%s\n", src)
 		fmt.Fprintf(out, "Save and exit (y/N)? ")
-		answer = getAnswer(readBuffer, true)
+		answer = getAnswer(readBuffer, "n", true)
 		if answer == "y" {
 			// We're ready to write out result.
 			// If file exists make a back up copy
@@ -664,7 +620,7 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 			break
 		} else {
 			fmt.Fprintf(out, "Exit without saving (y/N)? ")
-			answer = getAnswer(readBuffer, true)
+			answer = getAnswer(readBuffer, "n", true)
 			if answer == "y" {
 				fmt.Fprintf(out, "aborting write of %q\n", appFName)
 				return INIT_FAIL

@@ -3,22 +3,21 @@
 
 ## Bugs
 
-- [ ] Newt Init should not add routes or templates if they are already defined in the previously read YAML
 - [ ] When using Newt to run services, each services needs to display the port it is running on.
 - [ ] Need to wrap the webforms in the appropriate form element and attributes
 - [ ] Newt Router currently should restrict POST to urlencoded or application/json encoded but explicitly disallow multipart form encoding since Newt Router doesn't support file uploads yet.
 - [X] Select partials in page.tmpl isn't viable the way I thought I could implemented it, need to figure out a better way, 
 - [X] Newt Router needs to bubble up the HTTP error code from the last retrieved  HTTP response in the pipeline
 - [X] decide if it is object name then action or action then object name, I've seem to have flipped flopped around on this in the code.
+- [X] Newt Init should not add routes or templates if they are already defined in the previously read YAML
 
 ## Next for the second prototype 
 
 NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
-- [ ] Need to decide on how to vet submitted web forms, does vetting code get generate in the RDMS, do I include a model in the route definition or should this be done as an independent part of the pipeline? Or all of they above?
+- [ ] Postgres configuration in yamlgen.go needs to include a DSN to make the connection for loading our SQL
 - [ ] Newt Router needs to validate it's inputs for POST, PUT, PATCH against a specific data model
-- [ ] Need a way to assign a sql trigger from a form element, could use the `x-pgsql-*` as an element attribute then when I write the HTML I skip those attributes
-- [ ] Explore the idea of "complex models", these would be composed by either combining or aggregating lists of other models. This would let me mimic RDM/ArchivesSpace rich data models from Newt
+    - [ ] Need to decide on how to vet submitted web forms, does vetting code get generate in the RDMS, do I include a model in the route definition or should this be done as an independent part of the pipeline? Or all of they above?
 - [ ] Newt needs a web hook service that can be placed in the pipeline to trigger a non-pipeline action, sorta of like the Unix tee command
   - use cases
     - the webhook would recieve the JSON data from the previous service in the pipeline
@@ -50,11 +49,9 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
   - [ ] delete mustache template
   - [ ] list mustache template
 - [ ] `newt` runner should be able to manage a postgrest instance. This will simplify using Newt in the development setting
-  - [D] `newt` would need to respond SIGTERM, SIGHUP and SIGKILL (if I use Go's exec I don't need to explicitly handle these)
   - [X] `newt` need to track the pid of the external process, then folder that into the signal handlers (using a go routine to start it don't think I need to track this, though it would be nice to log it.
-- [ ] `newtinit`, an interactive Newt YAML file generator, need to decide on approach
-  - [ ] could be done as a cli interactive tool
-  - [ ] could be done as part of the Newt website, like the Codemeta generator, but using a web component to render the Newt YAML contents
+- [ ] `newt init`, an interactive Newt YAML file generator, need to decide on approach
+  - [X] could be done as a cli interactive tool
   - [ ] could be done as a GUI form based application
 - [ ] A "newt object manager" takes a model, validates it and if OK sends the result to the next stage in the pipeline for storage. It should deal with things like unpacking shortened uuids using a base encoding scheme
 - [ ] Present to DLD and interested staff
@@ -75,11 +72,12 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
 - [X] Adopt GitHub's YAML Issue Syntax for describing models
   - [X] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
   - [X] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
-- [X] Present at Code4Lib meetup, July 14, 2023
-- [D] The cli.go runners should handle options rather than `cmd/*/*.go`. This may allow a much more consistent interface between the tools. The source for processing the options could be all in one file like what I did with exit codes.
+- [X] Present at Code4Lib SoCal meetup, July 14, 2023
+- [ ] Present at Code4Lib SoCal meetup, April 19, 2024
 
 ## Someday, maybe
 
+- [ ] Explore the idea of "complex models", these would be composed by either combining or aggregating lists of other models. This would let me mimic RDM/ArchivesSpace rich data models from Newt
 - [ ] If the Newt Router is going to proxy file uploads it will need to specify the route as multipart encoded, if Newt Router can generate object ids when creating new objects along with the file upload then you could automagically map the object into an S3 prototocol path for file storage and further processing
 - [ ] The generate could generating an Apache include conf file or an NGINX configuration file
 - [ ] Solr could bespecified like PostgREST in the `.applications` property, this could easy integrating Solr
