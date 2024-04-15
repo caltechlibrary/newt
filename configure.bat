@@ -1,11 +1,6 @@
 rem
 rem This script setups of the model definition for development. It will import mimimal modules needed to compile newt.exe.
 rem
-
-
-rem
-rem Check all of irdmtools is installed
-rem
 echo "Checking for Go >= 1.22"
 go version
 echo "Checking for Pandoc >= 3.1"
