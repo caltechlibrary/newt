@@ -1,5 +1,5 @@
 ---
-title: "ws(1) user manual | 0.0.8 302c3fd"
+title: "ws(1) user manual | 0.0.8 f7cc697"
 pubDate: 2024-04-15
 author: "R. S. Doiel"
 ---
