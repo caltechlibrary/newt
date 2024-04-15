@@ -26,9 +26,6 @@
 <h1 id="action-items">Action Items</h1>
 <h2 id="bugs">Bugs</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Newt Init should not add routes or
-templates if they are already defined in the previously read
-YAML</label></li>
 <li><label><input type="checkbox" />When using Newt to run services,
 each services needs to display the port it is running on.</label></li>
 <li><label><input type="checkbox" />Need to wrap the webforms in the
@@ -46,26 +43,26 @@ the pipeline</label></li>
 <li><label><input type="checkbox" checked="" />decide if it is object
 name then action or action then object name, I’ve seem to have flipped
 flopped around on this in the code.</label></li>
+<li><label><input type="checkbox" checked="" />Newt Init should not add
+routes or templates if they are already defined in the previously read
+YAML</label></li>
 </ul>
 <h2 id="next-for-the-second-prototype">Next for the second
 prototype</h2>
 <p>NOTE: X is completed, P is partial completion, D (dropped) is
 skipping implementation</p>
 <ul>
+<li><label><input type="checkbox" />Postgres configuration in yamlgen.go
+needs to include a DSN to make the connection for loading our
+SQL</label></li>
+<li><label><input type="checkbox" />Newt Router needs to validate it’s
+inputs for POST, PUT, PATCH against a specific data model</label>
+<ul class="task-list">
 <li><label><input type="checkbox" />Need to decide on how to vet
 submitted web forms, does vetting code get generate in the RDMS, do I
 include a model in the route definition or should this be done as an
 independent part of the pipeline? Or all of they above?</label></li>
-<li><label><input type="checkbox" />Newt Router needs to validate it’s
-inputs for POST, PUT, PATCH against a specific data model</label></li>
-<li><label><input type="checkbox" />Need a way to assign a sql trigger
-from a form element, could use the <code>x-pgsql-*</code> as an element
-attribute then when I write the HTML I skip those
-attributes</label></li>
-<li><label><input type="checkbox" />Explore the idea of “complex
-models”, these would be composed by either combining or aggregating
-lists of other models. This would let me mimic RDM/ArchivesSpace rich
-data models from Newt</label></li>
+</ul></li>
 <li><label><input type="checkbox" />Newt needs a web hook service that
 can be placed in the pipeline to trigger a non-pipeline action, sorta of
 like the Unix tee command</label>
@@ -154,23 +151,17 @@ template</label></li>
 <li><label><input type="checkbox" /><code>newt</code> runner should be
 able to manage a postgrest instance. This will simplify using Newt in
 the development setting</label>
-<ul>
-<li>[D] <code>newt</code> would need to respond SIGTERM, SIGHUP and
-SIGKILL (if I use Go’s exec I don’t need to explicitly handle
-these)</li>
+<ul class="task-list">
 <li><label><input type="checkbox" checked="" /><code>newt</code> need to
 track the pid of the external process, then folder that into the signal
 handlers (using a go routine to start it don’t think I need to track
 this, though it would be nice to log it.</label></li>
 </ul></li>
-<li><label><input type="checkbox" /><code>newtinit</code>, an
+<li><label><input type="checkbox" /><code>newt init</code>, an
 interactive Newt YAML file generator, need to decide on approach</label>
 <ul class="task-list">
-<li><label><input type="checkbox" />could be done as a cli interactive
-tool</label></li>
-<li><label><input type="checkbox" />could be done as part of the Newt
-website, like the Codemeta generator, but using a web component to
-render the Newt YAML contents</label></li>
+<li><label><input type="checkbox" checked="" />could be done as a cli
+interactive tool</label></li>
 <li><label><input type="checkbox" />could be done as a GUI form based
 application</label></li>
 </ul></li>
@@ -233,15 +224,17 @@ href="https://docs.github.com/en/communities/using-templates-to-encourage-useful
 YAML issue template schema</a>? Or should it be replaced by
 it?</label></li>
 </ul></li>
-<li><label><input type="checkbox" checked="" />Present at Code4Lib
+<li><label><input type="checkbox" checked="" />Present at Code4Lib SoCal
 meetup, July 14, 2023</label></li>
-<li>[D] The cli.go runners should handle options rather than
-<code>cmd/*/*.go</code>. This may allow a much more consistent interface
-between the tools. The source for processing the options could be all in
-one file like what I did with exit codes.</li>
+<li><label><input type="checkbox" />Present at Code4Lib SoCal meetup,
+April 19, 2024</label></li>
 </ul>
 <h2 id="someday-maybe">Someday, maybe</h2>
 <ul class="task-list">
+<li><label><input type="checkbox" />Explore the idea of “complex
+models”, these would be composed by either combining or aggregating
+lists of other models. This would let me mimic RDM/ArchivesSpace rich
+data models from Newt</label></li>
 <li><label><input type="checkbox" />If the Newt Router is going to proxy
 file uploads it will need to specify the route as multipart encoded, if
 Newt Router can generate object ids when creating new objects along with
