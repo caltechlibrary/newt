@@ -36,19 +36,10 @@ Install from source
 
 #### step 1
 
-1. Check if Go is installed and it is the right version. See <https://golang.org> to download and install Go
-2. Check if Pandoc is installed and the right version. See <https://pandoc.org> to download and install Pandoc
-3. Check if Git is installed and version. To install the Git command see, <https://git-scm.com/>. GitHub provides [GA](https://docs.github.com/en/github-cli) and [GitHub Desktop](https://docs.github.com/en/desktop) with similar capabilities. Newt install instructions assume the venerable `git` command.
-4. Check if your GNU or POSIX commands are available
-   - These command often installed by POSIX operating system and its package manager
+The `./configure.sh` script or `.configure.bat` for Windows performs this step.
 
 ~~~shell
-go version
-pandoc --version
-git version
-make --version
-grep --version
-cut --version
+./configure.sh
 ~~~
 
 #### step 2
