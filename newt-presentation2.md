@@ -57,7 +57,7 @@ Not yet, hopefully soon.
 
 - [X] Router is implemented and working
 - [X] Mustache template engine is working
-- [ ] Generator developement, in progress
+- [ ] Generator development, in progress
 
 # How do I think things will work?
 

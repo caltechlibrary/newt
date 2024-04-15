@@ -1,10 +1,15 @@
 ---
 <<<<<<< HEAD
+<<<<<<< HEAD
 title: "newtmustache(1) user manual | 0.0.7 f46634d"
 =======
 title: "newtmustache(1) user manual | 0.0.8 8f00277"
 >>>>>>> 95dbf8d68ad2f4215b407f7f4a9198ad2a13a22d
 pubDate: 2024-04-10
+=======
+title: "newtmustache(1) user manual | 0.0.8 f7cc697"
+pubDate: 2024-04-15
+>>>>>>> 5bdf6484b107972fb35b17845ae07d283e6c57b2
 author: "R. S. Doiel"
 ---
 

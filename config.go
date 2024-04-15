@@ -83,6 +83,9 @@ type Application struct {
 	// Htdocs holds any static files you want to make available through
 	// Newt router.
 	Htdocs string `json:"htdocs,omitempty" yaml:"htdocs,omitempty"`
+
+	// DSN, data source name is a URI connection string
+	DSN string `json:"dsn,omitemity" yaml:"dsn,omitempty"`
 }
 
 // ConfigUnmarshal will read []byte of YAML or JSON,
