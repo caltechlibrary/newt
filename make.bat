@@ -52,12 +52,12 @@ echo } >>version.go
 go fmt version.go
 
 echo.
-echo Buidling bin\newt.exe
+echo Buidling bin\newt*.exe
 echo.
 mkdir bin
 go build -o bin\newt.exe cmd\newt\newt.go
 go build -o bin\newtmustache.exe cmd\newtmustache\newtmustache.go
-go build -o bin\newtrouter.exe cmd\newtwrouter\newtrouter.go
+go build -o bin\newtrouter.exe cmd\newtrouter\newtrouter.go
 go build -o bin\newtgenerator.exe cmd\newtgenerator\newtgenerator.go
 go build -o bin\ws.exe cmd\ws\ws.go
 go build -o bin\mustache.exe cmd\mustache\mustache.go

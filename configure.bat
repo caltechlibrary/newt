@@ -1,6 +1,7 @@
 rem
 rem This script setups of the model definition for development. It will import mimimal modules needed to compile newt.exe.
 rem
+@echo off
 echo "Checking for Go >= 1.22"
 go version
 echo "Checking for Pandoc >= 3.1"
@@ -14,7 +15,4 @@ postgrest --version
 echo "Checking for jq >= 1.6"
 jq --version
 echo "Review version info for each software checked."
-if exist go.mod del go.mod
-if exist go.sum del go.sum
-go mod init "github.com/caltechlibrary/newt"
-go mod tidy
+@echo on
