@@ -4,10 +4,10 @@
 #
 applications:
   newtrouter:
-    port: 8010
+    port: 8100
     htdocs: htdocs
   newtmustache:
-    port: 8011
+    port: 8101
   newtgenerator:
     namespace: cold
   postgres:
