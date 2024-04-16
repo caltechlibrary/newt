@@ -97,34 +97,32 @@ models</h1>
 </ul>
 <h1 id="step-three-generate-our-sql-files-config">Step three, generate
 our SQL files, config</h1>
-<pre><code>newtgenerator app.yaml postgres setup &gt;setup.sql
-newtgenerator app.yaml postgres models &gt;models.sql
-newtgenerator app.yaml postgrest &gt;postgrest.conf</code></pre>
+<pre><code>newt generate app.yaml postgres setup &gt;setup.sql
+newt generate app.yaml postgres models &gt;models.sql
+newt generate app.yaml postgrest &gt;postgrest.conf</code></pre>
 <ul>
 <li>newtgenerator</li>
 <li>edit your SQL files if needed</li>
 </ul>
 <h1 id="step-three-generate-templates">Step three, generate
 templates</h1>
-<pre><code>newtgenerator app.yaml mustache create_form app &gt;create_app_form.tmpl
-newtgenerator app.yaml mustache create_response app &gt;create_app_response.tmpl
-newtgenerator app.yaml mustache update_form app &gt;update_app_form.tmpl
-newtgenerator app.yaml mustache update_response app &gt;update_app_response.tmpl
-newtgenerator app.yaml mustache delete_form app &gt;delete_app_form.tmpl
-newtgenerator app.yaml mustache delete_response app &gt;delete_app_response.tmpl
-newtgenerator app.yaml mustache read app &gt;read_app.tmpl
-newtgenerator app.yaml mustache list app &gt;list_app.tmpl</code></pre>
+<pre><code>newt generate app.yaml mustache create_form app &gt;create_app_form.tmpl
+newt generate app.yaml mustache create_response app &gt;create_app_response.tmpl
+newt generate app.yaml mustache update_form app &gt;update_app_form.tmpl
+newt generate app.yaml mustache update_response app &gt;update_app_response.tmpl
+newt generate app.yaml mustache delete_form app &gt;delete_app_form.tmpl
+newt generate app.yaml mustache delete_response app &gt;delete_app_response.tmpl
+newt generate app.yaml mustache read app &gt;read_app.tmpl
+newt generate app.yaml mustache list app &gt;list_app.tmpl</code></pre>
 <ul>
 <li>newtgenerator</li>
 <li>this needs automation</li>
 </ul>
 <h1 id="step-four-run-our-sql">Step four, run our SQL</h1>
 <pre><code>createdb app
-psql app
-\i setup.sql
-\i models.sql
-\dt
-\q</code></pre>
+psql app -c &#39;\i setup.sql&#39;
+psql app -c &#39;\i models.sql&#39;
+psql app -c &#39;\dt&#39;</code></pre>
 <ul>
 <li>psql</li>
 <li>this could be automated</li>
