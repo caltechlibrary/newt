@@ -81,7 +81,7 @@ Newt Router configured, port set to :8010
 route interesting_album_view defined, request path GET /api/{$}, pipeline size 1
 ~~~
 
-For now ignore the "WARNING" about models. The SQL program "setup_album_reviews_demo.sql" already created the database, table and functions to the models are not necessary for this demo.
+For now ignore the "WARNING" about models. The SQL program "setup_album_reviews_demo.sql" already created the database, table and functions that implement our data models so are not necessary for this demo.
 
 Now let's run the Newt Router.
 
@@ -172,8 +172,8 @@ Point your web browser at <http://localhost:8010>. You should see an album list 
 
 ## What have we done exactly?
 
-First we've built up a simple web application through defining some routes using data pipelines. In our first iteration we just verified that we could connect to PostgREST using a simple one stage pipeline. It nice but not really compelling for must of us humnas.
+First we've built up a simple web application through defining some routes using data pipelines. In our first iteration we just verified that we could connect to PostgREST using a simple one stage pipeline. It was nice but not really compelling for must of us humans.
 
-In the second iteration we use the Newt Router to run two additional routes. The first one listed our review list like before but this time the results were displayed as a web page (i.e. HTML markup). This was accomplished by adding Newt Mustache in our pipleines. We use one route to display our list and include a web form for submitting another review. The second route we added displays the results from the submission.
+In the second iteration we use the Newt Router to run two additional routes. The first one listed our review list like before but this time the results were displayed as a web page (i.e. HTML markup). This was accomplished by adding Newt Mustache in our pipelines. We use one route to display our list and include a web form for submitting another review. The second route we added displays the results from the submission.
 
 By typing in the Newt YAML file, adding some Mustache templates we have a functional web application that is built on what is provided by Postgres and PostgREST.

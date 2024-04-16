@@ -32,11 +32,12 @@ Mustache service. Newt Mustache then takes that data, processes it via a
 Mustache template and returns the result.</p>
 <p>Newt Mustache does this through Newt’s YAML configuration file. In
 that file there is a <code>templates</code> property where you map the
-request paths to templates. The templates are provided a set of objects
-that can be used int he template. They include the “body” of the POST, a
-set of “options” defined for the applications listed in your Newt YAML
-file. They can also include “vocabulary” taken from an external YAML
-file and variables defined in the request path for the template.</p>
+request paths to templates. The templates provided a set of objects that
+can be used from with in the template. They include the “body” of the
+POST, a set of “options” defined for the applications listed in your
+Newt YAML file. They can also include “vocabulary” taken from an
+external YAML file and variables defined in the request path for the
+template.</p>
 <p>The Mustache templates have the following objects available.</p>
 <dl>
 <dt><code>body</code></dt>
@@ -174,7 +175,7 @@ should see the message “Hi Maxine from Planet Earth!”.</p>
 <p>That’s the basic idea of Newt Mustache. Let me cover some other
 situations you might encounter when developing your Newt Mustache
 templates.</p>
-<p>If you use an HTTP beside POST you will get back an HTTP error
+<p>If you use an HTTP method beside POST you will get back an HTTP error
 message. If you use a URL path not defined in your templates you will
 get back an HTTP error message. These should be 404 type HTTP error
 message.</p>
