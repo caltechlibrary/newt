@@ -5,7 +5,7 @@
 
 Newt Mustache is a simple, light weight template engine. It supports the [Mustache](https://mustache.github.io) template language. The way it works is you send data encoded as JSON via a POST to the Newt Mustache service. Newt Mustache then takes that data, processes it via a Mustache template and returns the result.
 
-Newt Mustache does this through Newt's YAML configuration file. In that file there is a `templates` property where you map the request paths to templates. The templates are provided a set of objects that can be used int he template.  They include the "body" of the POST, a set of "options" defined for the applications listed in your Newt YAML file. They can also include "vocabulary" taken from an external YAML file and variables defined in the request path for the template.
+Newt Mustache does this through Newt's YAML configuration file. In that file there is a `templates` property where you map the request paths to templates. The templates provided a set of objects that can be used from with in the template.  They include the "body" of the POST, a set of "options" defined for the applications listed in your Newt YAML file. They can also include "vocabulary" taken from an external YAML file and variables defined in the request path for the template.
 
 The Mustache templates have the following objects available.
 
@@ -141,7 +141,7 @@ Now you should see "Hi Maxine from Mars!".
 
 That's the basic idea of Newt Mustache. Let me cover some other situations you might encounter when developing your Newt Mustache templates.
 
-If you use an HTTP beside POST you will get back an HTTP error message. If you use a URL path not defined in your templates you will get back an HTTP error message. These should be 404 type HTTP error message.
+If you use an HTTP method beside POST you will get back an HTTP error message. If you use a URL path not defined in your templates you will get back an HTTP error message. These should be 404 type HTTP error message.
 
 If you're POSTing to a defined URL and still running into a problem (say a template or data issue). You will get back an HTTP error. The easiest way to get insight into what is happening is to run the `newt` command using the `--verbose` option. This will output a allot of debug information which hopefully will help you find the problem in your template or in your data.
 
