@@ -1,13 +1,5 @@
 ---
-<<<<<<< HEAD
-<<<<<<< HEAD
-title: "mustache(1) user manual | 0.0.8 49a9d6f"
-=======
-title: "mustache(1) user manual | 0.0.8 44c724e"
->>>>>>> 98142636be1a80e49efb952d5eb418ac42d7d8ed
-=======
-title: "mustache(1) user manual | 0.0.8 b593b04"
->>>>>>> f0e86acf3909736cced589e89c1ee273de1d606e
+title: "mustache(1) user manual | 0.0.8 07eba5b"
 pubDate: 2024-04-16
 author: "R. S. Doiel"
 ---
