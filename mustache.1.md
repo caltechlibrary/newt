@@ -1,5 +1,9 @@
 ---
+<<<<<<< HEAD
 title: "mustache(1) user manual | 0.0.8 07eba5b"
+=======
+title: "mustache(1) user manual | 0.0.8 73c95d4"
+>>>>>>> 25e7987a62414c06fd8b6ade25b2b251b8fb110c
 pubDate: 2024-04-16
 author: "R. S. Doiel"
 ---

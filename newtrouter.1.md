@@ -1,6 +1,7 @@
 ---
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 title: "newtrouter(1) user manual | 0.0.8 49a9d6f"
 =======
 title: "newtrouter(1) user manual | 0.0.8 44c724e"
@@ -8,6 +9,9 @@ title: "newtrouter(1) user manual | 0.0.8 44c724e"
 =======
 title: "newtrouter(1) user manual | 0.0.8 b593b04"
 >>>>>>> f0e86acf3909736cced589e89c1ee273de1d606e
+=======
+title: "newtrouter(1) user manual | 0.0.8 73c95d4"
+>>>>>>> 25e7987a62414c06fd8b6ade25b2b251b8fb110c
 pubDate: 2024-04-16
 author: "R. S. Doiel"
 ---
