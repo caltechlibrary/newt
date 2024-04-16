@@ -92,9 +92,9 @@ vi app.yaml
 # Step three, generate our SQL files, config
 
 ~~~
-newtgenerator app.yaml postgres setup >setup.sql
-newtgenerator app.yaml postgres models >models.sql
-newtgenerator app.yaml postgrest >postgrest.conf
+newt generate app.yaml postgres setup >setup.sql
+newt generate app.yaml postgres models >models.sql
+newt generate app.yaml postgrest >postgrest.conf
 ~~~
 
 - newtgenerator
@@ -103,14 +103,14 @@ newtgenerator app.yaml postgrest >postgrest.conf
 # Step three, generate templates
 
 ~~~
-newtgenerator app.yaml mustache create_form app >create_app_form.tmpl
-newtgenerator app.yaml mustache create_response app >create_app_response.tmpl
-newtgenerator app.yaml mustache update_form app >update_app_form.tmpl
-newtgenerator app.yaml mustache update_response app >update_app_response.tmpl
-newtgenerator app.yaml mustache delete_form app >delete_app_form.tmpl
-newtgenerator app.yaml mustache delete_response app >delete_app_response.tmpl
-newtgenerator app.yaml mustache read app >read_app.tmpl
-newtgenerator app.yaml mustache list app >list_app.tmpl
+newt generate app.yaml mustache create_form app >create_app_form.tmpl
+newt generate app.yaml mustache create_response app >create_app_response.tmpl
+newt generate app.yaml mustache update_form app >update_app_form.tmpl
+newt generate app.yaml mustache update_response app >update_app_response.tmpl
+newt generate app.yaml mustache delete_form app >delete_app_form.tmpl
+newt generate app.yaml mustache delete_response app >delete_app_response.tmpl
+newt generate app.yaml mustache read app >read_app.tmpl
+newt generate app.yaml mustache list app >list_app.tmpl
 ~~~
 
 - newtgenerator 
@@ -120,11 +120,9 @@ newtgenerator app.yaml mustache list app >list_app.tmpl
 
 ~~~
 createdb app
-psql app
-\i setup.sql
-\i models.sql
-\dt
-\q
+psql app -c '\i setup.sql'
+psql app -c '\i models.sql'
+psql app -c '\dt'
 ~~~
 
 - psql

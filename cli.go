@@ -392,8 +392,7 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	case "generate":
 		//FIXME: I need to back up all the expected filenames for project first, then
 		// for each generate action option a new output buffer to render each new version of the file.
-		fmt.Fprintf(eout, "%s init action is not implemented\n", appName)
-		return INIT_FAIL
+		return RunNewtGenerator(in, out, eout, args)
 	case "run":
 		return RunNewtApplications(in, out, eout, args, verbose)
 	case "sws":
