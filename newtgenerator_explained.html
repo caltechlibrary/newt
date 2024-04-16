@@ -124,7 +124,7 @@ abstraction should the underlying data model change in the future.
 Second you can enhance the function to perform additional validation if
 needed. Example, let’s say you’ve imported the Python library idutils
 into Postgres. You can use that library to validate identifiers like
-DOI, ORCID, ROR, arXiv, ISNI, etc. Newt pefers SQL functions to
+DOI, ORCID, ROR, arXiv, ISNI, etc. Newt prefers SQL functions to
 procedures. A function provides a result. A function makes it possible
 to have a conversation between service and web browser. A procedure only
 supports the fire and forget interaction model.</p>
@@ -185,7 +185,7 @@ the my application.</p>
 <p>If that worked then we can try out starting PostgREST and use <a
 href="https://curl.se/">curl</a> to see if our JSON API works. The exact
 URL will be dependent on the database and model names setup in Postgres.
-The PostgREST webpage explains the JSON API, see <a
+The PostgREST web page explains the JSON API, see <a
 href="https://postgrest.org/en/stable/references/api.html"
 class="uri">https://postgrest.org/en/stable/references/api.html</a>. If
 I have created a model named “people” I can start PostgREST then test of
@@ -223,12 +223,12 @@ newt generate mustache update people &gt;people_update.tmpl
 newt generate mustache delete people &gt;people_delete.tmpl
 newt generate mustache list people &gt;people_list.tmpl</code></pre>
 <p>If you examine the resulting templates you’ll notice that create,
-update and delete include webforms and use the model types you describe.
-On the other hand the templates for read and list do not include
-webforms instead they render other HTML elements with Mustache embedded
-values. This will likely need further editing. Some field you many not
-want or you may choose different HTML elements over the default “span”
-wrapping model values.</p>
+update and delete include web forms and use the model types you
+describe. On the other hand the templates for read and list do not
+include web forms instead they render other HTML elements with Mustache
+embedded values. This will likely need further editing. Some field you
+many not want or you may choose different HTML elements over the default
+“span” wrapping model values.</p>
 <p>I usually get the back end setup and tested before moving to make the
 application pretty and enhancing the browser experience.</p>
 <p>There are two approaches to testing your templates. One is to use

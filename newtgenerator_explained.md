@@ -46,7 +46,7 @@ The first section of the SQL generate should have statements to create the datab
 The nice things about having views is it simplifies accessing the JSON API for listing objects based on our models. This becomes very helpful when you are extending your application or trying to debug why the JSON API isn't giving you what you expected. A view is accessed through the SQL `select` statement. (See the Postgres documentation or the "Art of Postgres" for details about views).
 
 
-After a model's view Newt will generate functions for create, read, update and delete. Why do this?  First it allows us a consistent abstraction should the underlying data model change in the future. Second you can enhance the function to perform additional validation if needed. Example, let's say you've imported the Python library idutils into Postgres. You can use that library to validate identifiers like DOI, ORCID, ROR, arXiv, ISNI, etc. Newt pefers SQL functions to procedures. A function provides a result. A function makes it possible to have a conversation between service and web browser. A procedure only supports the fire and forget interaction model.
+After a model's view Newt will generate functions for create, read, update and delete. Why do this?  First it allows us a consistent abstraction should the underlying data model change in the future. Second you can enhance the function to perform additional validation if needed. Example, let's say you've imported the Python library idutils into Postgres. You can use that library to validate identifiers like DOI, ORCID, ROR, arXiv, ISNI, etc. Newt prefers SQL functions to procedures. A function provides a result. A function makes it possible to have a conversation between service and web browser. A procedure only supports the fire and forget interaction model.
 
 You might be wondering about how things are name.  The functions and view names are formed from the model name appended with "\_", followed by the action. Newt tries to give you a robust bootstrap. One of the ways that it accomplishes that is by naming things predictably. This improves code readability for us humans too.
 
@@ -80,7 +80,7 @@ On my computer I have Postgres 16 running and my personal account has admin priv
 psql -c "\i app.sql"
 ```
 
-If that worked then we can try out starting PostgREST and use [curl](https://curl.se/) to see if our JSON API works. The exact URL will be dependent on the database and model names setup in Postgres. The PostgREST webpage explains the JSON API, see <https://postgrest.org/en/stable/references/api.html>. If I have created a model named "people" I can start PostgREST then test of it is available like this.
+If that worked then we can try out starting PostgREST and use [curl](https://curl.se/) to see if our JSON API works. The exact URL will be dependent on the database and model names setup in Postgres. The PostgREST web page explains the JSON API, see <https://postgrest.org/en/stable/references/api.html>. If I have created a model named "people" I can start PostgREST then test of it is available like this.
 
 ```
 postgrest postgrest.conf &
@@ -110,7 +110,7 @@ newt generate mustache delete people >people_delete.tmpl
 newt generate mustache list people >people_list.tmpl
 ```
 
-If you examine the resulting templates you'll notice that create, update and delete include webforms and use the model types you describe. On the other hand the templates for read and list do not include webforms instead they render other HTML elements with Mustache embedded values. This will likely need further editing. Some field you many not want or you may choose different HTML elements over the default "span" wrapping model values. 
+If you examine the resulting templates you'll notice that create, update and delete include web forms and use the model types you describe. On the other hand the templates for read and list do not include web forms instead they render other HTML elements with Mustache embedded values. This will likely need further editing. Some field you many not want or you may choose different HTML elements over the default "span" wrapping model values. 
 
 I usually get the back end setup and tested before moving to make the application pretty and enhancing the browser experience.
 
