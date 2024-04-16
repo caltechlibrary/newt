@@ -1,20 +1,6 @@
 ---
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-title: "newt(1) user manual | 0.0.7 f46634d"
-=======
-title: "newt(1) user manual | 0.0.8 8f00277"
->>>>>>> 95dbf8d68ad2f4215b407f7f4a9198ad2a13a22d
-pubDate: 2024-04-10
-=======
-title: "newt(1) user manual | 0.0.8 f7cc697"
-pubDate: 2024-04-15
->>>>>>> 5bdf6484b107972fb35b17845ae07d283e6c57b2
-=======
-title: "newt(1) user manual | 0.0.8 a20361f"
+title: "newt(1) user manual | 0.0.8 49a9d6f"
 pubDate: 2024-04-16
->>>>>>> 44c724e629192ae82efda7d87e8a0f8327264b77
 author: "R. S. Doiel"
 ---
 
