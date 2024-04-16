@@ -12,9 +12,9 @@ import (
 
 var (
 	helpText = `---
-title: "{app_name}(1) user manual | {version} {release_hash}"
+title: {app_name}(1) user manual | {version} {release_hash}
 pubDate: {release_date}
-author: "R. S. Doiel"
+author: R. S. Doiel
 ---
 
 # NAME
