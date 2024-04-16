@@ -7,7 +7,9 @@ The Newt code generator works primarily with the "models" property in your Newt 
 
 Our minimal useful application should be able to do five things - Create, Read, Update, Delete and List (abbr: CRUD-L). It needs to offer these actions for each model defined in our project. The second Newt prototype assumes each model is independent. If you need to combine models (not unusual) then you will need to enhance the generated SQL. For now let us focus on the basics.
 
-In the Newt philosophy we model our data and manage our data in the database. For us this means Postgres. By combining Postgres and PostgREST we create a JSON API based on what we've modeled and managed in our database. Our middleware, the stages in our pipelines, do not need to know anything about SQL. They don't ever touch it. This gives us a clean break from SQL and the rest of our system. It avoids the burden of doing the cognitive shifts when implementing middleware. This is a result of Postgres plus PostgREST automatically giving a JSON API. Clever stuff really.
+In the Newt philosophy we model our data and manage our data in the database. For us this means Postgres. By combining Postgres and PostgREST we create a JSON API based on what we've modeled and managed in our database. Our middleware, the stages in our pipelines, do not need to know anything about SQL. They don't ever touch it. This gives us a clean break from SQL and the rest of our system. It avoids the burden of doing the cognitive shifts when implementing middleware. This is a result of Postgres plus PostgREST automatically giving a JSON API. PostgREST is really clever.
+
+An aside about Newt Generator. There are two ways to run it. You can run it standalone using the `newtgenerator` command. The way we will demonstrate this in this tutorial is to use the second way using the `newt` command. The `newt` command is a developer's tool and can be used for more then just generating code.
 
 ## Bringing up Postgres+PostgREST
 
@@ -28,33 +30,36 @@ Let's turn our attention to setting up Postgres database. Several things need to
 OK, now that we know what we're generating lets generate this SQL from our app.yaml. We'll save the SQL output in a file called "app.sql"
 
 ```shell
-newtgenerator postgres app.yaml >app.sql
+newt generate postgres app.yaml >app.sql
 ```
 
 In the statement above "postgres" tells the generator target the Postgres database SQL dialect. 
 
 Take a look at "app.sql". Notice that the SQL if the code contains comments.  If you've included the `.description` attributes in our models then the SQL also includes them. This means you can continue improving the SQL manually if you like. Another approach would be to create a second SQL file with your modifications and use SQL `alter` or `drop` statements where you need to augment or replace the Newt generated parts.
 
-This is a text that explains Postgres database so I am going to keep this short. If you want to read about Postgres to better understand it I recommend the [Postgres website](https://postgres.org) or the book [The Art of Postgres](https://theartofpostgresql.com/ "website for the book").  is heavily commented, those your
+This is a text that explains Postgres database so I am going to keep this short. If you want to read about Postgres to better understand it I recommend the [Postgres website](https://postgres.org) or the book [The Art of Postgres](https://theartofpostgresql.com/ "website for the book").
 
 What was generated?  The specifics will depend on what was in the "app.yaml" file, specifically the models property.  Do you see comments you the generate SQL file? These were form from the `.description` properties found in the YAML. By taking the time to add description properties are making the generated code more human friendly. While these are optional properties they are really handy when you evolve the code generator or come back to a project later.
 
 The first section of the SQL generate should have statements to create the database if it doesn't exist and to create a name space if it doesn't exist. Next you should see SQL for creating tables, one for each model. Then you should see the creation of views. The SQL views fill the role of the "L" in the acronym CRUD-L.
 
-The nice things about having views is it make it easy to see what our application will see when accessing the JSON API to list objects based on our models. This parity becomes very helpful when you are extending your application or trying to debug why the JSON API isn't giving you what you expected. A view is accessed through the SQL `select` statement.
+The nice things about having views is it simplifies accessing the JSON API for listing objects based on our models. This becomes very helpful when you are extending your application or trying to debug why the JSON API isn't giving you what you expected. A view is accessed through the SQL `select` statement. (See the Postgres documentation or the "Art of Postgres" for details about views).
 
-After a model's view Newt will generate functions for create, read, update and delete. Why do this?  First it allows us a consistent abstraction should the underlying data model change in the future. Second you can enhance the function to perform additional validation if needed. Example, let's say you've imported the Python library idutils into Postgres. You can use that library to validate identifiers like DOI, ORCID, ROR, arXiv, ISNI, etc. Since the operation is a "function" rather than an SQL procedure you can let the requestor there was a problem or take actions to mitigate it. A function can keep the conversation going with the web browser at the other end of the wire.
 
-You might be wondering about how things are name.  The functions and view names are formed from the model name appended with "\_", followed by the action. Newt tries to give you a robust bootstrap. One of the ways that it accomplishes that is by naming things predictably. This improves code readability for us humans.
+After a model's view Newt will generate functions for create, read, update and delete. Why do this?  First it allows us a consistent abstraction should the underlying data model change in the future. Second you can enhance the function to perform additional validation if needed. Example, let's say you've imported the Python library idutils into Postgres. You can use that library to validate identifiers like DOI, ORCID, ROR, arXiv, ISNI, etc. Newt pefers SQL functions to procedures. A function provides a result. A function makes it possible to have a conversation between service and web browser. A procedure only supports the fire and forget interaction model.
 
-After defining the models tables, views and functions the end of the generated SQL sets up the access needed by PostgREST to provide the JSON API. Essentially that is a block of permission granting statements. When you read through these you need to understand them and make sure they comply with your organization's database practices. Newt is only making a guess what is OK for you. See the PostgREST website for more information about how Postgres and PostgREST work together, <https://postgrest.org/en/stable/>.
+You might be wondering about how things are name.  The functions and view names are formed from the model name appended with "\_", followed by the action. Newt tries to give you a robust bootstrap. One of the ways that it accomplishes that is by naming things predictably. This improves code readability for us humans too.
+
+After defining the models tables, views and functions the end of the generated SQL sets up the access needed by PostgREST to provide the JSON API. Essentially that is a block of permission granting statements. When you read through these you need to understand them and make sure they comply with your organization's data practices. Newt is only making a guess at what is OK. You as the developer need to make sure you're meeting the requirements of your organization or client.
+
+See the PostgREST website for more information about how Postgres and PostgREST work together, <https://postgrest.org/en/stable/>.
 
 ### Generate our PostgREST configuration
 
-The generator can generate a PostgREST configuration file, `postgrest.conf`. This is the first step. Next step is to setup our Postgres database to model our data, manage our data and to allow PostgREST to access our database appropriately. This is all done via SQL. So how to we generate. To generate the `postgrest.conf` you use the newtgenerator with a YAML file named "app.yaml" you would do the following.
+The generator can generate a PostgREST configuration file, `postgrest.conf`. This is the first step. Next step is to setup our Postgres database to model our data, manage our data and to allow PostgREST to access our database appropriately. This is all done via SQL. So how to we generate. To generate the `postgrest.conf` you use the Newt Generator with a YAML file named "app.yaml" you would do the following.
 
 ```shell
-newtgenerator postgrest app.yaml >postgrest.conf
+newt generate postgrest app.yaml >postgrest.conf
 ```
 
 In the above command the "postgrest" (note the "t" at the end) tells the generator what needs to be generated. In this a Postgrest configuration because that is what PostgREST needs.
@@ -72,7 +77,7 @@ Now we need to set things in motion. You can load your SQL into Postgres via the
 On my computer I have Postgres 16 running and my personal account has admin privileges so I use `psql` like this to create the database, schema, tables, views, functions and permissions needed for the my application.
 
 ```shell
-psql < app.sql
+psql -c "\i app.sql"
 ```
 
 If that worked then we can try out starting PostgREST and use [curl](https://curl.se/) to see if our JSON API works. The exact URL will be dependent on the database and model names setup in Postgres. The PostgREST webpage explains the JSON API, see <https://postgrest.org/en/stable/references/api.html>. If I have created a model named "people" I can start PostgREST then test of it is available like this.
@@ -98,11 +103,11 @@ That should return a list of people. Since our database tables aren't populated 
 Newt comes with a light weight template engine called Newt Mustache. It implements Mustache templates. The Newt generator knows how to generate partial Mustache templates suitable for using from Newt Mustache.  Newt can generate a partial template for each of our CRUD-L operations for each model. To know what template you want to generate you need to tell the generator you want to generate mustache templates, which model you generating it for and what action the template will model. As mentioned previously Newt generator writes the generated code to standard output and errors if encountered to standard error. Like with generating SQL and a configuration file this allows for flexibility in scripting via shell or a Makefile. Here's an example of the commands I type to create the templates for our people model.
 
 ```shell
-newtgenerator mustache create people >people_create.tmpl
-newtgenerator mustache read people >people_read.tmpl
-newtgenerator mustache update people >people_update.tmpl
-newtgenerator mustache delete people >people_delete.tmpl
-newtgenerator mustache list people >people_list.tmpl
+newt generate mustache create people >people_create.tmpl
+newt generate mustache read people >people_read.tmpl
+newt generate mustache update people >people_update.tmpl
+newt generate mustache delete people >people_delete.tmpl
+newt generate mustache list people >people_list.tmpl
 ```
 
 If you examine the resulting templates you'll notice that create, update and delete include webforms and use the model types you describe. On the other hand the templates for read and list do not include webforms instead they render other HTML elements with Mustache embedded values. This will likely need further editing. Some field you many not want or you may choose different HTML elements over the default "span" wrapping model values. 
@@ -112,7 +117,7 @@ I usually get the back end setup and tested before moving to make the applicatio
 There are two approaches to testing your templates. One is to use them as the last stage of your JSON API. Another is to configure the templates in your YAML and run Newt Mustache service and use curl. In in the example below I'm assuming you've mocked up a person record in a JSON file called person.json. We can then test come of our templates to see how they fit the bill. I'm assuming you've setup Newt Mustache to provide templates based on the names of the templates. I am also assuming Newt Mustache is running on port 8040 in this example.
 
 ```shell
-newtmustache app.yaml &
+newt run app.yaml &
 curl --data '@people.json' http://localhost:8040/people_read.html
 ```
 
