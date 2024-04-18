@@ -79,15 +79,23 @@ Not yet, hopefully soon.
 newt init app.yaml
 ~~~
 
-- Interactively generate app.yaml
+> Interactively generate app.yaml
 
 # Step two define our data models
 
 ~~~
-vi app.yaml
+newt modeler app.yaml
 ~~~
 
-- edit app.yaml
+> Interactively model you data
+
+# Step three, generate our code
+
+- Use `newt generate`
+    - SQL
+    - PostgREST config
+    - Templates
+- Edit files if needed
 
 # Step three, generate our SQL files, config
 
@@ -97,24 +105,43 @@ newt generate app.yaml postgres models >models.sql
 newt generate app.yaml postgrest >postgrest.conf
 ~~~
 
-- newtgenerator
-- edit your SQL files if needed
-
 # Step three, generate templates
 
 ~~~
-newt generate app.yaml mustache create_form app >create_app_form.tmpl
-newt generate app.yaml mustache create_response app >create_app_response.tmpl
-newt generate app.yaml mustache update_form app >update_app_form.tmpl
-newt generate app.yaml mustache update_response app >update_app_response.tmpl
-newt generate app.yaml mustache delete_form app >delete_app_form.tmpl
-newt generate app.yaml mustache delete_response app >delete_app_response.tmpl
+newt generate app.yaml mustache \
+  create_form app >create_app_form.tmpl
+newt generate app.yaml mustache \
+  create_response app >create_app_response.tmpl
+~~~
+
+# Step three, generate templates ...
+
+~~~
+newt generate app.yaml mustache \
+  update_form app >update_app_form.tmpl
+newt generate app.yaml mustache \
+  update_response app >update_app_response.tmpl
+~~~
+
+# Step three, generate templates ...
+
+~~~
+newt generate app.yaml mustache \
+  delete_form app >delete_app_form.tmpl
+newt generate app.yaml mustache \
+  delete_response app >delete_app_response.tmpl
+~~~
+
+# Step three, generate templates ... finally
+
+~~~
 newt generate app.yaml mustache read app >read_app.tmpl
 newt generate app.yaml mustache list app >list_app.tmpl
 ~~~
 
-- newtgenerator 
-- this needs automation
+# Step three, generate templates
+
+> code generation should be fully automated
 
 # Step four, run our SQL
 
@@ -125,8 +152,7 @@ psql app -c '\i models.sql'
 psql app -c '\dt'
 ~~~
 
-- psql
-- this could be automated
+> this should be automated with the `newt` command
 
 # Step five, run newt and test
 
@@ -150,12 +176,13 @@ newt run app.yaml
 - Managing routes and pipelines has a cognitive price
 - Keep your pipelines short
 - Web services need a "developer" mode for debugging
+- Lots of typing discourages use
 
-# What's next?
+# What's next to wrap up prototype 2?
 
-- Find nice way to bootstrap our data models
-- Improve the generated code, consolidate actions
-- Simplify how you use Newt (less typing)
+- Finish/improve the code generator
+- Implement a data modeler
+- Less typing!
 
 # Newt's challenges
 
@@ -186,9 +213,11 @@ newt run app.yaml
 
 # Thank you!
 
-- This Presentation <https://caltechlibrary.github.io/newt/presentation2/> [pdf](https://caltechlibrary.github.io/newt/presentation2/newt-presentation2.pdf), [pptx](https://caltechlibrary.github.io/newt/presentation2/newt-presentation2.pptx)
+- This Presentation
+  - pdf: <https://caltechlibrary.github.io/newt/presentation2/newt-p2.pdf>
+  - pptx: <https://caltechlibrary.github.io/newt/presentation2/newt-p2.pptx>
 - Newt Documentation <https://caltechlibrary.github.io/newt>
-- Project: <https://github.com/caltechlibrary/newt>
+- Source Code: <https://github.com/caltechlibrary/newt>
 - Email: rsdoiel@caltech.edu
 
 

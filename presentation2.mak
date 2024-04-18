@@ -12,14 +12,14 @@ html: .FORCE
 	git add presentation2/index.html
 
 pdf: .FORCE
-	pandoc -V lang=en -s -t beamer newt-presentation2.md -o presentation2/newt-presentation2.pdf
+	pandoc -V lang=en -s -t beamer newt-presentation2.md -o presentation2/newt-p2.pdf
 
 pptx: .FORCE
-	pandoc -V lang=en -s newt-presentation2.md -o presentation2/newt-presentation2.pptx
+	pandoc -V lang=en -s newt-presentation2.md -o presentation2/newt-p2.pptx
 
 clean: .FORCE
 	if [ -f presentation2/index.html ]; then rm presentation2/*.html; fi
-	if [ -f presentation2/newt-presentation*.pdf ]; then rm presentation2/*.pdf; fi
-	if [ -f presentation2/newt-presentation*.pptx ]; then rm presentation2/*.pptx; fi
+	if [ -f presentation2/newt-p*.pdf ]; then rm presentation2/*.pdf; fi
+	if [ -f presentation2/newt-p*.pptx ]; then rm presentation2/*.pptx; fi
 
 .FORCE:
