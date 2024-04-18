@@ -186,7 +186,7 @@ newt run app.yaml
 
 # Thank you!
 
-- This Presentation <https://caltechlibrary.github.io/newt/presentation2/>
+- This Presentation <https://caltechlibrary.github.io/newt/presentation2/> [pdf](https://caltechlibrary.github.io/newt/presentation2/newt-presentation2.pdf), [pptx](https://caltechlibrary.github.io/newt/presentation2/newt-presentation2.pptx)
 - Newt Documentation <https://caltechlibrary.github.io/newt>
 - Project: <https://github.com/caltechlibrary/newt>
 - Email: rsdoiel@caltech.edu

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- newtmodeler_explained</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-modeler-explained-draft-concept">Newt Modeler explained
+(draft concept)</h1>
+<h2 id="overview">Overview</h2>
+<p>Newt Modeler provides an interactive way for generating and managing
+your models without directly typing YAML. It is an interactive command
+line program in the spirit of <code>newt init</code>. When started it
+list the existing models (if any are defined) and lets you add, modify,
+remove models in our YAML file. It also will updated the default routes
+and templates defined in the YAML file to matching the model’s name.</p>
+<h2 id="two-ways-to-run-newt-modeler">Two ways to run Newt Modeler</h2>
+<p>In this short tutorial we are going to create a web application that
+says describes the contents of a garden. Like the Newt Router, Newt
+Generator and Newt Mustache the Modeler can be used directly with the
+<code>newtmodeler</code> command or via the <code>newt</code> command.
+In the tutorial we’ll be using the <code>newt</code> command since this
+is a development activity and that is the tool designed to help develop
+Newt applications.</p>
+<h2 id="tutorial-on-the-newt-modeler">Tutorial on the Newt Modeler</h2>
+<h3 id="step-1-create-a-garden.yaml-newt-yaml-file">Step 1, create a
+“garden.yaml” Newt YAML file</h3>
+<p>We can create a new YAML file using our standard
+<code>newt init</code> command. For this tutorial just accept the
+defaults.</p>
+<pre class="shell"><code>newt init garden.yaml</code></pre>
+<h3 id="step-2-defining-and-managing-models-for-garden.yaml">Step 2,
+defining and managing models for “garden.yaml”</h3>
+<p>The first stage of the modeler is to present a list of existing
+models. It then gives you options of “add”, “remove” “modify”, “init”,
+and “quit”. Launch our modeler with
+<code>newt model garden.yaml</code></p>
+<pre class="shell"><code>newt model garden.yaml</code></pre>
+<p>By default the command <code>newt init</code> created an “garden”
+model. We’re not going to use this model so let’s remove it.</p>
+<pre class="shell"><code>remove garden</code></pre>
+<p>When that action is done the “garden” model will be removed from the
+“garden.yaml” file. It will also remove the default routes and templates
+in the “garden.yaml” generated previously from the
+<code>newt init</code> command.</p>
+<p>When “remove garden” is complete there will be no models. We need to
+add one. Let’s add a model called “plant”. we want to add a new
+model.</p>
+<pre class="shell"><code>add plant</code></pre>
+<p>Now we should see a single model called “plant” in the list. This has
+done three things. It has updated the models list and created a minimal
+model with a “oid” (i.e. object identifier) as the sole property of the
+model. The “oid” property is the identifier used to manage the object(s)
+created using this model. It is required by Newt. The second thing that
+happens when we create a new model is routes and templates properties
+are added to our “garden.yaml” file. These can be used to generate the
+files we need to run our Newt application.</p>
+<p>An object with only an “oid” isn’t very useful. We want to modify our
+model to include some addititional properties like “plant_name”,
+“plant_description”, and “plant_location” in our garden box,
+“plant_type” (i.e. vegie, fruit, tuber) and “date_planted”.</p>
+<p>In next step is we want to “modify” our model to have these
+properties.</p>
+<h3 id="step-3-lets-define-some-new-properties.">Step 3, let’s define
+some new properties.</h3>
+<pre><code>modify plant</code></pre>
+<p>You should now see a list of propertes in our “plant” model. Right
+now it only has the “oid” property defined. This property is required
+and can’t be removed.</p>
+<p>Let’s add the plant name to our model by typing “add name” at the
+prompt.</p>
+<h4 id="plant_name">plant_name</h4>
+<pre class="shell"><code>add plant_name</code></pre>
+<p>This will add default property called “plant_name” to the model
+“plant”. We will want to modify this property. We do that with the
+“modify plant_name” command.</p>
+<pre class="shell"><code>modify plant_name</code></pre>
+<p>This will step through the “plant_name” property elements. For each
+element you have an opportunity to accept (pressing enter), modify or
+remove the element value(s). The first element presented is optional. It
+is the description of the property being defined. It is free text but if
+populated it will be used in generated comments in SQL code and as help
+text in Mustache HTML template code.</p>
+<p>Because “description” is free format text if you have the EDITOR
+environment variable set it will open your editor and allow you to edit
+the text using your preferred editor. If you don’t have that value set
+then you will type text similar to how you type text at the shell
+prompt. Your edit ability will be limited. If you are editing in your
+EDITOR then when you save the text and exit the value will be updated in
+the model. If you quit the edit without saving the value will remain the
+same as before.</p>
+<p>After description you will be prompted for the property’s type. Like
+in GitHub YAML Issue Template Syntax this corresponds to the HTML
+notation of an input element’s type. The default value is
+“input[type=text]”. You can use any valid HTML 5 input element type
+expression<a href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>. Example, if you wanted to have a
+“date” input you would change this to <code>input[type=date]</code>.</p>
+<p>The “plant_name” property will use the default “input” so press enter
+to accept.</p>
+<p>You will then be prompt for attributes and validations. These are key
+value pairs. If you press enter then you are accepting the (currently
+empty) list presented. if you wanted to remove a key/value pair you
+would type in the key and it would be removed. If you wanted to add a
+key value pair you would type in the key, a space, then the value. The
+key must start with a letter or underscore followed by one or more
+alphanumeric or underscore characters. The value is set to anything
+after first space following the key before you press enter.</p>
+<p>For “plant_name” when prompted for “attributes” just press enter to
+accept. When prompted for “validations” type in “required true” (without
+the quotes) and press enter.</p>
+<pre class="shell"><code>required true</code></pre>
+<h4 id="plant_description">plant_description</h4>
+<p>Next we need to add the “plant_description” property. It’s going to
+be a text field. Unlike “plant_name” it will not be required. We’ll
+enter a description and then accept the defaults for the other elements
+of the property.</p>
+<h4 id="plant_type">plant_type</h4>
+<p>Plant type is the first element we will create that has an expected
+set of values. Our plants in our garden will be one of several types
+“veggie”, “tuber”, “spice”, “fruit” and “flower”. The HTML element type
+that make sense for this type of limited vocabulary “select” element.
+Replace “input” with “select” and press enter. This will then prompt for
+a set of key corresponds to what the “value” will contain in the option
+element inside “select” element. The value you enter corresponds to the
+inner HTML of the option element.</p>
+<p>As example “select” expressed as HTML would look like.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">select</span><span class="dt">&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;</span><span class="kw">option</span><span class="ot"> value</span><span class="op">=</span><span class="st">&quot;veggie&quot;</span><span class="dt">&gt;</span>Veggie<span class="dt">&lt;/</span><span class="kw">option</span><span class="dt">&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;</span><span class="kw">option</span><span class="ot"> value</span><span class="op">=</span><span class="st">&quot;tuber&quot;</span><span class="dt">&gt;</span>Tuber<span class="dt">&lt;/</span><span class="kw">option</span><span class="dt">&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;</span><span class="kw">option</span><span class="ot"> value</span><span class="op">=</span><span class="st">&quot;spice&quot;</span><span class="dt">&gt;</span>Spice<span class="dt">&lt;/</span><span class="kw">option</span><span class="dt">&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;</span><span class="kw">option</span><span class="ot"> value</span><span class="op">=</span><span class="st">&quot;fruit&quot;</span><span class="dt">&gt;</span>Fruit<span class="dt">&lt;/</span><span class="kw">option</span><span class="dt">&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;</span><span class="kw">option</span><span class="ot"> value</span><span class="op">=</span><span class="st">&quot;flower&quot;</span><span class="dt">&gt;</span>Flower<span class="dt">&lt;/</span><span class="kw">option</span><span class="dt">&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">select</span><span class="dt">&gt;</span></span></code></pre></div>
+<p>For building our select box we need to enter the follow text.</p>
+<pre class="shell"><code>veggie Veggie
+tuber Tuber
+spice Spice
+fruit Fruit
+flower Flower</code></pre>
+<p>When the list looks right press enter. We’re not going to use the
+attributes or validations in this property.</p>
+<h4 id="plant_location">plant_location</h4>
+<p>This element describes the location in our garden of the plant. For
+the purposes our tutorial we’re going to describes our garden as a grid.
+We can use letters for the “columns” of locations and numbers for the
+“rows” in our garden. This will result is location descriptions like
+“A1” or “B15”. We are going to use the attribute property to enforce the
+values submitted.</p>
+<p>Enter a description, accept the default input type of
+“input[type=text]”. When you get to attributes we need to enter a
+“pattern” along with an expression that validates the letterand number
+combination describing locations in our garden box.</p>
+<pre class="shell"><code>pattern [a-z|A-Z][0-9]</code></pre>
+<h3 id="date_planted">date_planted</h3>
+<p>This is a is the date you planted the plant in your garden box. You
+should create it using the “input[type=cal]” type. It isn’t required
+because you may have not planted it yet.</p>
+<p>When you have entered this once you can press enter again to accept
+the model you’ve made you should return to the model list.</p>
+<h3 id="step-4-save-our-models-properties">Step 4, save our model’s
+properties</h3>
+<h3 id="step-5-updating-the-routes-and-templates">Step 5, updating the
+routes and templates</h3>
+<h3 id="step-6-ready-to-test">Step 6, ready to test</h3>
+<p>See <a href="newtmodeler.1.html">newtmodeler</a> manual page for
+details.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>See <a
+href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#input_types">MDN
+Element Input documents</a> for details.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>
