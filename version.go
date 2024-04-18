@@ -9,10 +9,14 @@ const (
     Version = "0.0.8"
 
     // ReleaseDate, the date version.go was generated
-    ReleaseDate = "2024-04-16"
+    ReleaseDate = "2024-04-18"
 
     // ReleaseHash, the Git hash when version.go was generated
+<<<<<<< HEAD
     ReleaseHash = "7c849c6"
+=======
+    ReleaseHash = "2805a44"
+>>>>>>> b2a3f5bbd8a7a7206729770cdb207c502eda9a45
 
     LicenseText = `
 Redistribution and use in source and binary forms, with or without
