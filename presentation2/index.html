@@ -48,22 +48,50 @@ class="email">rsdoiel@caltech.edu</a>
 <div class="slide" id="TOC">
 
 </div>
-<div id="goal-answer-a-question." class="slide section level1">
-<h1>Goal: Answer a question.</h1>
-<p>Is Newt and “off the shelf” enough?</p>
+<div id="what-is-newt" class="slide section level1">
+<h1>What is Newt?</h1>
+<ul>
+<li>A rapid application develop tool
+<ul>
+<li>for applications that curate metadata</li>
+</ul></li>
+<li>Audience: Libraries, Archives and Museums</li>
+</ul>
 </div>
-<div id="how-i-am-proceeding" class="slide section level1">
-<h1>How I am proceeding</h1>
+<div id="goal-of-prototype-2-answer-the-question."
+class="slide section level1">
+<h1>Goal of Prototype 2: Answer the question.</h1>
+<p>Is Newt and “off the shelf” software enough to create metadata
+curation applications?</p>
+</div>
+<div id="high-level-concepts" class="slide section level1">
+<h1>High level Concepts</h1>
+<ul>
+<li>describe the application you want</li>
+<li>generate the application you described</li>
+</ul>
+</div>
+<div id="implementation-concepts" class="slide section level1">
+<h1>Implementation Concepts</h1>
+<ul>
+<li>data sources</li>
+<li>data models</li>
+<li>routing requests through data pipelines</li>
+<li>rendering JSON responses via template engine</li>
+</ul>
+</div>
+<div id="themes" class="slide section level1">
+<h1>Themes</h1>
 <ul>
 <li>Pick Simple = (No coding) + (Less coding)</li>
-<li>Avoid inventing new things</li>
 <li>Compose applications using data pipelines and templates</li>
+<li>Avoid inventing new things</li>
 </ul>
 </div>
 <div id="off-the-shelf-no-coding" class="slide section level1">
 <h1>Off the shelf (no coding)</h1>
 <ul>
-<li><a href="https://postgresql.org">Postgres</a> or <a
+<li><a href="https://postgresql.org">Postgres</a> and <a
 href="https://postgrest.org">PostgREST</a></li>
 <li><a href="https://solr.apache.org">Solr</a> or <a
 href="https://opensearch.org">OpenSearch</a></li>
@@ -71,183 +99,135 @@ href="https://opensearch.org">OpenSearch</a></li>
 <li>Newt Router, ties it all together</li>
 </ul>
 </div>
-<div id="assembling-it-with-yaml-less-coding"
+<div id="office-the-shelf-other-data-sources"
 class="slide section level1">
-<h1>Assembling it with YAML (less coding)</h1>
+<h1>Office the shelf (other data sources)</h1>
 <ul>
-<li>GitHub YAML issue template syntax described data models</li>
-<li>YAML describes configuration, routes, pipelines</li>
-<li>Template language is now Mustache</li>
-<li>Code generation, “look Mom, no AI!”</li>
+<li>ArchivesSpace, RDM -&gt; JSON API</li>
+<li>ORCID, ROR, CrossRef, DataCite -&gt; JSON API</li>
 </ul>
 </div>
-<div id="second-prototype-status" class="slide section level1">
-<h1>Second prototype status</h1>
+<div id="assemble-app-from-yaml-less-coding"
+class="slide section level1">
+<h1>Assemble app from YAML (less coding)</h1>
 <ul>
-<li>A work in progress (April 2024)</li>
-<li>Hope to have a working prototype by June 2024</li>
-<li>Internal applications will serve as test bed</li>
+<li>The application you want is described in YAML</li>
+<li>Newt generates the code you need</li>
+<li>Customize by editing the generated code</li>
 </ul>
 </div>
-<div id="is-there-a-demo-i-can-run" class="slide section level1">
-<h1>Is there a Demo I can run?</h1>
-<p>Not yet, hopefully soon.</p>
-</div>
-<div id="whats-working-whats-not" class="slide section level1">
-<h1>What’s working, what’s not?</h1>
-<ul class="task-list">
-<li><label><input type="checkbox" checked="" />Router is implemented and
-working</label></li>
-<li><label><input type="checkbox" checked="" />Mustache template engine
-is working</label></li>
-<li><label><input type="checkbox" />Generator development, in
-progress</label></li>
+<div id="how-are-data-models-described" class="slide section level1">
+<h1>How are data models described?</h1>
+<ul>
+<li>A model is a set of HTML form input types</li>
+<li>Expressed using GitHub YAML Issue Template Syntax</li>
+<li>Model describes HTML and implies SQL</li>
 </ul>
 </div>
 <div id="how-do-i-think-things-will-work" class="slide section level1">
 <h1>How do I think things will work?</h1>
 <ol style="list-style-type: decimal">
-<li>Generate our app YAML</li>
-<li>Designing our data models</li>
-<li>Generate SQL, PostgREST config and templates</li>
-<li>Run generated SQL</li>
-<li>Run Newt and Test</li>
+<li>Interactively generate our application’s YAML file</li>
+<li>Interactively define data models</li>
+<li>Generate our application code</li>
+<li>Setup Postgres and PostgREST</li>
+<li>Run our app with Newt</li>
 </ol>
 </div>
-<div id="how-is-the-data-model-is-described"
+<div id="steps-one-and-two-are-interactive"
 class="slide section level1">
-<h1>How is the data model is described?</h1>
-<ul>
-<li>GitHub YAML Issue Template Syntax
-<ul>
-<li>describes HTML</li>
-<li>implies SQL</li>
-</ul></li>
-</ul>
-</div>
-<div id="step-one-create-our-yaml-file" class="slide section level1">
-<h1>Step one create our YAML file</h1>
-<pre><code>newt init app.yaml</code></pre>
-<blockquote>
-<p>Interactively generate app.yaml</p>
-</blockquote>
-</div>
-<div id="step-two-define-our-data-models" class="slide section level1">
-<h1>Step two define our data models</h1>
-<pre><code>newt modeler app.yaml</code></pre>
-<blockquote>
-<p>Interactively model you data</p>
-</blockquote>
+<h1>Steps one and two are interactive</h1>
+<pre class="shell"><code>  newt init app.yaml
+  newt model app.yaml</code></pre>
 </div>
 <div id="step-three-generate-our-code" class="slide section level1">
 <h1>Step three, generate our code</h1>
+<pre class="shell"><code>  newt generate app.yaml</code></pre>
+<blockquote>
+<p>Renders SQL, PostgREST conf, Mustache templates</p>
+</blockquote>
+</div>
+<div id="step-four-setup-postgres-and-postgrest"
+class="slide section level1">
+<h1>Step four, setup Postgres and PostgREST</h1>
+<ol style="list-style-type: decimal">
+<li>Use the generated SQL and configuration</li>
+<li>Setup and check via <code>createdb</code> and <code>psql</code></li>
+</ol>
+</div>
+<div id="step-four-setup-postgres-and-postgrest-1"
+class="slide section level1">
+<h1>Step four, setup Postgres and PostgREST</h1>
+<pre class="shell"><code>  createdb app
+  psql app -c &#39;\i setup.sql&#39;
+  psql app -c &#39;\i models.sql&#39;
+  psql app -c &#39;\dt&#39;</code></pre>
+<blockquote>
+<p>should this be automated too?</p>
+</blockquote>
+</div>
+<div id="step-five-run-your-application-and-test"
+class="slide section level1">
+<h1>Step five, run your application and test</h1>
+<pre class="shell"><code>  newt run app.yaml</code></pre>
+<blockquote>
+<p>Point your web browser at http://localhost:8010 to test</p>
+</blockquote>
+</div>
+<div id="can-i-run-a-demo" class="slide section level1">
+<h1>Can I run a demo?</h1>
+<p>Not yet, hopefully in late May 2024.</p>
+</div>
+<div id="second-prototype-status" class="slide section level1">
+<h1>Second prototype Status</h1>
 <ul>
-<li>Use <code>newt generate</code>
-<ul>
-<li>SQL</li>
-<li>PostgREST config</li>
-<li>Templates</li>
-</ul></li>
-<li>Edit files if needed</li>
+<li>A work in progress (April 2024)</li>
+<li>Working prototype target date June 2024</li>
+<li>Using internal applications as test bed</li>
 </ul>
 </div>
-<div id="step-three-generate-our-sql-files-config"
-class="slide section level1">
-<h1>Step three, generate our SQL files, config</h1>
-<pre><code>newt generate app.yaml postgres setup &gt;setup.sql
-newt generate app.yaml postgres models &gt;models.sql
-newt generate app.yaml postgrest &gt;postgrest.conf</code></pre>
-</div>
-<div id="step-three-generate-templates" class="slide section level1">
-<h1>Step three, generate templates</h1>
-<pre><code>newt generate app.yaml mustache \
-  create_form app &gt;create_app_form.tmpl
-newt generate app.yaml mustache \
-  create_response app &gt;create_app_response.tmpl</code></pre>
-</div>
-<div id="step-three-generate-templates-1" class="slide section level1">
-<h1>Step three, generate templates …</h1>
-<pre><code>newt generate app.yaml mustache \
-  update_form app &gt;update_app_form.tmpl
-newt generate app.yaml mustache \
-  update_response app &gt;update_app_response.tmpl</code></pre>
-</div>
-<div id="step-three-generate-templates-2" class="slide section level1">
-<h1>Step three, generate templates …</h1>
-<pre><code>newt generate app.yaml mustache \
-  delete_form app &gt;delete_app_form.tmpl
-newt generate app.yaml mustache \
-  delete_response app &gt;delete_app_response.tmpl</code></pre>
-</div>
-<div id="step-three-generate-templates-finally"
-class="slide section level1">
-<h1>Step three, generate templates … finally</h1>
-<pre><code>newt generate app.yaml mustache read app &gt;read_app.tmpl
-newt generate app.yaml mustache list app &gt;list_app.tmpl</code></pre>
-</div>
-<div id="step-three-generate-templates-3" class="slide section level1">
-<h1>Step three, generate templates</h1>
-<blockquote>
-<p>code generation should be fully automated</p>
-</blockquote>
-</div>
-<div id="step-four-run-our-sql" class="slide section level1">
-<h1>Step four, run our SQL</h1>
-<pre><code>createdb app
-psql app -c &#39;\i setup.sql&#39;
-psql app -c &#39;\i models.sql&#39;
-psql app -c &#39;\dt&#39;</code></pre>
-<blockquote>
-<p>this should be automated with the <code>newt</code> command</p>
-</blockquote>
-</div>
-<div id="step-five-run-newt-and-test" class="slide section level1">
-<h1>Step five, run newt and test</h1>
-<pre><code>newt run app.yaml</code></pre>
-<ul>
-<li>fire up newt, test and debug</li>
-<li>web browser</li>
+<div id="how-much-is-built" class="slide section level1">
+<h1>How much is built?</h1>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Newt developer
+tool</label></li>
+<li><label><input type="checkbox" checked="" />Router is implemented and
+working</label></li>
+<li><label><input type="checkbox" checked="" />Mustache template engine
+is working</label></li>
+<li><label><input type="checkbox" />Generator development (in
+progress)</label></li>
+<li><label><input type="checkbox" />Modeler (design stage)</label></li>
 </ul>
 </div>
 <div id="insights-from-prototypes-1-2" class="slide section level1">
 <h1>Insights from prototypes 1 &amp; 2</h1>
 <ul>
 <li>“Off the shelf” is simpler</li>
-<li>Large YAML structures benefit from code generation</li>
-<li>SQL turns people off, use a code generator</li>
-<li>Mustache/HTML needs a code generator</li>
-<li>Automatic “wiring up” of routes and templates is helpful</li>
+<li>Lots of typing discourages use</li>
 </ul>
 </div>
-<div id="lessons-learned-so-far" class="slide section level1">
-<h1>Lessons learned, so far</h1>
+<div id="insights-from-prototypes-1-2-1" class="slide section level1">
+<h1>Insights from prototypes 1 &amp; 2</h1>
 <ul>
-<li>Managing routes and pipelines has a cognitive price</li>
-<li>Keep your pipelines short</li>
-<li>Web services need a “developer” mode for debugging</li>
-<li>Lots of typing discourages use</li>
+<li>SQL turns people off, use a code generator</li>
+<li>Hand typing templates is a turn off, use a code generator</li>
+<li>Large YAML structures benefit from code generation</li>
+<li>Automatic “wiring up” of routes and templates very helpful</li>
 </ul>
 </div>
 <div id="whats-next-to-wrap-up-prototype-2"
 class="slide section level1">
 <h1>What’s next to wrap up prototype 2?</h1>
 <ul>
-<li>Finish/improve the code generator</li>
+<li>Debug and improve the code generator</li>
 <li>Implement a data modeler</li>
-<li>Less typing!</li>
-</ul>
-</div>
-<div id="newts-challenges" class="slide section level1">
-<h1>Newt’s challenges</h1>
-<ul>
-<li>Newt is <strong>a work in progress</strong> (April 2024)</li>
-<li>Newt is missing file upload support</li>
 </ul>
 </div>
 <div id="unanswered-questions" class="slide section level1">
 <h1>Unanswered Questions</h1>
 <ul>
-<li>What is the minimum knowledge needed to use Newt?</li>
+<li>What should be the minimum knowledge needed to use Newt?</li>
 <li>What should come out of the box with Newt?
 <ul>
 <li>GUI tools?</li>
@@ -256,15 +236,14 @@ class="slide section level1">
 </ul></li>
 </ul>
 </div>
-<div id="my-wish-list" class="slide section level1">
-<h1>My wish list …</h1>
+<div id="someday-maybe-ideas" class="slide section level1">
+<h1>Someday, maybe ideas</h1>
 <ul>
 <li>SQLite 3 database support</li>
-<li>Visually programming would be easier than writing YAML files</li>
-<li>Web components for gallery, library, archive and museum metadata
-types</li>
-<li>A simple S3 protocol web service that implements storing object
-using OCFL</li>
+<li>A S3 protocol web service implementing object storage using
+OCFL</li>
+<li>Web components for library, archive and museum metadata types</li>
+<li>Visual programming would be easier than editing YAML files</li>
 </ul>
 </div>
 <div id="related-resources" class="slide section level1">
@@ -277,9 +256,6 @@ class="uri">https://postgres.org</a> + PostgREST <a
 href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
 <li><a href="https://mustache.github.io">Mustache</a> programming
 languages support</li>
-<li>Go 1.22, pattern language in HTTP handlers, see <a
-href="https://pkg.go.dev/net/http#hdr-Patterns"
-class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a></li>
 </ul>
 </div>
 <div id="thank-you" class="slide section level1">

@@ -27,11 +27,21 @@
 (draft concept)</h1>
 <h2 id="overview">Overview</h2>
 <p>Newt Modeler provides an interactive way for generating and managing
-your models without directly typing YAML. It is an interactive command
-line program in the spirit of <code>newt init</code>. When started it
-list the existing models (if any are defined) and lets you add, modify,
-remove models in our YAML file. It also will updated the default routes
-and templates defined in the YAML file to matching the model’s name.</p>
+your data models. It let’s you avoid directly typing YAML. While it is
+interactive it is still a command you run in your shell. It lets you
+list, add, modify and remove data models. When working with a model it
+lets you list, add, modify and remove elements. These operations modify
+your Newt application’s YAML file when you’re happy with your changes.
+The modeler will also update the Newt Routes and Newt Mustache Templates
+to support the model much like the <code>newt init</code> command does.
+This is means if you add, modify or remove a model’s element that
+definition of the related templates change to reflect that element being
+removed. Similarly if you add, modify or remove a data model then those
+routes will also be updated accordingly.</p>
+<p>Between <code>newt init</code>, <code>newt model</code> and
+<code>newt generate</code> you deliverable a minimal function
+application that relies on Postgres+PostgREST as well as Mustache
+templates for rendering the human user interface.</p>
 <h2 id="two-ways-to-run-newt-modeler">Two ways to run Newt Modeler</h2>
 <p>In this short tutorial we are going to create a web application that
 says describes the contents of a garden. Like the Newt Router, Newt
