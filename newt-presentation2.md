@@ -19,197 +19,160 @@ keywords: [ "web service", "micro service", "Postgres", "PostgREST", "Mustache" 
 url: "https://caltechlibrary.github.io/newt/presentation2"
 ---
 
-# Goal: Answer a question.
+# What is Newt?
 
-Is Newt and "off the shelf" enough?
+- A rapid application develop tool
+    - for applications that curate metadata
+- Audience: Libraries, Archives and Museums
 
-# How I am proceeding
+# Goal of Prototype 2: Answer the question.
+
+Is Newt and "off the shelf" software enough to create metadata curation applications?
+
+# High level Concepts
+
+- describe the application you want
+- generate the application you described
+
+# Implementation Concepts
+
+- data sources
+- data models
+- routing requests through data pipelines
+- rendering JSON responses via template engine
+
+# Themes
 
 - Pick Simple = (No coding) + (Less coding)
-- Avoid inventing new things
 - Compose applications using data pipelines and templates
+- Avoid inventing new things
 
 # Off the shelf (no coding)
 
-- [Postgres](https://postgresql.org) or [PostgREST](https://postgrest.org)
+- [Postgres](https://postgresql.org) and [PostgREST](https://postgrest.org) 
 - [Solr](https://solr.apache.org) or [OpenSearch](https://opensearch.org)
 - Newt Mustache => Transform JSON into web pages
 - Newt Router, ties it all together
 
-# Assembling it with YAML (less coding)
+# Office the shelf (other data sources)
 
-- GitHub YAML issue template syntax described data models
-- YAML describes configuration, routes, pipelines
-- Template language is now Mustache
-- Code generation, "look Mom, no AI!"
+- ArchivesSpace, RDM -> JSON API
+- ORCID, ROR, CrossRef, DataCite -> JSON API
 
-# Second prototype status
+# Assemble app from YAML (less coding)
 
-- A work in progress (April 2024)
-- Hope to have a working prototype by June 2024
-- Internal applications will serve as test bed
+- The application you want is described in YAML
+- Newt generates the code you need
+- Customize by editing the generated code
 
-# Is there a Demo I can run?
+# How are data models described?
 
-Not yet, hopefully soon.
-
-# What's working, what's not?
-
-- [X] Router is implemented and working
-- [X] Mustache template engine is working
-- [ ] Generator development, in progress
+- A model is a set of HTML form input types
+- Expressed using GitHub YAML Issue Template Syntax
+- Model describes HTML and implies SQL
 
 # How do I think things will work?
 
-1. Generate our app YAML
-2. Designing our data models
-3. Generate SQL, PostgREST config and templates
-4. Run generated SQL
-5. Run Newt and Test
+1. Interactively generate our application's YAML file
+2. Interactively define data models
+3. Generate our application code
+4. Setup Postgres and PostgREST
+5. Run our app with Newt
 
-# How is the data model is described?
+# Steps one and two are interactive
 
-- GitHub YAML Issue Template Syntax
-  - describes HTML
-  - implies SQL
-
-# Step one create our YAML file
-
+~~~shell
+  newt init app.yaml
+  newt model app.yaml
 ~~~
-newt init app.yaml
-~~~
-
-> Interactively generate app.yaml
-
-# Step two define our data models
-
-~~~
-newt modeler app.yaml
-~~~
-
-> Interactively model you data
 
 # Step three, generate our code
 
-- Use `newt generate`
-    - SQL
-    - PostgREST config
-    - Templates
-- Edit files if needed
-
-# Step three, generate our SQL files, config
-
-~~~
-newt generate app.yaml postgres setup >setup.sql
-newt generate app.yaml postgres models >models.sql
-newt generate app.yaml postgrest >postgrest.conf
+~~~shell
+  newt generate app.yaml
 ~~~
 
-# Step three, generate templates
+> Renders SQL, PostgREST conf, Mustache templates
 
-~~~
-newt generate app.yaml mustache \
-  create_form app >create_app_form.tmpl
-newt generate app.yaml mustache \
-  create_response app >create_app_response.tmpl
-~~~
+# Step four, setup Postgres and PostgREST
 
-# Step three, generate templates ...
+1. Use the generated SQL and configuration
+2. Setup and check via `createdb` and `psql`
 
-~~~
-newt generate app.yaml mustache \
-  update_form app >update_app_form.tmpl
-newt generate app.yaml mustache \
-  update_response app >update_app_response.tmpl
+# Step four, setup Postgres and PostgREST
+
+~~~shell
+  createdb app
+  psql app -c '\i setup.sql'
+  psql app -c '\i models.sql'
+  psql app -c '\dt'
 ~~~
 
-# Step three, generate templates ...
+> should this be automated too?
 
-~~~
-newt generate app.yaml mustache \
-  delete_form app >delete_app_form.tmpl
-newt generate app.yaml mustache \
-  delete_response app >delete_app_response.tmpl
-~~~
+# Step five, run your application and test
 
-# Step three, generate templates ... finally
-
-~~~
-newt generate app.yaml mustache read app >read_app.tmpl
-newt generate app.yaml mustache list app >list_app.tmpl
+~~~shell
+  newt run app.yaml
 ~~~
 
-# Step three, generate templates
+> Point your web browser at http://localhost:8010 to test
 
-> code generation should be fully automated
+# Can I run a demo?
 
-# Step four, run our SQL
+Not yet, hopefully in late May 2024.
 
-~~~
-createdb app
-psql app -c '\i setup.sql'
-psql app -c '\i models.sql'
-psql app -c '\dt'
-~~~
+# Second prototype Status
 
-> this should be automated with the `newt` command
+- A work in progress (April 2024)
+- Working prototype target date June 2024
+- Using internal applications as test bed
 
-# Step five, run newt and test
+# How much is built?
 
-~~~
-newt run app.yaml
-~~~
-
-- fire up newt, test and debug
-- web browser
+- [X] Newt developer tool
+- [X] Router is implemented and working
+- [X] Mustache template engine is working
+- [ ] Generator development (in progress)
+- [ ] Modeler (design stage)
 
 # Insights from prototypes 1 & 2
 
 - "Off the shelf" is simpler
-- Large YAML structures benefit from code generation
-- SQL turns people off, use a code generator
-- Mustache/HTML needs a code generator
-- Automatic "wiring up" of routes and templates is helpful
-
-# Lessons learned, so far
-
-- Managing routes and pipelines has a cognitive price
-- Keep your pipelines short
-- Web services need a "developer" mode for debugging
 - Lots of typing discourages use
+
+# Insights from prototypes 1 & 2
+
+- SQL turns people off, use a code generator
+- Hand typing templates is a turn off, use a code generator
+- Large YAML structures benefit from code generation
+- Automatic "wiring up" of routes and templates very helpful
 
 # What's next to wrap up prototype 2?
 
-- Finish/improve the code generator
+- Debug and improve the code generator
 - Implement a data modeler
-- Less typing!
-
-# Newt's challenges
-
-- Newt is **a work in progress** (April 2024)
-- Newt is missing file upload support
 
 # Unanswered Questions
 
-- What is the minimum knowledge needed to use Newt?
+- What should be the minimum knowledge needed to use Newt?
 - What should come out of the box with Newt?
     - GUI tools?
     - Web components?
     - Ready made apps?
 
-# My wish list ...
+# Someday, maybe ideas
 
 - SQLite 3 database support
-- Visually programming would be easier than writing YAML files
-- Web components for gallery, library, archive and museum metadata types
-- A simple S3 protocol web service that implements storing object using OCFL
+- A S3 protocol web service implementing object storage using OCFL
+- Web components for library, archive and museum metadata types
+- Visual programming would be easier than editing YAML files
 
 # Related resources
 
 - Newt <https://github.com/caltechlibrary/newt>
 - Postgres <https://postgres.org> + PostgREST <https://postgrest.org>
 - [Mustache](https://mustache.github.io) programming languages support
-- Go 1.22, pattern language in HTTP handlers, see <https://pkg.go.dev/net/http#hdr-Patterns>
 
 # Thank you!
 
@@ -219,5 +182,4 @@ newt run app.yaml
 - Newt Documentation <https://caltechlibrary.github.io/newt>
 - Source Code: <https://github.com/caltechlibrary/newt>
 - Email: rsdoiel@caltech.edu
-
 
