@@ -20,6 +20,9 @@ These are links to prior art, related efforts and resources for consideration in
 - [Generate webforms based on YAML schema with pykwalify](https://github.com/cxong/pykwalify-webform)
 - [Flask Open API 3](https://pypi.org/project/flask-openapi3/)
 
+## Web Form generation
+
+- [Deform](https://docs.pylonsproject.org/projects/deform/en/latest/)
 
 ## SQL DB to REST JSON API
 
@@ -86,8 +89,19 @@ This could be implemented directory into the generated SQL or have an Identifier
 - [UUID](https://pkg.go.dev/github.com/google/UUID), v4 UUID, go storage in Postgres, long for URL
 - [shortid](https://pkg.go.dev/github.com/teris-io/shortid)
 - [shortuuid](https://github.com/skorokithakis/shortuuid), Python shortuuid package
-- [shortuuid](https://github.com/lithammer/shortuuid), a Port of the Python package to Go, algorithmically compatible with the Python implementation
+- [shortuuid](https://github.com/lithammer/shortuuid), a Port of the Python package to Go, algorithmically compatible with the Python implementation, currently at v4 and still actively developed (April 2024), see <https://pkg.go.dev/github.com/lithammer/shortuuid/v4>
 - [ulid](https://github.com/oklog/ulid), a logically sortable unique identifier package, ported from the JavaScript package implementing ulid
+- [Cuid2](https://github.com/nrednav/cuid2), a port of [Cuid2]() JavaScript implementation
+- [Sonyflake](https://github.com/sony/sonyflake), a uid inspired by Twitter's snowflake
+- [Mongo BSON ObjectID](https://pkg.go.dev/github.com/mongodb/mongo-go-driver/bson/objectid), Go implementation from Mongo's go client library
+- [xid](https://github.com/rs/xid)
+
+
+Blog posts on identifiers
+
+- [Identify Crisis, how modern applications generate unique identifiers](https://medium.com/javascript-scene/identity-crisis-how-modern-applications-generate-unique-ids-39562736f557)
+- [Unique identifiers in three parts](http://antoniomo.com/blog/2017/05/21/unique-ids-in-golang-part-1/)
+- [What is a ulid and why should you start using it?](https://dev.to/nejos97/what-is-ulid-and-why-should-you-start-using-it-14j9)
 
 ## Web Components
 

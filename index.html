@@ -29,32 +29,38 @@ development. Specifically Newt is focused on web based metadata curation
 tools. These types of applications are commonly needed in galleries,
 libraries, archives and museums (abbr: GLAM). Newt makes creating these
 type of applications easier.</p>
-<p>How does Newt do that? Newt implements a service oriented
-architecture to assemble web applications.</p>
+<p>How does Newt do that? Newt generates applications implementing a <a
+href="https://en.wikipedia.org/wiki/Service-oriented_architecture">service
+oriented architecture</a>.</p>
 <p>You can think of a web application as a sequence of requests and
-responses. In a service oriented architecture we take advantage of that
-concept but enhance the model by allowing one web service to make a
-request to another. Typically when a web browser contacts your
-application one of two things will happen. Your app knows the answer and
-hands back the result. With the service oriented architecture your
-application has another option. Your application can contact another
-service and use that result to answer the request from the web browser.
-Newt makes this easy by providing a data router. Unlike setting up a
-proxy relationship in Apache or NGINX, Newt provides a pipeline<a
-href="#fn1" class="footnote-ref" id="fnref1"
-role="doc-noteref"><sup>1</sup></a>. Newt’s pipeline is expressed in
-YAML. The last service completed hands its result to the Newt Router
+responses. Typically when a web browser contacts your web application
+one of two things will happen. Your app knows the answer and hands back
+the result. With the service oriented architecture your application has
+another option. Your application can contact another service and use
+that result to answer the request from the web browser. Newt’s
+enhancement to a basic service oriented architecture is to provide an
+easy means to construct data processing pipelines<a href="#fn1"
+class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>.</p>
+<p>With data pipelines we can accept a request and feed that request to
+one service then take its output and send it to the next service. Newt
+does this by providing a data router. Newt can manage the request
+sequence through a simple YAML description of the pipeline. While it is
+possible to create pipelines using Apache and NginX proxy features in
+practice quickly becomes an unmanagable configuration problem. You could
+encampsulate clusters of processes in containers but this too becomes
+complex to manage. Newt’s router can cut through the hairball of
+configurations and define pipelines per route request. With Newt a
+pipeline the last service completed hands its result to the Newt Router
 which returns the result to the web browser.</p>
 <p>Why is this important? Much of the “back end” of a web application is
 already available as off the shelf software. Here is a short list of
-examples.</p>
+examples used in Caltech Library.</p>
 <ul>
 <li><a href="https://postgres.org">Postgres</a> and <a
 href="https://postgrest.org">PostgREST</a> provides a JSON API for data
 management</li>
-<li>MySQL and MySQL REST Service can provide a JSON API for data
-management</li>
-<li><a href="https://solr.apache.org">Solr</a>, Elasticsearch,
+<li><a href="https://solr.apache.org">Solr</a> and Elasticsearch,
 OpenSearch can provide full text search as a JSON web service</li>
 <li><a href="https://archivesspace.org">ArchivesSpace</a> provides a
 JSON API web service</li>
@@ -71,16 +77,17 @@ in Newt’s YAML file. Newt Router runs the data pipelines.</p>
 <p>Wait, what about my custom metadata needs?</p>
 </blockquote>
 <p>That role can be filled by a JSON data source. In the second Newt
-prototype our focus is on using Postgres+PostgREST as that JSON data
-source. Newt’s code generator lends a hand here. Using Newt’s YAML file
-the code generator can generate SQL for setting up Postgres+PostgREST,
-the SQL for managing your objects and the configuration file for
-PostgREST. Additionally Newt’s code generator can render Mustache
-templates too. Between the SQL and Mustache templates you have the basic
-CRUD-L<a href="#fn2" class="footnote-ref" id="fnref2"
-role="doc-noteref"><sup>2</sup></a> operations covered. Off the self
-software with the Newt generator, router and template service provides
-the core features for building many GLAM applications.</p>
+prototype our focus is on using Postgres+PostgREST as a JSON data
+source. Newt’s code generation lends a hand here. Using Newt’s YAML file
+the code generator can generate SQL and configuration for setting up
+Postgres+PostgREST. Newt’s code generator can also render Mustache
+templates used for interacting with the JSON data source. Between the
+generated SQL and Mustache templates Newt and Postgres+PostgREST
+provides the basic CRUD-L<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a> operations for managing custom
+metadata. You can enhance your Newt application further through
+customizing the generated Mustache templates and SQL or by adding routes
+and pipelines leveraging other JSON data sources (e.g. Solr).</p>
 <h2 id="does-newt-clean-my-house-or-make-cocktails">Does Newt clean my
 house or make cocktails?</h2>
 <p>Newt is a narrowly focused rapid application development toolbox.
@@ -121,17 +128,15 @@ Newt doesn’t make cocktails, what is it bringing to the party?</h2>
 <p>In 2024 there is allot of off the self software to build on. Newt
 provides a few tools to fill in the gaps.</p>
 <ul>
+<li><code>newt</code> is a development tool for generating code, running
+Newt Router, Newt Mustache and PostgREST so you can test your
+application</li>
 <li><code>newtrouter</code> is a stateless web service (a.k.a. micro
-service) that routes a web request through a data pipeline built from
+service) that routes a web requests through a data pipelines built from
 other web services</li>
-<li><code>newtgenerator</code> is a code generator that understands the
-data models described in Newt’s YAML configuration file. Newt can
-generate code to setup and model data in Postgres, configure PostgREST
-and generate Mustache templates to take the PostgREST output and turn it
-into a web page.</li>
-<li><code>newtmustache</code> is a simple stateless template engine
-inspired by Pandoc server that supports the Mustache template language
-and is designed to process data from a JSON data source.</li>
+<li><code>newtmustache</code> is a stateless template engine inspired by
+Pandoc server that supports the Mustache template language and is
+designed to process data from a JSON data source.</li>
 </ul>
 <p>Newt’s 2nd prototype is being tested building applications based
 on</p>
@@ -142,8 +147,8 @@ Postgres into a JSON API</li>
 </ul>
 <p>The Newt YAML ties this together expressing</p>
 <ul>
-<li>applications (run time information for Newt Router and Newt
-Mustache)</li>
+<li>applications (run time information for Newt Router, Newt Mustache
+and PostgREST)</li>
 <li>models (descriptions of data as you would provided in a web
 form)</li>
 <li>routes (web requests differentiated by a HTTP method and URL path
@@ -154,9 +159,12 @@ some other format such as an HTML document)</li>
 <h2 id="what-type-of-applications-are-supported-by-newt">What type of
 applications are supported by Newt?</h2>
 <p>Most GLAM applications are focused on managing and curating some sort
-of metadata records. This is the primary target of Newt. This might be
-as simple as a controlled vocabulary or as complex as an archival or
-repository metadata record.</p>
+of metadata records. Sometimes these metadata records are quite complex
+(e.g. ArchivesSpace, RDM records) but often they are simple (e.g. a list
+of authors, a list of citations). Newt’s primary target is generating
+applications to manage simple data models. Simple data models are those
+which can be expressed in HTML5 web forms via HTML native input
+elements.</p>
 <h2 id="motivation">Motivation</h2>
 <p>Over the last several decades web applications became very complex.
 This complexity is expensive in terms of reliability, enhancement, bug
@@ -180,17 +188,18 @@ solve this problem many people wrote software in languages like Perl,
 PHP and Python that ran inside the popular Apache web server. It was a
 pain to setup but once setup relatively easy to build things that relied
 on databases. This led the web to explode with bespoke systems. By the
-late 1990s and early 2000s practice of “mashing up” sites (i.e. content
-reuse) was the rage. Bespoke systems took advantage of content reuse
-too. <a href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo
-Pipes</a> was a very interesting expression of the “mashup culture”<a
-href="#fn5" class="footnote-ref" id="fnref5"
-role="doc-noteref"><sup>5</sup></a>. Yahoo Pipes inspired Newt’s data
-pipelines. Eventual the bespoke systems gave way to common use cases<a
-href="#fn6" class="footnote-ref" id="fnref6"
-role="doc-noteref"><sup>6</sup></a>. A good example of a common use case
-is Apache’s <a href="https://solr.apache.org">Solr</a> search engine.
-Another example is how bespoke content management systems gave way to <a
+late 1990s and early 2000s the practice of “mashing up” sites
+(i.e. content reuse) was the rage. Bespoke systems took advantage of
+content reuse too. <a
+href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo Pipes</a> was a
+very interesting expression of the “mashup culture”<a href="#fn5"
+class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.
+Yahoo Pipes inspired Newt’s data pipelines. Eventual the bespoke systems
+gave way to common use cases<a href="#fn6" class="footnote-ref"
+id="fnref6" role="doc-noteref"><sup>6</sup></a>. A good example of a
+common use case is Apache’s <a href="https://solr.apache.org">Solr</a>
+search engine. Another example is how bespoke content management systems
+gave way to <a href="https://plone.org">Plone</a>, <a
 href="https://drupal.org">Drupal</a> and <a
 href="https://wordpress.org">WordPress</a>.</p>
 <blockquote>
@@ -272,7 +281,7 @@ Project?</h2>
 <p>The primary tools are.</p>
 <ul>
 <li><a href="newt.1.html">newt</a> a developer tool for building a Newt
-based application</li>
+based application which includes code generation support</li>
 <li><a href="newtrouter.1.html">newtrouter</a> a <a
 href="https://en.wikipedia.org/wiki/microservices">web service</a>
 designed for working with other “off the shelf” web services. It
@@ -280,11 +289,6 @@ functions both as a router and as a static file server. It does this by
 routing your request through a YAML defined pipeline and returning the
 results. Typically this will be a JSON data source and running that
 output through a template engine like Newt Mustache.</li>
-<li><a href="newtgenerator.1.html">newtgenerator</a> is a command line
-program that reads the Newt YAML file and generates SQL and templates
-used to build your application. Currently the generator targets SQL for
-use with Postgres+PostgREST. The template language being targeted is
-Mustache.</li>
 <li><a href="newmustache.1.html">newtmustache</a> implements a simple
 lightweight template engine supporting <a
 href="https://mustache.github.io/">Mustache</a> templates. Mustache
@@ -302,7 +306,8 @@ class="uri">https://github.com/caltechlibrary/newt</a>. If you have
 questions, problems or concerns regarding Newt you can use GitHub issue
 tracker to communicate with the development team. It is located at <a
 href="https://github.com/caltechlibrary/newt/issues"
-class="uri">https://github.com/caltechlibrary/newt/issues</a>.</p>
+class="uri">https://github.com/caltechlibrary/newt/issues</a>. The name
+comes from wanting a “[New t]ake” on web application development.</p>
 <h2 id="getting-help">Getting help</h2>
 <p><strong>The Newt Project is an experiment!!</strong>. The source code
 for the project is supplied “as is”. Newt is a partially implemented
@@ -310,10 +315,6 @@ prototype (April 2024). However if you’d like to ask a question or have
 something you’d like to contribute please feel free to file a GitHub
 issue, see <a href="https://github.com/caltechlibrary/newt/issues"
 class="uri">https://github.com/caltechlibrary/newt/issues</a>.</p>
-<blockquote>
-<p>Newt, a type of salamander. Newts don’t seek attention. They do their
-own thing. You only notice them if you look very carefully.</p>
-</blockquote>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
