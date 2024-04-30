@@ -92,18 +92,18 @@ func (g *NewtGenerator) renderPostgREST() error {
 
 // renderMustache will render a mustache template for a given model id. The action corresponds
 // to the model id.
-func (g *NewtGenerator) renderMustache(action string, modelId string) error {
+func (g *NewtGenerator) renderMustache(modelId string, action string) error {
 	for _, model := range g.Models {
 		if modelId == model.Id {
-			return MTmplGen(g.out, action, model)
+			return MTmplGen(g.out, model, action)
 		}
 	}
 	return fmt.Errorf("failed to find model id %q", modelId)
 }
 
 // renderHtml will render HTML forms for given action and model id.
-func (g *NewtGenerator) renderHtml(action string, modelId string) error {
-	return fmt.Errorf("g.renderHtml(%q, %q) not implemented", action, modelId)
+func (g *NewtGenerator) renderHtml(modelId string, action string) error {
+	return fmt.Errorf("g.renderHtml(%q, %q) not implemented", modelId, action)
 }
 
 // validate action from list of actions.
@@ -135,7 +135,7 @@ func validateModelId(modelId string, models []*NewtModel) error {
 // - generatorName is the generator to use
 // - action is a parameter that the selected generator can use (e.g. PostgreSQL has setup as well as )
 // - modelId references the `.id` attribute of the model needing code generation
-func (g *NewtGenerator) Generate(generatorName string, action string, modelId string) error {
+func (g *NewtGenerator) Generate(generatorName string, modelId string, action string) error {
 	pgActions := []string{ "setup", "models", "models_test" }
 	//modelActions := []string{ "create", "read", "update", "delete", "list", "page" }
 	templateActions := []string{ 
@@ -159,7 +159,7 @@ func (g *NewtGenerator) Generate(generatorName string, action string, modelId st
 		if err := validateModelId(modelId, g.Models);  err != nil {
 			return err
 		}
-		return g.renderMustache(action, modelId)
+		return g.renderMustache(modelId, action)
 	default:
 		return fmt.Errorf("%q is not supported at this time", generatorName)
 	}

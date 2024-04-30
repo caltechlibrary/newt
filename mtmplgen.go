@@ -153,7 +153,7 @@ func mTmplGenRead(out io.Writer, model *NewtModel) error {
 // mTmplGenUpdateForm generations a Mustache partial for a update object web form
 func mTmplGenUpdateForm(out io.Writer, model *NewtModel) error {
 	// Build a webform partial
-	formURL := fmt.Sprintf("/update_%s", model.Id)
+	formURL := fmt.Sprintf("/%s_update", model.Id)
 	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
@@ -178,7 +178,7 @@ func mTmplGenUpdateResponse(out io.Writer, model *NewtModel) error {
 func mTmplGenDeleteForm(out io.Writer, model *NewtModel) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
 	// Build a webform partial
-	formURL := fmt.Sprintf("/delete_%s", model.Id)
+	formURL := fmt.Sprintf("/%s_delete", model.Id)
 	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
@@ -240,10 +240,10 @@ func mTmplPage(out io.Writer, model *NewtModel, fn PartialGen) error {
 }
 
 
-// MTmplGen takes an io.Writer, an action string and model and renders
+// MTmplGen takes an io.Writer, model and an action string rendering
 // the contents of the model as a Newt Mustache template for the provided
 // action. It returns an error value when something goes wrong.
-func MTmplGen(out io.Writer, action string, model *NewtModel) error {
+func MTmplGen(out io.Writer, model *NewtModel, action string) error {
 	if model == nil || model.Id == "" {
 		return fmt.Errorf("model appears incomplete, aborting")
 	}

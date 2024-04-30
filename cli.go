@@ -34,6 +34,7 @@ const (
 	// General failure of a command or service
 	INIT_FAIL
 	CHECK_FAIL
+	MODELER_FAIL
 	GENERATOR_FAIL
 	ROUTER_FAIL
 	MUSTACHE_FAIL
@@ -61,29 +62,66 @@ const (
 	POSTGRES_PORT    = 5432
 )
 
+// backupFile takes a filename, copies it to filename plus ".bak"
+func backupFile(appFName string) error {
+	buf, err := os.ReadFile(appFName)
+	if err != nil {
+		return fmt.Errorf("failed to back up %s, aborting write, %s", appFName, err)
+	}
+	if err := os.WriteFile(appFName+".bak", buf, 0666); err != nil {
+		return fmt.Errorf("failed to write back up %s, aborting write, %s\n", appFName, err)
+	}
+	return nil
+}
+
+
+// getNewtYamlFName - figure out what the Newt YAML filename should be.
+func getNewtYamlFName(args []string) string {
+	fName := ""
+	if len(args) > 0 {
+		fName = args[0]
+	}
+	if fName == "" {
+		s, err := os.Getwd()
+		if err == nil {
+			s = path.Base(s)
+		}
+		if s != "" {
+			fName = strings.ToLower(strings.ReplaceAll(s, " ", "_")) + ".yaml"
+		} else {
+			fName = "app.yaml"
+		}
+	}
+	return fName
+}
+
+func renderTemplate(generator *NewtGenerator, tType string, modelID string, action string, fName string) error {
+	var err error
+	if _, err = os.Stat(fName); err == nil {
+		if err = backupFile(fName); err != nil {
+			return err
+		}
+	}
+	out, err := os.Create(fName)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	generator.out = out
+	if err := generator.Generate(tType, modelID, action); err != nil {
+		return err
+	}
+	return nil
+}
 
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
 func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
-	//appName := "Newt Generator"
-	fName, generatorName, action, modelName := "", "", "", ""
-	if len(args) > 0 {
-		fName = args[0]
-	} else {
-		fmt.Fprintf(eout, "missing YAML configuration file\n")
+	fName := getNewtYamlFName(args)
+	if fName == "" { 
+		fmt.Fprintf(eout, "missing Newt YAML filename\n")
 		return CONFIG
 	}
-	if len(args) > 1 {
-		generatorName = args[1]
-	} else {
-		fmt.Fprintf(eout, "missing generator name, e.g. postgres, postgrest, mustache\n")
-		return CONFIG
-	}
-	if len(args) > 2 {
-		action = args[2]
-	}
-	if len(args) > 3 {
-		modelName = args[3]
-	}
+
 	cfg, err := LoadConfig(fName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
@@ -100,9 +138,67 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 	}
 	generator.out = out
 	generator.eout = eout
-	if err := generator.Generate(generatorName, action, modelName); err != nil {
+	//NOTE: I need to generate each of the files needed for Postgres and PostgREST
+	for _, fName := range []string{"setup.sql", "models.sql"} {
+		if err := renderTemplate(generator, "postgres", "", "setup", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+	}
+	fName = "postgrest.conf"
+	if err := renderTemplate(generator, "postgrest", "", "", fName); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return GENERATOR_FAIL
+	}
+
+	//NOTE: For each model generate a set of templates
+	for _, modelID := range cfg.GetModelIds() {
+		// backup and generate {model}_create_form.mustache, {model}_create_response.mustache
+		fName = fmt.Sprintf("%s_create_form.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "create_form", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+		fName = fmt.Sprintf("%s_create_response.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "create_response", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+
+		// backup and generate {model}_read.mustache
+		fName = fmt.Sprintf("%s_read.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "read", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+		// backup and generate {model}_update_form.mustache, {model}_update_response.mustache
+		fName = fmt.Sprintf("%s_update_form.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "update_form", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+		fName = fmt.Sprintf("%s_update_response.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "update_response", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+		// backup and generate {model}_delete_form.mustache, {model}_delete_response.mustache
+		fName = fmt.Sprintf("%s_delete_form.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "delete_form", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+		fName = fmt.Sprintf("%s_delete_response.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "delete_response", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
+		// backup and generate {model}_list.mustache
+		fName = fmt.Sprintf("%s_list.mustache", modelID)
+		if err := renderTemplate(generator, "mustache", modelID, "list", fName); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+			return GENERATOR_FAIL
+		}
 	}
 	return OK
 }
@@ -111,11 +207,9 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
 	appName := "Newt Mustache"
 	// Configure the template bundler webservice
-	fName := ""
-	if len(args) > 0 {
-		fName = args[0]
-	} else {
-		fmt.Fprintf(eout, "missing Newt YAML configuration\n")
+	fName := getNewtYamlFName(args)
+	if fName == "" {
+		fmt.Fprintf(eout, "missing Newt YAML filename\n")
 		return CONFIG
 	}
 	// Load the Newt YAML syntax file holding the configuration
@@ -183,23 +277,14 @@ func RunNewtRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, d
 	// You can run Newt Router with just an htdocs directory. If so you don't require a config file.
 	var (
 		err error
-		fName string
 		router *NewtRouter
 	)
-	if htdocs == "" && len(args) == 0 {
-		fmt.Fprintln(eout, "missing YAML config file or htdocs directory")
+	fName := getNewtYamlFName(args)
+	if fName == "" {
+		fmt.Fprintln(eout, "missing Newt YAML filename")
 		return CONFIG
 	}
-	cfg := &Config{
-		Applications: &Applications{
-			NewtRouter: &Application{},
-		},
-	}
-	if len(args) > 0 {
-		fName = args[0]
-	}
-	
-	cfg, err = LoadConfig(fName)
+	cfg, err := LoadConfig(fName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
@@ -279,11 +364,11 @@ func RunStaticWebServer(in io.Reader, out io.Writer, eout io.Writer, args []stri
 
 // NewtRunCheckYAML will load a Newt YAML fiel and make sure it can parse the configuration.
 func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
-	if len(args) == 0 {
-		fmt.Fprintf(eout, "missing Newt YAML filename to check\n")
+	fName := getNewtYamlFName(args)
+	if fName == "" {
+		fmt.Fprintln(eout, "missing Newt YAML filename")
 		return CHECK_FAIL
 	}
-	fName := args[0]
 	cfg, err := LoadConfig(fName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s error: %s\n", fName, err)
@@ -389,13 +474,15 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 		return RunNewtInit(in, out, eout, args, verbose)
 	case "check":
 		return RunNewtCheckYAML(in, out, eout, args, verbose)
+	case "model":
+		return RunNewtModeler(in, out, eout, args, verbose)
 	case "generate":
 		//FIXME: I need to back up all the expected filenames for project first, then
 		// for each generate action option a new output buffer to render each new version of the file.
 		return RunNewtGenerator(in, out, eout, args)
 	case "run":
 		return RunNewtApplications(in, out, eout, args, verbose)
-	case "sws":
+	case "ws":
 		return RunStaticWebServer(in, out, eout, args, 0, verbose)
 	default:
 		fmt.Fprintf(eout, "%s does %q is an unsupported action, see %s -help\n", appName, action, appName)
@@ -406,13 +493,9 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 
 // RunNewtApplications will run the applictions defined in your Newt YAML file.
 func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
-	var fName string
 	appName := path.Base(os.Args[0])
-	// get the Newt YAML filename.
-	if len(args) > 0 {
-		fName = args[0]
-	}
-	// Newt YAML should be present so the actions available are "generate" and "run"
+	// Get the Newt YAML file to run
+	fName := getNewtYamlFName(args)
 	if fName == "" {
 		fmt.Fprintf(eout, "%s expected a Newt YAML filename\n", appName)
 		return CONFIG
@@ -538,20 +621,10 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 	cfg := &Config{}
 	readBuffer := bufio.NewReader(in)
 	// Step 1. Figure out what we're going to call our generated Newt YAML file.
-	appFName := ""
-	if len(args) > 0 {
-		appFName = args[0]
-	}
+	appFName := getNewtYamlFName(args)
 	if appFName == "" {
-		s, err := os.Getwd()
-		if err == nil {
-			s = path.Base(s)
-		}
-		if s != "" {
-			appFName = strings.ToLower(strings.ReplaceAll(s, " ", "_")) + ".yaml"
-		} else {
-			appFName = "app.yaml"
-		}
+		fmt.Fprintf(eout, "missing Newt YAML Filename\n")
+		return INIT_FAIL
 	}
 	if _, err := os.Stat(appFName); err == nil {
 		mkBackUp = true
@@ -562,15 +635,17 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 			fmt.Fprintf(eout, "aborting init, %q already exists\n", appFName)
 			return INIT_FAIL
 		}
+	} else {
+		fmt.Fprintf(out, "Create %q (Y/n)? ", appFName)
+		answer = getAnswer(readBuffer, "y", true)
+		if answer != "y" {
+			fmt.Fprintf(eout, "aborting creation of %q\n", appFName)
+			return INIT_FAIL
+		}
 	}
 	// objName is used to gererate example elements in the Newt YAML file.
 	objName := strings.TrimSuffix(appFName, ".yaml")
 	// Step 2. Figure out which applications will be running
-	/*
-	if cfg.Applications == nil {
-		cfg.Applications = &Applications{}
-	}
-	*/
 	for {
 		setupNewtRouter(cfg, readBuffer, out, appFName, objName)
 		setupPostgres(cfg, readBuffer, out, appFName, objName)
@@ -581,11 +656,13 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 		setupOptions(cfg, readBuffer, out, appFName, objName)
 
 		// Now output the YAML
-		comment := []byte(fmt.Sprintf(`#!/bin/env newt check
+		timeStamp := (time.Now()).Format("2006-01-02")
+		userName := os.Getenv("USER")
+		comment := []byte(fmt.Sprintf(`#/usr/bin/env newt check %s
 #
-# This was generated by %s, version %s %s, on %s.
+# This was generated by %s on %s with %s version %s %s.
 #
-`, path.Base(os.Args[0]), Version, ReleaseHash, ReleaseDate))
+`, appFName, userName, timeStamp, path.Base(os.Args[0]), Version, ReleaseHash))
 		data := bytes.NewBuffer(comment)
 		encoder := yaml.NewEncoder(data)
 		encoder.SetIndent(2)
@@ -602,13 +679,8 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 			// We're ready to write out result.
 			// If file exists make a back up copy
 			if mkBackUp {
-				buf, err := os.ReadFile(appFName)
-				if err != nil {
-					fmt.Fprintf(eout, "failed to back up %s, aborting write\n", appFName)
-					return INIT_FAIL
-				}
-				if err := os.WriteFile(appFName+".bak", buf, 0666); err != nil {
-					fmt.Fprintf(eout, "failed to write back up %s, aborting write, %s\n", appFName, err)
+				if err := backupFile(appFName); err != nil {
+					fmt.Fprintf(eout, "%s\n", err)
 					return INIT_FAIL
 				}
 			}
@@ -634,7 +706,13 @@ repository for %q. It is recommented that add the following to your .gitignore f
     # Newt Project ignore list.
     *setup*.sql
     postgrest.conf
+
 `, objName)
 	}
 	return OK
+}
+
+func RunNewtModeler(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
+	fmt.Fprintf(eout, "Newt Modeler not implemented yet\n")
+	return MODELER_FAIL
 }

@@ -1,6 +1,6 @@
 ---
-title: newt(1) user manual | 0.0.8 bd12907
-pubDate: 2024-04-26
+title: newt(1) user manual | 0.0.8 6d29329
+pubDate: 2024-04-29
 author: R. S. Doiel
 ---
 
@@ -10,22 +10,39 @@ newt
 
 # SYNOPSIS
 
-newt [OPTIONS] ACTION YAML_CONFIG_FILE 
+newt [OPTIONS] ACTION [YAML_FILE]
 
 # DESCRIPTION
 
-**newt** sets up up and can run your Newt application during development.
-**newt** supports the "init", "generate" and "run" actions. The "init"
-command is used when you are starting a Newt Project. It will guide you through
-creating your initial Newt YAML file and also optionally make additions to your
-`.gitignore`. "generate" will run the Newt Generator to create the
-SQL, PostgREST configuration and Mustache templates based on the contents of the
-Newt YAML file. The third action is "run". It is used to run your Newt based
-application. For the applications you have defined in your Newt YAML_CONFIG_FILE
-it's start them up. These include the Newt Router, Newt Mustache and PostgREST.
-This allows you to quick run and stop the services are you craft your
-Newt YAML file for your project.
+**newt** is a developer tool. It can set up and run your Newt application
+during development.  **newt** supports the "init", "check", "model", "generate",
+"run" and "ws" actions. The "init" command is used when you are starting a
+Newt Project. It is an interactive command prompting for various choices regarding
+the application you want to create.  
 
+The "check" will analyze the the YAML file and report results of the analyze and as
+well as validate the YAML syntax.
+
+The "model" is used to manage your data models. It is interactive like "init".
+
+The "generate" will run the Newt Generator to create the SQL, PostgREST configuration
+and Mustache templates. It'll also update the Newt YAML file's routes and templates
+properties as needed for the generated content. 
+
+The "run" action will run Newt Router, Newt Mustache and PostgREST
+for testing and development.  This allows you to quick run and stop the services
+from one command. 
+
+The "ws" action runs a simple static web service. It is useful when you are debugging
+static web assets for your project.
+
+
+If a Newt YAML filename isn't supplied when you invoke **newt** the application
+will look in the current directory for a file with the directory's name and ".yaml" 
+extension and if that is not found it'll look for "app.yaml".
+
+If you are working in the root of a Git repository when you run "init" you will
+get a warning about which files should be added to your `.gitignore`.
 
 # OPTIONS
 
@@ -45,25 +62,31 @@ The following options are supported by **newt**.
 
 # ACTION
 
-init
+init [YAML_FILE]
 : this will create your initial Newt YAML file based on a set of interactive
 questions. It can also update your `.gitignore` file too.
 
-generate
+model [YAML_FILE]
+: this will read the current Newt YAML file and run the interactive modeler updating the Newt YAML file if model(s) are accepted.
+
+check [YAML_FILE]
+: analyze the Newt YAML file and report problems if found.
+
+generate [YAML_FILE]
 : this is used to generate your SQL, PostgREST configuration and Mustache templates
 based on the contents of your Newt YAML file.
 
-run
+run [YAML_FILE]
 : this will run the defined services in the application attribute of the Newt YAML file.
 This is intended for use in development. In a production setting you'd setup the individual
 services to run from systemd or init as services.
 
-sws
-: this will run Newt's static web server.
+ws [YAML_FILE]
+: run Newt's static web server.
 
-# YAML_CONFIG_FILE 
+# YAML_FILE 
 
-**newt** is configured in a YAML file. What is described below is the complete
+**newt** is configured in a YAML file. What is described below is a summary of 
 YAML syntax use in a Newt project that uses all of the Newt programs.
 
 ## Top level properties
@@ -74,13 +97,13 @@ applications
 : (optional) holds the run time configuration used by the Newt applications.
 
 models
-: (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYITS)
+: (required by newt generator) This holds the description of the data models in your application.  Each model uses HTML 5 element descriptions which can be set using the interactive `newt model` command. 
 
 routes
-: (required by newtrouter) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
+: (required by newt router) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 templates
-: (required by newtmustache)
+: (required by newt mustache)
 
 ## The applications property
 
@@ -90,7 +113,7 @@ newtrouter
 : this contains configuration for the Newt Router, i.e. port and htdocs
 
 newtgenerator
-: this contains configuration for the Newt Generator, e.g. port, namespace
+: this contains configuration for code generation. e.g. namespace used by Postgres and PostgREST.
 
 newtmustache
 : this contains configuration for Newt Mustache, i.e. port
@@ -101,7 +124,7 @@ options
 environment
 : (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
-### Configuring Newt programs
+### Each application may have one or more of these properies.
 
 namespace
 : (newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
@@ -111,6 +134,18 @@ port
 
 htdocs
 : (newtrouter) Directory that holds your application's static content
+
+timeout
+: (newt router, newt mustache) The time in seconds to timeout a HTTP transaction
+
+dsn
+: (postgres) The data source name (URI for database connection string). Using to connect to Postgres
+
+app_path
+: (postgrest) The full path to the application (if it is not in the PATH environment variable)
+
+conf_app
+: (postgres) Configuration path for the application.
 
 ## the "routes" property
 
@@ -207,126 +242,127 @@ checkboxes
 
 Newt may add additional types in the future.
 
-## Example Newt YAML for router and code generator
+## Example Newt YAML file, "app.yaml" 
 
 ~~~yaml
 applications:
-  newtgenerator:
-    namespace: people # E.g. "people" Namespace to use generating Postgres SQL
   newtrouter:
-    port: 8011 # Port number for Newt Router
-    htdocs: htdocs # Path to static content directory if required
+    port: 8010
   newtmustache:
-    port: 8012 # Port number for Newt Mustache 
-  #options:
-    # name value pairs used for aliasing strings in routes, models, and templates 
+    port: 8011
+  newtgenerator:
+    namespace: app
+  postgres:
+    port: 5432
+    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/app
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
+    port: 3000
   environment:
-    - DB_USER
-    - DB_PASSWORD
-    - DB_HOST
+    - PGUSER
+    - PGPASSWORD
 models:
-  - id: people
-    name: People Profiles
-    description: |
-      This models a curated set of profiles of colleagues
+  - id: app
+    description: This is where you would model your application data
     body:
-      - id: people_id
-        type: input
+      - type: input
+        id: data_attribute
         attributes:
-          label: A unique person id, no spaces, alpha numeric
-          placeholder: ex. jane-do-007
+          description: This is an example input element
+          name: data_attribute
+          placeholdertext: ex. of placeholder text
+          title: this is an example element in your model
         validations:
           required: true
-      - id: display_name
-        type: input
-        attributes:
-          label: (optional) A person display name
-          placeholder: ex. J. Doe, journalist
-      - id: family_name
-        type: input
-        attributes:
-          label: (required) A person's family name or singular when only one name exists
-          placeholder: ex. Doe
-        validations:
-          required: true
-      - id: given_name
-        type: input
-        attributes:
-          label: (optional, encouraged) A person's given name
-          placeholder: ex. Jane
-      - id: orcid
-        type: input
-        attributes:
-          label: (optional) A person's ORCID identifier
-          placeholder: ex. 0000-0000-0000-0000
-        validations:
-          pattern: "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
-      - id: ror
-        type: input
-        attributes:
-          label: (optional) A person's ROR identifying their affiliation
-      - id: email
-        type: "input[type=email]"
-        attributes:
-          label: (optional) A person public email address
-      - id: website
-        type: "input[type=url]"
-        attributes:
-          label: (optional) A person's public website
-          placeholder: ex. https://jane.doe.example.org
 routes:
-  - id: create_person
-    description: Create new person profile
-    request: POST /person
+  - id: app_create
+    request: GET /app_create
+    description: Handle retrieving the webform for app create
     pipeline:
-      - description: This will generate a new user in the database
-        service: POST "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
-        content_type: application/json
-      - description: |
-          This sends the results of creating a person to the template engine
-        service: POST http://localhost:3032/people_update_result.tmpl
-        content_type: application/json
-  - id: read_person
-    description: Update a person's profile
-    request: "GET /person/{{people.people_id}}"
+      - service: POST http://localhost:8011/app_create
+        description: Display a app for create
+  - id: app_create
+    request: POST /app_create
+    description: Handle form submission for app create
     pipeline:
-      - description: Retrieve a person's profile
-        service: POST "https://{{DB_USER}}@{{DB_HOST}}:3000/person/{{people.people_id}}"
-        content_type: application/json
-      - description: |
-          Render a person's profile
-        service: POST http://localhost:3032/profile.tmpl
-        content_type: application/json
-  - id: update_person
-    description: Update person's profile
-    request: "PUT /person/{{people.people_id}}"
+      - service: POST http://localhost:3000/rpc/app_create
+        description: Access PostgREST API for app create
+      - service: POST http://localhost:8011/app_create_response
+        description: This is an result template for app create
+  - id: app_update
+    request: GET /app_update/{oid}
+    description: Handle retrieving the webform for app update
     pipeline:
-      - description: This will update a person record in the database
-        service: PUT "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
-        content_type: application/json
-      - description: |
-          This sends the results of updating a person to the template engine
-        service: POST http://localhost:3032/people_update_result.tmpl
-        content_type: application/json
-  - id: delete_person
-    description: Remove person's profile
-    request: "DELETE /person/{{people.people_id}}"
+      - service: GET http://localhost:3000/rpc/app_read/{oid}
+        description: Retrieve app from PostgREST API before update
+      - service: POST http://localhost:8011/app_update
+        description: Display a app for update
+  - id: app_update
+    request: POST /app_update
+    description: Handle form submission for app update
     pipeline:
-      - description: Remove the person for the database
-        service: DELETE "https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}"
-        content_type: application/json
-      - description: Displace the result of what happened in the removal
-        service: POST http://localhost:3032/removed_person.tmpl
-  - id: list_people
-    description: List people profiles available
-    request: GET /people
+      - service: PUT http://localhost:3000/rpc/app_update/{oid}
+        description: Access PostgREST API for app update
+      - service: POST http://localhost:8011/app_update_response
+        description: This is an result template for app update
+  - id: app_delete
+    request: GET /app_delete/{oid}
+    description: Handle retrieving the webform for app delete
     pipeline:
-      - description: Retrieve a list of all people profiles available
-        service: GET https://{{DB_HOST}}@{{DB_HOST}}:3000/people
-        content_type: application/json
-      - description: format a browsable people list linking to individual profiles
-        service: POST http://localhost:3030/list_people.tmpl
-        content_type: application/json
+      - service: GET http://localhost:3000/rpc/app_read/{oid}
+        description: Retrieve app from PostgREST API before delete
+      - service: POST http://localhost:8011/app_delete
+        description: Display a app for delete
+  - id: app_delete
+    request: POST /app_delete
+    description: Handle form submission for app delete
+    pipeline:
+      - service: DELETE http://localhost:3000/rpc/app_delete/{oid}
+        description: Access PostgREST API for app delete
+      - service: POST http://localhost:8011/app_delete_response
+        description: This is an result template for app delete
+  - id: app_read
+    request: POST /app_read
+    description: Retrieve object(s) for app read
+    pipeline:
+      - service: GET http://localhost:3000/rpc/app_read/{oid}
+        description: Access PostgREST API for app read
+      - service: POST http://localhost:8011/app_read
+        description: This template handles app read
+  - id: app_list
+    request: POST /app_list
+    description: Retrieve object(s) for app list
+    pipeline:
+      - service: GET http://localhost:3000/rpc/app_list
+        description: Access PostgREST API for app list
+      - service: POST http://localhost:8011/app_list
+        description: This template handles app list
+templates:
+  - request: /app_create
+    template: app_create_form.tmpl
+    description: Display a app for create
+  - request: /app_create_response
+    template: app_create_response.tmpl
+    description: This is an result template for app create
+  - request: /app_update
+    template: app_update_form.tmpl
+    description: Display a app for update
+  - request: /app_update_response
+    template: app_update_response.tmpl
+    description: This is an result template for app update
+  - request: /app_delete
+    template: app_delete_form.tmpl
+    description: Display a app for delete
+  - request: /app_delete_response
+    template: app_delete_response.tmpl
+    description: This is an result template for app delete
+  - request: /app_read
+    template: app_read.tmpl
+    description: This template handles app read
+  - request: /app_list
+    template: app_list.tmpl
+    description: This template handles app list
 ~~~
 
 

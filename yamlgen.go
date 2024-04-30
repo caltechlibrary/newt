@@ -126,12 +126,12 @@ func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName s
 			cfg.Templates = []*MustacheTemplate{}
 			// Handle the special cases of routes for retrieving forms for create, update and delete.
 			// E.g. retrieve the web form, handle the submit of the web form as two actions.
-			setupWebFormHandling(cfg, "create", objName)
-			setupWebFormHandling(cfg, "update", objName)
-			setupWebFormHandling(cfg, "delete", objName)
+			setupWebFormHandling(cfg, objName, "create")
+			setupWebFormHandling(cfg, objName, "update")
+			setupWebFormHandling(cfg, objName, "delete")
 			// Now add the mappings for read and list
-			setupReadHandling(cfg, "read", objName)
-			setupReadHandling(cfg, "list", objName)
+			setupReadHandling(cfg, objName, "read")
+			setupReadHandling(cfg, objName, "list")
 		}
 	} else {
 		if cfg.Applications != nil {
@@ -184,32 +184,38 @@ func setupNewtGenerator(cfg *Config, buf *bufio.Reader, out io.Writer, appFName 
 
 
 // setupPostgRESTService creates a Service object for interacting with PostgREST
-func setupPostgRESTService(cfg *Config, action string, objName string) *Service {
+func setupPostgRESTService(cfg *Config, objName string, action string) *Service {
 	var (
-		serviceURL string
+		oidSuffix string
 		description string
 		method string
 		port int
 	)
-	switch action {
-	case "create":
-		method = http.MethodPost
-	case "update": 
-		method = http.MethodPut
-	case "delete":
-		method = http.MethodDelete
-	default:
-		method = http.MethodGet
-	}
-	description = fmt.Sprintf("Access PostgREST API for %s %s", action, objName)
+	description = fmt.Sprintf("Access PostgREST API for %s %s", objName, action)
 	if cfg.Applications != nil && cfg.Applications.PostgREST != nil {
 		port = cfg.Applications.PostgREST.Port
 	} else {
 		port = 3000
 	}
-	serviceURL = fmt.Sprintf("%s http://localhost:%d/rpc/%s_%s", method, port, objName, action)
+	switch action {
+	case "create":
+		// create action doesn't take an oid
+		method = http.MethodPost
+	case "read":
+		method = http.MethodGet
+		oidSuffix = "/{oid}"
+	case "update": 
+		method = http.MethodPut
+		oidSuffix = "/{oid}"
+	case "delete":
+		method = http.MethodDelete
+		oidSuffix = "/{oid}"
+	default:
+		// list action doesn't take an oid
+		method = http.MethodGet
+	}
 	return &Service {
-		Service: serviceURL,
+		Service: fmt.Sprintf("%s http://localhost:%d/rpc/%s_%s%s", method, port, objName, action, oidSuffix),
 		Description: description,
 	}
 }
@@ -231,7 +237,7 @@ func setupTmplService(cfg *Config, tmplPattern string, description string) *Serv
 
 // setupWebFormHandling generates the routes and template handling for retrieving and submitting
 // webforms for "create", "update" or "delete".
-func setupWebFormHandling(cfg *Config, action string, objName string) {
+func setupWebFormHandling(cfg *Config, objName string, action string) {
 	var (
 		pathSuffix string
 		service *Service
@@ -239,28 +245,29 @@ func setupWebFormHandling(cfg *Config, action string, objName string) {
 	if action == "update" || action == "delete" {
 		pathSuffix = "/{oid}"
 	}
-	// Setup templates, webform
-	tmplPattern := fmt.Sprintf("/%s_%s", action, objName)
-	tmplName := fmt.Sprintf("%s_%s_form.tmpl", action, objName)
-	tmplDescription := fmt.Sprintf("Display a %s for %s", action, objName)
+	// Setup templates and webforms. Names are formed by objName combined with action.
+	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
+	tmplName := fmt.Sprintf("%s_%s_form.tmpl", objName, action)
+	tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
 	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
 	})
 	// Handle web form request
-	routeId := fmt.Sprintf("%s_%s", action, objName)
-	request := fmt.Sprintf("%s /%s_%s%s", http.MethodGet, action, objName, pathSuffix)
-	routeDescription := fmt.Sprintf("Handle retrieving the webform for %s %s", action, objName)
+	routeId := fmt.Sprintf("%s_%s", objName, action)
+	request := fmt.Sprintf("%s /%s_%s%s", http.MethodGet, objName, action, pathSuffix)
+	routeDescription := fmt.Sprintf("Handle retrieving the webform for %s %s", objName, action)
 	route := &NewtRoute{
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
 		Pipeline: []*Service{},
 	}
-	if pathSuffix != "" {
-		// NOTE: If we have an update or delete we want to retrieve the record before calling the template
-		service = setupPostgRESTService(cfg, "read", objName)
+	// NOTE: If we have an update or delete we want to retrieve the record before calling the template
+	if action == "update" || action == "delete" {
+		service = setupPostgRESTService(cfg, objName, "read")
+		service.Description = fmt.Sprintf("Retrieve %s from PostgREST API before %s", objName, action)
 		route.Pipeline = append(route.Pipeline, service)
 	}
 	service = setupTmplService(cfg, tmplPattern, tmplDescription)
@@ -268,9 +275,9 @@ func setupWebFormHandling(cfg *Config, action string, objName string) {
 	cfg.Routes = append(cfg.Routes, route)
 
 	// Setup template submit result
-	tmplPattern = fmt.Sprintf("/%s_%s_response", action, objName)
-	tmplName = fmt.Sprintf("%s_%s_response.tmpl", action, objName)
-	tmplDescription = fmt.Sprintf("This is an result template for %s %s", action, objName)
+	tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
+	tmplName = fmt.Sprintf("%s_%s_response.tmpl", objName, action)
+	tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
 	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
@@ -278,43 +285,43 @@ func setupWebFormHandling(cfg *Config, action string, objName string) {
 	})
 
 	// Handle submission routing 
-	routeId = fmt.Sprintf("%s_%s", action, objName)
-	routeDescription = fmt.Sprintf("Handle form submission for %s %s", action, objName)
-	request = fmt.Sprintf("%s /%s_%s", http.MethodPost, action, objName)
+	routeId = fmt.Sprintf("%s_%s", objName, action)
+	routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
+	request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
 	route = &NewtRoute{
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
 		Pipeline: []*Service{},
 	}
-	service = setupPostgRESTService(cfg, action, objName)
+	service = setupPostgRESTService(cfg, objName, action)
 	route.Pipeline = append(route.Pipeline, service)
 	service = setupTmplService(cfg, tmplPattern, tmplDescription)
 	route.Pipeline = append(route.Pipeline, service)
 	cfg.Routes = append(cfg.Routes, route)
 }
 
-func setupReadHandling(cfg *Config, action string, objName string) {
+func setupReadHandling(cfg *Config, objName string, action string) {
 	// Setup template for results of read request
-	tmplPattern := fmt.Sprintf("/%s_%s", action, objName)
-	tmplName := fmt.Sprintf("%s_%s.tmpl", action, objName)
-	tmplDescription := fmt.Sprintf("This template handles %s %s", action, objName)
+	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
+	tmplName := fmt.Sprintf("%s_%s.tmpl", objName, action)
+	tmplDescription := fmt.Sprintf("This template handles %s %s", objName, action)
 	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
 	})
 	// Handle requesting object or list of objects
-	routeId := fmt.Sprintf("%s_%s", action, objName)
-	routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", action, objName)
-	request := fmt.Sprintf("%s /%s_%s", http.MethodPost, action, objName)
+	routeId := fmt.Sprintf("%s_%s", objName, action)
+	routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", objName, action)
+	request := fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
 	route := &NewtRoute{
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
 		Pipeline: []*Service{},
 	}
-	service := setupPostgRESTService(cfg, action, objName)
+	service := setupPostgRESTService(cfg, objName, action)
 	route.Pipeline = append(route.Pipeline, service)
 	service = setupTmplService(cfg, tmplPattern, tmplDescription)
 	route.Pipeline = append(route.Pipeline, service)

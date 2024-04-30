@@ -54,7 +54,7 @@ type Applications struct {
 
 	// Environment holds a list of OS environment variables that can be made
 	// available to the web services.
-	Environment []string `json:"enviroment,omitempty" yaml:"enviroment,omitempty"`
+	Environment []string `json:"environment,omitempty" yaml:"enviroment,omitempty"`
 
 	// Options is a map of name to string values, it is where the
 	// environment variables values are stored.
@@ -92,7 +92,7 @@ type Application struct {
 // populate the provided *Config object and return an error.
 //
 // ```
-// src, _ := os.ReadFile("newt.yaml")
+// src, _ := os.ReadFile("app.yaml")
 // cfg := new(Config)
 //
 //	if err := ConfigUnmarshal(src, cfg); err != nil {
@@ -128,7 +128,7 @@ func ConfigUnmarshal(src []byte, cfg *Config) error {
 // and returns a Config object and error value.
 //
 // ```
-// cfg, err := LoadConfig("newt.yaml")
+// cfg, err := LoadConfig("app.yaml")
 //
 //	if err != nil {
 //	    // ... handle error
