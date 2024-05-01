@@ -85,6 +85,7 @@ func (m *NewtModel) GetElementById(id string) (*Element, bool) {
 	return nil, false
 }
 
+
 // Element implementes the GitHub YAML issue template syntax for an input element.
 // The input element YAML is described at <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
 //

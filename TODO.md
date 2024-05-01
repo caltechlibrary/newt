@@ -15,6 +15,7 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) is skipping implementation
 
+- [ ] Adding modeler.go shows I need to cleanup code and normalize an API info working with models, updating routes and templates based on updated models list.
 - [ ] Postgres configuration in yamlgen.go needs to include a DSN to make the connection for loading our SQL
 - [ ] Newt Router needs to validate it's inputs for POST, PUT, PATCH against a specific data model
     - [ ] Need to decide on how to vet submitted web forms, does vetting code get generate in the RDMS, do I include a model in the route definition or should this be done as an independent part of the pipeline? Or all of they above?
@@ -77,6 +78,7 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
 
 ## Someday, maybe
 
+- [ ] Generate Python code that can be compiled into WASM module that is run directly in Newt Router without need to an external network call. This might be useful for implementing custom validators for the models or if they want to write a proxy service to outside localhost.
 - [ ] Explore the idea of "complex models", these would be composed by either combining or aggregating lists of other models. This would let me mimic RDM/ArchivesSpace rich data models from Newt
 - [ ] If the Newt Router is going to proxy file uploads it will need to specify the route as multipart encoded, if Newt Router can generate object ids when creating new objects along with the file upload then you could automagically map the object into an S3 prototocol path for file storage and further processing
 - [ ] The generate could generating an Apache include conf file or an NGINX configuration file

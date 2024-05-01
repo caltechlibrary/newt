@@ -122,6 +122,9 @@ func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName s
 		if cfg.Applications.NewtMustache.Port == 0 {
 			cfg.Applications.NewtMustache.Port = MUSTACHE_PORT
 		}
+		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
+		// When the model list changes then the related templates should change to.
+		// A scan of the template routes for removed models needs to happen when the model is "removed" by the modeler.
 		if cfg.Templates == nil {
 			cfg.Templates = []*MustacheTemplate{}
 			// Handle the special cases of routes for retrieving forms for create, update and delete.
@@ -154,6 +157,7 @@ func setupNewtGenerator(cfg *Config, buf *bufio.Reader, out io.Writer, appFName 
 			cfg.Applications.NewtGenerator.Namespace = objName
 		}
 		if cfg.Models == nil {
+			// FIXME: This is the same add adding a model in modeler.go so this code needs to be unified.
 			cfg.Models = []*NewtModel{}
 			cfg.Models = append(cfg.Models, &NewtModel{
 				Id:          objName,
