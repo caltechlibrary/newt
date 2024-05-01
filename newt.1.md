@@ -1,5 +1,5 @@
 ---
-title: newt(1) user manual | 0.0.8 bc1bb84
+title: newt(1) user manual | 0.0.8 0ca5631
 pubDate: 2024-05-01
 author: R. S. Doiel
 ---
@@ -63,11 +63,11 @@ The following options are supported by **newt**.
 # ACTION
 
 init [YAML_FILE]
-: this will create your initial Newt YAML file based on a set of interactive
-questions. It can also update your `.gitignore` file too.
+: this will create or refresh your Newt YAML file based on a set of interactive
+questions. It will suggest updates to your `.gitignore`.
 
 model [YAML_FILE]
-: this will read the current Newt YAML file and run the interactive modeler updating the Newt YAML file if model(s) are accepted.
+: this will read the current Newt YAML file and run the interactive modeler updating the Newt YAML file.
 
 check [YAML_FILE]
 : analyze the Newt YAML file and report problems if found.
