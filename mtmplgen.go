@@ -9,29 +9,28 @@ import (
 
 var (
 	inputFmtStr = map[string]string{
-    	"input[type=week]": `<input type="week" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=time]": `<input type="time" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=text]": `<input type="text" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=search]": `<input type="search" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=submit]": `<input type="submit" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=reset]": `<input type="reset" id=%q name=%q value="{{%s}}" %s>`, 
-    	"input[type=range]": `<input type="range" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=radio]": `<input type="radio" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=password]": `<input type="password" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=number]": `<input type="number" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=month]": `<input type="month" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=image]": `<input type="image" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=hidden]": `<input type="hidden" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=file]": `<input type="file" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=datetime-local]": `<input type="datetime-local" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=color]": `<input type="color" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=date]": `<input type="date" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=url]": `<input type="url" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=email]": `<input type="email" id=%q name=%q value="{{%s}}" %s>`,
-    	"input[type=button]": `<input type="button" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=week]":           `<input type="week" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=time]":           `<input type="time" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=text]":           `<input type="text" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=search]":         `<input type="search" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=submit]":         `<input type="submit" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=reset]":          `<input type="reset" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=range]":          `<input type="range" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=radio]":          `<input type="radio" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=password]":       `<input type="password" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=number]":         `<input type="number" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=month]":          `<input type="month" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=image]":          `<input type="image" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=hidden]":         `<input type="hidden" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=file]":           `<input type="file" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=datetime-local]": `<input type="datetime-local" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=color]":          `<input type="color" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=date]":           `<input type="date" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=url]":            `<input type="url" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=email]":          `<input type="email" id=%q name=%q value="{{%s}}" %s>`,
+		"input[type=button]":         `<input type="button" id=%q name=%q value="{{%s}}" %s>`,
 	}
 )
-
 
 // inList takes a string and compares it with a list of strings. It
 // returns true when a match is found, false otherwise
@@ -49,7 +48,7 @@ func inList(target string, list []string) bool {
 func genElementAttrString(attributes map[string]string, excludeList []string) string {
 	parts := []string{}
 	for k, v := range attributes {
-		if ! inList(k, excludeList) {
+		if !inList(k, excludeList) {
 			parts = append(parts, fmt.Sprintf("%s=%q", k, v))
 		}
 	}
@@ -74,7 +73,7 @@ func MDisplayElemGen(elem *Element) string {
 		elem.Attributes["class"] = elem.Id
 	}
 	// Build out our element markup
-	excludeList := []string{ "label", "placeholder" } 
+	excludeList := []string{"label", "placeholder"}
 	attrs := genElementAttrString(elem.Attributes, excludeList)
 	switch elem.Type {
 	case "input[type=phone]":
@@ -99,7 +98,7 @@ func MInputElemGen(elem *Element) string {
 	if elem.Type == "input" {
 		elem.Type = "input[type=text]"
 	}
-	excludeList := []string{ "label" } 
+	excludeList := []string{"label"}
 	attrs := genElementAttrString(elem.Attributes, excludeList)
 	if fmtStr, ok := inputFmtStr[elem.Type]; ok {
 		input = fmt.Sprintf(fmtStr, elem.Id, elem.Id, elem.Id, attrs)
@@ -135,7 +134,6 @@ func mTmplGenCreateResponse(out io.Writer, model *Model) error {
 	// Build a response partial
 	return mTmplGenRead(out, model)
 }
-
 
 // mTmplGenRead generations a Mustache partial for a read object display element
 func mTmplGenRead(out io.Writer, model *Model) error {
@@ -173,7 +171,6 @@ func mTmplGenUpdateResponse(out io.Writer, model *Model) error {
 	return mTmplGenRead(out, model)
 }
 
-
 // mTmplGenDeleteForm generations a Mustache partial for a delete object web form
 func mTmplGenDeleteForm(out io.Writer, model *Model) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
@@ -201,7 +198,7 @@ func mTmplGenDeleteResponse(out io.Writer, model *Model) error {
 	return nil
 }
 
-// mTmplGenList generations a Mustache partial to lists objects 
+// mTmplGenList generations a Mustache partial to lists objects
 func mTmplGenList(out io.Writer, model *Model) error {
 	fmt.Fprintf(out, "<ul>\n")
 	fmt.Fprintf(out, "{{#%s}}\n", model.Id)
@@ -238,7 +235,6 @@ func mTmplPage(out io.Writer, model *Model, fn PartialGen) error {
 </html>`)
 	return err
 }
-
 
 // MTmplGen takes an io.Writer, model and an action string rendering
 // the contents of the model as a Newt Mustache template for the provided

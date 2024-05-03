@@ -4,7 +4,7 @@ import (
 	//"fmt"
 	"bytes"
 	"path"
-  	"testing"
+	"testing"
 )
 
 // TestPgGenerators test the generation of setup.sql, models.sql and models_test.sql.
@@ -77,9 +77,9 @@ DROP ROLE IF EXISTS birds;
 CREATE ROLE birds NOINHERIT LOGIN PASSWORD '__change_me_password_goes_here__';
 GRANT birds_anonymous TO birds;
 `)
-    if len(expectedBytes) != len(data) {
-	t.Errorf("expected len %d, got len %d", len(expectedBytes), len(data))
-    }
+	if len(expectedBytes) != len(data) {
+		t.Errorf("expected len %d, got len %d", len(expectedBytes), len(data))
+	}
 
-    //fmt.Printf("DEBUG buf -> %s\n", buf)	
+	//fmt.Printf("DEBUG buf -> %s\n", buf)
 }

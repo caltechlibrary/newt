@@ -20,8 +20,8 @@ db-anon-role = "{{namespace}}_anonymous"
 	}
 	data := map[string]string{
 		"namespace": namespace,
-		"port": port,
-		"secret": "__change_me_password_goes_here__",
+		"port":      port,
+		"secret":    "__change_me_password_goes_here__",
 	}
 	return tmpl.FRender(out, data)
 }

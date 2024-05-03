@@ -117,7 +117,7 @@ func UnmarshalAST(src []byte, ast *AST) error {
 	}
 	if ast.Applications == nil {
 		ast.Applications = &Applications{
-			Router:    &Application{},
+			Router:        &Application{},
 			NewtMustache:  &Application{},
 			NewtGenerator: &Application{},
 			Postgres:      &Application{},
@@ -154,7 +154,7 @@ func LoadAST(configFName string) (*AST, error) {
 
 	if ast.Applications == nil {
 		ast.Applications = &Applications{
-			Router:    &Application{},
+			Router:        &Application{},
 			NewtMustache:  &Application{},
 			NewtGenerator: &Application{},
 			Options:       map[string]string{},
@@ -227,6 +227,9 @@ func (ast *AST) SaveAs(configName string) error {
 
 // GetModelIds returns a list of model ids
 func (ast *AST) GetModelIds() []string {
+	if ast.Models == nil {
+		ast.Models = []*Model{}
+	}
 	ids := []string{}
 	for _, m := range ast.Models {
 		if m.Id != "" {
@@ -261,6 +264,10 @@ func (ast *AST) GetModelById(id string) (*Model, bool) {
 // has an existing model id that matches the new model and if not appends
 // it so the list.
 func (ast *AST) AddModel(model *Model) error {
+	// Make sure we have a Models lists to work with.
+	if ast.Models == nil {
+		ast.Models = []*Model{}
+	}
 	// Check to see if this is a duplicate, return error if it is
 	for i, m := range ast.Models {
 		if m.Id == model.Id {
@@ -275,6 +282,10 @@ func (ast *AST) AddModel(model *Model) error {
 // UpdateModel takes a model id and new model struct replacing the
 // existing one.
 func (ast *AST) UpdateModel(id string, model *Model) error {
+	// Make sure we have a Models lists to work with.
+	if ast.Models == nil {
+		return fmt.Errorf("no models defined")
+	}
 	for i, m := range ast.Models {
 		if m.Id == id {
 			ast.Models[i] = model
@@ -287,38 +298,59 @@ func (ast *AST) UpdateModel(id string, model *Model) error {
 
 // RemoveModelById find the model with the model id and remove it
 func (ast *AST) RemoveModelById(id string) error {
+	// Make sure we have a Models lists to work with.
+	if ast.Models == nil {
+		return fmt.Errorf("no models defined")
+	}
 	for i, m := range ast.Models {
 		if m.Id == id {
 			ast.Models = append(ast.Models[:i], ast.Models[(i+1):]...)
+			ast.isChanged = true
 			return nil
 		}
 	}
-	ast.isChanged = true
 	return fmt.Errorf("failed to find model %q", id)
 }
 
-/*
-// GetTemplateIds return a list of template ids
-func (ast *AST) GetTemplateIds() []string {
-	ids := []string{}
+// GetPrimaryTemplates return a list of primary template filenames
+func (ast *AST) GetPrimaryTemplates() []string {
+	fNames := []string{}
 	for _, t := range ast.Templates {
-		if t.Id != "" {
-			ids = append(ids, t.Id)
+		if t.Template != "" {
+			fNames = append(fNames, t.Template)
 		}
 	}
-	return ids
+	return fNames
 }
 
-// GetTemplateById return a a list
-func (ast *AST) GetTemplateById(id string) (*NewtTemplate, bool) {
-	for _, t := range ast.Models {
-		if t.Id == id {
-			return t, true
+// GetAllTemplates returns a list of templates, including partials defined
+// in the .Templates property. Part template names are indented with a "\t"
+func (ast *AST) GetAllTemplates() []string {
+	fNames := []string{}
+	for _, t := range ast.Templates {
+		if t.Template != "" {
+			fNames = append(fNames, t.Template)
+			for _, p := range t.Partials {
+				if p != "" {
+					fNames = append(fNames, fmt.Sprintf("\t%s", p))
+				}
+			}
+		}
+	}
+	return fNames
+}
+
+// GetTemplateByPrimary returns the template entry using primary template filename
+func (ast *AST) GetTemplateByPrimary(fName string) (*MustacheTemplate, bool) {
+	if ast.Templates != nil {
+		for _, t := range ast.Templates {
+			if t.Template == fName {
+				return t, true
+			}
 		}
 	}
 	return nil, false
 }
-*/
 
 // Check reviews the ast *AST and reports and issues, return true
 // if no errors found and false otherwise.  The "buf" will hold the error output.
@@ -333,7 +365,7 @@ func (ast *AST) Check(buf io.Writer) bool {
 		ok = false
 	} else {
 		for i, m := range ast.Models {
-			if ! m.Check(buf) {
+			if !m.Check(buf) {
 				fmt.Fprintf(buf, "model #%d is invalid\n", i)
 				ok = false
 			}
@@ -346,7 +378,7 @@ func (ast *AST) Check(buf io.Writer) bool {
 		}
 	} else {
 		for i, r := range ast.Routes {
-			if ! r.Check(buf) {
+			if !r.Check(buf) {
 				fmt.Fprintf(buf, "route (#%d) errors\n", i)
 				ok = false
 			}
@@ -359,7 +391,7 @@ func (ast *AST) Check(buf io.Writer) bool {
 		}
 	} else {
 		for i, t := range ast.Templates {
-			if ! t.Check(buf) {
+			if !t.Check(buf) {
 				fmt.Fprintf(buf, "template (#%d) error\n", i)
 				ok = false
 			}
@@ -367,4 +399,3 @@ func (ast *AST) Check(buf io.Writer) bool {
 	}
 	return ok
 }
-

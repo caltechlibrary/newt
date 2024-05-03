@@ -14,7 +14,7 @@ func TestModelFuncs(t *testing.T) {
 	}
 	mName := "bird_sighting"
 	m, ok := ast.GetModelById(mName)
-	if ! ok {
+	if !ok {
 		t.Errorf("failed to find %q in %q, aborting test", mName, fName)
 		t.FailNow()
 	}

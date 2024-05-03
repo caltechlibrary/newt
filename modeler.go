@@ -2,8 +2,10 @@ package newt
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"regexp"
 	"sort"
 	"strconv"
@@ -23,7 +25,7 @@ func refreshRoutes(ast *AST) error {
 }
 
 // removeModelRoutesAndTemplates removes the model and related routes and templates
-func removeModelRoutesAndTemplates (ast *AST, modelId string) error {
+func removeModelRoutesAndTemplates(ast *AST, modelId string) error {
 	return fmt.Errorf("FIXME: removeModelRoutesAndTemplates(ast, %q) not implemented", modelId)
 }
 
@@ -31,27 +33,34 @@ func removeModelRoutesAndTemplates (ast *AST, modelId string) error {
 // regenerates routes and templates if needed, writes the updated structure
 // to disk
 func saveModelsRoutesAndTemplates(configName string, ast *AST) error {
+	eBuf := bytes.NewBuffer([]byte{})
+	hasError := false
 	// FIXME: Make we have templates our models, update template if needed
 	if err := refreshTemplates(ast); err != nil {
-		return err
+		fmt.Fprintf(eBuf, "%s\n", err)
+		hasError = true
 	}
 	// FIXME: Make sure that we have routes defined for each model and template
 	if err := refreshRoutes(ast); err != nil {
-		return err
+		fmt.Fprintf(eBuf, "%s\n", err)
+		hasError = true
 	}
 	if err := ast.SaveAs(configName); err != nil {
-		return err
+		fmt.Fprintf(eBuf, "%s\n", err)
+		hasError = true
+	}
+	if hasError {
+		return fmt.Errorf("%s", eBuf.Bytes())
 	}
 	return nil
 }
 
-
-
 // addModelStub adds an empty model to the ast.Models list. Returns
 // a new model list and error value
 func addModelStub(ast *AST, modelId string) ([]string, error) {
+	fmt.Fprint(os.Stderr, "DEBUG Getting Model ids from ast\n")
 	modelList := ast.GetModelIds()
-	if ! isValidVarname(modelId) {
+	if !isValidVarname(modelId) {
 		return modelList, fmt.Errorf("%q is not a valid model name", modelId)
 	}
 	model, err := NewModel(modelId)
@@ -67,7 +76,7 @@ func addModelStub(ast *AST, modelId string) ([]string, error) {
 }
 
 func getModelName(modelList []string, modelId string) (string, bool) {
-	// NOTE: nRe tests if modelId is a string representation of a positive integer 
+	// NOTE: nRe tests if modelId is a string representation of a positive integer
 	nRe := regexp.MustCompile(`^[0-9]+$`)
 	// See if we have been given a model number or a name
 	if isDigit := nRe.Match([]byte(modelId)); isDigit {
@@ -85,7 +94,7 @@ func getModelName(modelList []string, modelId string) (string, bool) {
 		}
 	}
 	if isValidVarname(modelId) {
-		return  modelId, true
+		return modelId, true
 	}
 	return "", false
 }
@@ -96,23 +105,26 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 }
 
 // modelerTUI takes configuration and then runs the interactive text user interface modeler.
-func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configName string, newModels []string) error {
+func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configName string, newModelIds []string) error {
 	var (
-		err error
+		err    error
 		answer string
 	)
 	readBuffer := bufio.NewReader(in)
+	if ast.Models == nil {
+		ast.Models = []*Model{}
+	}
 	modelList := ast.GetModelIds()
 	sort.Strings(modelList)
-	if len(newModels) > 0 {
-		for _, modelId := range newModels {
+	if len(newModelIds) > 0 {
+		for _, modelId := range newModelIds {
 			modelList, err = addModelStub(ast, modelId)
 			if err != nil {
 				fmt.Fprintf(eout, "WARNING: %s\n", err)
 			}
 		}
 	}
-	for quit := false; ! quit; {
+	for quit := false; !quit; {
 		fmt.Fprintf(out, "Enter menu menu command and model id\n\n")
 		if len(modelList) == 0 {
 			fmt.Fprintf(out, "\tNO MODELS DEFINED\n")
@@ -134,47 +146,47 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 		}
 		modelId, ok := getModelName(modelList, parts[1])
 		switch menu {
-			case "a":
-			    if ! ok {
-					fmt.Fprintf(out, "Enter model id to add: ")
-					answer = getAnswer(readBuffer, "", false)
-					modelId, ok = getModelName(modelList, answer)
+		case "a":
+			if !ok {
+				fmt.Fprintf(out, "Enter model id to add: ")
+				answer = getAnswer(readBuffer, "", false)
+				modelId, ok = getModelName(modelList, answer)
+			}
+			if ok {
+				modelList, err = addModelStub(ast, modelId)
+				if err != nil {
+					fmt.Fprintf(eout, "WARNING: %s\n", err)
 				}
-				if ok {
-					modelList, err = addModelStub(ast, modelId)
-					if err != nil {
-						fmt.Fprintf(eout, "WARNING: %s\n", err)
-					}
-				}
-			case "m":
-			    if modelId == "" {
-					fmt.Fprintf(out, "Enter model id to modify: ")
-					answer = getAnswer(readBuffer, "", false)
-					modelId, ok = getModelName(modelList, answer)
-				}
-				if err := modifyModelTUI(ast, in, out, eout, modelId); err != nil {
-					fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
-				}
-			case "r":
-			    if modelId == "" {
-					fmt.Fprintf(out, "Enter model id to remove: ")
-					answer = getAnswer(readBuffer, "", false)
-					modelId, ok = getModelName(modelList, answer)
-				}
-				if err := removeModelRoutesAndTemplates(ast, modelId); err != nil {
-					fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
-				}
-				modelList = ast.GetModelIds()
-			case "s":
-				if err := saveModelsRoutesAndTemplates(configName, ast); err != nil{
-					fmt.Fprintf(eout, "ERROR: %s\n", err)
-				}
-			case "q":
-				quit = true
-			case "":
-			// do nothing, display list
-			default:
-				fmt.Fprintf(eout, "\n\nERROR: Did not understand %q\n\n", answer)
+			}
+		case "m":
+			if modelId == "" {
+				fmt.Fprintf(out, "Enter model id to modify: ")
+				answer = getAnswer(readBuffer, "", false)
+				modelId, ok = getModelName(modelList, answer)
+			}
+			if err := modifyModelTUI(ast, in, out, eout, modelId); err != nil {
+				fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
+			}
+		case "r":
+			if modelId == "" {
+				fmt.Fprintf(out, "Enter model id to remove: ")
+				answer = getAnswer(readBuffer, "", false)
+				modelId, ok = getModelName(modelList, answer)
+			}
+			if err := removeModelRoutesAndTemplates(ast, modelId); err != nil {
+				fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
+			}
+			modelList = ast.GetModelIds()
+		case "s":
+			if err := saveModelsRoutesAndTemplates(configName, ast); err != nil {
+				fmt.Fprintf(eout, "ERROR: %s\n", err)
+			}
+		case "q":
+			quit = true
+		case "":
+		// do nothing, display list
+		default:
+			fmt.Fprintf(eout, "\n\nERROR: Did not understand %q\n\n", answer)
 		}
 	}
 	if ast.HasChanges() {
@@ -187,4 +199,4 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 		}
 	}
 	return nil
-} 
+}

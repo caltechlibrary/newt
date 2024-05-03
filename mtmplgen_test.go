@@ -67,7 +67,7 @@ models:
 		t.FailNow()
 	}
 	// out is our output buffer that'll be passed to MTmplGen function
-    out := bytes.NewBuffer([]byte{})
+	out := bytes.NewBuffer([]byte{})
 	modelId := "people"
 	model, ok := ast.GetModelById(modelId)
 	if !ok {
@@ -75,7 +75,7 @@ models:
 		t.FailNow()
 	}
 	// Run Model check, should return true
-	if ok := model.Check(out); ! ok {
+	if ok := model.Check(out); !ok {
 		t.Errorf("expected valid model, failed check\n%s\n", out.Bytes())
 		t.FailNow()
 	}
@@ -104,13 +104,12 @@ models:
 		}
 	}
 
-
 	// Test generating partial template
 	if err := MTmplGen(out, model, "search"); err == nil {
 		t.Errorf("should have gotten an error for \"search\" as an unsupported action")
 	}
 	for _, action := range []string{"create", "read", "update", "delete", "list"} {
-    	out = bytes.NewBuffer([]byte{})
+		out = bytes.NewBuffer([]byte{})
 		if err := MTmplGen(out, model, action); err != nil {
 			t.Error(err)
 		}

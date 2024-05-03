@@ -73,7 +73,6 @@ func backupFile(appFName string) error {
 	return nil
 }
 
-
 // getNewtYamlFName - figure out what the Newt YAML filename should be.
 func getNewtYamlFName(args []string) string {
 	fName := ""
@@ -116,7 +115,7 @@ func renderTemplate(generator *NewtGenerator, tType string, modelID string, acti
 // RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
 func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
 	fName := getNewtYamlFName(args)
-	if fName == "" { 
+	if fName == "" {
 		fmt.Fprintf(eout, "missing Newt YAML filename\n")
 		return CONFIG
 	}
@@ -275,7 +274,7 @@ func RunRouter(in io.Reader, out io.Writer, eout io.Writer, args []string, dryRu
 	appName := "Newt Router"
 	// You can run Newt Router with just an htdocs directory. If so you don't require a config file.
 	var (
-		err error
+		err    error
 		router *Router
 	)
 	fName := getNewtYamlFName(args)
@@ -373,7 +372,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		fmt.Fprintf(eout, "%s error: %s\n", fName, err)
 		return CHECK_FAIL
 	}
-	if ! ast.Check(eout) {
+	if !ast.Check(eout) {
 		fmt.Fprintf(eout, "errors reported for %s\n", fName)
 		return CHECK_FAIL
 	}
@@ -594,7 +593,7 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 
 // RunNewtInit will initialize a Newt project by creating a Newt YAML file interactively.
 func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
-	var answer   string
+	var answer string
 
 	ast := &AST{}
 	readBuffer := bufio.NewReader(in)
@@ -673,7 +672,7 @@ repository for %q. It is recommented that add the following to your .gitignore f
 
 func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
 	var (
-		answer   string
+		answer string
 	)
 	ast := &AST{}
 	readBuffer := bufio.NewReader(in)

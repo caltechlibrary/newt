@@ -21,14 +21,14 @@ import (
 // NewtMustache defines the `newtmustache` application configuration YAML
 type NewtMustache struct {
 	// Port number to run the web service on
-	Port      int
-	
+	Port int
+
 	// Templates defined for the service
 	Templates []*MustacheTemplate
-	
+
 	// Timeout setting for the web service
-	Timeout   time.Duration
-	
+	Timeout time.Duration
+
 	// Options hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
 	// the Newt Mustache template as `options`.
@@ -65,7 +65,7 @@ type MustacheTemplate struct {
 
 	// Voc holds a map of variable names to values. It is read in when NewtMustache starts from a separate YAML
 	// file.
-	Voc map[string]interface{}  `json:"-" yaml:"-"`
+	Voc map[string]interface{} `json:"-" yaml:"-"`
 
 	// Options hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
@@ -114,7 +114,7 @@ func (nm *NewtMustache) Check(buf io.Writer) bool {
 		ok = false
 	}
 	for i, t := range nm.Templates {
-		if ! t.Check(buf) {
+		if !t.Check(buf) {
 			fmt.Fprintf(buf, "template (#%d) failed check\n", i)
 			ok = false
 		}

@@ -20,5 +20,3 @@ func getAnswer(buf *bufio.Reader, defaultAnswer string, lower bool) string {
 	}
 	return answer
 }
-
-

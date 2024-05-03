@@ -15,7 +15,7 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	answer := getAnswer(buf, "y", true)
 	if answer == "y" {
 		if ast.Applications == nil {
-			ast.Applications = &Applications{ }
+			ast.Applications = &Applications{}
 		}
 		if ast.Applications.Router == nil {
 			ast.Applications.Router = &Application{}
@@ -100,7 +100,6 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) 
 	}
 }
 
-
 func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s use Newt Mustache (Y/n)? ", appFName)
 	answer := getAnswer(buf, "y", true)
@@ -165,15 +164,14 @@ func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName str
 	}
 }
 
-
 // setupPostgRESTService creates a Service object for interacting with PostgREST
 func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 	var (
-		oid string
-		oidSuffix string
+		oid         string
+		oidSuffix   string
 		description string
-		method string
-		port int
+		method      string
+		port        int
 	)
 	objName := model.Id
 	element, ok := model.GetModelIdentifier()
@@ -194,8 +192,8 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 		method = http.MethodPost
 	case "read":
 		method = http.MethodGet
-		oidSuffix = "/"  + oid
-	case "update": 
+		oidSuffix = "/" + oid
+	case "update":
 		method = http.MethodPut
 		oidSuffix = "/" + oid
 	case "delete":
@@ -205,8 +203,8 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 		// list action doesn't take an oid
 		method = http.MethodGet
 	}
-	return &Service {
-		Service: fmt.Sprintf("%s http://localhost:%d/rpc/%s_%s%s", method, port, objName, action, oidSuffix),
+	return &Service{
+		Service:     fmt.Sprintf("%s http://localhost:%d/rpc/%s_%s%s", method, port, objName, action, oidSuffix),
 		Description: description,
 	}
 }
@@ -220,8 +218,8 @@ func setupTmplService(ast *AST, tmplPattern string, description string) *Service
 		port = 8011
 	}
 	serviceURL := fmt.Sprintf("POST http://localhost:%d%s", port, tmplPattern)
-	return &Service {
-		Service: serviceURL,
+	return &Service{
+		Service:     serviceURL,
 		Description: description,
 	}
 }
@@ -230,9 +228,9 @@ func setupTmplService(ast *AST, tmplPattern string, description string) *Service
 // webforms for "create", "update" or "delete".
 func setupWebFormHandling(ast *AST, model *Model, action string) {
 	var (
-		oid string
+		oid        string
 		pathSuffix string
-		service *Service
+		service    *Service
 	)
 	objName := model.Id
 	element, ok := model.GetModelIdentifier()
@@ -261,7 +259,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) {
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
-		Pipeline: []*Service{},
+		Pipeline:    []*Service{},
 	}
 	// NOTE: If we have an update or delete we want to retrieve the record before calling the template
 	if action == "update" || action == "delete" {
@@ -283,7 +281,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) {
 		Description: tmplDescription,
 	})
 
-	// Handle submission routing 
+	// Handle submission routing
 	routeId = fmt.Sprintf("%s_%s", objName, action)
 	routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
 	request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
@@ -291,7 +289,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) {
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
-		Pipeline: []*Service{},
+		Pipeline:    []*Service{},
 	}
 	service = setupPostgRESTService(ast, model, action)
 	route.Pipeline = append(route.Pipeline, service)
@@ -319,7 +317,7 @@ func setupReadHandling(ast *AST, model *Model, action string) {
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
-		Pipeline: []*Service{},
+		Pipeline:    []*Service{},
 	}
 	service := setupPostgRESTService(ast, model, action)
 	route.Pipeline = append(route.Pipeline, service)
@@ -378,4 +376,3 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 		}
 	}
 }
-

@@ -3,6 +3,7 @@ package newt
 import (
 	"fmt"
 	"io"
+	"os"
 	"regexp"
 )
 
@@ -80,11 +81,12 @@ func (model *Model) HasChanges() bool {
 	}
 	return false
 }
+
 // HasElement checks if the model has a given element id
 func (model *Model) HasElement(elementId string) bool {
 	for _, e := range model.Body {
 		if e.Id == elementId {
-			return true 
+			return true
 		}
 	}
 	return false
@@ -121,7 +123,6 @@ func (m *Model) GetElementById(id string) (*Element, bool) {
 	}
 	return nil, false
 }
-
 
 // Element implementes the GitHub YAML issue template syntax for an input element.
 // The input element YAML is described at <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
@@ -207,7 +208,7 @@ func isValidVarname(s string) bool {
 // NewModel, makes sure model id is valid, populates a Model with the oid element providing
 // returns a *Model and error value.
 func NewModel(modelId string) (*Model, error) {
-	if ! isValidVarname(modelId) {
+	if !isValidVarname(modelId) {
 		return nil, fmt.Errorf("invalid model id, %q", modelId)
 	}
 	model := new(Model)
@@ -244,7 +245,7 @@ func (model *Model) Check(buf io.Writer) bool {
 		hasModelId := false
 		for i, e := range model.Body {
 			// Check to make sure each element is valid
-			if ! e.Check(buf) {
+			if !e.Check(buf) {
 				fmt.Fprintf(buf, "error for %s.%s\n", model.Id, e.Id)
 				ok = false
 			}
@@ -256,7 +257,7 @@ func (model *Model) Check(buf io.Writer) bool {
 				hasModelId = true
 			}
 		}
-		if ! hasModelId {
+		if !hasModelId {
 			fmt.Fprintf(buf, "missing required object identifier for model %s\n", model.Id)
 			ok = false
 		}
@@ -272,7 +273,7 @@ func (model *Model) InsertElement(pos int, element *Element) error {
 	if model.Body == nil {
 		model.Body = []*Element{}
 	}
-	if ! isValidVarname(element.Id) {
+	if !isValidVarname(element.Id) {
 		return fmt.Errorf("element id is not value")
 	}
 	if model.HasElement(element.Id) {
@@ -286,15 +287,20 @@ func (model *Model) InsertElement(pos int, element *Element) error {
 		model.isChanged = true
 		return nil
 	}
-	elements := append(model.Body[:pos], element)
-	model.Body = append(elements, model.Body[(pos+1):]...)
+	fmt.Fprintf(os.Stderr, "DEBUG pos of insert is %d, len is %d\n", pos, len(model.Body))
+	if pos < len(model.Body) {
+		elements := append(model.Body[:pos], element)
+		model.Body = append(elements, model.Body[(pos+1):]...)
+	} else {
+		model.Body = append(model.Body, element)
+	}
 	model.isChanged = true
 	return nil
 }
 
 // UpdateElement will update an existing element with element id will the new element.
 func (model *Model) UpdateElement(elementId string, element *Element) error {
-	if ! model.HasElement(elementId) {
+	if !model.HasElement(elementId) {
 		return fmt.Errorf("%q element id not found", elementId)
 	}
 	for i, e := range model.Body {
@@ -309,7 +315,7 @@ func (model *Model) UpdateElement(elementId string, element *Element) error {
 
 // RemoveElement removes an element by id from the model.Body
 func (model *Model) RemoveElement(elementId string) error {
-	if ! model.HasElement(elementId) {
+	if !model.HasElement(elementId) {
 		return fmt.Errorf("%q element id not found", elementId)
 	}
 	for i, e := range model.Body {

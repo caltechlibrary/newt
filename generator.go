@@ -89,7 +89,6 @@ func (g *NewtGenerator) renderPostgREST() error {
 	return postgRESTConf(g.out, g.Namespace, port)
 }
 
-
 // renderMustache will render a mustache template for a given model id. The action corresponds
 // to the model id.
 func (g *NewtGenerator) renderMustache(modelId string, action string) error {
@@ -136,10 +135,10 @@ func validateModelId(modelId string, models []*Model) error {
 // - action is a parameter that the selected generator can use (e.g. PostgreSQL has setup as well as )
 // - modelId references the `.id` attribute of the model needing code generation
 func (g *NewtGenerator) Generate(generatorName string, modelId string, action string) error {
-	pgActions := []string{ "setup", "models", "models_test" }
+	pgActions := []string{"setup", "models", "models_test"}
 	//modelActions := []string{ "create", "read", "update", "delete", "list", "page" }
-	templateActions := []string{ 
-		"create_form", "create_response", 
+	templateActions := []string{
+		"create_form", "create_response",
 		"update_form", "update_response",
 		"delete_form", "delete_response",
 		"read", "list",
@@ -153,10 +152,10 @@ func (g *NewtGenerator) Generate(generatorName string, modelId string, action st
 	case "postgrest":
 		return g.renderPostgREST()
 	case "mustache":
-		if err := validateAction(action, templateActions); err != nil  {
+		if err := validateAction(action, templateActions); err != nil {
 			return err
 		}
-		if err := validateModelId(modelId, g.Models);  err != nil {
+		if err := validateModelId(modelId, g.Models); err != nil {
 			return err
 		}
 		return g.renderMustache(modelId, action)

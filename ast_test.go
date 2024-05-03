@@ -2,6 +2,7 @@ package newt
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path"
 	"testing"
@@ -24,7 +25,7 @@ func TestUnmarshalAST(t *testing.T) {
 				t.Errorf("failed tn UnmarshalAST %q, %s", fName, err)
 			} else {
 				buf := bytes.NewBuffer([]byte{})
-				if ok := ast.Check(buf); ! ok {
+				if ok := ast.Check(buf); !ok {
 					t.Errorf("UnmarshalAST %q, failed to pass check -> %s", fName, buf.Bytes())
 				}
 			}
@@ -68,6 +69,44 @@ func TestLoadAST(t *testing.T) {
 		names := ast.GetModelNames()
 		if len(names) != len(ids) {
 			t.Errorf("expected %d model names for %q, got %d", len(ids), fName, len(names))
+		}
+	}
+}
+
+// TestHasChanges reads in our test YAML files, checks for changes, then modifies them and checkes for changes again.
+func TestHasChanges(t *testing.T) {
+	configFiles := []string{
+		path.Join("testdata", "birds.yaml"),
+		path.Join("testdata", "blog.yaml"),
+		path.Join("testdata", "bundler_test.yaml"),
+	}
+	for i, fName := range configFiles {
+		ast, err := LoadAST(fName)
+		if err != nil {
+			t.Errorf("failed to load %q, %s", fName, err)
+		}
+		if ast.HasChanges() {
+			t.Errorf("should not have changes after LoadAST(%q)", fName)
+		}
+		whatChanged := ""
+		switch i {
+		case 0:
+			ast.Applications = nil
+			ast.isChanged = true
+			whatChanged = fmt.Sprintf("removed .applications from ast for %q", fName)
+		case 1:
+			modelList := ast.GetModelIds()
+			modelId := modelList[0]
+			whatChanged = fmt.Sprintf("removed model %q from %q", modelId, fName)
+			ast.RemoveModelById(modelId)
+		case 2:
+			t := ast.Templates[0]
+			ast.Templates = ast.Templates[1:]
+			ast.isChanged = true
+			whatChanged = fmt.Sprintf("removed template %q -> %q for %q", t.Pattern, t.Template, fName)
+		}
+		if !ast.HasChanges() {
+			t.Errorf("%s, did not detect change for %q", whatChanged, fName)
 		}
 	}
 }

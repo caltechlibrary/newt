@@ -58,7 +58,7 @@ grant {{namespace}}_anonymous to {{namespace}}_authenticator;
 	}
 	data := map[string]string{
 		"namespace": namespace,
-		"secret": "__change_me_password_goes_here__",
+		"secret":    "__change_me_password_goes_here__",
 	}
 	return tmpl.FRender(out, data)
 }
@@ -414,7 +414,7 @@ select {{namespace}}.{{model}}_list();
 		data := map[string]string{
 			"namespace": namespace,
 			"model":     m.Id,
-			"test_no": fmt.Sprintf("%d", i),
+			"test_no":   fmt.Sprintf("%d", i),
 		}
 		if err := tmpl.FRender(out, data); err != nil {
 			return err

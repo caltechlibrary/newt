@@ -26,7 +26,7 @@ type Router struct {
 type Route struct {
 	// Id holds an id for the route. This should be unique. It is useful in debugging.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	
+
 	// Pattern holds the HTTP Method and URL path, may include Go 1.22 patterns
 	Pattern string `json:"request,required" yaml:"request,omitempty"`
 
