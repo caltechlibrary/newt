@@ -62,7 +62,7 @@ models:
           placeholder: ex. https://jane.doe.example.org
 `)
 	ast := new(AST)
-	if err := ASTUnmarshal(src, ast); err != nil {
+	if err := UnmarshalAST(src, ast); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

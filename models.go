@@ -15,7 +15,7 @@ import (
 // Code generation will need to render to SQL, HTML, Mustache and Pandoc templates.
 type Model struct {
 	// Id is a required field for Newt, it is an extension and isn't part of GHYITS.
-	Id string `json:"id,required" yaml:"id,omitempty"`
+	Id string `json:"id,required" yaml:"id"`
 
 	// This is a Newt specifc set of attributes to place in the form element of HTML. I.e. it could
 	// be form "class", "method", "action", "encoding". It is not defined in the GitHub YAML issue template syntax
@@ -257,7 +257,7 @@ func (model *Model) Check(buf io.Writer) bool {
 			}
 		}
 		if ! hasModelId {
-			fmt.Fprintf(buf, "missing %s.id\n", model.Id)
+			fmt.Fprintf(buf, "missing required object identifier for model %s\n", model.Id)
 			ok = false
 		}
 		return ok

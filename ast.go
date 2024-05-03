@@ -93,19 +93,19 @@ type Application struct {
 	DSN string `json:"dsn,omitemity" yaml:"dsn,omitempty"`
 }
 
-// ASTUnmarshal will read []byte of YAML or JSON,
+// UnmarshalAST will read []byte of YAML or JSON,
 // populate the provided *AST object and return an error.
 //
 // ```
 // src, _ := os.ReadFile("app.yaml")
 // ast := new(AST)
 //
-//	if err := ASTUnmarshal(src, ast); err != nil {
+//	if err := UnmarshalAST(src, ast); err != nil {
 //	    // ... handle error
 //	}
 //
 // ```
-func ASTUnmarshal(src []byte, ast *AST) error {
+func UnmarshalAST(src []byte, ast *AST) error {
 	if bytes.HasPrefix(src, []byte("{")) {
 		if err := json.Unmarshal(src, &ast); err != nil {
 			return err
@@ -147,7 +147,7 @@ func LoadAST(configFName string) (*AST, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to read %q, %s", configFName, err)
 		}
-		if err := ASTUnmarshal(src, ast); err != nil {
+		if err := UnmarshalAST(src, ast); err != nil {
 			return nil, fmt.Errorf("failed to read %q, %s", configFName, err)
 		}
 	}

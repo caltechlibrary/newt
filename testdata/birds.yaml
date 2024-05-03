@@ -13,6 +13,7 @@ models:
           name: bird_name
         validations:
           required: true
+        is_model_identifier: true
       - id: place
         type: input
         description: describe where you saw or heard the bird

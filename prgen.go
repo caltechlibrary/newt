@@ -7,8 +7,8 @@ import (
 	"github.com/cbroglie/mustache"
 )
 
-// prAST renders a PostgREST configuration given a namespace value.
-func prAST(out io.Writer, namespace string, port string) error {
+// postgRESTConf renders a PostgREST configuration given a namespace value.
+func postgRESTConf(out io.Writer, namespace string, port string) error {
 	txt := `
 db-uri = "postgres://{{namespace}}_authenticator:{{secret}}@localhost:{{port}}/postgres"
 db-schemas = "{{nampespace}}"

@@ -1,12 +1,40 @@
 package newt
 
 import (
+	"bytes"
+	"os"
 	"path"
 	"testing"
 )
 
-// Test the shared YAML configuration for Newt Router, Newt Generator
-// Newt Mustache and Pandoc Bundler.
+// TestUnmarshalAST tests unmarshalling YAML into a Newt AST object
+func TestUnmarshalAST(t *testing.T) {
+	configFiles := []string{
+		path.Join("testdata", "birds.yaml"),
+		path.Join("testdata", "blog.yaml"),
+		path.Join("testdata", "bundler_test.yaml"),
+	}
+	for _, fName := range configFiles {
+		src, err := os.ReadFile(fName)
+		if err != nil {
+			t.Errorf("failed to read %q, %s", fName, err)
+		} else {
+			ast := new(AST)
+			if err := UnmarshalAST(src, ast); err != nil {
+				t.Errorf("failed tn UnmarshalAST %q, %s", fName, err)
+			} else {
+				buf := bytes.NewBuffer([]byte{})
+				if ok := ast.Check(buf); ! ok {
+					t.Errorf("UnmarshalAST %q, failed to pass check -> %s", fName, buf.Bytes())
+				}
+			}
+		}
+	}
+
+}
+
+// TestLoadAST tests reading on and populating the shared YAML configuration used
+// by Newt applications.
 func TestLoadAST(t *testing.T) {
 	configFiles := []string{
 		path.Join("testdata", "birds.yaml"),

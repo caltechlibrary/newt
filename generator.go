@@ -86,7 +86,7 @@ func (g *NewtGenerator) renderPostgREST() error {
 	if g.Postgres != nil && g.Postgres.Port != 0 {
 		port = fmt.Sprintf("%d", g.Postgres.Port)
 	}
-	return prAST(g.out, g.Namespace, port)
+	return postgRESTConf(g.out, g.Namespace, port)
 }
 
 

@@ -52,6 +52,9 @@ prototype</h2>
 <p>NOTE: X is completed, P is partial completion, D (dropped) is
 skipping implementation</p>
 <ul>
+<li><label><input type="checkbox" />Adding modeler.go shows I need to
+cleanup code and normalize an API info working with models, updating
+routes and templates based on updated models list.</label></li>
 <li><label><input type="checkbox" />Postgres configuration in yamlgen.go
 needs to include a DSN to make the connection for loading our
 SQL</label></li>
@@ -231,6 +234,11 @@ April 19, 2024</label></li>
 </ul>
 <h2 id="someday-maybe">Someday, maybe</h2>
 <ul class="task-list">
+<li><label><input type="checkbox" />Generate Python code that can be
+compiled into WASM module that is run directly in Newt Router without
+need to an external network call. This might be useful for implementing
+custom validators for the models or if they want to write a proxy
+service to outside localhost.</label></li>
 <li><label><input type="checkbox" />Explore the idea of “complex
 models”, these would be composed by either combining or aggregating
 lists of other models. This would let me mimic RDM/ArchivesSpace rich

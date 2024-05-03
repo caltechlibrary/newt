@@ -5,6 +5,10 @@ models:
     name: Blog Post
     description: A blog post or article
     body:
+      - id: post_id
+        description: post_id is take from sluggifying the title and adding a suffix if needed to make it unique
+        type: input
+        is_model_identifier: true
       - id: title
         type: input
         attributes:
@@ -33,40 +37,62 @@ models:
           name: pubDate
         validation:
           required: true
+routes:
+  - id: list_posts
+    request: GET /
+    pipeline:
+      - service: GET http://localhost:3000/rpc/list_posts
+        content_type: application/json
+      - service: POST http://localhost:3032/list_posts
+        content_type: application/json
+  - id: show_post
+    request: GET /{post_id}
+    pipeline:
+      - service : GET http://localhost:3000/rpc/get_post/{post_id}
+        content_type: application/json
+      - service: POST http://localhost:3032/show_post
+        content_type: application/json
 templates:
+  - request: POST /list_posts
+    template: list_posts.tmpl
+  - request: POST /show_post
+    template: show_post.tmpl
   - request: "POST /custom_page"
-    template: page.tmpl
+    template: custom_page.tmpl
     options:
       from: markdown
       to: html5
       standalone: true
       title: This is the custom template with this title
-  - request: "POST /custom_page_with_title/{title}"
-    template: page.tmpl
+  - request: "POST /custom_page_with_title/{post_id}"
+    template: custom_page_with_title.tmpl
     options:
       from: markdown
       to: html5
       standalone: true
       title: This title is overwritten by the one in the request
   - request: "POST /custom_page_include"
-    template: page.tmpl
+    template: custom_page_includ.tmpl
     options:
       from: markdown
       to: html5
       standalone: false
   - request: "POST /default_html5"
+    template: page.tmpl
     options:
       from: markdown
       to: html5
       standalone: true
       title: A Page using the default template
-  - request: "POST /default_html5_with_title/{title}"
+  - request: "POST /default_html5_with_title/{post_id}"
+    template: page_with_title.tmpl
     options:
       from: markdown
       to: html5
       standalone: true
       title: This title is replaced by the title in the URL
   - request: "POST /default_html5_include"
+    template: page_include.tmpl
     options:
       from: markdown
       to: html5

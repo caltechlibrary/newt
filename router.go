@@ -69,7 +69,7 @@ func (r *Route) Check(buf io.Writer) bool {
 		ok = false
 	}
 	if r.Pattern == "" {
-		fmt.Fprintf(buf, "route %q has not pattern\n", r.Id)
+		fmt.Fprintf(buf, "route %q has no pattern (request path)\n", r.Id)
 		ok = false
 	}
 	if r.Pipeline == nil || len(r.Pipeline) == 0 {
