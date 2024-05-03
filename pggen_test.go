@@ -10,25 +10,25 @@ import (
 // TestPgGenerators test the generation of setup.sql, models.sql and models_test.sql.
 func TestPgGenerators(t *testing.T) {
 	fName := path.Join("testdata", "birds.yaml")
-	cfg, err := LoadConfig(fName)
+	ast, err := LoadAST(fName)
 	if err != nil {
 		t.Errorf("Missing %q, aborting test", fName)
 		t.FailNow()
 	}
-	if cfg.Applications == nil {
+	if ast.Applications == nil {
 		t.Errorf("Missing .Applications from %q, aborting test", fName)
 		t.FailNow()
 	}
-	if cfg.Applications.NewtGenerator == nil {
+	if ast.Applications.NewtGenerator == nil {
 		t.Errorf("Missing .Applications.NewtGenerator from %q, aborting test", fName)
 		t.FailNow()
 	}
-	if cfg.Applications.NewtGenerator.Namespace == "" {
+	if ast.Applications.NewtGenerator.Namespace == "" {
 		t.Errorf("Missing .Applications.NewtGenerator.Namespace from %q, aborting test", fName)
 		t.FailNow()
 	}
 	expected := "birds"
-	got := cfg.Applications.NewtGenerator.Namespace
+	got := ast.Applications.NewtGenerator.Namespace
 	if expected != got {
 		t.Errorf("expected namepsace %q, got %q", expected, got)
 	}

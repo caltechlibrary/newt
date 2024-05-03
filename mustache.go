@@ -79,23 +79,64 @@ type MustacheTemplate struct {
 
 // NewNewtMustache create a new NewtMustache struct. If a filename
 // is provided it reads the file and sets things up accordingly.
-func NewNewtMustache(cfg *Config) (*NewtMustache, error) {
+func NewNewtMustache(ast *AST) (*NewtMustache, error) {
 	nm := &NewtMustache{
-		Templates: cfg.Templates,
+		Templates: ast.Templates,
 	}
-	if cfg.Applications.NewtMustache.Port != 0 {
-		nm.Port = cfg.Applications.NewtMustache.Port
+	if ast.Applications.NewtMustache.Port != 0 {
+		nm.Port = ast.Applications.NewtMustache.Port
 	}
-	if cfg.Applications.NewtMustache.Timeout != 0 {
-		nm.Timeout = cfg.Applications.NewtMustache.Timeout * time.Second
+	if ast.Applications.NewtMustache.Timeout != 0 {
+		nm.Timeout = ast.Applications.NewtMustache.Timeout * time.Second
 	}
-	if len(cfg.Applications.Options) > 0 {
+	if len(ast.Applications.Options) > 0 {
 		nm.Options = map[string]string{}
-		for k, v := range cfg.Applications.Options {
+		for k, v := range ast.Applications.Options {
 			nm.Options[k] = v
 		}
 	}
 	return nm, nil
+}
+
+// Check makes sure the NewtMustache struct is populated
+func (nm *NewtMustache) Check(buf io.Writer) bool {
+	ok := true
+	if nm == nil {
+		fmt.Fprintf(buf, "templates not defined\n")
+		ok = false
+	}
+	if nm.Templates == nil || len(nm.Templates) == 0 {
+		fmt.Fprintf(buf, "not templates found\n")
+		ok = false
+	}
+	if nm.Port == 0 {
+		fmt.Fprintf(buf, "port not set\n")
+		ok = false
+	}
+	for i, t := range nm.Templates {
+		if ! t.Check(buf) {
+			fmt.Fprintf(buf, "template (#%d) failed check\n", i)
+			ok = false
+		}
+	}
+	return ok
+}
+
+// Check evaluates the *MustacheTemplate and outputs finding. Returns true of no error, false if errors found
+func (mt *MustacheTemplate) Check(buf io.Writer) bool {
+	ok := true
+	if mt == nil {
+		fmt.Fprintf(buf, "template is nil\n")
+		ok = false
+	}
+	if mt.Pattern == "" {
+		fmt.Fprintf(buf, "template does not have an associated path/pattern\n")
+		ok = false
+	}
+	if mt.Template == "" {
+		fmt.Fprintf(buf, "missing path to template for %s\n", mt.Pattern)
+	}
+	return ok
 }
 
 // LoadVocabary retrieves the YAML file contents found in .VocabularFName and builds the map[string]interface{} that
@@ -307,7 +348,7 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 func (nm *NewtMustache) ListenAndServe() error {
 	mux := http.NewServeMux()
 	// Setup our handlers, POST for process data with the template and GET to retreive the template
-	// source.
+	// ast.
 	for _, mt := range nm.Templates {
 		//FIXME: Need to map in the options passed in from the Newt Applications property
 		if err := mt.LoadVocabulary(); err != nil {

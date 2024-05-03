@@ -11,7 +11,7 @@ type NewtGenerator struct {
 	Namespace string
 
 	// Models holds the models used to generator specific code
-	Models []*NewtModel
+	Models []*Model
 
 	// Options holds the result environment variables and options that can be used in generator code
 	Options map[string]string
@@ -28,26 +28,26 @@ type NewtGenerator struct {
 	PostgREST *Application
 }
 
-// NewGenerator instaitates a new Generator object form a filename and Config object
+// NewGenerator instaitates a new Generator object form a filename and AST object
 // It returns a Generator object and error value.
-func NewGenerator(cfg *Config) (*NewtGenerator, error) {
-	if cfg.Applications == nil || cfg.Applications.NewtGenerator == nil {
+func NewGenerator(ast *AST) (*NewtGenerator, error) {
+	if ast.Applications == nil || ast.Applications.NewtGenerator == nil {
 		return nil, fmt.Errorf("configuration missing for Newt Generator")
 	}
 	generator := &NewtGenerator{}
-	generator.Namespace = cfg.Applications.NewtGenerator.Namespace
-	generator.Models = cfg.Models
+	generator.Namespace = ast.Applications.NewtGenerator.Namespace
+	generator.Models = ast.Models
 	generator.Options = map[string]string{}
-	if cfg.Applications.Postgres != nil {
-		generator.Postgres = cfg.Applications.Postgres
+	if ast.Applications.Postgres != nil {
+		generator.Postgres = ast.Applications.Postgres
 	}
-	if cfg.Applications.PostgREST != nil {
-		generator.PostgREST = cfg.Applications.PostgREST
+	if ast.Applications.PostgREST != nil {
+		generator.PostgREST = ast.Applications.PostgREST
 	}
 	// NOTE: LoadCondfig handles loading the environment into options. We just need to
 	// copy into the NewtGenerator struct.
-	if len(cfg.Applications.Options) > 0 {
-		for k, v := range cfg.Applications.Options {
+	if len(ast.Applications.Options) > 0 {
+		for k, v := range ast.Applications.Options {
 			generator.Options[k] = v
 		}
 	}
@@ -86,7 +86,7 @@ func (g *NewtGenerator) renderPostgREST() error {
 	if g.Postgres != nil && g.Postgres.Port != 0 {
 		port = fmt.Sprintf("%d", g.Postgres.Port)
 	}
-	return prConfig(g.out, g.Namespace, port)
+	return prAST(g.out, g.Namespace, port)
 }
 
 
@@ -120,7 +120,7 @@ func validateAction(action string, supportedActions []string) error {
 }
 
 // validateModelId
-func validateModelId(modelId string, models []*NewtModel) error {
+func validateModelId(modelId string, models []*Model) error {
 	for _, model := range models {
 		if modelId == model.Id {
 			return nil

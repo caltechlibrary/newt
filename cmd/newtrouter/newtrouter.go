@@ -228,5 +228,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunNewtRouter(in, out, eout, args, dryRun, port, htdocs, verbose))
+	os.Exit(newt.RunRouter(in, out, eout, args, dryRun, port, htdocs, verbose))
 }

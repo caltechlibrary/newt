@@ -9,195 +9,182 @@ import (
 	"strings"
 )
 
-// getAnswer get a Y/N response from buffer
-func getAnswer(buf *bufio.Reader, defaultAnswer string, lower bool) string {
-	answer, err := buf.ReadString('\n')
-	if err != nil {
-		return ""
-	}
-	answer = strings.TrimSpace(answer)
-	if answer == "" {
-		answer = defaultAnswer
-	}
-	if lower {
-		return strings.ToLower(answer)
-	}
-	return answer
-}
-
-// setupNewtRouter prompt to configure the NewtRouter
-func setupNewtRouter(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+// setupRouter prompt to configure the Router
+func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s use Newt Router (Y/n)? ", appFName)
 	answer := getAnswer(buf, "y", true)
 	if answer == "y" {
-		if cfg.Applications == nil {
-			cfg.Applications = &Applications{ }
+		if ast.Applications == nil {
+			ast.Applications = &Applications{ }
 		}
-		if cfg.Applications.NewtRouter == nil {
-			cfg.Applications.NewtRouter = &Application{}
+		if ast.Applications.Router == nil {
+			ast.Applications.Router = &Application{}
 		}
 		// NOTE: If port is zero, we haven't configure the router.
-		if cfg.Applications.NewtRouter.Port == 0 {
-			cfg.Applications.NewtRouter.Port = ROUTER_PORT
+		if ast.Applications.Router.Port == 0 {
+			ast.Applications.Router.Port = ROUTER_PORT
 			if info, err := os.Stat("htdocs"); err == nil && info.IsDir() {
-				cfg.Applications.NewtRouter.Htdocs = "htdocs"
+				ast.Applications.Router.Htdocs = "htdocs"
 			} else {
-				cfg.Applications.NewtRouter.Htdocs = ""
+				ast.Applications.Router.Htdocs = ""
 			}
 		}
 
-		if cfg.Routes == nil {
-			cfg.Routes = []*NewtRoute{}
+		if ast.Routes == nil {
+			ast.Routes = []*Route{}
 		}
 	} else {
-		if cfg.Applications != nil {
-			cfg.Applications.NewtRouter = nil
+		if ast.Applications != nil {
+			ast.Applications.Router = nil
 		}
 	}
 }
 
 // setupPostgREST prompt to configure PostgREST
-func setupPostgREST(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s use PostgREST (Y/n)? ", appFName)
 	answer := getAnswer(buf, "y", true)
 	if answer == "y" {
-		if cfg.Applications == nil {
-			cfg.Applications = &Applications{}
+		if ast.Applications == nil {
+			ast.Applications = &Applications{}
 		}
-		if cfg.Applications.PostgREST == nil {
-			cfg.Applications.PostgREST = &Application{}
+		if ast.Applications.PostgREST == nil {
+			ast.Applications.PostgREST = &Application{}
 		}
-		if cfg.Applications.PostgREST.Port == 0 {
-			cfg.Applications.PostgREST.Port = POSTGREST_PORT
-			cfg.Applications.PostgREST.AppPath = "postgrest"
-			cfg.Applications.PostgREST.ConfPath = "postgrest.conf"
+		if ast.Applications.PostgREST.Port == 0 {
+			ast.Applications.PostgREST.Port = POSTGREST_PORT
+			ast.Applications.PostgREST.AppPath = "postgrest"
+			ast.Applications.PostgREST.ConfPath = "postgrest.conf"
 		}
 	} else {
-		if cfg.Applications != nil {
-			cfg.Applications.PostgREST = nil
+		if ast.Applications != nil {
+			ast.Applications.PostgREST = nil
 		}
 	}
 }
 
 // setupPostgres prompt to configure Postgres
-func setupPostgres(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s use Postgres (Y/n)? ", appFName)
 	answer := getAnswer(buf, "y", true)
 	if answer == "y" {
-		if cfg.Applications == nil {
-			cfg.Applications = &Applications{}
+		if ast.Applications == nil {
+			ast.Applications = &Applications{}
 		}
-		if cfg.Applications.Postgres == nil {
-			cfg.Applications.Postgres = &Application{}
+		if ast.Applications.Postgres == nil {
+			ast.Applications.Postgres = &Application{}
 		}
-		if cfg.Applications.Postgres.Port == 0 {
-			cfg.Applications.Postgres.Port = POSTGRES_PORT
+		if ast.Applications.Postgres.Port == 0 {
+			ast.Applications.Postgres.Port = POSTGRES_PORT
 		}
-		if cfg.Applications.Postgres.DSN == "" {
-			cfg.Applications.Postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", cfg.Applications.Postgres.Port, objName)
+		if ast.Applications.Postgres.DSN == "" {
+			ast.Applications.Postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", ast.Applications.Postgres.Port, appFName)
 			// Now we need to make sure we allow PGUSER and PGPASSWORD to pass through in the environment
-			if cfg.Applications.Environment == nil {
-				cfg.Applications.Environment = []string{}
+			if ast.Applications.Environment == nil {
+				ast.Applications.Environment = []string{}
 			}
-			cfg.Applications.Environment = append(cfg.Applications.Environment, "PGUSER", "PGPASSWORD")
+			ast.Applications.Environment = append(ast.Applications.Environment, "PGUSER", "PGPASSWORD")
+		}
+		if ast.Applications.NewtGenerator == nil {
+			ast.Applications.NewtGenerator = &Application{
+				Namespace: appFName,
+			}
 		}
 	} else {
-		if cfg.Applications != nil {
-			cfg.Applications.Postgres = nil
+		if ast.Applications != nil {
+			ast.Applications.Postgres = nil
+		}
+		if ast.Applications.NewtGenerator != nil {
+			ast.Applications.NewtGenerator.Namespace = ""
 		}
 	}
 }
 
 
-func setupNewtMustache(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s use Newt Mustache (Y/n)? ", appFName)
 	answer := getAnswer(buf, "y", true)
 	if answer == "y" {
-		if cfg.Applications == nil {
-			cfg.Applications = &Applications{}
+		if ast.Applications == nil {
+			ast.Applications = &Applications{}
 		}
-		if cfg.Applications.NewtMustache == nil {
-			cfg.Applications.NewtMustache = &Application{}
+		if ast.Applications.NewtMustache == nil {
+			ast.Applications.NewtMustache = &Application{}
 		}
-		if cfg.Applications.NewtMustache.Port == 0 {
-			cfg.Applications.NewtMustache.Port = MUSTACHE_PORT
+		if ast.Applications.NewtMustache.Port == 0 {
+			ast.Applications.NewtMustache.Port = MUSTACHE_PORT
 		}
 		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
 		// When the model list changes then the related templates should change to.
 		// A scan of the template routes for removed models needs to happen when the model is "removed" by the modeler.
-		if cfg.Templates == nil {
-			cfg.Templates = []*MustacheTemplate{}
-			// Handle the special cases of routes for retrieving forms for create, update and delete.
-			// E.g. retrieve the web form, handle the submit of the web form as two actions.
-			setupWebFormHandling(cfg, objName, "create")
-			setupWebFormHandling(cfg, objName, "update")
-			setupWebFormHandling(cfg, objName, "delete")
-			// Now add the mappings for read and list
-			setupReadHandling(cfg, objName, "read")
-			setupReadHandling(cfg, objName, "list")
+		if ast.Templates == nil {
+			ast.Templates = []*MustacheTemplate{}
+			setupMustacheTemplates(ast, buf, out)
 		}
 	} else {
-		if cfg.Applications != nil {
-			cfg.Applications.NewtMustache = nil
+		if ast.Applications != nil {
+			ast.Applications.NewtMustache = nil
 		}
 	}
 }
 
-func setupNewtGenerator(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+func setupMustacheTemplates(ast *AST, buf *bufio.Reader, out io.Writer) {
+	for _, m := range ast.Models {
+		// Handle the special cases of routes for retrieving forms for create, update and delete.
+		// E.g. retrieve the web form, handle the submit of the web form as two actions.
+		setupWebFormHandling(ast, m, "create")
+		setupWebFormHandling(ast, m, "update")
+		setupWebFormHandling(ast, m, "delete")
+		// Now add the mappings for read and list
+		setupReadHandling(ast, m, "read")
+		setupReadHandling(ast, m, "list")
+	}
+}
+
+func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s use Newt Generator (Y/n)? ", appFName)
 	answer := getAnswer(buf, "y", true)
 	if answer == "y" {
-		if cfg.Applications == nil {
-			cfg.Applications = &Applications{}
+		if ast.Applications == nil {
+			ast.Applications = &Applications{}
 		}
-		if cfg.Applications.NewtGenerator == nil {
-			cfg.Applications.NewtGenerator = &Application{}
+		if ast.Applications.NewtGenerator == nil {
+			ast.Applications.NewtGenerator = &Application{}
 		}
-		if cfg.Applications.NewtGenerator.Namespace == "" {
-			cfg.Applications.NewtGenerator.Namespace = objName
+		if ast.Applications.NewtGenerator.Namespace == "" {
+			ast.Applications.NewtGenerator.Namespace = appFName
 		}
-		if cfg.Models == nil {
+		if ast.Models == nil {
 			// FIXME: This is the same add adding a model in modeler.go so this code needs to be unified.
-			cfg.Models = []*NewtModel{}
-			cfg.Models = append(cfg.Models, &NewtModel{
-				Id:          objName,
-				Description: "This is where you would model your application data",
-				Body: []*Element{
-					&Element{
-						Id:   "data_attribute",
-						Type: "input",
-						Attributes: map[string]string{
-							"name":            "data_attribute",
-							"description":     "This is an example input element",
-							"placeholdertext": "ex. of placeholder text",
-							"title":           "this is an example element in your model",
-						},
-						Validations: map[string]interface{}{
-							"required": true,
-						},
-					},
-				},
-			})
+			ast.Models = []*Model{}
 		}
 	} else {
-		if cfg.Applications != nil {
-			cfg.Applications.NewtGenerator = nil
+		if ast.Applications != nil {
+			ast.Applications.NewtGenerator = nil
 		}
 	}
 }
 
 
 // setupPostgRESTService creates a Service object for interacting with PostgREST
-func setupPostgRESTService(cfg *Config, objName string, action string) *Service {
+func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 	var (
+		oid string
 		oidSuffix string
 		description string
 		method string
 		port int
 	)
+	objName := model.Id
+	element, ok := model.GetModelIdentifier()
+	if ok {
+		oid = fmt.Sprintf("{%s}", element.Id)
+	} else {
+		oid = "{oid}"
+	}
 	description = fmt.Sprintf("Access PostgREST API for %s %s", objName, action)
-	if cfg.Applications != nil && cfg.Applications.PostgREST != nil {
-		port = cfg.Applications.PostgREST.Port
+	if ast.Applications != nil && ast.Applications.PostgREST != nil {
+		port = ast.Applications.PostgREST.Port
 	} else {
 		port = 3000
 	}
@@ -207,13 +194,13 @@ func setupPostgRESTService(cfg *Config, objName string, action string) *Service 
 		method = http.MethodPost
 	case "read":
 		method = http.MethodGet
-		oidSuffix = "/{oid}"
+		oidSuffix = "/"  + oid
 	case "update": 
 		method = http.MethodPut
-		oidSuffix = "/{oid}"
+		oidSuffix = "/" + oid
 	case "delete":
 		method = http.MethodDelete
-		oidSuffix = "/{oid}"
+		oidSuffix = "/" + oid
 	default:
 		// list action doesn't take an oid
 		method = http.MethodGet
@@ -225,10 +212,10 @@ func setupPostgRESTService(cfg *Config, objName string, action string) *Service 
 }
 
 // setupTemplService creates a Service object to process with a template
-func setupTmplService(cfg *Config, tmplPattern string, description string) *Service {
+func setupTmplService(ast *AST, tmplPattern string, description string) *Service {
 	var port int
-	if cfg.Applications != nil && cfg.Applications.NewtMustache != nil {
-		port = cfg.Applications.NewtMustache.Port
+	if ast.Applications != nil && ast.Applications.NewtMustache != nil {
+		port = ast.Applications.NewtMustache.Port
 	} else {
 		port = 8011
 	}
@@ -241,19 +228,27 @@ func setupTmplService(cfg *Config, tmplPattern string, description string) *Serv
 
 // setupWebFormHandling generates the routes and template handling for retrieving and submitting
 // webforms for "create", "update" or "delete".
-func setupWebFormHandling(cfg *Config, objName string, action string) {
+func setupWebFormHandling(ast *AST, model *Model, action string) {
 	var (
+		oid string
 		pathSuffix string
 		service *Service
 	)
+	objName := model.Id
+	element, ok := model.GetModelIdentifier()
+	if ok {
+		oid = fmt.Sprintf("{%s}", element.Id)
+	} else {
+		oid = "{oid}"
+	}
 	if action == "update" || action == "delete" {
-		pathSuffix = "/{oid}"
+		pathSuffix = "/" + oid
 	}
 	// Setup templates and webforms. Names are formed by objName combined with action.
 	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
 	tmplName := fmt.Sprintf("%s_%s_form.tmpl", objName, action)
 	tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
-	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
+	ast.Templates = append(ast.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
@@ -262,7 +257,7 @@ func setupWebFormHandling(cfg *Config, objName string, action string) {
 	routeId := fmt.Sprintf("%s_%s", objName, action)
 	request := fmt.Sprintf("%s /%s_%s%s", http.MethodGet, objName, action, pathSuffix)
 	routeDescription := fmt.Sprintf("Handle retrieving the webform for %s %s", objName, action)
-	route := &NewtRoute{
+	route := &Route{
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
@@ -270,19 +265,19 @@ func setupWebFormHandling(cfg *Config, objName string, action string) {
 	}
 	// NOTE: If we have an update or delete we want to retrieve the record before calling the template
 	if action == "update" || action == "delete" {
-		service = setupPostgRESTService(cfg, objName, "read")
+		service = setupPostgRESTService(ast, model, "read")
 		service.Description = fmt.Sprintf("Retrieve %s from PostgREST API before %s", objName, action)
 		route.Pipeline = append(route.Pipeline, service)
 	}
-	service = setupTmplService(cfg, tmplPattern, tmplDescription)
+	service = setupTmplService(ast, tmplPattern, tmplDescription)
 	route.Pipeline = append(route.Pipeline, service)
-	cfg.Routes = append(cfg.Routes, route)
+	ast.Routes = append(ast.Routes, route)
 
 	// Setup template submit result
 	tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
 	tmplName = fmt.Sprintf("%s_%s_response.tmpl", objName, action)
 	tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
-	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
+	ast.Templates = append(ast.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
@@ -292,25 +287,26 @@ func setupWebFormHandling(cfg *Config, objName string, action string) {
 	routeId = fmt.Sprintf("%s_%s", objName, action)
 	routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
 	request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
-	route = &NewtRoute{
+	route = &Route{
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
 		Pipeline: []*Service{},
 	}
-	service = setupPostgRESTService(cfg, objName, action)
+	service = setupPostgRESTService(ast, model, action)
 	route.Pipeline = append(route.Pipeline, service)
-	service = setupTmplService(cfg, tmplPattern, tmplDescription)
+	service = setupTmplService(ast, tmplPattern, tmplDescription)
 	route.Pipeline = append(route.Pipeline, service)
-	cfg.Routes = append(cfg.Routes, route)
+	ast.Routes = append(ast.Routes, route)
 }
 
-func setupReadHandling(cfg *Config, objName string, action string) {
+func setupReadHandling(ast *AST, model *Model, action string) {
+	objName := model.Id
 	// Setup template for results of read request
 	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
 	tmplName := fmt.Sprintf("%s_%s.tmpl", objName, action)
 	tmplDescription := fmt.Sprintf("This template handles %s %s", objName, action)
-	cfg.Templates = append(cfg.Templates, &MustacheTemplate{
+	ast.Templates = append(ast.Templates, &MustacheTemplate{
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
@@ -319,51 +315,51 @@ func setupReadHandling(cfg *Config, objName string, action string) {
 	routeId := fmt.Sprintf("%s_%s", objName, action)
 	routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", objName, action)
 	request := fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
-	route := &NewtRoute{
+	route := &Route{
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
 		Pipeline: []*Service{},
 	}
-	service := setupPostgRESTService(cfg, objName, action)
+	service := setupPostgRESTService(ast, model, action)
 	route.Pipeline = append(route.Pipeline, service)
-	service = setupTmplService(cfg, tmplPattern, tmplDescription)
+	service = setupTmplService(ast, tmplPattern, tmplDescription)
 	route.Pipeline = append(route.Pipeline, service)
-	cfg.Routes = append(cfg.Routes, route)
+	ast.Routes = append(ast.Routes, route)
 }
 
-func setupEnvironment(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objName string) {
+func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s need to import environment variables (y/N)? ", appFName)
 	answer := getAnswer(buf, "n", true)
 	if answer == "y" {
-		if cfg.Applications.Environment == nil {
-			cfg.Applications.Environment = []string{}
+		if ast.Applications.Environment == nil {
+			ast.Applications.Environment = []string{}
 		}
-		if len(cfg.Applications.Environment) > 0 {
+		if len(ast.Applications.Environment) > 0 {
 			fmt.Fprintf(out, "You currently have the following environment defined:\n\t%s\n",
-				strings.Join(cfg.Applications.Environment, "\n\t"))
+				strings.Join(ast.Applications.Environment, "\n\t"))
 		}
 		fmt.Fprintf(out, "Enter the environment variable name (one per line, enter empty line when complete):\n")
 		answer = " "
 		for answer != "" {
 			answer = getAnswer(buf, "", false)
 			if answer != "" {
-				cfg.Applications.Environment = append(cfg.Applications.Environment, answer)
+				ast.Applications.Environment = append(ast.Applications.Environment, answer)
 			}
 		}
 	}
 }
 
-func setupOptions(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string, objFName string) {
+func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 	fmt.Fprintf(out, "Will %s provide options to the services (y/N)? ", appFName)
 	answer := getAnswer(buf, "n", true)
 	if answer == "y" {
-		if cfg.Applications.Options == nil {
-			cfg.Applications.Options = map[string]string{}
+		if ast.Applications.Options == nil {
+			ast.Applications.Options = map[string]string{}
 		}
-		if len(cfg.Applications.Options) > 0 {
+		if len(ast.Applications.Options) > 0 {
 			fmt.Fprintf(out, "You currently have the following options defined:\n")
-			for k, v := range cfg.Applications.Options {
+			for k, v := range ast.Applications.Options {
 				fmt.Fprintf(out, "\t%s -> %q\n", k, v)
 			}
 		}
@@ -375,7 +371,7 @@ func setupOptions(cfg *Config, buf *bufio.Reader, out io.Writer, appFName string
 				parts := strings.SplitN(answer, ":", 2)
 				k := strings.ReplaceAll(strings.TrimSpace(parts[0]), " ", "_")
 				v := strings.TrimSpace(parts[1])
-				cfg.Applications.Options[k] = v
+				ast.Applications.Options[k] = v
 			} else if answer != "" {
 				fmt.Fprintf(out, "%q is missing a colon, can't tell key from value, try again\n", answer)
 			}

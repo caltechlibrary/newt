@@ -10,48 +10,59 @@ import (
 	"strings"
 )
 
-// isValidVarname tests a sting confirms to Newt's naming rule.
-func isValidVarname(s string) bool {
-	if len(s) == 0 {
-		return false
-	}
-	// NOTE: variable names must start with a latter and maybe followed by
-	// one or more letters, digits and underscore.
-	vRe := regexp.MustCompile(`^([a-zA-Z]|[a-zA-Z][0-9a-zA-Z\_]+)$`)
-	return vRe.Match([]byte(s))
+// refreshTemplates will look at the list of models in the config
+// and make sure we have a current set of templates for each one.
+func refreshTemplates(ast *AST) error {
+	return fmt.Errorf("FIXME: refreshTemplates(ast) not implemented")
 }
 
-// addModelStub adds an empty model to the cfg.Models list. Returns
+// refreshRoutes will look at the list of models and templates in the config and
+// make sure we have a current set of related routes for model/template set
+func refreshRoutes(ast *AST) error {
+	return fmt.Errorf("FIXME: refreshRoutes(ast) not implemented")
+}
+
+// removeModelRoutesAndTemplates removes the model and related routes and templates
+func removeModelRoutesAndTemplates (ast *AST, modelId string) error {
+	return fmt.Errorf("FIXME: removeModelRoutesAndTemplates(ast, %q) not implemented", modelId)
+}
+
+// saveModelsRoutesAndTemplates takes a existing config structure,
+// regenerates routes and templates if needed, writes the updated structure
+// to disk
+func saveModelsRoutesAndTemplates(configName string, ast *AST) error {
+	// FIXME: Make we have templates our models, update template if needed
+	if err := refreshTemplates(ast); err != nil {
+		return err
+	}
+	// FIXME: Make sure that we have routes defined for each model and template
+	if err := refreshRoutes(ast); err != nil {
+		return err
+	}
+	if err := ast.SaveAs(configName); err != nil {
+		return err
+	}
+	return nil
+}
+
+
+
+// addModelStub adds an empty model to the ast.Models list. Returns
 // a new model list and error value
-func addModelStub(cfg *Config, modelId string) ([]string, error) {
-	modelList := cfg.GetModelIds()
+func addModelStub(ast *AST, modelId string) ([]string, error) {
+	modelList := ast.GetModelIds()
 	if ! isValidVarname(modelId) {
 		return modelList, fmt.Errorf("%q is not a valid model name", modelId)
 	}
-	// Make sure we not adding a duplicate
-	_, found := sort.Find(len(modelList), func(i int) int {
-   			return strings.Compare(modelId, modelList[i])
-	})
-	if found {
-		return modelList, fmt.Errorf("%q is a duplicate name", modelId)
+	model, err := NewModel(modelId)
+	if err != nil {
+		return modelList, err
 	}
-	modelList = append(modelList, modelId)
+	if err := ast.AddModel(model); err != nil {
+		return modelList, err
+	}
+	modelList = ast.GetModelIds()
 	sort.Strings(modelList)
-	model := new(NewtModel)
-	model.Id = modelId
-	model.Name = modelId
-	model.Description = fmt.Sprintf("... description of %q goes here ...", modelId)
-	model.Body = []*Element{}
-	element := new(Element)
-	element.Id = "oid"
-	element.Type = "input"
-	element.Attributes = map[string]string{"readonly": "true"}
-	element.Validations = map[string]interface{}{ "retired": true}
-	model.Body = append(model.Body, element)
-	if cfg.Models == nil {
-		cfg.Models = []*NewtModel{}
-	}
-	cfg.Models = append(cfg.Models, model)
 	return modelList, nil
 }
 
@@ -80,28 +91,27 @@ func getModelName(modelList []string, modelId string) (string, bool) {
 }
 
 // modifyModelTUI modify a specific model (e.g. add, modify remove model attributes)
-func modifyModelTUI(cfg *Config, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
-	return fmt.Errorf("DEBUG modify model %q not implemented", modelId)
+func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
+	return fmt.Errorf("FIXME modify model %q not implemented", modelId)
 }
 
 // modelerTUI takes configuration and then runs the interactive text user interface modeler.
-func modelerTUI(cfg *Config, in io.Reader, out io.Writer, eout io.Writer, configName string, newModels []string) error {
+func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configName string, newModels []string) error {
 	var (
 		err error
 		answer string
 	)
 	readBuffer := bufio.NewReader(in)
-	modelList := cfg.GetModelIds()
+	modelList := ast.GetModelIds()
 	sort.Strings(modelList)
 	if len(newModels) > 0 {
 		for _, modelId := range newModels {
-			modelList, err = addModelStub(cfg, modelId)
+			modelList, err = addModelStub(ast, modelId)
 			if err != nil {
 				fmt.Fprintf(eout, "WARNING: %s\n", err)
 			}
 		}
 	}
-	notSaved := false
 	for quit := false; ! quit; {
 		fmt.Fprintf(out, "Enter menu menu command and model id\n\n")
 		if len(modelList) == 0 {
@@ -131,41 +141,34 @@ func modelerTUI(cfg *Config, in io.Reader, out io.Writer, eout io.Writer, config
 					modelId, ok = getModelName(modelList, answer)
 				}
 				if ok {
-					modelList, err = addModelStub(cfg, modelId)
+					modelList, err = addModelStub(ast, modelId)
 					if err != nil {
 						fmt.Fprintf(eout, "WARNING: %s\n", err)
 					}
 				}
-				// FIXME: Add templates and routes based on tis new model.
-				notSaved = true
 			case "m":
 			    if modelId == "" {
 					fmt.Fprintf(out, "Enter model id to modify: ")
 					answer = getAnswer(readBuffer, "", false)
 					modelId, ok = getModelName(modelList, answer)
 				}
-				if err := modifyModelTUI(cfg, in, out, eout, modelId); err != nil {
+				if err := modifyModelTUI(ast, in, out, eout, modelId); err != nil {
 					fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
 				}
-				// FIXME: Update templates because this model changed.
-				notSaved = true
 			case "r":
 			    if modelId == "" {
 					fmt.Fprintf(out, "Enter model id to remove: ")
 					answer = getAnswer(readBuffer, "", false)
 					modelId, ok = getModelName(modelList, answer)
 				}
-				if err := cfg.RemoveModelById(modelId); err != nil {
+				if err := removeModelRoutesAndTemplates(ast, modelId); err != nil {
 					fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
 				}
-				// FIXME: Remove templates and routes related to this model too.
-				modelList = cfg.GetModelIds()
-				notSaved = true
+				modelList = ast.GetModelIds()
 			case "s":
-				if err := cfg.SaveConfig(configName); err != nil {
+				if err := saveModelsRoutesAndTemplates(configName, ast); err != nil{
 					fmt.Fprintf(eout, "ERROR: %s\n", err)
 				}
-				notSaved = false
 			case "q":
 				quit = true
 			case "":
@@ -174,12 +177,12 @@ func modelerTUI(cfg *Config, in io.Reader, out io.Writer, eout io.Writer, config
 				fmt.Fprintf(eout, "\n\nERROR: Did not understand %q\n\n", answer)
 		}
 	}
-	if notSaved {
+	if ast.HasChanges() {
 		fmt.Fprintf(out, "Save before exiting (Y/n)? ")
 		answer = getAnswer(readBuffer, "y", true)
 		if answer == "y" {
-			if cfg.SaveConfig(configName); err != nil {
-				return fmt.Errorf("failed to save changes to %q, %s\n", configName, err)
+			if err := saveModelsRoutesAndTemplates(configName, ast); err != nil {
+				return err
 			}
 		}
 	}

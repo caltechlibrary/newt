@@ -61,17 +61,22 @@ models:
           label: (optional) A person's public website
           placeholder: ex. https://jane.doe.example.org
 `)
-	cfg := new(Config)
-	if err := ConfigUnmarshal(src, cfg); err != nil {
+	ast := new(AST)
+	if err := ASTUnmarshal(src, ast); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	// out is our output buffer that'll be passed to MTmplGen function
     out := bytes.NewBuffer([]byte{})
 	modelId := "people"
-	model, ok := cfg.GetModelById(modelId)
+	model, ok := ast.GetModelById(modelId)
 	if !ok {
 		t.Errorf("failed to find model id %q", modelId)
+		t.FailNow()
+	}
+	// Run Model check, should return true
+	if ok := model.Check(out); ! ok {
+		t.Errorf("expected valid model, failed check\n%s\n", out.Bytes())
 		t.FailNow()
 	}
 	// Test generation of display elements (used in read and list)
@@ -101,14 +106,14 @@ models:
 
 
 	// Test generating partial template
-	if err := MTmplGen(out, "search", model); err == nil {
+	if err := MTmplGen(out, model, "search"); err == nil {
 		t.Errorf("should have gotten an error for \"search\" as an unsupported action")
 	}
 	for _, action := range []string{"create", "read", "update", "delete", "list"} {
     	out = bytes.NewBuffer([]byte{})
-		if err := MTmplGen(out, action, model); err != nil {
+		if err := MTmplGen(out, model, action); err != nil {
 			t.Error(err)
 		}
-		t.Errorf("test of output to MTmplGen() not implemented")
+		t.Errorf("test of output to MTmplGen(out, model %q) not implemented", action)
 	}
 }
