@@ -72,6 +72,7 @@ func addModelStub(ast *AST, modelId string) ([]string, error) {
 	}
 	modelList = ast.GetModelIds()
 	sort.Strings(modelList)
+	// Setup templates and routes for model
 	return modelList, nil
 }
 

@@ -32,17 +32,6 @@ var (
 	}
 )
 
-// inList takes a string and compares it with a list of strings. It
-// returns true when a match is found, false otherwise
-func inList(target string, list []string) bool {
-	for _, val := range list {
-		if val == target {
-			return true
-		}
-	}
-	return false
-}
-
 // genElementAttrsString will generate a string that contains all the rendered element attributes
 // e.g. id, class, title, placeholder text
 func genElementAttrString(attributes map[string]string, excludeList []string) string {

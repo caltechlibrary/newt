@@ -2,6 +2,7 @@ package newt
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -118,7 +119,9 @@ func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName stri
 		// A scan of the template routes for removed models needs to happen when the model is "removed" by the modeler.
 		if ast.Templates == nil {
 			ast.Templates = []*MustacheTemplate{}
-			setupMustacheTemplates(ast, buf, out)
+			if err := setupMustacheTemplateHandlers(ast); err != nil {
+				fmt.Fprintf(out, "WARNINGS: %s\n", err)
+			}
 		}
 	} else {
 		if ast.Applications != nil {
@@ -127,17 +130,30 @@ func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName stri
 	}
 }
 
-func setupMustacheTemplates(ast *AST, buf *bufio.Reader, out io.Writer) {
+func setupMustacheTemplateHandlers(ast *AST) error {
+	eBuf := bytes.NewBuffer([]byte{})
+	hasError := false
 	for _, m := range ast.Models {
 		// Handle the special cases of routes for retrieving forms for create, update and delete.
 		// E.g. retrieve the web form, handle the submit of the web form as two actions.
-		setupWebFormHandling(ast, m, "create")
-		setupWebFormHandling(ast, m, "update")
-		setupWebFormHandling(ast, m, "delete")
+		for _, action := range []string{"create", "update", "delete"} {
+			if err := setupWebFormHandling(ast, m, action); err != nil {
+				fmt.Fprintf(eBuf, "%s\n", err)
+				hasError = true
+			}
+		}
 		// Now add the mappings for read and list
-		setupReadHandling(ast, m, "read")
-		setupReadHandling(ast, m, "list")
+		for _, action := range []string{"read", "list"} {
+			if err := setupReadHandling(ast, m, action); err != nil {
+				fmt.Fprintf(eBuf, "%s\n", err)
+				hasError = true
+			}
+		}
 	}
+	if hasError {
+		return fmt.Errorf("%s", eBuf.Bytes())
+	}
+	return nil
 }
 
 func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
@@ -224,9 +240,10 @@ func setupTmplService(ast *AST, tmplPattern string, description string) *Service
 	}
 }
 
+
 // setupWebFormHandling generates the routes and template handling for retrieving and submitting
 // webforms for "create", "update" or "delete".
-func setupWebFormHandling(ast *AST, model *Model, action string) {
+func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	var (
 		oid        string
 		pathSuffix string
@@ -243,87 +260,119 @@ func setupWebFormHandling(ast *AST, model *Model, action string) {
 		pathSuffix = "/" + oid
 	}
 	// Setup templates and webforms. Names are formed by objName combined with action.
+	tNames := ast.GetPrimaryTemplates()
+	rIds := ast.GetRouteIds()
+	
+	tSuffix := "_form.tmpl"
+	tmplName := mkName(objName, action, tSuffix)
 	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
-	tmplName := fmt.Sprintf("%s_%s_form.tmpl", objName, action)
 	tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
-	ast.Templates = append(ast.Templates, &MustacheTemplate{
-		Pattern:     tmplPattern,
-		Template:    tmplName,
-		Description: tmplDescription,
-	})
+	if ! inList(tmplName, tNames) {
+		ast.Templates = append(ast.Templates, &MustacheTemplate{
+			Pattern:     tmplPattern,
+			Template:    tmplName,
+			Description: tmplDescription,
+		})
+		ast.isChanged = true
+	}
 	// Handle web form request
-	routeId := fmt.Sprintf("%s_%s", objName, action)
+	routeId := mkName(objName, action, "")
 	request := fmt.Sprintf("%s /%s_%s%s", http.MethodGet, objName, action, pathSuffix)
 	routeDescription := fmt.Sprintf("Handle retrieving the webform for %s %s", objName, action)
-	route := &Route{
-		Id:          routeId,
-		Pattern:     request,
-		Description: routeDescription,
-		Pipeline:    []*Service{},
-	}
-	// NOTE: If we have an update or delete we want to retrieve the record before calling the template
-	if action == "update" || action == "delete" {
-		service = setupPostgRESTService(ast, model, "read")
-		service.Description = fmt.Sprintf("Retrieve %s from PostgREST API before %s", objName, action)
+	if ! inList(routeId, rIds) {
+		route := &Route{
+			Id:          routeId,
+			Pattern:     request,
+			Description: routeDescription,
+			Pipeline:    []*Service{},
+		}
+		// NOTE: If we have an update or delete we want to retrieve the record before calling the template
+		if action == "update" || action == "delete" {
+			service = setupPostgRESTService(ast, model, "read")
+			service.Description = fmt.Sprintf("Retrieve %s from PostgREST API before %s", objName, action)
+			route.Pipeline = append(route.Pipeline, service)
+		}
+		service = setupTmplService(ast, tmplPattern, tmplDescription)
 		route.Pipeline = append(route.Pipeline, service)
+		ast.Routes = append(ast.Routes, route)
+		ast.isChanged = true
 	}
-	service = setupTmplService(ast, tmplPattern, tmplDescription)
-	route.Pipeline = append(route.Pipeline, service)
-	ast.Routes = append(ast.Routes, route)
 
 	// Setup template submit result
-	tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
-	tmplName = fmt.Sprintf("%s_%s_response.tmpl", objName, action)
-	tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
-	ast.Templates = append(ast.Templates, &MustacheTemplate{
-		Pattern:     tmplPattern,
-		Template:    tmplName,
-		Description: tmplDescription,
-	})
+	tmplName = mkName(objName, action, "_response.tmpl")
+	if ! inList(tmplName, tNames) {
+		tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
+		tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
+		ast.Templates = append(ast.Templates, &MustacheTemplate{
+			Pattern:     tmplPattern,
+			Template:    tmplName,
+			Description: tmplDescription,
+		})
+		ast.isChanged = true
+	}
 
 	// Handle submission routing
-	routeId = fmt.Sprintf("%s_%s", objName, action)
-	routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
-	request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
-	route = &Route{
-		Id:          routeId,
-		Pattern:     request,
-		Description: routeDescription,
-		Pipeline:    []*Service{},
+	routeId = mkName(objName, action, "")
+	if ! inList(routeId, rIds) {
+		routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
+		request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
+		route := &Route{
+			Id:          routeId,
+			Pattern:     request,
+			Description: routeDescription,
+			Pipeline:    []*Service{},
+		}
+		service = setupPostgRESTService(ast, model, action)
+		route.Pipeline = append(route.Pipeline, service)
+		service = setupTmplService(ast, tmplPattern, tmplDescription)
+		route.Pipeline = append(route.Pipeline, service)
+		ast.Routes = append(ast.Routes, route)
+		ast.isChanged = true
 	}
-	service = setupPostgRESTService(ast, model, action)
-	route.Pipeline = append(route.Pipeline, service)
-	service = setupTmplService(ast, tmplPattern, tmplDescription)
-	route.Pipeline = append(route.Pipeline, service)
-	ast.Routes = append(ast.Routes, route)
+	if ! ast.isChanged {
+		return fmt.Errorf("No change to webform handling")
+	}
+	return nil
 }
 
-func setupReadHandling(ast *AST, model *Model, action string) {
+func setupReadHandling(ast *AST, model *Model, action string) error {
+	tNames := ast.GetPrimaryTemplates()
 	objName := model.Id
 	// Setup template for results of read request
+	tmplName := mkName(objName, action, ".tmpl")
 	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
-	tmplName := fmt.Sprintf("%s_%s.tmpl", objName, action)
 	tmplDescription := fmt.Sprintf("This template handles %s %s", objName, action)
-	ast.Templates = append(ast.Templates, &MustacheTemplate{
-		Pattern:     tmplPattern,
-		Template:    tmplName,
-		Description: tmplDescription,
-	})
-	// Handle requesting object or list of objects
-	routeId := fmt.Sprintf("%s_%s", objName, action)
-	routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", objName, action)
-	request := fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
-	route := &Route{
-		Id:          routeId,
-		Pattern:     request,
-		Description: routeDescription,
-		Pipeline:    []*Service{},
+	if ! inList(tmplName, tNames) {
+		ast.Templates = append(ast.Templates, &MustacheTemplate{
+			Pattern:     tmplPattern,
+			Template:    tmplName,
+			Description: tmplDescription,
+		})
+		ast.isChanged = true
 	}
-	service := setupPostgRESTService(ast, model, action)
-	route.Pipeline = append(route.Pipeline, service)
-	service = setupTmplService(ast, tmplPattern, tmplDescription)
-	route.Pipeline = append(route.Pipeline, service)
-	ast.Routes = append(ast.Routes, route)
+	// Handle requesting object or list of objects
+	rIds := ast.GetRouteIds()
+	routeId := mkName(objName, action, "")
+	if ! inList(routeId, rIds) {
+		routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", objName, action)
+		request := fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
+		route := &Route{
+			Id:          routeId,
+			Pattern:     request,
+			Description: routeDescription,
+			Pipeline:    []*Service{},
+		}
+		service := setupPostgRESTService(ast, model, action)
+		route.Pipeline = append(route.Pipeline, service)
+		service = setupTmplService(ast, tmplPattern, tmplDescription)
+		route.Pipeline = append(route.Pipeline, service)
+		ast.Routes = append(ast.Routes, route)
+		ast.isChanged = true
+	}
+	if ! ast.isChanged {
+		return fmt.Errorf("No change to reading handling")
+	}
+	return nil
 }
 
 func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {

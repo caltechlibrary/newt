@@ -312,6 +312,17 @@ func (ast *AST) RemoveModelById(id string) error {
 	return fmt.Errorf("failed to find model %q", id)
 }
 
+// GetRouteIds returns a list of Router ids found in ast.Routes
+func (ast *AST) GetRouteIds() []string {
+	rIds := []string{}
+	for _, r := range ast.Routes {
+		if r.Id != "" {
+			rIds = append(rIds, r.Id)
+		}
+	}
+	return rIds
+}
+
 // GetPrimaryTemplates return a list of primary template filenames
 func (ast *AST) GetPrimaryTemplates() []string {
 	fNames := []string{}
@@ -377,6 +388,13 @@ func (ast *AST) Check(buf io.Writer) bool {
 			ok = false
 		}
 	} else {
+		if ast.Applications.Router == nil {
+			fmt.Fprintf(buf, "application.router not configured")
+			ok = false
+		} else if ast.Applications.Router.Port == 0 {
+			fmt.Fprintf(buf, "application.router.port not set")
+			ok = false
+		}
 		for i, r := range ast.Routes {
 			if !r.Check(buf) {
 				fmt.Fprintf(buf, "route (#%d) errors\n", i)
@@ -390,6 +408,13 @@ func (ast *AST) Check(buf io.Writer) bool {
 			ok = false
 		}
 	} else {
+		if ast.Applications.NewtMustache == nil {
+			fmt.Fprintf(buf, "application.newt_mustache not configured")
+			ok = false
+		} else if ast.Applications.NewtMustache.Port  == 0 {
+			fmt.Fprintf(buf, "application.newt_mustache.port not set")
+			ok = false
+		}
 		for i, t := range ast.Templates {
 			if !t.Check(buf) {
 				fmt.Fprintf(buf, "template (#%d) error\n", i)
@@ -399,3 +424,4 @@ func (ast *AST) Check(buf io.Writer) bool {
 	}
 	return ok
 }
+

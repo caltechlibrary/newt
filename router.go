@@ -58,22 +58,24 @@ type Service struct {
 	Timeout time.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
 }
 
-func (r *Route) Check(buf io.Writer) bool {
+// Check will review the route and return true if no errors and false othise.
+// It will write error descriptions to buf.
+func (nr *Route) Check(buf io.Writer) bool {
 	ok := true
-	if r == nil {
+	if nr == nil {
 		fmt.Fprintf(buf, "route is nil\n")
 		ok = false
 	}
-	if r.Id == "" {
+	if nr.Id == "" {
 		fmt.Fprintf(buf, "route is missing id\n")
 		ok = false
 	}
-	if r.Pattern == "" {
-		fmt.Fprintf(buf, "route %q has no pattern (request path)\n", r.Id)
+	if nr.Pattern == "" {
+		fmt.Fprintf(buf, "route %q has no pattern (request path)\n", nr.Id)
 		ok = false
 	}
-	if r.Pipeline == nil || len(r.Pipeline) == 0 {
-		fmt.Fprintf(buf, "route %q is missing a pipelnie\n", r.Id)
+	if nr.Pipeline == nil || len(nr.Pipeline) == 0 {
+		fmt.Fprintf(buf, "route %q is missing a pipelnie\n", nr.Id)
 		ok = false
 	}
 	return ok
@@ -279,6 +281,33 @@ func NewRouter(ast *AST) (*Router, error) {
 		}
 	}
 	return router, nil
+}
+
+// GetRouteIds returns a list of route ids defined in the Router.
+func (rtr *Router) GetRouteIds() []string {
+	rIds := []string{}
+	for _, route := range rtr.Routes {
+		if route.Id != "" {
+			rIds = append(rIds, route.Id)
+		}
+	}
+	return rIds
+}
+
+// Check will review the router and its routes and return true if no errors
+// found and false otherwise. It will write error descriptions to buf.
+func (rtr *Router) Check(buf io.Writer) bool {
+	ok := true
+	if rtr.Port == 0 && rtr.Htdocs == "" {
+		fmt.Fprintf(buf, "port and htdocs is unset")
+		ok = false
+	}
+	for _, nr := range rtr.Routes {
+		if ! nr.Check(buf) {
+			ok = false
+		}
+	}
+	return ok
 }
 
 // ListenAndServe() runs the router web service
