@@ -205,6 +205,23 @@ func isValidVarname(s string) bool {
 	return vRe.Match([]byte(s))
 }
 
+// NewElement, makes sure element id is valid, populates an element as a basic input type.
+// The new element has the attributes "name" and "title" set to default values. Title needs
+// to be updated to reflect helpful text for the element which is displayed on hover.
+func NewElement(elementId string) (*Element, error) {
+	if !isValidVarname(elementId) {
+		return nil, fmt.Errorf("invalid element id, %q", elementId)
+	}
+	element := new(Element)
+	element.Id = elementId
+	element.Attributes = map[string]string{ "name": elementId }
+	element.Type = "input"
+	element.Attributes["title"] = "... element description text goes here ..."
+	element.IsModelIdentifier = false
+	element.isChanged = true
+	return element, nil
+}
+
 // NewModel, makes sure model id is valid, populates a Model with the oid element providing
 // returns a *Model and error value.
 func NewModel(modelId string) (*Model, error) {

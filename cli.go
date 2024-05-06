@@ -605,21 +605,24 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 	}
 	if _, err := os.Stat(appFName); err == nil {
 		ast, err = LoadAST(appFName)
-		fmt.Fprintf(out, "found %q, continue (y/N)? ", appFName)
-		answer = getAnswer(readBuffer, "y", true)
+		fmt.Fprintf(out, "%q already exists, continue (y/N)? ", appFName)
+		answer = getAnswer(readBuffer, "n", true)
 		if answer != "y" {
-			fmt.Fprintf(eout, "aborting init, %q already exists\n", appFName)
+			fmt.Fprintf(eout, "aborting: newt init %q\n", appFName)
 			return INIT_FAIL
 		}
-	} else {
+	} else if len(args) <= 1 {
 		fmt.Fprintf(out, "Create %q (Y/n)? ", appFName)
 		answer = getAnswer(readBuffer, "y", true)
 		if answer != "y" {
 			fmt.Fprintf(eout, "aborting creation of %q\n", appFName)
 			return INIT_FAIL
 		}
+	} 
+	// Step 2. Decide which services you're going to use (a .Applications will need to exist).
+	if ast.Applications == nil {
+		ast.Applications = new(Applications)
 	}
-	// Step 2. Decide which services you're going to use.
 	for {
 		//FIXME: Each of these should reflect the current model list in ast.
 		setupRouter(ast, readBuffer, out, appFName)
@@ -631,14 +634,13 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 		setupOptions(ast, readBuffer, out, appFName)
 
 		// Now output the YAML
-		src, err := ast.Encode()
+		_, err := ast.Encode()
 		if err != nil {
 			fmt.Fprintf(eout, "Failed to generate %s, %s\n", appFName, err)
 			return INIT_FAIL
 		}
-		fmt.Fprintf(out, "%s\n", src)
-		fmt.Fprintf(out, "Save and exit (y/N)? ")
-		answer = getAnswer(readBuffer, "n", true)
+		fmt.Fprintf(out, "Save and exit (Y/n)? ")
+		answer = getAnswer(readBuffer, "y", true)
 		if answer == "y" {
 			// We're ready to write out result.
 			// If file exists make a back up copy
@@ -651,7 +653,7 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 			fmt.Fprintf(out, "Exit without saving (y/N)? ")
 			answer = getAnswer(readBuffer, "n", true)
 			if answer == "y" {
-				fmt.Fprintf(out, "aborting write of %q\n", appFName)
+				fmt.Fprintf(out, "%s was not saved\n", appFName)
 				return INIT_FAIL
 			}
 		}
@@ -700,6 +702,15 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 	if err := modelerTUI(ast, in, out, eout, appFName, args[1:]); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return MODELER_FAIL
+	}
+	if ast.Applications == nil ||
+			ast.Applications.Router == nil ||
+			ast.Applications.Postgres == nil ||
+			ast.Applications.PostgREST == nil ||
+			ast.Applications.NewtMustache == nil {
+		fmt.Fprintf(out, "Applications are not configured for %q, try\n\n", appFName)
+		appName := path.Base(os.Args[0])
+		fmt.Fprintf(out, "\t%s init %q\n\n", appName, appFName)
 	}
 	return OK
 }

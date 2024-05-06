@@ -221,6 +221,12 @@ func (ast *AST) SaveAs(configName string) error {
 		return err
 	}
 	fmt.Fprintf(fp, "%s", src)
+	for _, model := range ast.Models {
+		for _, element := range model.Body {
+			element.isChanged = false
+		}
+		model.isChanged = false
+	}
 	ast.isChanged = false
 	return nil
 }
