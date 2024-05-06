@@ -261,114 +261,106 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	}
 	// Setup templates and webforms. Names are formed by objName combined with action.
 	templateList := ast.GetTemplateIds()
-	templateId := fmt.Sprintf("%s_%s", model.Id, action)
-	if ! inList(templateId, templateList) {
-		tSuffix := "_form.tmpl"
-		tmplName := mkName(objName, action, tSuffix)
-		tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
-		tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
-		ast.Templates = append(ast.Templates, &MustacheTemplate{
-			Id: templateId,
-			Pattern:     tmplPattern,
-			Template:    tmplName,
-			Description: tmplDescription,
-		})
-		// Setup template submit result
-		tmplName = mkName(objName, action, "_response.tmpl")
-		tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
-		tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
-		ast.Templates = append(ast.Templates, &MustacheTemplate{
-			Id: templateId,
-			Pattern:     tmplPattern,
-			Template:    tmplName,
-			Description: tmplDescription,
-		})
-		ast.isChanged = true
-	}
-	// Handle web form request
+	templateId := mkName(model.Id, action, "")
 	routeList := ast.GetRouteIds()
 	routeId := mkName(objName, action, "")
+	if inList(routeId, routeList) || inList(templateId, templateList) {
+		return fmt.Errorf("routes and templates exist for %s %s", model.Id, action)
+	}
+	
+	tSuffix := "_form.tmpl"
+	tmplName := mkName(objName, action, tSuffix)
+	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
+	tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
+	ast.Templates = append(ast.Templates, &MustacheTemplate{
+		Id: templateId,
+		Pattern:     tmplPattern,
+		Template:    tmplName,
+		Description: tmplDescription,
+	})
+
+	// Handle web form request
 	request := fmt.Sprintf("%s /%s_%s%s", http.MethodGet, objName, action, pathSuffix)
 	routeDescription := fmt.Sprintf("Handle retrieving the webform for %s %s", objName, action)
-	if ! inList(routeId, routeList) {
-		route := &Route{
-			Id:          routeId,
-			Pattern:     request,
-			Description: routeDescription,
-			Pipeline:    []*Service{},
-		}
-		// NOTE: If we have an update or delete we want to retrieve the record before calling the template
-		if action == "update" || action == "delete" {
-			service = setupPostgRESTService(ast, model, "read")
-			service.Description = fmt.Sprintf("Retrieve %s from PostgREST API before %s", objName, action)
-			route.Pipeline = append(route.Pipeline, service)
-		}
-		service = setupTmplService(ast, tmplPattern, tmplDescription)
+	route := &Route{
+		Id:          routeId,
+		Pattern:     request,
+		Description: routeDescription,
+		Pipeline:    []*Service{},
+	}
+	// NOTE: If we have an update or delete we want to retrieve the record before calling the template
+	if action == "update" || action == "delete" {
+		service = setupPostgRESTService(ast, model, "read")
+		service.Description = fmt.Sprintf("Retrieve %s from PostgREST API before %s", objName, action)
 		route.Pipeline = append(route.Pipeline, service)
-		ast.Routes = append(ast.Routes, route)
+	}
+	service = setupTmplService(ast, tmplPattern, tmplDescription)
+	route.Pipeline = append(route.Pipeline, service)
+	ast.Routes = append(ast.Routes, route)
 
-		// Handle submission routing
-		routeId = mkName(objName, action, "")
-		routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
-		request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
-		route := &Route{
-			Id:          routeId,
-			Pattern:     request,
-			Description: routeDescription,
-			Pipeline:    []*Service{},
-		}
-		service = setupPostgRESTService(ast, model, action)
-		route.Pipeline = append(route.Pipeline, service)
-		service = setupTmplService(ast, tmplPattern, tmplDescription)
-		route.Pipeline = append(route.Pipeline, service)
-		ast.Routes = append(ast.Routes, route)
-		ast.isChanged = true
+	// Setup template submit result
+	tmplName = mkName(objName, action, "_response.tmpl")
+	tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
+	tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
+	ast.Templates = append(ast.Templates, &MustacheTemplate{
+		Id: templateId,
+		Pattern:     tmplPattern,
+		Template:    tmplName,
+		Description: tmplDescription,
+	})
+	// Handle submission routing
+	routeId = mkName(objName, action, "")
+	routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
+	request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
+	route = &Route{
+		Id:          routeId,
+		Pattern:     request,
+		Description: routeDescription,
+		Pipeline:    []*Service{},
 	}
-	if ! ast.isChanged {
-		return fmt.Errorf("No change to webform handling")
-	}
+	service = setupPostgRESTService(ast, model, action)
+	route.Pipeline = append(route.Pipeline, service)
+	service = setupTmplService(ast, tmplPattern, tmplDescription)
+	route.Pipeline = append(route.Pipeline, service)
+	ast.Routes = append(ast.Routes, route)
+	ast.isChanged = true
 	return nil
 }
 
 func setupReadHandling(ast *AST, model *Model, action string) error {
 	templateList := ast.GetTemplateIds()
 	templateId := fmt.Sprintf("%s_%s", model.Id, action)
-	objName := model.Id
-	// Setup template for results of read request
-	if ! inList(templateId, templateList) {
-		tmplName := mkName(objName, action, ".tmpl")
-		tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
-		tmplDescription := fmt.Sprintf("This template handles %s %s", objName, action)
-		ast.Templates = append(ast.Templates, &MustacheTemplate{
-			Id: templateId,
-			Pattern:     tmplPattern,
-			Template:    tmplName,
-			Description: tmplDescription,
-		})
-		ast.isChanged = true
-	}
-	// Handle requesting object or list of objects
 	routeList := ast.GetRouteIds()
-	routeId := mkName(objName, action, "")
-	if ! inList(routeId, routeList) {
-		routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", objName, action)
-		request := fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
-		route := &Route{
-			Id:          routeId,
-			Pattern:     request,
-			Description: routeDescription,
-			Pipeline:    []*Service{},
-		}
-		service := setupPostgRESTService(ast, model, action)
-		route.Pipeline = append(route.Pipeline, service)
-		service = setupTmplService(ast, tmplPattern, tmplDescription)
-		route.Pipeline = append(route.Pipeline, service)
-		ast.Routes = append(ast.Routes, route)
-		ast.isChanged = true
+	routeId := mkName(model.Id, action, "")
+	if inList(routeId, routeList) || inList(templateId, templateList) {
+		return fmt.Errorf("route or template exists for %s %s", model.Id, action)
 	}
-	if ! ast.isChanged {
-		return fmt.Errorf("No change to reading handling")
+	// Setup template for results of read request
+	tmplName := mkName(model.Id, action, ".tmpl")
+	tmplPattern := fmt.Sprintf("/%s_%s", model.Id, action)
+	tmplDescription := fmt.Sprintf("This template handles %s %s", model.Id, action)
+	ast.Templates = append(ast.Templates, &MustacheTemplate{
+		Id: templateId,
+		Pattern:     tmplPattern,
+		Template:    tmplName,
+		Description: tmplDescription,
+	})
+	
+	// Handle requesting object or list of objects
+	routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", model.Id, action)
+	request := fmt.Sprintf("%s /%s_%s", http.MethodPost, model.Id, action)
+	route := &Route{
+		Id:          routeId,
+		Pattern:     request,
+		Description: routeDescription,
+		Pipeline:    []*Service{},
 	}
+	service := setupPostgRESTService(ast, model, action)
+	route.Pipeline = append(route.Pipeline, service)
+	service = setupTmplService(ast, tmplPattern, tmplDescription)
+	route.Pipeline = append(route.Pipeline, service)
+	ast.Routes = append(ast.Routes, route)
+	ast.isChanged = true
 	return nil
 }
 

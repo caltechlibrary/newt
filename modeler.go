@@ -11,30 +11,51 @@ import (
 	"strings"
 )
 
-// removeModelRoutesAndTemplates removes the model and related routes and templates
-func removeModelRoutesAndTemplates(ast *AST, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
-	pos := -1
-	for i, model := range ast.Models {
-		if model.Id == modelId {
-			pos = i
+// removeElement removes an element from a model
+func removeElement(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
+	elemFound := false
+	for i, elem := range model.Body {
+		if elem.Id == elementId {
+			model.Body = append(model.Body[:i], model.Body[(i+1):]...)
+			model.isChanged = true
+			elemFound = true
 		}
 	}
-	// Step 1: Remove the model
-	if pos >= 0 {
-		ast.Models = append(ast.Models[:pos], ast.Models[(pos+1):]...)
+	if ! elemFound {
+		return fmt.Errorf("failed to find %s.%s", model.Id, elementId)
 	}
-	// Step 2: For each model remove the related routes
-	var routeId string
-	for _, action := range []string{"create", "update", "delete"} {
-		routeId = fmt.Sprintf("%s_%s", modelId, action)
-		if err := ast.RemoveRouteById(routeId); err != nil {
+	return nil
+}
+
+// removeModelRoutesAndTemplates removes the model and related routes and templates
+func removeModelRoutesAndTemplates(ast *AST, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
+	// Step 1: Remove the model
+	modelFound := false
+	for i, model := range ast.Models {
+		if model.Id == modelId {
+			ast.Models = append(ast.Models[:i], ast.Models[(i+1):]...)
+			modelFound = true
+		}
+	}
+	if ! modelFound {
+		return fmt.Errorf("failed to find %s", modelId)
+	}
+	for _, action := range []string{"create", "read", "update", "delete", "list"} {
+		id := mkName(modelId, action, "")
+		// Step 2: For each model remove the related routes
+		if err := ast.RemoveRouteById(id); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+		} else {
+			ast.isChanged = true
+		}
+		// Step 3: For each model remove the related templates
+		if err := ast.RemoveTemplateById(id); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 		} else {
 			ast.isChanged = true
 		}
 	}
-	// Step 3: For each model remove the related templates
-	return fmt.Errorf("FIXME: removeModelRoutesAndTemplates(ast, %q) not implemented", modelId)
+	return nil
 }
 
 // saveModelsRoutesAndTemplates takes a existing config structure,
