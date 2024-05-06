@@ -318,6 +318,39 @@ func (ast *AST) RemoveModelById(id string) error {
 	return fmt.Errorf("failed to find model %q", id)
 }
 
+// RemoveRouteById find the route with route id and remove it
+func (ast *AST) RemoveRouteById(id string) error {
+	routeFound := false
+	for i, r := range ast.Routes {
+		// NOTE: A route id ties one or more requests together, e.g. retrieve a web form (GET), then handle it (POST)
+		if r.Id == id {
+			ast.Routes = append(ast.Routes[:i], ast.Routes[(i+1):]...)
+			ast.isChanged = true
+			routeFound = true
+		}
+	}
+	if ! routeFound {
+		return fmt.Errorf("failed to find route %s", id)
+	}
+	return nil
+}
+
+// RemoveTemplateById() find the template id and remove it from the .Templates structure
+func (ast *AST) RemoveTemplateById(id string) error {
+	templateFound := false
+	for i, t := range ast.Templates {
+		if t.Id == id {
+			ast.Templates = append(ast.Templates[:i], ast.Templates[(i+1):]...)
+			ast.isChanged = true
+			templateFound = true
+		}
+	}
+	if ! templateFound {
+		return fmt.Errorf("failed to find template %s", id)
+	}
+	return nil
+}
+
 // GetRouteIds returns a list of Router ids found in ast.Routes
 func (ast *AST) GetRouteIds() []string {
 	rIds := []string{}
@@ -327,6 +360,17 @@ func (ast *AST) GetRouteIds() []string {
 		}
 	}
 	return rIds
+}
+
+// GetTemplateIds return a list of template ids.
+func (ast *AST) GetTemplateIds() []string {
+	tIds := []string{}
+	for _, t := range ast.Templates {
+		if t.Id != "" {
+			tIds = append(tIds, t.Id)
+		}
+	}
+	return tIds
 }
 
 // GetPrimaryTemplates return a list of primary template filenames

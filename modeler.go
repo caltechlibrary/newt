@@ -12,7 +12,28 @@ import (
 )
 
 // removeModelRoutesAndTemplates removes the model and related routes and templates
-func removeModelRoutesAndTemplates(ast *AST, modelId string) error {
+func removeModelRoutesAndTemplates(ast *AST, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
+	pos := -1
+	for i, model := range ast.Models {
+		if model.Id == modelId {
+			pos = i
+		}
+	}
+	// Step 1: Remove the model
+	if pos >= 0 {
+		ast.Models = append(ast.Models[:pos], ast.Models[(pos+1):]...)
+	}
+	// Step 2: For each model remove the related routes
+	var routeId string
+	for _, action := range []string{"create", "update", "delete"} {
+		routeId = fmt.Sprintf("%s_%s", modelId, action)
+		if err := ast.RemoveRouteById(routeId); err != nil {
+			fmt.Fprintf(eout, "%s\n", err)
+		} else {
+			ast.isChanged = true
+		}
+	}
+	// Step 3: For each model remove the related templates
 	return fmt.Errorf("FIXME: removeModelRoutesAndTemplates(ast, %q) not implemented", modelId)
 }
 
@@ -180,7 +201,6 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		fmt.Fprintf(out, "id %s\n", elementId)
 		fmt.Fprintf(out, "[t]ype %s\n", elem.Type)
 		fmt.Fprintf(out, "[a]ttributes\n")
-		fmt.Fprintf(out, "\n[q]uit editing\n")
 		if len(elem.Attributes) == 0 {
 			fmt.Fprintf(out, "\t NO ATTRIBUTES SET\n")
 		} else {
@@ -198,6 +218,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		}
 		fmt.Fprintf(out, "\n")
 		fmt.Fprintf(out, "[m]odel identifier is set to %t\n", elem.IsModelIdentifier)
+		fmt.Fprintf(out, "\n\n[q]uit editing\n")
 		answer = getAnswer(readBuffer, "", true)
 		switch answer {
 			case "t":
@@ -207,6 +228,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 					// FIXME: should probably validate this ..., should probably be a
 					// controlled vocabulary of supported type strings. e.g. button, checkbox, ORCID, ROR, etc
 					elem.Type = answer
+					elem.isChanged = true
 				}
 			case "a":
 				if err := modifyAttributesTUI(model, in, out, eout, elementId); err != nil {
@@ -218,6 +240,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				}
 			case "m":
 				elem.IsModelIdentifier = ! elem.IsModelIdentifier
+				elem.isChanged = true
 			case "q":
 				quit = true
 			case "":
@@ -377,7 +400,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 				answer = getAnswer(readBuffer, "", false)
 				modelId, ok = getIdFromList(modelList, answer)
 			}
-			if err := removeModelRoutesAndTemplates(ast, modelId); err != nil {
+			if err := removeModelRoutesAndTemplates(ast, in, out, eout, modelId); err != nil {
 				fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
 			}
 			modelList = ast.GetModelIds()

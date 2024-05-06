@@ -37,6 +37,9 @@ type NewtMustache struct {
 
 // MustacheTemplate hold the request to template mapping for NewtMustache struct
 type MustacheTemplate struct {
+	// Id ties a set of one or more template together, e.g. a web form and its response
+	Id string `json:"id,required" yaml:"id,omitempty"`
+
 	// Pattern holds a request path, e.g. `/blog_post`. NOTE: the method is ignored. A POST
 	// is presumed to hold data that will be processed by the template engine. A GET retrieves the
 	// unresolved template.

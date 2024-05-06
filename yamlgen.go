@@ -260,15 +260,25 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 		pathSuffix = "/" + oid
 	}
 	// Setup templates and webforms. Names are formed by objName combined with action.
-	tNames := ast.GetPrimaryTemplates()
-	rIds := ast.GetRouteIds()
-	
-	tSuffix := "_form.tmpl"
-	tmplName := mkName(objName, action, tSuffix)
-	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
-	tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
-	if ! inList(tmplName, tNames) {
+	templateList := ast.GetTemplateIds()
+	templateId := fmt.Sprintf("%s_%s", model.Id, action)
+	if ! inList(templateId, templateList) {
+		tSuffix := "_form.tmpl"
+		tmplName := mkName(objName, action, tSuffix)
+		tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
+		tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
 		ast.Templates = append(ast.Templates, &MustacheTemplate{
+			Id: templateId,
+			Pattern:     tmplPattern,
+			Template:    tmplName,
+			Description: tmplDescription,
+		})
+		// Setup template submit result
+		tmplName = mkName(objName, action, "_response.tmpl")
+		tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
+		tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
+		ast.Templates = append(ast.Templates, &MustacheTemplate{
+			Id: templateId,
 			Pattern:     tmplPattern,
 			Template:    tmplName,
 			Description: tmplDescription,
@@ -276,10 +286,11 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 		ast.isChanged = true
 	}
 	// Handle web form request
+	routeList := ast.GetRouteIds()
 	routeId := mkName(objName, action, "")
 	request := fmt.Sprintf("%s /%s_%s%s", http.MethodGet, objName, action, pathSuffix)
 	routeDescription := fmt.Sprintf("Handle retrieving the webform for %s %s", objName, action)
-	if ! inList(routeId, rIds) {
+	if ! inList(routeId, routeList) {
 		route := &Route{
 			Id:          routeId,
 			Pattern:     request,
@@ -295,25 +306,9 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 		service = setupTmplService(ast, tmplPattern, tmplDescription)
 		route.Pipeline = append(route.Pipeline, service)
 		ast.Routes = append(ast.Routes, route)
-		ast.isChanged = true
-	}
 
-	// Setup template submit result
-	tmplName = mkName(objName, action, "_response.tmpl")
-	if ! inList(tmplName, tNames) {
-		tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
-		tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
-		ast.Templates = append(ast.Templates, &MustacheTemplate{
-			Pattern:     tmplPattern,
-			Template:    tmplName,
-			Description: tmplDescription,
-		})
-		ast.isChanged = true
-	}
-
-	// Handle submission routing
-	routeId = mkName(objName, action, "")
-	if ! inList(routeId, rIds) {
+		// Handle submission routing
+		routeId = mkName(objName, action, "")
 		routeDescription = fmt.Sprintf("Handle form submission for %s %s", objName, action)
 		request = fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
 		route := &Route{
@@ -336,14 +331,16 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 }
 
 func setupReadHandling(ast *AST, model *Model, action string) error {
-	tNames := ast.GetPrimaryTemplates()
+	templateList := ast.GetTemplateIds()
+	templateId := fmt.Sprintf("%s_%s", model.Id, action)
 	objName := model.Id
 	// Setup template for results of read request
-	tmplName := mkName(objName, action, ".tmpl")
-	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
-	tmplDescription := fmt.Sprintf("This template handles %s %s", objName, action)
-	if ! inList(tmplName, tNames) {
+	if ! inList(templateId, templateList) {
+		tmplName := mkName(objName, action, ".tmpl")
+		tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
+		tmplDescription := fmt.Sprintf("This template handles %s %s", objName, action)
 		ast.Templates = append(ast.Templates, &MustacheTemplate{
+			Id: templateId,
 			Pattern:     tmplPattern,
 			Template:    tmplName,
 			Description: tmplDescription,
@@ -351,9 +348,9 @@ func setupReadHandling(ast *AST, model *Model, action string) error {
 		ast.isChanged = true
 	}
 	// Handle requesting object or list of objects
-	rIds := ast.GetRouteIds()
+	routeList := ast.GetRouteIds()
 	routeId := mkName(objName, action, "")
-	if ! inList(routeId, rIds) {
+	if ! inList(routeId, routeList) {
 		routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", objName, action)
 		request := fmt.Sprintf("%s /%s_%s", http.MethodPost, objName, action)
 		route := &Route{

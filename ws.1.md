@@ -1,5 +1,5 @@
 ---
-title: ws(1) user manual | 0.0.8 d8836f5
+title: ws(1) user manual | 0.0.8 dd6e3c9
 pubDate: 2024-05-06
 author: R. S. Doiel
 ---

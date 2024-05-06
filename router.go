@@ -24,7 +24,9 @@ type Router struct {
 
 // This holds the route definitions, e.g. request, description, pipeline, debug
 type Route struct {
-	// Id holds an id for the route. This should be unique. It is useful in debugging.
+	// Id holds an id for the route. It is unique for each set of HTTP methods. E.g. The id can
+	// tie a GET (retrieve a webform) and POST (submit the form) but NOT two GET or two POST.
+	// This allows us to work with simple and complex actions.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Pattern holds the HTTP Method and URL path, may include Go 1.22 patterns
