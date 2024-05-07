@@ -11,7 +11,7 @@ These are the top level properties in YAML files.
 : (optional) holds the run time configuration used by the Newt applications.
 
 `models`
-: (required by newtgenerator) This holds the description of the data models in your application. Each model uses the [GitHub YAML issue template syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms) (abbr: GHYTS)
+: (required by newtgenerator) This holds the description of the data models in your application. Each model describes a series of HTML 5 elements that make up the model. 
 
 `routes`
 : (required by newtrouter) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
@@ -96,29 +96,26 @@ A pipeline is a list of web services containing a type, URL, method and content 
 
 ## the "models" property
 
-Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYTS).
+Models holds a list of individual models used by our data pipelines. The models are used by Newt code generator and the Newt router. Models were inspired by a subset of GitHub YAML issue template syntax (abbr: GHYTS). Models contain lists of elements, elements are descriptions of HTML5 input elements and their attributes.
 
 ### a model object
 
 The model object is based largely on GitHub YAML issue template syntax with a couple extra properties that are Newt enhancements.
 
 `id`
-: (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^21]
+: (required) this is the name identifying the model. It must conform to variable name rules[^21]
 
-The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYTS)
-
-`name`
-: (required: GHYTS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
+The following properties are inspired by GitHub YAML issue template syntax[^22] (abbr: GHYTS)
 
 `description`
 : (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
 
-`body`
+`elements`
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
 
 #### a model's input types
 
-This is based on GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
+This is based on HTML5 form input types. They were inspired by GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
 
 `id`
 : (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
@@ -129,16 +126,13 @@ This is based on GitHub YAML issue template (abbr: GHYTS) input types[^23].
 `attributes`
 : (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML.
 
-`validations`
-: (optional, encouraged) A set of key-value pairs setting constraints of the element content. E.g. required, regexp properties, validation rule provided with certain identifiers (e.g. DOI, ROR, ORCID).
-
+is_model_identifier
+: (boolean, defaults to false) if true this element is used as the model identifier and must be unique.
 
 ## input types
 
-Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYTS for scheme[^23]. They include
-
-`markdown`
-: (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
+The model types supported in Newt are based on the HTML5 form input types. They are inspired by GHYITS scheme[^23]. Example
+types include
 
 `textarea`
 : (models only) A multi-line text field
@@ -152,7 +146,7 @@ Both the routes and models may contain input types. The types supported in Newt 
 `checkboxes`
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
-Newt may add additional types in the future.
+Newt does NOT support the FILE input type because Newt applications do not support file uploads. Additional types maybe added in the future either through aliasing to input elements that validate with a regexp or web components.
 
 ## Example Newt YAML for router and code generator
 
@@ -180,7 +174,7 @@ models:
     name: People Profiles
     description: |
       This models a curated set of profiles of colleagues
-    body:
+    elements:
       - id: people_id
         type: input
         attributes:
@@ -289,7 +283,8 @@ routes:
 
 ## templates property
 
-This property is used by Newt Mustache. It is ignore by Newt router and code generator.
+This property is used by Newt Mustache. It allows Newt Mustache to map a POST to a specific template or
+template and set of paritals.
 
 templates
 : (optional: newtmustache) this holds a list of template objects.
@@ -297,8 +292,13 @@ templates
 ### template object model
 
 The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
+Newt Mustache only responds to POST methods which have a defined path in the templates section of the 
+Newt YAML template file.
 
-`request [METHOD ][PATH]`
+`id`
+: the identifier for related templates. E.g. a web form and the response form
+
+`request [PATH]`
 : (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed.
 
 `template`
@@ -323,18 +323,22 @@ applications:
   newtmustache:
     port: 8012
 templates:
-  - request: GET /hello/{name}
+  - id: hello
+    request: /hello/{name}
     template: testdata/simple.mustache
-  - request: GET /hello
+  - id: hello
+    request: /hello
     template: testdata/simple.mustache
     options:
       name: Universe
-  - request: GET /hi/{name}
+  - id: hi
+    request: /hi/{name}
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache
     debug: true
-  - request: GET /hi
+  - id: hi
+    request: /hi
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache

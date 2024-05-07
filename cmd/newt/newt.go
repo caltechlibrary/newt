@@ -167,7 +167,7 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 ### a route object
 
 `+"`"+`id`+"`"+`
-: (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]
+: (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]. You may have more than one route associated with an identifier but they may not share the same method. This allows us to group routes by actions. E.g. creating an object would include a GET to retrieve the web form and a POST to handle the submission. Both should use the same id.
 
 `+"`"+`description`+"`"+`
 : (optional, encouraged) This is a human readable description of what you're trying to accomplish in this specific route. It may be used in comments or by documentation generators.
@@ -197,29 +197,24 @@ A pipeline is a list of web services containing a type, URL, method and content 
 
 ## the "models" property
 
-Models holds a list of individual models used by our data pipelines. The models are by Newt code generator and the Newt router. Models defines a superset of the GitHub YAML issue template syntax (abbr: GHYITS).
+Models holds a list of individual models used by our data pipelines. The models are describe by a list of HTML5 form elements which intern are described by their attributes.
 
 ### a model object
 
-The model object is based largely on GitHub YAML issue template syntax with a couple extra properties that are Newt enhancements.
+The model object was inspired by GitHub YAML issue template syntax. It is much simpler and more focus on
+representing HTML5 webform elements and their attributes directly. HTML5 form elements imply a mapping to SQL
+data types.
 
 id
-: (required, newt specific) this is the name identifying the model. It must conform to variable name rules[^21]
-
-The following properties are based on the GitHub YAML issue template syntax[^22] (abbr: GHYITS)
-
-name
-: (required: GHYITS, optional: newt) Must be unique to use with GitHub YAML issue templates[^22]. In Newt it will be used in populating comments in generated SQL
+: (required) this is the name identifying the model. It must conform to variable name rules[^21]
 
 description
-: (required: GHYITS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
+: (optional) A human description of the model, It will appear in the web form and SQL components generated from the model
 
-body
+elements
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
 
 #### a model's input types
-
-This is based on GitHub YAML issue template (abbr: GHYITS) input types[^23]. 
 
 id
 : (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
@@ -228,34 +223,41 @@ type
 : (required) Identifies the type of elements (input, textarea, markdown, checkbox, dropdown).
 
 attributes
-: (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML.
+: (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML. These correspond with the attributess you'd find in HTML 5 input elements.
 
-validations
-: (optional, encouraged) A set of key-value pairs setting constraints of the element content. E.g. required, regexp properties, validation rule provided with certain identifiers (e.g. DOI, ROR, ORCID).
-
+is_model_identifier
+: (boolean, defaults to false) if true then Newt will use this element as the identifier in the SQL code and routes. You can only have one element used as the model identifier and it must be unique.
 
 ## input types
 
-Both the routes and models may contain input types. The types supported in Newt are based on the types found in the GHYITS for scheme[^23]. They include
-
-markdown
-: (models only) markdown request displayed to the user but not submitted to the user but not submitted by forms. 
-
-textarea
-: (models only) A multi-line text field
+Inputs must map to their HTML 5 form element types. Here is an example of HTML 5 input types.
 
 input
 : A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `+"`"+`input[type=data]`+"`"+` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
 
-dropdown
-: A dropdown menu. In SQL this could render as an enumerated type. In HTML it would render as a drop down list
+textarea
+: A multi-line text field
 
 checkboxes
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
-Newt may add additional types in the future.
+More comple types include 
 
-## Example Newt YAML file, "app.yaml" 
+radio
+: For generating a radio button list
+
+select
+: A dropdown menu. In SQL this could render as an enumerated type. In HTML it would render as a drop down list
+
+auto_complete
+: A input plus data list, useful for large vocabularies
+
+
+NOPTE: The file input type is explicitly NOT supported by Newt at this time. Newt may add additional types in
+the future through aliasing input with regular expression validation or web components.
+
+## Example Newt YAML file, "app.yaml" generated with the `+"`"+`{app_name} init app.yaml`+"`"+` and
+`+"`"+`{app_name} model app.yaml`+` commands.
 
 ~~~yaml
 applications:
@@ -352,38 +354,42 @@ routes:
       - service: POST http://localhost:8011/app_list
         description: This template handles app list
 templates:
-  - request: /app_create
+  - id: app_create
+    request: /app_create
     template: app_create_form.tmpl
     description: Display a app for create
-  - request: /app_create_response
+  - id: app_create
+    request: /app_create_response
     template: app_create_response.tmpl
     description: This is an result template for app create
-  - request: /app_update
+  - id: app_update
+    request: /app_update
     template: app_update_form.tmpl
     description: Display a app for update
-  - request: /app_update_response
+  - id: app_update
+    request: /app_update_response
     template: app_update_response.tmpl
     description: This is an result template for app update
-  - request: /app_delete
+  - id: app_delete
+    request: /app_delete
     template: app_delete_form.tmpl
     description: Display a app for delete
-  - request: /app_delete_response
+  - id: app_delete
+    request: /app_delete_response
     template: app_delete_response.tmpl
     description: This is an result template for app delete
-  - request: /app_read
+  - id: app_read
+    request: /app_read
     template: app_read.tmpl
     description: This template handles app read
-  - request: /app_list
+  - id: app_list
+    request: /app_list
     template: app_list.tmpl
     description: This template handles app list
 ~~~
 
 
 [^21]: variable numbers must start with a letter, may contain numbers but not spaces or punctuation except the underscore
-
-[^22]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms>, 
-
-[^23]: See <https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema>
 
 ## templates property
 
@@ -396,17 +402,21 @@ templates
 
 The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
 
+`+"`"+`id
+: (required) is the template id. It can be used to relate one or more templates to an action. E.g. a web form an
+submission result.
+
 `+"`"+`request [METHOD ][PATH]`+"`"+`
 : (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
 
 `+"`"+`template`+"`"+`
-: (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
+: (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
 `+"`"+`partials`+"`"+`
-: (optional, newtmustache only) A list of paths to partial Mustache templates used by `+"`"+`.template`+"`"+`.
+: (optional) A list of paths to partial Mustache templates used by `+"`"+`.template`+"`"+`.
 
 `+"`"+`options`+"`"+`
-: (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template
+: (optional) An object that can be merged in with JSON received for processing by your Mustache template
 
 `+"`"+`debug`+"`"+`
 : (optional) this turns on debugging output for this template
@@ -418,18 +428,22 @@ applications:
   newtmustache:
     port: 8012
 templates:
-  - request: GET /hello/{name}
+  - id: hello
+    request: POST /hello/{name}
     template: testdata/simple.mustache
-  - request: GET /hello
+  - id: hello
+    request: POST /hello
     template: testdata/simple.mustache
     options:
       name: Universe
-  - request: GET /hi/{name}
+  - id: hi
+    request: POST /hi/{name}
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache
     debug: true
-  - request: GET /hi
+  - id: hi
+    request: POST /hi
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache

@@ -15,7 +15,7 @@ import (
 //
 // Code generation will need to render to SQL, HTML, Mustache and Pandoc templates.
 type Model struct {
-	// Id is a required field for Newt, it is an extension and isn't part of GHYITS.
+	// Id is a required field for Newt, it mapps to the HTML element id and name
 	Id string `json:"id,required" yaml:"id"`
 
 	// This is a Newt specifc set of attributes to place in the form element of HTML. I.e. it could
@@ -23,47 +23,17 @@ type Model struct {
 	// (optional)
 	Attributes map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
 
-	// Name, A name for the issue form template. Must be unique from all other templates, including Markdown templates.
-	//
-	// For Newt this should conform to the variable naming conventions, starts with an alphabetical character, may be
-	// alpha number without spaces or punctuation other than '_'.
-	// (required)
-	Name string `json:"name,required" yaml:"name,omitempty"`
-
 	// Description, A description for the issue form template, which appears in the template chooser interface.
 	// (required)
 	Description string `json:"description,required" yaml:"description,omitempty"`
 
-	// Body, Definition of the input types in the form.
+	// Elements, Definition of the input types in the form.
 	// (required)
-	Body []*Element `json:"body,required" yaml:"body,omitempty"`
+	Elements []*Element `json:"body,required" yaml:"body,omitempty"`
 
 	// Title, A default title that will be pre-populated in the issue submission form.
 	// (optional)
 	Title string `json:"title,omitempty" yaml:"title,omitempty"`
-
-	//
-	// The following are included in the struct for compatibilty with GitHub YAML issue template syntax.
-	// They are ignored by Newt as they are not relevant to the general case of rendering an web application.
-	//
-
-	// Assignees, People who will be automatically assigned to issues created with this template.
-	// (ignored)
-	Assignees []string `json:"assignees,omitempty" yaml:"assignees,omitempty"`
-
-	// Labels, Labels that will automatically be added to issues created with this template. If a label does not
-	// already exist in the repository, it will not be automatically added to the issue.
-	// (ignored)
-	Labels []string `json:"labels,omitempty" yaml:"labels,omitempty"`
-
-	// Projects, Projects that any issues created with this template will automatically be added to. The format
-	// of this key is PROJECT-OWNER/PROJECT-NUMBER.
-	//
-	// Note: The person opening the issue must have write permissions for the specified projects. If you don't
-	// expect people using this template to have write access, consider enabling your project's auto-add workflow.
-	// For more information, see "Adding items automatically."
-	// (ignored)
-	Projects []string `json:"projects,omitempty" yaml:"projects,omitempty"`
 
 	// isChanged is an internal state used by the modeler to know when a model has changed
 	isChanged bool `json:"-" yaml:"-"`
@@ -74,7 +44,7 @@ func (model *Model) HasChanges() bool {
 	if model.isChanged {
 		return true
 	}
-	for _, e := range model.Body {
+	for _, e := range model.Elements {
 		if e.isChanged {
 			return true
 		}
@@ -84,7 +54,7 @@ func (model *Model) HasChanges() bool {
 
 // HasElement checks if the model has a given element id
 func (model *Model) HasElement(elementId string) bool {
-	for _, e := range model.Body {
+	for _, e := range model.Elements {
 		if e.Id == elementId {
 			return true
 		}
@@ -95,7 +65,7 @@ func (model *Model) HasElement(elementId string) bool {
 // GetModelIdentifier() returns the element which describes the model identifier.
 // Returns the element and a boolean set to true if found.
 func (m *Model) GetModelIdentifier() (*Element, bool) {
-	for _, e := range m.Body {
+	for _, e := range m.Elements {
 		if e.IsModelIdentifier {
 			return e, true
 		}
@@ -103,10 +73,10 @@ func (m *Model) GetModelIdentifier() (*Element, bool) {
 	return nil, false
 }
 
-// GetElementIds returns a slice of element ids found in the model's .Body
+// GetElementIds returns a slice of element ids found in the model's .Elements
 func (m *Model) GetElementIds() []string {
 	ids := []string{}
-	for _, elem := range m.Body {
+	for _, elem := range m.Elements {
 		if elem.Id != "" {
 			ids = append(ids, elem.Id)
 		}
@@ -114,9 +84,9 @@ func (m *Model) GetElementIds() []string {
 	return ids
 }
 
-// GetElementById returns a Element from the model's .Body.
+// GetElementById returns a Element from the model's .Elements.
 func (m *Model) GetElementById(id string) (*Element, bool) {
-	for _, elem := range m.Body {
+	for _, elem := range m.Elements {
 		if elem.Id == id {
 			return elem, true
 		}
@@ -150,21 +120,6 @@ type Element struct {
 	// This is a required element as it holds the "value" attribute when expressing
 	// HTML content. Other commonly use attributes
 	Attributes map[string]string `json:"attributes,omitempty" yaml:"attributes,omitempty"`
-
-	// Validations, A set of key-value pairs that set constraints on the element.
-	// Optional, key-value pair example expressed in HTML include
-	// `required="true"` and "pattern" followed by a JavaScript RegExp would be
-	// another example of validations.
-	//
-	// See MDN documentation for Intrinsic and basic contraints on input types,
-	// <https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation>
-	//
-	// See MDN documentation for pattern attribute,
-	// <https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/pattern>
-	//
-	// See MDN documentation for RegExp,
-	// <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet>
-	Validations map[string]interface{} `json:"validations,omitempty" yaml:"validations,omitempty"`
 
 	// IsModelIdentifier is used by the modeler and config object to know which id values to embed
 	// in routes and templates as the identifier for an object.
@@ -230,9 +185,8 @@ func NewModel(modelId string) (*Model, error) {
 	}
 	model := new(Model)
 	model.Id = modelId
-	model.Name = modelId
 	model.Description = fmt.Sprintf("... description of %q goes here ...", modelId)
-	model.Body = []*Element{}
+	model.Elements = []*Element{}
 	// Make the required element ...
 	element := new(Element)
 	element.Id = "oid"
@@ -252,15 +206,15 @@ func (model *Model) Check(buf io.Writer) bool {
 		fmt.Fprintf(buf, "model is nil\n")
 		return false
 	}
-	if model.Body == nil {
+	if model.Elements == nil {
 		fmt.Fprintf(buf, "missing %s.body\n", model.Id)
 		return false
 	}
-	// Check to see if we have at least one element in Body
-	if len(model.Body) > 0 {
+	// Check to see if we have at least one element in Elements
+	if len(model.Elements) > 0 {
 		ok := true
 		hasModelId := false
-		for i, e := range model.Body {
+		for i, e := range model.Elements {
 			// Check to make sure each element is valid
 			if !e.Check(buf) {
 				fmt.Fprintf(buf, "error for %s.%s\n", model.Id, e.Id)
@@ -284,11 +238,11 @@ func (model *Model) Check(buf io.Writer) bool {
 	return false
 }
 
-// InsertElement will add a new element to model.Body in the position indicated,
+// InsertElement will add a new element to model.Elements in the position indicated,
 // It will also set isChanged to true on additional.
 func (model *Model) InsertElement(pos int, element *Element) error {
-	if model.Body == nil {
-		model.Body = []*Element{}
+	if model.Elements == nil {
+		model.Elements = []*Element{}
 	}
 	if !isValidVarname(element.Id) {
 		return fmt.Errorf("element id is not value")
@@ -299,17 +253,17 @@ func (model *Model) InsertElement(pos int, element *Element) error {
 	if pos < 0 {
 		pos = 0
 	}
-	if pos > len(model.Body) {
-		model.Body = append(model.Body, element)
+	if pos > len(model.Elements) {
+		model.Elements = append(model.Elements, element)
 		model.isChanged = true
 		return nil
 	}
-	fmt.Fprintf(os.Stderr, "DEBUG pos of insert is %d, len is %d\n", pos, len(model.Body))
-	if pos < len(model.Body) {
-		elements := append(model.Body[:pos], element)
-		model.Body = append(elements, model.Body[(pos+1):]...)
+	fmt.Fprintf(os.Stderr, "DEBUG pos of insert is %d, len is %d\n", pos, len(model.Elements))
+	if pos < len(model.Elements) {
+		elements := append(model.Elements[:pos], element)
+		model.Elements = append(elements, model.Elements[(pos+1):]...)
 	} else {
-		model.Body = append(model.Body, element)
+		model.Elements = append(model.Elements, element)
 	}
 	model.isChanged = true
 	return nil
@@ -320,9 +274,9 @@ func (model *Model) UpdateElement(elementId string, element *Element) error {
 	if !model.HasElement(elementId) {
 		return fmt.Errorf("%q element id not found", elementId)
 	}
-	for i, e := range model.Body {
+	for i, e := range model.Elements {
 		if e.Id == elementId {
-			model.Body[i] = element
+			model.Elements[i] = element
 			model.isChanged = true
 			return nil
 		}
@@ -330,14 +284,14 @@ func (model *Model) UpdateElement(elementId string, element *Element) error {
 	return fmt.Errorf("failed to find %q to update", elementId)
 }
 
-// RemoveElement removes an element by id from the model.Body
+// RemoveElement removes an element by id from the model.Elements
 func (model *Model) RemoveElement(elementId string) error {
 	if !model.HasElement(elementId) {
 		return fmt.Errorf("%q element id not found", elementId)
 	}
-	for i, e := range model.Body {
+	for i, e := range model.Elements {
 		if e.Id == elementId {
-			model.Body = append(model.Body[:i], model.Body[(i+1):]...)
+			model.Elements = append(model.Elements[:i], model.Elements[(i+1):]...)
 			model.isChanged = true
 			return nil
 		}

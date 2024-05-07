@@ -19,14 +19,19 @@ models:
     name: Bird Sightings
     description: |
       This model captures the data for a bird sighting.
-    body:
+    elements:
+      - id: oid
+        type: input
+        attributes:
+          "x-sql": uuid primary key
+          required: true
+        is_model_identifier: true
       - id: bird
         type: input
         description: Bird name or description
         attibributes:
           name: bird
           placeholdertext: ex. Blue Bird, Hummingbird
-        validations:
           required: true
       - id: place
         type: input
@@ -34,7 +39,6 @@ models:
         attributes:
           name: place
           placeholdertext: ex. Backyard, Central Park
-        validations:
           required: true
       - id: sighted
         type: input[type=date]
@@ -42,7 +46,6 @@ models:
         attributes:
           name: sighted
           placeholdertext: ex. 2024-02-29 20:00 PST
-        validation:
           required: true
       - id: notes
         type: textarea
@@ -51,8 +54,6 @@ models:
           name: notes
           placeholdertext: |
             ex. Tree was bare. Frost on the ground.
-        validations:
-          required: false
 #
 # These routes need to be rewriten to actually test
 # PostgREST with for CRUD-L verification of generated SQL.
@@ -142,17 +143,27 @@ routes:
 # version.
 #
 templates:
-  - request: GET /create_sighting
-    template: create_sighting.tmpl
-  - request: POST /create_sighting
-    template: create_sighting.tmpl
-  - request: POST /read_sighting
+  - id: create_sighting
+    request: POST /create_sighting_form
+    template: create_sighting_form.tmpl
+  - id: create_sighting
+    request: POST /create_sighting_response
+    template: create_sighting_response.tmpl
+  - id: read_sighting
+    request: POST /read_sighting
     template: read_sighting.tmpl
-  - request: GET /update_sighting
-    template: update_sighting.tmpl
-  - request: POST /update_sighting
-    template: update_sighting.tmpl
-  - request: POST /delete_sighting
-    template: delete_sighting.tmpl
-  - request: POST /list_sighting
+  - id: update_sighting
+    request: POST /update_sighting_form
+    template: update_sighting_form.tmpl
+  - id: update_sighting
+    request: POST /update_sighting_response
+    template: update_sighting_response.tmpl
+  - id: delete_sighting
+    request: POST /delete_sighting_form
+    template: delete_sighting_form.tmpl
+  - id: delete_sighting
+    request: POST /delete_sighting_response
+    template: deltee_sighting_response.tmpl
+  - id:list_sighting
+    request: POST /list_sighting
     template: list_sighting.yaml

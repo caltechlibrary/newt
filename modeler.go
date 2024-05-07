@@ -14,9 +14,9 @@ import (
 // removeElement removes an element from a model
 func removeElement(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
 	elemFound := false
-	for i, elem := range model.Body {
+	for i, elem := range model.Elements {
 		if elem.Id == elementId {
-			model.Body = append(model.Body[:i], model.Body[(i+1):]...)
+			model.Elements = append(model.Elements[:i], model.Elements[(i+1):]...)
 			model.isChanged = true
 			elemFound = true
 		}
@@ -97,7 +97,7 @@ func saveModelsRoutesAndTemplates(configName string, ast *AST) error {
 	return nil
 }
 
-// addElementStub adds an empty element to model.Body list. Returns a new model list and error value
+// addElementStub adds an empty element to model.Elements list. Returns a new model list and error value
 func addElementStub(model *Model, elementId string) ([]string, error) {
 	elementList := model.GetElementIds()
 	if !isValidVarname(elementId) {
@@ -107,7 +107,7 @@ func addElementStub(model *Model, elementId string) ([]string, error) {
 	if err != nil {
 		return elementList, err
 	}
-	model.Body = append(model.Body, elem)
+	model.Elements = append(model.Elements, elem)
 	elementList = model.GetElementIds()
 	return elementList, nil
 }
@@ -169,19 +169,11 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 	for quit := false; !quit; {
 		elementList := model.GetElementIds()
 		fmt.Fprintf(out, "Pick a model attribute to change using the menu options\n\n")
-		fmt.Fprintf(out, "   [N]ame %q\n", model.Name)
 		fmt.Fprintf(out, "   [D]escription %q\n", model.Description)
 		fmt.Fprintf(out, "   [E]lements (%s)\n", strings.Join(elementList, ", "))
 		fmt.Fprintf(out, "\n   [q]uit editing\n")
 		answer = getAnswer(readBuffer, "", true)
 		switch answer {
-			case "n":
-				fmt.Fprintf(out, "\nEnter model name: ")
-				answer = getAnswer(readBuffer, "", false)
-				if answer != "" {
-					model.Name = answer
-				}
-				fmt.Fprintln(out, "")
 			case "d":
 				fmt.Fprintf(out, "\nEnter model description: ")
 				answer = getAnswer(readBuffer, "", false)
@@ -227,14 +219,6 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		} else {
 			for k, v := range elem.Attributes {
 				fmt.Fprintf(out, "\t%s: %s\n", k, v)
-			}
-		}
-		fmt.Fprintf(out, "\n[v]alidations\n")
-		if len(elem.Validations) == 0 {
-			fmt.Fprintf(out, "\t NO VALIDATIONS SET\n")
-		} else {
-			for k, v := range elem.Validations {
-				fmt.Fprintf(out, "\t%s: %+v\n", k, v)
 			}
 		}
 		fmt.Fprintf(out, "\n")

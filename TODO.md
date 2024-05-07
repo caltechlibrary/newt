@@ -74,7 +74,8 @@ NOTE: X is completed, P is partial completion, D (dropped) is skipping implement
   - [X] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
   - [X] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
 - [X] Present at Code4Lib SoCal meetup, July 14, 2023
-- [ ] Present at Code4Lib SoCal meetup, April 19, 2024
+- [X] Present at Code4Lib SoCal meetup, April 19, 2024
+- [X] Cleanup data models, abandon strict following of GHYTS, I don't need that level of complexity and simplifying data model and AST will be easier to document leaving out the GHYTS connection
 
 ## Someday, maybe
 

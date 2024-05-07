@@ -386,7 +386,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		}
 		if ast.Models != nil {
 			for _, m := range ast.Models {
-				fmt.Printf("models %s defined, %d elements\n", m.Id, len(m.Body))
+				fmt.Printf("models %s defined, %d elements\n", m.Id, len(m.Elements))
 				if m.Description != "" {
 					fmt.Fprintf(out, "\t%s\n\n", m.Description)
 				}

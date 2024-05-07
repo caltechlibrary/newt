@@ -222,7 +222,7 @@ func (ast *AST) SaveAs(configName string) error {
 	}
 	fmt.Fprintf(fp, "%s", src)
 	for _, model := range ast.Models {
-		for _, element := range model.Body {
+		for _, element := range model.Elements {
 			element.isChanged = false
 		}
 		model.isChanged = false
@@ -243,17 +243,6 @@ func (ast *AST) GetModelIds() []string {
 		}
 	}
 	return ids
-}
-
-// GetModelNames returns a list of model names (not to be confused with Model ids)
-func (ast *AST) GetModelNames() []string {
-	names := []string{}
-	for _, m := range ast.Models {
-		if m.Name != "" {
-			names = append(names, m.Name)
-		}
-	}
-	return names
 }
 
 // GetModelById return a specific model by it's id
