@@ -2,6 +2,9 @@ package newt
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
+	"sort"
 )
 
 //
@@ -32,7 +35,59 @@ func getAttributeIds(m map[string]string) []string {
 			ids = append(ids, k)
 		}
 	}
+	if len(ids) > 0 {
+		sort.Strings(ids)
+	}
 	return ids
 }
 
 
+func getIdFromList(list []string, id string) (string, bool) {
+	// NOTE: nRe tests if modelId is a string representation of a positive integer
+	nRe := regexp.MustCompile(`^[0-9]+$`)
+	// See if we have been given a model number or a name
+	if isDigit := nRe.Match([]byte(id)); isDigit {
+		mNo, err := strconv.Atoi(id)
+		if err == nil {
+			// Adjust provided integer for zero based index.
+			if mNo > 0 {
+				mNo--
+			} else {
+				mNo = 0
+			}
+			if mNo < len(list) {
+				return list[mNo], true
+			}
+		}
+	}
+	if isValidVarname(id) {
+		return id, true
+	}
+	return "", false
+}
+
+// getItemNoFromList returns the zero based item number from list of items.
+// If an item number is provided then it will be adjusted to zero based and
+// validated, if a string is provided it will the position in the list that
+// is returned.
+func getItemNoFromList(list []string, id string) (int, bool) {
+	// Handle case where ones based number has been provided as a string.
+	nRe := regexp.MustCompile(`^[0-9]+$`)
+	if isDigit := nRe.Match([]byte(id)); isDigit {
+		itemNo, err := strconv.Atoi(id)
+		if err == nil {
+			itemNo--
+			if itemNo >= 0 && itemNo < len(list) {
+				return itemNo, true
+			}
+		}
+		return -1, false
+	}
+	// Handle case where the string needs to be matched.
+	for i, val := range list {
+		if val == id {
+			return i, true
+		}
+	}
+	return -1, false
+}

@@ -5,10 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
-	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -136,7 +133,6 @@ func normalizeInputType(inputType string) (string, string) {
 		val = inputType
 	}
 	if pattern, ok := patternMap[inputType]; ok {
-		fmt.Fprintf(os.Stderr, "DEBUG normalized to %s -> %q\n", inputType, pattern)
 		return val, pattern
 	}
 	return val, ""
@@ -177,30 +173,6 @@ func addModelStub(ast *AST, modelId string) ([]string, error) {
 	return modelList, nil
 }
 
-func getIdFromList(list []string, id string) (string, bool) {
-	// NOTE: nRe tests if modelId is a string representation of a positive integer
-	nRe := regexp.MustCompile(`^[0-9]+$`)
-	// See if we have been given a model number or a name
-	if isDigit := nRe.Match([]byte(id)); isDigit {
-		mNo, err := strconv.Atoi(id)
-		if err == nil {
-			// Adjust provided integer for zero based index.
-			if mNo > 0 {
-				mNo--
-			} else {
-				mNo = 0
-			}
-			if mNo < len(list) {
-				return list[mNo], true
-			}
-		}
-	}
-	if isValidVarname(id) {
-		return id, true
-	}
-	return "", false
-}
-
 // modifyModelTUI modify a specific model (e.g. add, modify remove model attributes)
 func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
 	readBuffer := bufio.NewReader(in)
@@ -210,18 +182,19 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 	}
 	for quit := false; !quit; {
 		elementList := model.GetElementIds()
+		//attributeList := model.GetAttributeIds()
 		menu, opt := selectMenuItem(in, out,
-			"Pick a model property",
-			"",
+			"Enter menu letter to manage model",
+			"Menu: model [d]escription, [e]lements, [q]uit (making changes)",
 			[]string{
-				fmt.Sprintf("[D]escription %q", model.Description),
-				fmt.Sprintf("[E]dit Elements (%s)", strings.Join(elementList, ", ")),
-				"[q]uit editing",
+				fmt.Sprintf("Model Id: %s", model.Id),
+				fmt.Sprintf("Descriptions: %s", model.Description),
+				//fmt.Sprintf("Form Attributes: %s", strings.Join(attributeList, "\n\t\t")),
+				fmt.Sprintf("Elements: %s\n", strings.Join(elementList, "\n\t\t")),
 			}, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
-		fmt.Fprintf(eout, "DEBUG menu %q -> opt %q\n", menu, opt)
 		switch menu {
 		case "d":
 			if opt == "" {
@@ -245,19 +218,84 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 	return nil
 }
 
-// modifyAttributeTUI provides a text UI for managing a model's element's attributes
-func modifyAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
+// modifyModelAttributesTUI provides a text UI for managing a model's attributes
+func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer) error {
 	readBuffer := bufio.NewReader(in)
-	elem, _ := model.GetElementById(elementId)
+	if model.Attributes == nil {
+		model.Attributes = map[string]string{}
+	}
 	for quit := false; !quit; {
-		attributeList := getAttributeIds(elem.Attributes)
+		attributeList := model.GetAttributeIds()
 		menu, opt := selectMenuItem(in, out,
-			"Enter menu command and element id",
-			"[a]dd, [m]odify, [r]emove, [q]uit editing",
+			TuiStandardMenuHelp, TuiStandardMenu,
 			attributeList, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
+		var ok bool
+		opt, ok = getIdFromList(attributeList, opt)
+		switch menu {
+		case "a":
+			if opt == "" {
+				fmt.Fprintf(out, "Enter attribute name: ")
+				opt = getAnswer(readBuffer, "", true)
+			}
+			if !isValidVarname(opt) {
+				fmt.Fprint(eout, "%q is not a valid attribute name\n", opt)
+			} else {
+				model.Attributes[opt] = ""
+				model.isChanged = true
+			}
+		case "m":
+			if opt == "" {
+				fmt.Fprintf(out, "Enter attribute name: ")
+				opt = getAnswer(readBuffer, "", true)
+			}
+			fmt.Fprintf(out, "Enter %s's value: ", opt)
+			val := getAnswer(readBuffer, "", false)
+			if val != "" {
+				model.Attributes[opt] = val
+				model.isChanged = true
+			}
+		case "r":
+			if opt == "" {
+				fmt.Fprintf(out, "Enter attribute name to remove: ")
+				opt = getAnswer(readBuffer, "", true)
+				opt, ok = getIdFromList(attributeList, opt)
+			}
+			if ok {
+				if _, ok := model.Attributes[opt]; ok {
+					delete(model.Attributes, opt)
+					model.isChanged = true
+				}
+			} 
+			if ! ok {
+				fmt.Fprintf(eout, "failed to find %q in attributes\n", opt)
+			}
+		case "q":
+			quit = true
+		default:
+			fmt.Fprintf(eout, "failed to underand %q\n", opt)
+		}
+	}
+	return nil
+}
+
+
+// modifyElementAttributesTUI provides a text UI for managing a model's element's attributes
+func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
+	readBuffer := bufio.NewReader(in)
+	elem, _ := model.GetElementById(elementId)
+	for quit := false; !quit; {
+		var ok bool
+		attributeList := getAttributeIds(elem.Attributes)
+		menu, opt := selectMenuItem(in, out,
+			TuiStandardMenuHelp, TuiStandardMenu,
+			attributeList, "", "", true)
+		if len(menu) > 0 {
+			menu = menu[0:1]
+		}
+		opt, ok = getIdFromList(attributeList, opt)
 		switch menu {
 		case "a":
 			if opt == "" {
@@ -285,12 +323,16 @@ func modifyAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writ
 			if opt == "" {
 				fmt.Fprintf(out, "Enter attribute name to remove: ")
 				opt = getAnswer(readBuffer, "", true)
+				opt, ok = getIdFromList(attributeList, opt)
 			}
-			if _, ok := elem.Attributes[opt]; ok {
-				delete(elem.Attributes, opt)
-				elem.isChanged = true
-			} else {
-				fmt.Fprintf(eout, "failed to find %q in attributeds\n", opt)
+			if ok {
+				if _, ok = elem.Attributes[opt]; ok {
+					delete(elem.Attributes, opt)
+					elem.isChanged = true
+				}
+			} 
+			if ! ok {
+				fmt.Fprintf(eout, "failed to find %q in attributes\n", opt)
 			}
 		case "q":
 			quit = true
@@ -313,15 +355,14 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 	for quit := false; !quit; {
 		attributeList := getAttributeIds(elem.Attributes)
 		menu, attr := selectMenuItem(in, out,
-			"Enter the menu letter to modify element",
-			"",
+			"Select menu item to model properties",
+			"Menu [t]ype, [p]attern, [a]ttributes, [o]bject id flag, [q]uit (making changes)",
 			[]string{
-				fmt.Sprintf("id %s\n", elementId),
-				fmt.Sprintf("[t]ype %s\n", elem.Type),
-				fmt.Sprintf("[p]attern %s\n", elem.Pattern),
-				fmt.Sprintf("[a]ttributes (%s)\n", strings.Join(attributeList, ", ")),
-				fmt.Sprintf("[m]odel identifier is set to %t\n", elem.IsObjectId),
-				fmt.Sprintf("[q]uit editing\n"),
+				fmt.Sprintf("id %s", elementId),
+				fmt.Sprintf("type %s", elem.Type),
+				fmt.Sprintf("pattern %s", elem.Pattern),
+				fmt.Sprintf("attributes %s", strings.Join(attributeList, "\n\t\t")),
+				fmt.Sprintf("is object id %t", elem.IsObjectId),
 			},
 			"", "", true)
 		if len(menu) > 0 {
@@ -356,10 +397,10 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				model.isChanged = true
 			}
 		case "a":
-			if err := modifyAttributesTUI(model, in, out, eout, elementId); err != nil {
+			if err := modifyElementAttributesTUI(model, in, out, eout, elementId); err != nil {
 				fmt.Fprintf(eout, "%s\n", err)
 			}
-		case "m":
+		case "o":
 			elem.IsObjectId = !elem.IsObjectId
 			elem.isChanged = true
 		case "q":
@@ -395,8 +436,7 @@ func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model
 	for quit := false; !quit; {
 		elementList := model.GetElementIds()
 		menu, opt := selectMenuItem(in, out,
-			"Enter menu command and element id",
-			"Menu [a]dd, [m]odify, [r]emove, [q]uit editing",
+			TuiStandardMenuHelp, TuiStandardMenu,
 			elementList, "", "", true)
 		if len(menu) > 1 {
 			menu = menu[0:1]
@@ -430,15 +470,15 @@ func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model
 				opt = getAnswer(readBuffer, "", false)
 				elementId, ok = getIdFromList(elementList, opt)
 			}
-			if err := removeElementFromModel(model, elementId); err != nil {
-				fmt.Fprintf(eout, "ERROR (%q): %s\n", elementId, err)
-			}
-			elementList = model.GetElementIds()
+			if ok {
+				if err := removeElementFromModel(model, elementId); err != nil {
+					fmt.Fprintf(eout, "ERROR (%q): %s\n", elementId, err)
+				}
+			} 
 		case "q":
 			quit = true
 		case "":
 			// do nothing, redisplay list
-			elementList = model.GetElementIds()
 		default:
 			fmt.Fprintf(eout, "\n\nERROR: Did not understand %q\n\n", answer)
 		}
@@ -469,8 +509,8 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 	}
 	for quit := false; !quit; {
 		menu, opt := selectMenuItem(in, out,
-			"Enter menu command and model id",
-			"Menu [a]dd, [m]odify, [r]emove, [s]ave, [q]uit editing",
+			TuiStandardMenuHelp,
+			TuiStandardMenu,
 			modelList, "", "", true)
 		if len(menu) > 1 {
 			menu = menu[0:1]
@@ -508,10 +548,6 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 				fmt.Fprintf(eout, "ERROR (%q): %s\n", modelId, err)
 			}
 			modelList = ast.GetModelIds()
-		case "s":
-			if err := saveModelsRoutesAndTemplates(configName, ast); err != nil {
-				fmt.Fprintf(eout, "ERROR: %s\n", err)
-			}
 		case "q":
 			quit = true
 		case "":

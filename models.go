@@ -21,7 +21,7 @@ type Model struct {
 	// This is a Newt specifc set of attributes to place in the form element of HTML. I.e. it could
 	// be form "class", "method", "action", "encoding". It is not defined in the GitHub YAML issue template syntax
 	// (optional)
-	Attributes map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
+	Attributes map[string]string `json:"attributes,omitempty" yaml:"attributes,omitempty"`
 
 	// Description, A description for the issue form template, which appears in the template chooser interface.
 	// (required)
@@ -72,6 +72,12 @@ func (m *Model) GetModelIdentifier() (*Element, bool) {
 	}
 	return nil, false
 }
+
+// GetAttributeIds returns a slice of attribute ids found in the model's .Elements
+func (m *Model) GetAttributeIds() []string {
+	return getAttributeIds(m.Attributes)
+}
+
 
 // GetElementIds returns a slice of element ids found in the model's .Elements
 func (m *Model) GetElementIds() []string {

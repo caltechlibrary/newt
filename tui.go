@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+const (
+	TuiStandardMenuHelp = `Enter menu letter and id`
+	TuiStandardMenu = `Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)`
+)
+
 // getAnswer get a Y/N response from buffer
 func getAnswer(buf *bufio.Reader, defaultAnswer string, lower bool) string {
 	answer, err := buf.ReadString('\n')

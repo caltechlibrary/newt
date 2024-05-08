@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 )
 
 // setupRouter prompt to configure the Router
@@ -401,16 +400,45 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 		if ast.Applications.Environment == nil {
 			ast.Applications.Environment = []string{}
 		}
-		if len(ast.Applications.Environment) > 0 {
-			fmt.Fprintf(out, "You currently have the following environment defined:\n\t%s\n",
-				strings.Join(ast.Applications.Environment, "\n\t"))
-		}
-		fmt.Fprintf(out, "Enter the environment variable name (one per line, enter empty line when complete):\n")
-		answer = " "
-		for answer != "" {
-			answer = getAnswer(buf, "", false)
-			if answer != "" {
-				ast.Applications.Environment = append(ast.Applications.Environment, answer)
+		for quit := false; !quit; {
+			menu, opt := selectMenuItem(buf, out,
+				"Enter menu command and environment name",
+				"Menu [a]dd, [r]emove, [q]uit (making changes)",
+					ast.Applications.Environment, "", "", true)
+			if val, ok := getIdFromList(ast.Applications.Environment, opt); ok {
+				opt = val
+			}
+			if len(menu) > 0 {
+				menu = menu[0:1]
+			}
+			switch menu {
+				case "a":
+				   if opt == "" {
+					   fmt.Fprintf(out, "Enter environment name to include: ")
+					   opt = getAnswer(buf, "", false)
+				   }
+				   if opt != "" {
+						ast.Applications.Environment = append(ast.Applications.Environment, opt)
+						ast.isChanged = true
+				   }
+				case "r":
+					if opt == "" {
+						fmt.Fprintf(out, "Enter environment name to remove: ")
+					    opt = getAnswer(buf, "", false)
+					}
+					if opt != "" {
+						pos, ok := getItemNoFromList(ast.Applications.Environment, opt)
+						if ok {
+							ast.Applications.Environment = append(ast.Applications.Environment[:pos], ast.Applications.Environment[(pos+1):]...)
+							ast.isChanged = true
+						}
+					}
+				case "q":
+					quit = true
+				case "":
+					// do nothing
+				default:
+					fmt.Fprint(out, "do not understand %q\n", menu)
 			}
 		}
 	}
@@ -428,23 +456,45 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 		if ast.Applications.Options == nil {
 			ast.Applications.Options = map[string]string{}
 		}
-		if len(ast.Applications.Options) > 0 {
-			fmt.Fprintf(out, "You currently have the following options defined:\n")
-			for k, v := range ast.Applications.Options {
-				fmt.Fprintf(out, "\t%s -> %q\n", k, v)
+		for quit := false; !quit; {
+			optionsList := getAttributeIds(ast.Applications.Options)
+			menu, opt := selectMenuItem(buf, out,
+				"Enter menu command and option name",
+				"Menu [a]dd, [r]emove, [q]uit (making changes)",
+					optionsList, "", "", true)
+			if val, ok := getIdFromList(optionsList, opt); ok {
+				opt = val
 			}
-		}
-		fmt.Fprintf(out, "Enter the options (separated key/value by colon, enter empty line when complete):\n")
-		answer = " "
-		for answer != "" {
-			answer = getAnswer(buf, "", false)
-			if strings.Contains(answer, ":") {
-				parts := strings.SplitN(answer, ":", 2)
-				k := strings.ReplaceAll(strings.TrimSpace(parts[0]), " ", "_")
-				v := strings.TrimSpace(parts[1])
-				ast.Applications.Options[k] = v
-			} else if answer != "" {
-				fmt.Fprintf(out, "%q is missing a colon, can't tell key from value, try again\n", answer)
+			if len(menu) > 0 {
+				menu = menu[0:1]
+			}
+			switch menu {
+				case "a":
+				   if opt == "" {
+					   fmt.Fprintf(out, "Enter option name: ")
+					   opt = getAnswer(buf, "", false)
+				   }
+				   fmt.Fprintf(out, "Enter option value: ")
+				   val := getAnswer(buf, "", false)
+				   if opt != "" && val != ""{
+					    ast.Applications.Options[opt] = val
+						ast.isChanged = true
+				   }
+				case "r":
+					if opt == "" {
+						fmt.Fprintf(out, "Enter option name to remove: ")
+					    opt = getAnswer(buf, "", false)
+					}
+					if opt != "" {
+						delete(ast.Applications.Options, opt)
+						ast.isChanged = true
+					}
+				case "q":
+					quit = true
+				case "":
+					// do nothing
+				default:
+					fmt.Fprint(out, "do not understand %q\n", menu)
 			}
 		}
 	}
