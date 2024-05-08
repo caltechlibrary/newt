@@ -1,16 +1,20 @@
 templates:
-  - request: GET /hello/{name}
+  - id: hello
+    request: GET /hello/{name}
     template: testdata/simple.mustache
-  - request: GET /hello
+  - id: hello
+    request: GET /hello
     template: testdata/simple.mustache
     options:
       name: Universe
-  - request: GET /hi/{name}
+  - id: hi
+    request: GET /hi/{name}
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache
     debug: true
-  - request: GET /hi
+  - id: hi
+    request: GET /hi
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache

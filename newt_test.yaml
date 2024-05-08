@@ -33,5 +33,6 @@ routes:
       - service: POST http://localhost:8002/newt_test.mustache
     debug: true
 templates:
-  - request: POST /newt_test.mustache
+  - id: newt_test
+    request: POST /newt_test.mustache
     template: newt_test.mustache
