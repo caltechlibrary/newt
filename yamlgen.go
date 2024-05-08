@@ -11,9 +11,14 @@ import (
 )
 
 // setupRouter prompt to configure the Router
-func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
-	fmt.Fprintf(out, "Will %s use Newt Router (Y/n)? ", appFName)
-	answer := getAnswer(buf, "y", true)
+func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "y"
+	} else {
+		fmt.Fprintf(out, "Will %s use Newt Router (Y/n)? ", appFName)
+		answer = getAnswer(buf, "y", true)
+	}
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = &Applications{}
@@ -42,9 +47,14 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
 }
 
 // setupPostgREST prompt to configure PostgREST
-func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
-	fmt.Fprintf(out, "Will %s use PostgREST (Y/n)? ", appFName)
-	answer := getAnswer(buf, "y", true)
+func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "y"
+	} else {
+		fmt.Fprintf(out, "Will %s use PostgREST (Y/n)? ", appFName)
+		answer = getAnswer(buf, "y", true)
+	}
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = &Applications{}
@@ -65,9 +75,14 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string)
 }
 
 // setupPostgres prompt to configure Postgres
-func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
-	fmt.Fprintf(out, "Will %s use Postgres (Y/n)? ", appFName)
-	answer := getAnswer(buf, "y", true)
+func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "y"
+	} else {
+		fmt.Fprintf(out, "Will %s use Postgres (Y/n)? ", appFName)
+		answer = getAnswer(buf, "y", true)
+	}
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = &Applications{}
@@ -101,9 +116,14 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) 
 	}
 }
 
-func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
-	fmt.Fprintf(out, "Will %s use Newt Mustache (Y/n)? ", appFName)
-	answer := getAnswer(buf, "y", true)
+func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "y"
+	} else {
+		fmt.Fprintf(out, "Will %s use Newt Mustache (Y/n)? ", appFName)
+		answer = getAnswer(buf, "y", true)
+	}
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = &Applications{}
@@ -156,9 +176,14 @@ func setupMustacheTemplateHandlers(ast *AST) error {
 	return nil
 }
 
-func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
-	fmt.Fprintf(out, "Will %s use Newt Generator (Y/n)? ", appFName)
-	answer := getAnswer(buf, "y", true)
+func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "y"
+	} else {
+		fmt.Fprintf(out, "Will %s use Newt Generator (Y/n)? ", appFName)
+		answer = getAnswer(buf, "y", true)
+	}
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = &Applications{}
@@ -364,9 +389,14 @@ func setupReadHandling(ast *AST, model *Model, action string) error {
 	return nil
 }
 
-func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
-	fmt.Fprintf(out, "Will %s need to import environment variables (y/N)? ", appFName)
-	answer := getAnswer(buf, "n", true)
+func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "n"
+	} else {
+		fmt.Fprintf(out, "Will %s need to import environment variables (y/N)? ", appFName)
+		answer = getAnswer(buf, "n", true)
+	}
 	if answer == "y" {
 		if ast.Applications.Environment == nil {
 			ast.Applications.Environment = []string{}
@@ -386,9 +416,14 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 	}
 }
 
-func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string) {
-	fmt.Fprintf(out, "Will %s provide options to the services (y/N)? ", appFName)
-	answer := getAnswer(buf, "n", true)
+func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "n"
+	} else {
+		fmt.Fprintf(out, "Will %s provide options to the services (y/N)? ", appFName)
+		answer = getAnswer(buf, "n", true)
+	}
 	if answer == "y" {
 		if ast.Applications.Options == nil {
 			ast.Applications.Options = map[string]string{}

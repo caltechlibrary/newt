@@ -1,6 +1,6 @@
 ---
-title: mustache(1) user manual | 0.0.8 40b7f53
-pubDate: 2024-05-06
+title: mustache(1) user manual | 0.0.8 e94052f
+pubDate: 2024-05-07
 author: R. S. Doiel
 ---
 

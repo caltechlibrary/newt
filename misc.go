@@ -24,4 +24,15 @@ func inList(target string, list []string) bool {
 	return false
 }
 
+// getAttributeIds returns a list of attribue keys in a maps[string]interface{} structure
+func getAttributeIds(m map[string]string) []string {
+	ids := []string{}
+	for k, _ := range m {
+		if k != "" {
+			ids = append(ids, k)
+		}
+	}
+	return ids
+}
+
 

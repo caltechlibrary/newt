@@ -74,23 +74,31 @@ func backupFile(appFName string) error {
 }
 
 // getNewtYamlFName - figure out what the Newt YAML filename should be.
+// If no filename is provided use the default "app.yaml".
 func getNewtYamlFName(args []string) string {
 	fName := ""
-	if len(args) > 0 {
-		fName = args[0]
+	for _, arg := range args {
+		arg = strings.TrimSpace(arg)
+		if arg != "" && !strings.HasPrefix(arg, "-") {
+			fName = arg
+			break
+		}
 	}
 	if fName == "" {
-		s, err := os.Getwd()
-		if err == nil {
-			s = path.Base(s)
-		}
-		if s != "" {
-			fName = strings.ToLower(strings.ReplaceAll(s, " ", "_")) + ".yaml"
-		} else {
-			fName = "app.yaml"
-		}
+		fName = "app.yaml"
 	}
 	return fName
+}
+
+// hasArg - review args and see if the use option is in the list. If
+// hasArg is found then true is returned if not false.
+func hasArg(option string, args []string) bool {
+	for _, arg := range args {
+		if strings.ToLower(arg) == option {
+			return true
+		}
+	}
+	return false
 }
 
 func renderTemplate(generator *NewtGenerator, tType string, modelID string, action string, fName string) error {
@@ -603,35 +611,41 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 		fmt.Fprintf(eout, "missing Newt YAML Filename\n")
 		return INIT_FAIL
 	}
-	if _, err := os.Stat(appFName); err == nil {
-		ast, err = LoadAST(appFName)
-		fmt.Fprintf(out, "%q already exists, continue (y/N)? ", appFName)
-		answer = getAnswer(readBuffer, "n", true)
-		if answer != "y" {
-			fmt.Fprintf(eout, "aborting: newt init %q\n", appFName)
-			return INIT_FAIL
-		}
-	} else if len(args) <= 1 {
-		fmt.Fprintf(out, "Create %q (Y/n)? ", appFName)
-		answer = getAnswer(readBuffer, "y", true)
-		if answer != "y" {
-			fmt.Fprintf(eout, "aborting creation of %q\n", appFName)
-			return INIT_FAIL
-		}
-	} 
+	skipPrompts := hasArg("-y", args)
+	if skipPrompts {
+		answer = "y"
+	}
+	if ! skipPrompts {
+		if _, err := os.Stat(appFName); err == nil {
+			ast, err = LoadAST(appFName)
+			fmt.Fprintf(out, "%q already exists, continue (y/N)? ", appFName)
+			answer = getAnswer(readBuffer, "n", true)
+			if answer != "y" {
+				fmt.Fprintf(eout, "aborting: newt init %q\n", appFName)
+				return INIT_FAIL
+			}
+		} else if len(args) <= 1 {
+			fmt.Fprintf(out, "Create %q (Y/n)? ", appFName)
+			answer = getAnswer(readBuffer, "y", true)
+			if answer != "y" {
+				fmt.Fprintf(eout, "aborting creation of %q\n", appFName)
+				return INIT_FAIL
+			}
+		} 
+	}
 	// Step 2. Decide which services you're going to use (a .Applications will need to exist).
 	if ast.Applications == nil {
 		ast.Applications = new(Applications)
 	}
 	for {
 		//FIXME: Each of these should reflect the current model list in ast.
-		setupRouter(ast, readBuffer, out, appFName)
-		setupPostgres(ast, readBuffer, out, appFName)
-		setupPostgREST(ast, readBuffer, out, appFName)
-		setupNewtMustache(ast, readBuffer, out, appFName)
-		setupNewtGenerator(ast, readBuffer, out, appFName)
-		setupEnvironment(ast, readBuffer, out, appFName)
-		setupOptions(ast, readBuffer, out, appFName)
+		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
+		setupPostgres(ast, readBuffer, out, appFName, skipPrompts)
+		setupPostgREST(ast, readBuffer, out, appFName, skipPrompts)
+		setupNewtMustache(ast, readBuffer, out, appFName, skipPrompts)
+		setupNewtGenerator(ast, readBuffer, out, appFName, skipPrompts)
+		setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
+		setupOptions(ast, readBuffer, out, appFName, skipPrompts)
 
 		// Now output the YAML
 		_, err := ast.Encode()
@@ -639,8 +653,12 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 			fmt.Fprintf(eout, "Failed to generate %s, %s\n", appFName, err)
 			return INIT_FAIL
 		}
-		fmt.Fprintf(out, "Save and exit (Y/n)? ")
-		answer = getAnswer(readBuffer, "y", true)
+		if skipPrompts {
+			answer = "y"
+		} else {
+			fmt.Fprintf(out, "Save and exit (Y/n)? ")
+			answer = getAnswer(readBuffer, "y", true)
+		}
 		if answer == "y" {
 			// We're ready to write out result.
 			// If file exists make a back up copy

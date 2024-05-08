@@ -29,7 +29,7 @@ type Model struct {
 
 	// Elements, Definition of the input types in the form.
 	// (required)
-	Elements []*Element `json:"body,required" yaml:"body,omitempty"`
+	Elements []*Element `json:"elements,required" yaml:"elements,omitempty"`
 
 	// Title, A default title that will be pre-populated in the issue submission form.
 	// (optional)
@@ -66,7 +66,7 @@ func (model *Model) HasElement(elementId string) bool {
 // Returns the element and a boolean set to true if found.
 func (m *Model) GetModelIdentifier() (*Element, bool) {
 	for _, e := range m.Elements {
-		if e.IsModelIdentifier {
+		if e.IsObjectId {
 			return e, true
 		}
 	}
@@ -121,9 +121,18 @@ type Element struct {
 	// HTML content. Other commonly use attributes
 	Attributes map[string]string `json:"attributes,omitempty" yaml:"attributes,omitempty"`
 
-	// IsModelIdentifier is used by the modeler and config object to know which id values to embed
-	// in routes and templates as the identifier for an object.
-	IsModelIdentifier bool `json:"is_model_identifier,omitempty" yaml:"is_model_identifier,omitempty"`
+	// Pattern holds a validation pattern. When combined with an input type (or input type alias, e.g. orcid)
+	// produces a form element that sports a specific client side validation exceptation.  This intern can be used
+	// to generate appropriate validation code server side. 
+	Pattern string `json:"pattern,omitempty" yaml:"pattern,omitempty"`
+
+	// Choices holds the value and their labels used for select elements and their option child elements, 
+	Choices []map[string]string `json:"choices,omitempty" yaml:"choices,omitempty"`
+
+    
+	// IsObjectId (e.g. primary key) used by for the modeled data.
+	// It is used in calculating routes and templates where the object identifier is required.
+	IsObjectId bool `json:"is_object_id,omitempty" yaml:"is_object_id,omitempty"`
 
 	//
 	// These fields are used by the modeler to manage the models and their elements
@@ -172,7 +181,7 @@ func NewElement(elementId string) (*Element, error) {
 	element.Attributes = map[string]string{ "name": elementId }
 	element.Type = "input"
 	element.Attributes["title"] = "... element description text goes here ..."
-	element.IsModelIdentifier = false
+	element.IsObjectId = false
 	element.isChanged = true
 	return element, nil
 }
@@ -190,7 +199,7 @@ func NewModel(modelId string) (*Model, error) {
 	// Make the required element ...
 	element := new(Element)
 	element.Id = "oid"
-	element.IsModelIdentifier = true
+	element.IsObjectId = true
 	element.Type = "input"
 	element.Attributes = map[string]string{"readonly": "true"}
 	if err := model.InsertElement(0, element); err != nil {
@@ -220,7 +229,7 @@ func (model *Model) Check(buf io.Writer) bool {
 				fmt.Fprintf(buf, "error for %s.%s\n", model.Id, e.Id)
 				ok = false
 			}
-			if e.IsModelIdentifier {
+			if e.IsObjectId {
 				if hasModelId == true {
 					fmt.Fprintf(buf, "duplicate model identifier element (%d) %s.%s\n", i, model.Id, e.Id)
 					ok = false
