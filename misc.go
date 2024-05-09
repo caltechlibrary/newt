@@ -3,8 +3,9 @@ package newt
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 //
@@ -56,6 +57,10 @@ func getIdFromList(list []string, id string) (string, bool) {
 				mNo = 0
 			}
 			if mNo < len(list) {
+				if strings.Contains(list[mNo], " ") {
+					parts := strings.SplitN(list[mNo], " ", 2)
+					return parts[0], true
+				}
 				return list[mNo], true
 			}
 		}

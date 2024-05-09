@@ -96,43 +96,18 @@ func saveModelsRoutesAndTemplates(configName string, ast *AST) error {
 }
 
 // normalizeInputType takes a string and returns a normlized input type
-// e.g. calendar -> input[type=date], email -> input[type=email], url -> input[type=url]
+// (e.g. lowercased and spaces trim) and if the type is an alias
+// then a pattern is returned along with the normalized type.
+// e.g. DATE -> date,""
+//      eMail -> email, ""
+//      ORCID -> orcid, "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9A-Z]"
 func normalizeInputType(inputType string) (string, string) {
-	// This is the map of input type normalization, if map target isn't found it just passes through
-	typeMap := map[string]string{
-		"calendar":       "input[type=date]",
-		"checkbox":       "input[type=checkbox]",
-		"color":          "input[type=color]",
-		"button":         "input[type=butten]",
-		"datetime-local": "input[type=datetime-local]",
-		"email":          "input[type=email]",
-		// NOTE: File isn't supported by Newt, this is just included for completeness
-		"file":     "input[type=file]",
-		"hidden":   "input[type=hidden]",
-		"month":    "input[type=month]",
-		"number":   "input[type=number]",
-		"password": "input[type=password]",
-		"radio":    "input[type=radio]",
-		"range":    "input[type=range]",
-		"search":   "input[type=search]",
-		"reset":    "input[type=reset]",
-		"submit":   "input[type=submit]",
-		"tel":      "input[type=tel]",
-		"text":     "input[type=text]",
-		"time":     "input[type=time]",
-		"url":      "input[type=url]",
-		"week":     "input[type=week]",
-		// NOTE: what follows is a proof of concept for GLAM identifier implementation.
-		"orcid": "input[type=text]",
-	}
 	patternMap := map[string]string{
+		// This is where we put the aliases to common regexp validated patterns
 		"orcid": "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9A-Z]",
 	}
-	val, ok := typeMap[inputType]
-	if !ok {
-		val = inputType
-	}
-	if pattern, ok := patternMap[inputType]; ok {
+	val := strings.TrimSpace(strings.ToLower(inputType))
+	if pattern, ok := patternMap[val]; ok {
 		return val, pattern
 	}
 	return val, ""
@@ -224,10 +199,13 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 		model.Attributes = map[string]string{}
 	}
 	for quit := false; !quit; {
-		attributeList := model.GetAttributeIds()
+		attributeList := []string{}
+		for k, v := range model.Attributes{
+			attributeList = append(attributeList, fmt.Sprintf("%s -> %q", k, v))
+		}
 		menu, opt := selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s attributes", model.Id), TuiStandardMenu,
-			attributeList, true, "", "", true)
+			attributeList, false, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
@@ -287,7 +265,10 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 	elem, _ := model.GetElementById(elementId)
 	for quit := false; !quit; {
 		var ok bool
-		attributeList := getAttributeIds(elem.Attributes)
+		attributeList := []string{}
+		for k, v := range elem.Attributes {
+			attributeList = append(attributeList, fmt.Sprintf("%s -> %q", k, v))
+		}
 		menu, opt := selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s attributes", model.Id, elementId), TuiStandardMenu,
 			attributeList, true, "", "", true)

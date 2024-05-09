@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 // setupRouter prompt to configure the Router
@@ -34,7 +35,46 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 				ast.Applications.Router.Htdocs = ""
 			}
 		}
-
+		for quit := false; ! quit; {
+			menuList := []string {
+		   		fmt.Sprintf("Set [p]ort: %d", ast.Applications.Router.Port),
+		   		fmt.Sprintf("Set [h]tdocs: %q", ast.Applications.Router.Htdocs),
+			}
+			menu, opt := selectMenuItem(buf, out, 
+		   		"Manage Newt Router Settings",
+		   		"Type menu letter and press enter to modify or press enter when done",
+				menuList, false, "", "", true)
+			if len(menu) > 0 {
+				menu = menu[0:1]
+			}
+			switch menu {
+			case "p":
+				if opt == "" {
+					opt = getAnswer(buf, strconv.Itoa(ROUTER_PORT), true)
+				}
+				port, err := strconv.Atoi(opt)
+				if err != nil {
+					fmt.Fprintf(out, "ERROR: port number post be an integer, got %q\n", opt)
+				} else {
+					ast.Applications.Router.Port = port
+					ast.isChanged = true
+				}
+			case "h":
+				if opt == "" {
+					opt = getAnswer(buf, "", false)
+				}
+				if ast.Applications.Router.Htdocs != opt {
+					ast.Applications.Router.Htdocs = opt
+					ast.isChanged = true
+				}
+			case "q":
+				quit = true
+			case "":
+			  	quit = true
+			default:
+				fmt.Fprintf(out, "failed to understand %q\n", menu)
+			}
+		}
 		if ast.Routes == nil {
 			ast.Routes = []*Route{}
 		}
@@ -65,6 +105,57 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 			ast.Applications.PostgREST.Port = POSTGREST_PORT
 			ast.Applications.PostgREST.AppPath = "postgrest"
 			ast.Applications.PostgREST.ConfPath = "postgrest.conf"
+		}
+		for quit := false; ! quit; {
+			menuList := []string {
+				fmt.Sprintf("Set [p]ort: %d", ast.Applications.PostgREST.Port),
+				fmt.Sprintf("Set [a]pp path: %q", ast.Applications.PostgREST.AppPath),
+				fmt.Sprintf("Set [c]onf path: %q", ast.Applications.PostgREST.ConfPath),
+			}
+			menu, opt := selectMenuItem(buf, out,
+		   		"Manage PostgREST Settings",
+		   		"Type menu letter and press enter to modify or press enter when done",
+				menuList, false, "", "", true)
+			if len(menu) > 0 {
+				menu = menu[0:1]
+			}
+			switch menu {
+				case "p":
+					if opt == "" {
+						opt = getAnswer(buf, strconv.Itoa(POSTGREST_PORT), true)
+					}
+					port, err := strconv.Atoi(opt)
+					if err != nil {
+						fmt.Fprint(out, "ERROR: port number must be an intereger, got %q\n", opt)
+					} else {
+						ast.Applications.PostgREST.Port = port
+						ast.isChanged = true
+					}
+				case "a":
+					if opt == "" {
+						fmt.Fprintf(out, "Enter the path to PostgREST application (an empty path is OK): ")
+						opt = getAnswer(buf, "", false)
+					}
+					if ast.Applications.PostgREST.AppPath != opt {
+						ast.Applications.PostgREST.AppPath = opt
+						ast.isChanged = true
+					}
+				case "c":
+					if opt == "" {
+						fmt.Fprintf(out, "Enter the path to PostgREST configuration (an empty path is OK): ")
+						opt = getAnswer(buf, "", false)
+					}
+					if ast.Applications.PostgREST.ConfPath != opt {
+						ast.Applications.PostgREST.ConfPath = opt
+						ast.isChanged = true
+					}
+				case "q":
+					quit = true
+				case "":
+					quit = true
+				default:
+					fmt.Fprintf(out, "failed to understand request, %q\n", menu)
+			}
 		}
 	} else {
 		if ast.Applications != nil {
@@ -105,6 +196,47 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 				Namespace: appFName,
 			}
 		}
+		for quit := false; ! quit; {
+			menuList := []string {
+				fmt.Sprintf("Set [p]ort: %d", ast.Applications.Postgres.Port),
+				fmt.Sprintf("Set [d]sn (data source name): %q", ast.Applications.Postgres.DSN),
+			}
+			menu, opt := selectMenuItem(buf, out,
+		   		"Manage Postgres Settings",
+		   		"Type menu letter and press enter to modify or press enter when done",
+				menuList, false, "", "", true)
+			if len(menu) > 0 {
+				menu = menu[0:1]
+			}
+			switch menu {
+				case "p":
+					if opt == "" {
+						opt = getAnswer(buf, strconv.Itoa(POSTGRES_PORT), true)
+					}
+					port, err := strconv.Atoi(opt)
+					if err != nil {
+						fmt.Fprint(out, "ERROR: port number must be an intereger, got %q\n", opt)
+					} else {
+						ast.Applications.PostgREST.Port = port
+						ast.isChanged = true
+					}
+				case "d":
+					if opt == "" {
+						fmt.Fprintf(out, "Enter DSN in uri form: ")
+						opt = getAnswer(buf, "", false)
+					}
+					if ast.Applications.PostgREST.DSN != opt {
+						ast.Applications.PostgREST.DSN = opt
+						ast.isChanged = true
+					}
+				case "q":
+					quit = true
+				case "":
+					quit = true
+				default:
+					fmt.Fprintf(out, "failed to understand request, %q\n", menu)
+			}
+		}
 	} else {
 		if ast.Applications != nil {
 			ast.Applications.Postgres = nil
@@ -142,6 +274,37 @@ func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName stri
 				fmt.Fprintf(out, "WARNINGS: %s\n", err)
 			}
 		}
+		for quit := false; ! quit; {
+			menuList := []string {
+				fmt.Sprintf("Set [p]ort: %d", ast.Applications.PostgREST.Port),
+			}
+			menu, opt := selectMenuItem(buf, out,
+		   		"Manage Newt Mustache Settings",
+		   		"Type menu letter and press enter to modify or press enter when done",
+				menuList, false, "", "", true)
+			if len(menu) > 0 {
+				menu = menu[0:1]
+			}
+			switch menu {
+				case "p":
+					if opt == "" {
+						opt = getAnswer(buf, strconv.Itoa(MUSTACHE_PORT), true)
+					}
+					port, err := strconv.Atoi(opt)
+					if err != nil {
+						fmt.Fprint(out, "ERROR: port number must be an intereger, got %q\n", opt)
+					} else {
+						ast.Applications.PostgREST.Port = port
+						ast.isChanged = true
+					}
+				case "q":
+					quit = true
+				case "":
+					quit = true
+				default:
+					fmt.Fprintf(out, "failed to understand request, %q\n", menu)
+			}
+		}
 	} else {
 		if ast.Applications != nil {
 			ast.Applications.NewtMustache = nil
@@ -176,31 +339,18 @@ func setupMustacheTemplateHandlers(ast *AST) error {
 }
 
 func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
-	var answer string
-	if skipPrompts {
-		answer = "y"
-	} else {
-		fmt.Fprintf(out, "Will %s use Newt Generator (Y/n)? ", appFName)
-		answer = getAnswer(buf, "y", true)
+	if ast.Applications == nil {
+		ast.Applications = &Applications{}
 	}
-	if answer == "y" {
-		if ast.Applications == nil {
-			ast.Applications = &Applications{}
-		}
-		if ast.Applications.NewtGenerator == nil {
-			ast.Applications.NewtGenerator = &Application{}
-		}
-		if ast.Applications.NewtGenerator.Namespace == "" {
-			ast.Applications.NewtGenerator.Namespace = appFName
-		}
-		if ast.Models == nil {
-			// FIXME: This is the same add adding a model in modeler.go so this code needs to be unified.
-			ast.Models = []*Model{}
-		}
-	} else {
-		if ast.Applications != nil {
-			ast.Applications.NewtGenerator = nil
-		}
+	if ast.Applications.NewtGenerator == nil {
+		ast.Applications.NewtGenerator = &Application{}
+	}
+	if ast.Applications.NewtGenerator.Namespace == "" {
+		ast.Applications.NewtGenerator.Namespace = appFName
+	}
+	if ast.Models == nil {
+		// FIXME: This is the same add adding a model in modeler.go so this code needs to be unified.
+		ast.Models = []*Model{}
 	}
 }
 
@@ -288,8 +438,15 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	templateId := mkName(model.Id, action, "")
 	routeList := ast.GetRouteIds()
 	routeId := mkName(objName, action, "")
-	if inList(routeId, routeList) || inList(templateId, templateList) {
-		return fmt.Errorf("routes and templates exist for %s %s", model.Id, action)
+	if inList(routeId, routeList) {
+		if err := ast.RemoveRouteById(routeId); err != nil {
+			return err
+		}
+	}
+	if inList(templateId, templateList) {
+		if err := ast.RemoveTemplateById(templateId); err != nil {
+			return err
+		}
 	}
 	
 	tSuffix := "_form.tmpl"
@@ -356,8 +513,15 @@ func setupReadHandling(ast *AST, model *Model, action string) error {
 	templateId := fmt.Sprintf("%s_%s", model.Id, action)
 	routeList := ast.GetRouteIds()
 	routeId := mkName(model.Id, action, "")
-	if inList(routeId, routeList) || inList(templateId, templateList) {
-		return fmt.Errorf("route or template exists for %s %s", model.Id, action)
+	if inList(routeId, routeList) {
+		if err := ast.RemoveRouteById(routeId); err != nil {
+			return err
+		}
+	}
+	if inList(templateId, templateList) {
+		if err := ast.RemoveTemplateById(templateId); err != nil {
+			return err
+		}
 	}
 	// Setup template for results of read request
 	tmplName := mkName(model.Id, action, ".tmpl")
@@ -402,7 +566,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 		}
 		for quit := false; !quit; {
 			menu, opt := selectMenuItem(buf, out,
-				"Enter menu command and environment name",
+				fmt.Sprintf("Manage Environment availability in %s", appFName),
 				"Menu [a]dd, [r]emove, [q]uit (making changes)",
 					ast.Applications.Environment, true, "", "", true)
 			if val, ok := getIdFromList(ast.Applications.Environment, opt); ok {
@@ -436,7 +600,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 				case "q":
 					quit = true
 				case "":
-					// do nothing
+					quit = true
 				default:
 					fmt.Fprint(out, "do not understand %q\n", menu)
 			}
@@ -457,11 +621,14 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 			ast.Applications.Options = map[string]string{}
 		}
 		for quit := false; !quit; {
-			optionsList := getAttributeIds(ast.Applications.Options)
+			optionsList := []string{}
+			for k, v := range ast.Applications.Options {
+				optionsList = append(optionsList, fmt.Sprintf("%s -> %q", k, v))
+			}
 			menu, opt := selectMenuItem(buf, out,
 				"Enter menu command and option name",
 				"Menu [a]dd, [r]emove, [q]uit (making changes)",
-					optionsList, true, "", "", true)
+					optionsList, false, "", "", true)
 			if val, ok := getIdFromList(optionsList, opt); ok {
 				opt = val
 			}
@@ -492,7 +659,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 				case "q":
 					quit = true
 				case "":
-					// do nothing
+					quit = true
 				default:
 					fmt.Fprint(out, "do not understand %q\n", menu)
 			}

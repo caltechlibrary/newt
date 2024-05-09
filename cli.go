@@ -617,10 +617,10 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 	}
 	if ! skipPrompts {
 		if _, err := os.Stat(appFName); err == nil {
-			fmt.Fprintf(out, "Opening %q", appFName)
+			fmt.Fprintf(out, "Opening %q\n", appFName)
 			ast, err = LoadAST(appFName)
 		} else if len(args) <= 1 {
-			fmt.Fprintf(out, "Creating %q", appFName)
+			fmt.Fprintf(out, "Creating %q\n", appFName)
 		} 
 	}
 	// Step 2. Decide which services you're going to use (a .Applications will need to exist).
