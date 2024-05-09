@@ -1,6 +1,6 @@
 ---
-title: newtrouter(1) user manual | 0.0.8 8453132
-pubDate: 2024-05-08
+title: newtrouter(1) user manual | 0.0.8 bc0d5e8
+pubDate: 2024-05-09
 author: R. S. Doiel
 ---
 
@@ -105,13 +105,13 @@ An example of a YAML file describing blog like application based on Postgres+Pos
 application:
   htdocs: htdocs
   environment:
-    - DB_USER
-    - DB_PASSWORD
+    - PGUSER
+    - PGPASSWORD
 #
 # Postgres+PostgREST is listening on port 3000
 # Newt Mustache template engine is listening on port 3032
 #
-# DB_USER and DB_PASSWORD required to access the PostgREST JSON API
+# PGUSER and PGPASSWORD required to access the PostgREST JSON API
 # so is passed in via the environment.
 routes:
   - id: retrieve_all_posts
@@ -120,7 +120,7 @@ routes:
     pipeline:
       - description: |
           Retrieve the blog posts order by descending date
-        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/view_all_posts
+        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/view_all_posts
       - description: render the posts using the list_posts.tmpl
         service: POST http://localhost:3032/list_posts.tmpl
   - id: retrieve_year posts
@@ -128,7 +128,7 @@ routes:
     description: This route retrieves all the posts in a specific year
     pipeline:
       - description: Retrieve the posts for a specific year
-        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/year_posts/{year}
+        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/year_posts/{year}
       - description: Turn the JSON list into a web page.
         service: POST http://localhost:3032/list_posts.tmpl
   - id: retrieve_month_posts
@@ -136,7 +136,7 @@ routes:
     description: This route retrieves all the posts in a specific year/month
     pipeline:
       - description: Retrieve the posts in the DB for year/month
-        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/month_posts/{year}/{month}
+        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/month_posts/{year}/{month}
       - description: Transform monthly list into web page
         service: POST http://localhost:3032/list_posts.tmpl
   - id: retrieve_day_posts
@@ -144,7 +144,7 @@ routes:
     description: Retrieve all the posts on a specific day
     pipeline:
       - description: Retrieve the posts happening on year/month/day
-        service: GET http://{DB_USER}:{DB_PASSWOR}@localhost:3000/rpc/day_posts/{year}/{month}/{day}
+        service: GET http://{PGUSER}:{PGPASSWOR}@localhost:3000/rpc/day_posts/{year}/{month}/{day}
       - description: Transform monthly list into web page
         service: POST http://localhost:3032/list_posts.tmpl
   - id: retrieve_recent_posts
@@ -152,7 +152,7 @@ routes:
     description: This route retrieves the recent 10 posts.
     pipeline:
       - description: Use the recent_post view to retrieve the recent posts in descending date order
-        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/rpc/recent_posts
+        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/recent_posts
       - description: Take the JSON for recent posts and turn it into a web page
         service: GET http://localhost:3032/list_posts.tmpl
   - id: retrieve_a_post
@@ -160,7 +160,7 @@ routes:
     description: Retrieve a specific host and display it
     pipeline:
       - description: retrieve the requested post from the blog path
-        service: GET http://{DB_USER}:{DB_PASSWORD}@localhost:3000/{year}/{month}/{day}/{title-slug}
+        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/{year}/{month}/{day}/{title-slug}
       - description: Turn the JSON into a web page
         service: GET http://localhost:3032/blog_post.tmpl
 ~~~

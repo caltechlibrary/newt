@@ -14,10 +14,14 @@
 ## Tutorials and reference materials (drafts)
 
 - Getting Started with Newt
-    - [Data modeling with Newt](newt_explained.md)
-    - [Newt's code generator](newtgenerator_explained.md)
-- [Newt Routing Explained](newtrouter_explained.md)
-- [Newt Mustache Explained](newtmustache_explained.md)
+    - [Newt Overview](newt_command_overview.md)
+    - [Configuring](newt_config_explained.md)
+    - [Modeling Data](newt_model_explained.md)
+    - [Checking your YAML](newt_check_explained.md)
+    - [Generating code](newt_generator_explained.md)
+- Running your Newt App
+    - [Newt Routing Explained](newtrouter_explained.md)
+    - [Newt Mustache Explained](newtmustache_explained.md)
 - [Have more questions?](more_questions.md)
 - [Reference Material](reference_material.md), links to prior art
 

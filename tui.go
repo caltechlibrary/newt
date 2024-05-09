@@ -55,11 +55,15 @@ func getAnswers(buf *bufio.Reader, defaultAnswer string, defaultValue string, lo
 
 // selectMenuItem displays a description, a list of menu items (selected by name or number)
 // returns the selected menu action and optional modify using getAnswers().
-func selectMenuItem(in io.Reader, out io.Writer, topMsg string, bottomMsg string, list []string, defaultAnswer string, defaultValue string, lower bool) (string, string) {
+func selectMenuItem(in io.Reader, out io.Writer, topMsg string, bottomMsg string, list []string, numberedList bool, defaultAnswer string, defaultValue string, lower bool) (string, string) {
 	readBuffer := bufio.NewReader(in)
 	fmt.Fprintf(out, "%s\n\n", topMsg)
 	for i, item := range list {
-		fmt.Fprintf(out, "\t%d: %s\n", (i+1), item)
+		if numberedList {
+			fmt.Fprintf(out, "\t%d: %s\n", (i+1), item)
+		} else {
+			fmt.Fprintf(out, "\t%s\n", item)
+		}
 	}
 	fmt.Fprintf(out, "\n%s\n", bottomMsg)
 	return getAnswers(readBuffer, defaultAnswer, defaultValue, lower)

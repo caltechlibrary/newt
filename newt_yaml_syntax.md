@@ -42,7 +42,7 @@ The applications properties are optional. Some maybe set via command line. See N
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
 
 `environment`
-: (optional) this is a list of operating system environment variables that will be available to models, routes and templates. You can use this to pass in secrets (e.g. credentials) to your pipelined services.
+: (optional) this is a list of operating system environment variables that will be available to models, routes and templates. You can use this to pass in secrets (e.g. credentials) to your pipelined services. The pairing of environment variable and value are merged into the options when Newt services start up.
 
 ### Configuring Newt programs
 
@@ -96,7 +96,7 @@ A pipeline is a list of web services containing a type, URL, method and content 
 
 ## the "models" property
 
-Models holds a list of individual models used by our data pipelines. The models are used by Newt code generator and the Newt router. Models were inspired by a subset of GitHub YAML issue template syntax (abbr: GHYTS). Models contain lists of elements, elements are descriptions of HTML5 input elements and their attributes.
+Models holds a list of individual models used by our data pipelines. The models are used by Newt code generator and the Newt router. Models were inspired by a subset of GitHub YAML issue template syntax (abbr: GHYITS). Models contain lists of elements, elements are descriptions of HTML5 input elements and their attributes.
 
 ### a model object
 
@@ -105,17 +105,17 @@ The model object is based largely on GitHub YAML issue template syntax with a co
 `id`
 : (required) this is the name identifying the model. It must conform to variable name rules[^21]
 
-The following properties are inspired by GitHub YAML issue template syntax[^22] (abbr: GHYTS)
+The following properties are inspired by GitHub YAML issue template syntax[^22] (abbr: GHYITS)
 
 `description`
-: (required: GHYTS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
+: (required: GHYITS, optional: newt) A human description of the model, It will appear in the web form and SQL components generated from the model
 
 `elements`
 : (required) A a list of input types. Each input type maps to columns in SQL, input element in web forms and or HTML elements in read only pages
 
 #### a model's input types
 
-This is based on HTML5 form input types. They were inspired by GitHub YAML issue template (abbr: GHYTS) input types[^23]. 
+This is based on HTML5 form input types. They were inspired by GitHub YAML issue template (abbr: GHYITS) input types[^23]. 
 
 `id`
 : (required) an identifier for the element. Must conform to variable name rules[^21]. It is used to SQL as a column name and in web forms for the input property.
@@ -126,19 +126,19 @@ This is based on HTML5 form input types. They were inspired by GitHub YAML issue
 `attributes`
 : (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML.
 
-is_model_identifier
-: (boolean, defaults to false) if true this element is used as the model identifier and must be unique.
+`primary_key`
+: (boolean, defaults to false) if true this element is treat as the object identifier or primary key. It used in routing and in generate SQL schema and queries.
 
 ## input types
 
 The model types supported in Newt are based on the HTML5 form input types. They are inspired by GHYITS scheme[^23]. Example
 types include
 
+`text`
+: A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation as `input[type=date]`.
+
 `textarea`
 : (models only) A multi-line text field
-
-`input`
-: A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `input[type=data]` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
 
 `dropdown`
 : A dropdown menu. In SQL this could render as an enumerated type. In HTML it would render as a drop down list
@@ -146,7 +146,24 @@ types include
 `checkboxes`
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
-Newt does NOT support the FILE input type because Newt applications do not support file uploads. Additional types maybe added in the future either through aliasing to input elements that validate with a regexp or web components.
+`email`
+: This conforms to a text string with validation for email format
+
+See <https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types> for more possibilities.
+
+IMPORTANT: Newt does NOT support the file input type because Newt applications do not support file uploads. 
+
+Newt extends support for additional identifiers used by galleries, libraries, archives and museum by generating the necessary
+validation at the SQL level and use regular expressions in the pattern attribute of HTML5 input elements.  When expressed as
+HTML these can be identified by the additional attribute "extended-type".
+
+orcid
+: This identifies the element as an ORCID. Server side validation will be generated at the SQL level and client side validation via HTML5 input element with pattern attribute.
+
+~~~html
+<input type="text" extended-type="orcid" pattern="[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9A-Z]">
+~~~
+
 
 ## Example Newt YAML for router and code generator
 
@@ -166,9 +183,9 @@ applications:
     app_path: /usr/local/bin/postgrest
     conf: people.conf
   environment:
-    - DB_USER
-    - DB_PASSWORD
-    - DB_HOST
+    - PGUSER
+    - PGPASSWORD
+    - PGHOST
 models:
   - id: people
     name: People Profiles
@@ -180,7 +197,6 @@ models:
         attributes:
           label: A unique person id, no spaces, alpha numeric
           placeholder: ex. jane-do-007
-        validations:
           required: true
       - id: display_name
         type: input
@@ -192,7 +208,6 @@ models:
         attributes:
           label: (required) A person's family name or singular when only one name exists
           placeholder: ex. Doe
-        validations:
           required: true
       - id: given_name
         type: input
@@ -200,22 +215,16 @@ models:
           label: (optional, encouraged) A person's given name
           placeholder: ex. Jane
       - id: orcid
-        type: input
+        type: orcid
         attributes:
           label: (optional) A person's ORCID identifier
           placeholder: ex. 0000-0000-0000-0000
-        validations:
-          pattern: "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
-      - id: ror
-        type: input
-        attributes:
-          label: (optional) A person's ROR identifing their affiliation
       - id: email
-        type: "input[type=email]"
+        type: email
         attributes:
           label: (optional) A person public email address
       - id: website
-        type: "input[type=url]"
+        type: url
         attributes:
           label: (optional) A person's public website
           placeholder: ex. https://jane.doe.example.org
@@ -284,7 +293,7 @@ routes:
 ## templates property
 
 This property is used by Newt Mustache. It allows Newt Mustache to map a POST to a specific template or
-template and set of paritals.
+template and set of partials.
 
 templates
 : (optional: newtmustache) this holds a list of template objects.
@@ -296,22 +305,22 @@ Newt Mustache only responds to POST methods which have a defined path in the tem
 Newt YAML template file.
 
 `id`
-: the identifier for related templates. E.g. a web form and the response form
+: (required) the identifier for related templates. E.g. a web form and the response form are associated with a common identifier. Newt's modeler uses this field to manage template updates and removals.
 
 `request [PATH]`
-: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed.
+: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed. Requests in templates like with request in routes can contain inline string variables. Example would be `{name}` used in the YAML below.
 
 `template`
-: (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
+: (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
 `partials`
-: (optional, newtmustache only) A list of paths to partial Mustache templates used by `.template`.
+: (optional) A list of paths to partial Mustache templates used by `.template`.
 
 `vocabularies`
-: This is a YAML file containing "vocabulary" items that can be incorporated into the output of your Mustache template. It is read at Newt Mustache startup along with the template.
+: (optional) This is a YAML file containing "vocabulary" items that can be incorporated into the output of your Mustache template. Example would be auto complete form elements. It is read at Newt Mustache startup along with the template.
 
 `options`
-: (optional, newtmustache only) An object that can be merged in with JSON received for processing by your Mustache template.
+: (optional) An object that can be merged in with JSON received for processing by your Mustache template. Options can be set per template but are also inherited from the resolved names and values in the applications' attribute of the Newt YAML file.
 
 `debug`
 : (optional) this turns on debugging output for this template.

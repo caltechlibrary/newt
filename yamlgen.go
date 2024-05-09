@@ -404,7 +404,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 			menu, opt := selectMenuItem(buf, out,
 				"Enter menu command and environment name",
 				"Menu [a]dd, [r]emove, [q]uit (making changes)",
-					ast.Applications.Environment, "", "", true)
+					ast.Applications.Environment, true, "", "", true)
 			if val, ok := getIdFromList(ast.Applications.Environment, opt); ok {
 				opt = val
 			}
@@ -461,7 +461,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 			menu, opt := selectMenuItem(buf, out,
 				"Enter menu command and option name",
 				"Menu [a]dd, [r]emove, [q]uit (making changes)",
-					optionsList, "", "", true)
+					optionsList, true, "", "", true)
 			if val, ok := getIdFromList(optionsList, opt); ok {
 				opt = val
 			}

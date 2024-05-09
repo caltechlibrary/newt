@@ -159,48 +159,48 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 
 	//NOTE: For each model generate a set of templates
 	for _, modelID := range ast.GetModelIds() {
-		// backup and generate {model}_create_form.mustache, {model}_create_response.mustache
-		fName = fmt.Sprintf("%s_create_form.mustache", modelID)
+		// backup and generate {model}_create_form.tmpl, {model}_create_response.tmpl
+		fName = fmt.Sprintf("%s_create_form.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "create_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_create_response.mustache", modelID)
+		fName = fmt.Sprintf("%s_create_response.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "create_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
 
-		// backup and generate {model}_read.mustache
-		fName = fmt.Sprintf("%s_read.mustache", modelID)
+		// backup and generate {model}_read.tmpl
+		fName = fmt.Sprintf("%s_read.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "read", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		// backup and generate {model}_update_form.mustache, {model}_update_response.mustache
-		fName = fmt.Sprintf("%s_update_form.mustache", modelID)
+		// backup and generate {model}_update_form.tmpl, {model}_update_response.tmpl
+		fName = fmt.Sprintf("%s_update_form.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "update_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_update_response.mustache", modelID)
+		fName = fmt.Sprintf("%s_update_response.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "update_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		// backup and generate {model}_delete_form.mustache, {model}_delete_response.mustache
-		fName = fmt.Sprintf("%s_delete_form.mustache", modelID)
+		// backup and generate {model}_delete_form.tmpl, {model}_delete_response.tmpl
+		fName = fmt.Sprintf("%s_delete_form.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "delete_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_delete_response.mustache", modelID)
+		fName = fmt.Sprintf("%s_delete_response.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "delete_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		// backup and generate {model}_list.mustache
-		fName = fmt.Sprintf("%s_list.mustache", modelID)
+		// backup and generate {model}_list.tmpl
+		fName = fmt.Sprintf("%s_list.tmpl", modelID)
 		if err := renderTemplate(generator, "mustache", modelID, "list", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
@@ -457,8 +457,8 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	}
 
 	switch action {
-	case "init":
-		return RunNewtInit(in, out, eout, args, verbose)
+	case "config":
+		return RunNewtConfig(in, out, eout, args, verbose)
 	case "check":
 		return RunNewtCheckYAML(in, out, eout, args, verbose)
 	case "model":
@@ -599,8 +599,8 @@ func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string, 
 	return OK
 }
 
-// RunNewtInit will initialize a Newt project by creating a Newt YAML file interactively.
-func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
+// RunNewtConfig will initialize a Newt project by creating a Newt YAML file interactively.
+func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
 	var answer string
 
 	ast := &AST{}
@@ -617,20 +617,10 @@ func RunNewtInit(in io.Reader, out io.Writer, eout io.Writer, args []string, ver
 	}
 	if ! skipPrompts {
 		if _, err := os.Stat(appFName); err == nil {
+			fmt.Fprintf(out, "Opening %q", appFName)
 			ast, err = LoadAST(appFName)
-			fmt.Fprintf(out, "%q already exists, continue (y/N)? ", appFName)
-			answer = getAnswer(readBuffer, "n", true)
-			if answer != "y" {
-				fmt.Fprintf(eout, "aborting: newt init %q\n", appFName)
-				return INIT_FAIL
-			}
 		} else if len(args) <= 1 {
-			fmt.Fprintf(out, "Create %q (Y/n)? ", appFName)
-			answer = getAnswer(readBuffer, "y", true)
-			if answer != "y" {
-				fmt.Fprintf(eout, "aborting creation of %q\n", appFName)
-				return INIT_FAIL
-			}
+			fmt.Fprintf(out, "Creating %q", appFName)
 		} 
 	}
 	// Step 2. Decide which services you're going to use (a .Applications will need to exist).
@@ -717,7 +707,7 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 		}
 	}
 	// Step 2. build our lists of models and manage them
-	if err := modelerTUI(ast, in, out, eout, appFName, args[1:]); err != nil {
+	if err := modelerTUI(ast, in, out, eout, appFName, args); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return MODELER_FAIL
 	}
@@ -728,7 +718,7 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 			ast.Applications.NewtMustache == nil {
 		fmt.Fprintf(out, "Applications are not configured for %q, try\n\n", appFName)
 		appName := path.Base(os.Args[0])
-		fmt.Fprintf(out, "\t%s init %q\n\n", appName, appFName)
+		fmt.Fprintf(out, "\t%s config %q\n\n", appName, appFName)
 	}
 	return OK
 }

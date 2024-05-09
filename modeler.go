@@ -184,14 +184,13 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 		elementList := model.GetElementIds()
 		//attributeList := model.GetAttributeIds()
 		menu, opt := selectMenuItem(in, out,
-			"Enter menu letter to manage model",
+			fmt.Sprintf("Manage %s model", modelId),
 			"Menu: model [d]escription, [e]lements, [q]uit (making changes)",
 			[]string{
 				fmt.Sprintf("Model Id: %s", model.Id),
-				fmt.Sprintf("Descriptions: %s", model.Description),
-				//fmt.Sprintf("Form Attributes: %s", strings.Join(attributeList, "\n\t\t")),
-				fmt.Sprintf("Elements: %s\n", strings.Join(elementList, "\n\t\t")),
-			}, "", "", true)
+				fmt.Sprintf("Description: %s", model.Description),
+				fmt.Sprintf("Element(s): %s\n", strings.Join(elementList, ",\n\t\t")),
+			}, false, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
@@ -227,8 +226,8 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 	for quit := false; !quit; {
 		attributeList := model.GetAttributeIds()
 		menu, opt := selectMenuItem(in, out,
-			TuiStandardMenuHelp, TuiStandardMenu,
-			attributeList, "", "", true)
+			fmt.Sprintf("Manage %s attributes", model.Id), TuiStandardMenu,
+			attributeList, true, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
@@ -290,8 +289,8 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 		var ok bool
 		attributeList := getAttributeIds(elem.Attributes)
 		menu, opt := selectMenuItem(in, out,
-			TuiStandardMenuHelp, TuiStandardMenu,
-			attributeList, "", "", true)
+			fmt.Sprintf("Manage %s.%s attributes", model.Id, elementId), TuiStandardMenu,
+			attributeList, true, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
@@ -355,7 +354,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 	for quit := false; !quit; {
 		attributeList := getAttributeIds(elem.Attributes)
 		menu, attr := selectMenuItem(in, out,
-			"Select menu item to model properties",
+			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
 			"Menu [t]ype, [p]attern, [a]ttributes, [o]bject id flag, [q]uit (making changes)",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
@@ -364,7 +363,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				fmt.Sprintf("attributes %s", strings.Join(attributeList, "\n\t\t")),
 				fmt.Sprintf("is object id %t", elem.IsObjectId),
 			},
-			"", "", true)
+			false, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
@@ -436,8 +435,8 @@ func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model
 	for quit := false; !quit; {
 		elementList := model.GetElementIds()
 		menu, opt := selectMenuItem(in, out,
-			TuiStandardMenuHelp, TuiStandardMenu,
-			elementList, "", "", true)
+			fmt.Sprintf("Manage %s elements", model.Id), TuiStandardMenu,
+			elementList, true, "", "", true)
 		if len(menu) > 1 {
 			menu = menu[0:1]
 		}
@@ -509,9 +508,9 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 	}
 	for quit := false; !quit; {
 		menu, opt := selectMenuItem(in, out,
-			TuiStandardMenuHelp,
+			"Manage Models",
 			TuiStandardMenu,
-			modelList, "", "", true)
+			modelList, true, "", "", true)
 		if len(menu) > 1 {
 			menu = menu[0:1]
 		}

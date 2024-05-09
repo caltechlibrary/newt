@@ -5,7 +5,7 @@ This is a test application included in the Newt repository to test the generatio
 
 ## Files
 
-- `ornithology.yaml` defines a bird sighthing application
+- `ornithology.yaml` defines a bird sighting application
 - `ornitholog.mak` is a Makefile used to generate and run the ornithology test/demo application
 - `ornithology_*.sql` are the SQL files for setting up Postgres and PostgREST
 - `ornithology.conf` is a configuration file for PostgREST

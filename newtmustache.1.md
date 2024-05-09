@@ -1,6 +1,6 @@
 ---
-title: newtmustache(1) user manual | 0.0.8 8453132
-pubDate: 2024-05-08
+title: newtmustache(1) user manual | 0.0.8 bc0d5e8
+pubDate: 2024-05-09
 author: R. S. Doiel
 ---
 
@@ -144,18 +144,22 @@ applications:
   newtmustache:
     port: 8011
 templates:
-  - request: /hello/{name}
+  - id: hello
+    request: /hello/{name}
     template: testdata/simple.mustache
-  - request: /hello
+  - id: hello
+    request: /hello
     template: testdata/simple.mustache
     options:
       name: Universe
-  - request: /hi/{name}
+  - id: hi
+    request: /hi/{name}
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache
     debug: true
-  - request: /hi
+  - id: hi
+    request: /hi
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache

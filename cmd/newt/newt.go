@@ -28,15 +28,15 @@ author: R. S. Doiel
 # DESCRIPTION
 
 **{app_name}** is a developer tool. It can set up and run your Newt application
-during development.  **{app_name}** supports the "init", "check", "model", "generate",
-"run" and "ws" actions. The "init" command is used when you are starting a
+during development.  **{app_name}** supports the "config", "check", "model", "generate",
+"run" and "ws" actions. The "config" command is used when you are starting a
 Newt Project. It is an interactive command prompting for various choices regarding
 the application you want to create.  
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.
 
-The "model" is used to manage your data models. It is interactive like "init".
+The "model" is used to manage your data models. It is interactive like "config".
 
 The "generate" will run the Newt Generator to create the SQL, PostgREST configuration
 and Mustache templates. It'll also update the Newt YAML file's routes and templates
@@ -54,7 +54,7 @@ If a Newt YAML filename isn't supplied when you invoke **{app_name}** the applic
 will look in the current directory for a file with the directory's name and ".yaml" 
 extension and if that is not found it'll look for "app.yaml".
 
-If you are working in the root of a Git repository when you run "init" you will
+If you are working in the root of a Git repository when you run "config" you will
 get a warning about which files should be added to your `+"`"+`.gitignore`+"`"+`.
 
 # OPTIONS
@@ -75,7 +75,7 @@ The following options are supported by **{app_name}**.
 
 # ACTION
 
-init [YAML_FILE]
+config [YAML_FILE]
 : this will create or refresh your Newt YAML file based on a set of interactive
 questions. It will suggest updates to your `+"`"+`.gitignore`+"`"+`.
 
@@ -92,10 +92,7 @@ based on the contents of your Newt YAML file.
 run [YAML_FILE]
 : this will run the defined services in the application attribute of the Newt YAML file.
 This is intended for use in development. In a production setting you'd setup the individual
-services to run from systemd or init as services.
-
-ws [YAML_FILE]
-: run Newt's static web server.
+services to run from systemd or config as services.
 
 # YAML_FILE 
 
@@ -225,14 +222,14 @@ type
 attributes
 : (optional) A key-value list that define properties of the element. These used in rendering the element in SQL or HTML. These correspond with the attributess you'd find in HTML 5 input elements.
 
-is_model_identifier
-: (boolean, defaults to false) if true then Newt will use this element as the identifier in the SQL code and routes. You can only have one element used as the model identifier and it must be unique.
+primary_key
+: (boolean, defaults to false) if true then Newt will use this element as the identifier in the SQL code and routes. You can only have one element used as the object identifier and it must be unique.
 
 ## input types
 
 Inputs must map to their HTML 5 form element types. Here is an example of HTML 5 input types.
 
-input
+text
 : A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `+"`"+`input[type=data]`+"`"+` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
 
 textarea
@@ -253,10 +250,10 @@ auto_complete
 : A input plus data list, useful for large vocabularies
 
 
-NOPTE: The file input type is explicitly NOT supported by Newt at this time. Newt may add additional types in
+NOTE: The file input type is explicitly NOT supported by Newt at this time. Newt may add additional types in
 the future through aliasing input with regular expression validation or web components.
 
-## Example Newt YAML file, "app.yaml" generated with the `+"`"+`{app_name} init app.yaml`+"`"+` and
+## Example Newt YAML file, "app.yaml" generated with the `+"`"+`{app_name} config app.yaml`+"`"+` and
 `+"`"+`{app_name} model app.yaml`+` commands.
 
 ~~~yaml
@@ -396,24 +393,27 @@ templates:
 This property is used by Newt Mustache. It is ignore by Newt router and code generator.
 
 templates
-: (optional: newtmustache) this holds a list of template objects
+: (optional) this holds a list of template objects
 
 ### template object model
 
 The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
 
-`+"`"+`id
+`+"`"+`id`+"`"+`
 : (required) is the template id. It can be used to relate one or more templates to an action. E.g. a web form an
 submission result.
 
-`+"`"+`request [METHOD ][PATH]`+"`"+`
-: (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed
+`+"`"+`request [PATH]`+"`"+`
+: (required) This holds the request HTTP method and path. Note the HTTP method is missing as all request to Newt Mustache must be done using POST.
 
 `+"`"+`template`+"`"+`
 : (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
 `+"`"+`partials`+"`"+`
 : (optional) A list of paths to partial Mustache templates used by `+"`"+`.template`+"`"+`.
+
+`+"`"+`vocabulary`+"`"+`
+: (opitonal) A path to a "vocabulary" file which is read in when the Newt Mustache is started and the contents are available to the template for processing.
 
 `+"`"+`options`+"`"+`
 : (optional) An object that can be merged in with JSON received for processing by your Mustache template

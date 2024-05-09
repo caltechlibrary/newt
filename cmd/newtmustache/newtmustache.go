@@ -157,18 +157,22 @@ applications:
   newtmustache:
     port: 8011
 templates:
-  - request: /hello/{name}
+  - id: hello
+    request: /hello/{name}
     template: testdata/simple.mustache
-  - request: /hello
+  - id: hello
+    request: /hello
     template: testdata/simple.mustache
     options:
       name: Universe
-  - request: /hi/{name}
+  - id: hi
+    request: /hi/{name}
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache
     debug: true
-  - request: /hi
+  - id: hi
+    request: /hi
     template: testdata/hithere.html
     partials:
       - testdata/name.mustache

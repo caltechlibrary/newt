@@ -31,14 +31,14 @@ href="#yaml_file">YAML_FILE</a></p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>newt</strong> is a developer tool. It can set up and run your
 Newt application during development. <strong>newt</strong> supports the
-“init”, “check”, “model”, “generate”, “run” and “ws” actions. The “init”
-command is used when you are starting a Newt Project. It is an
+“config”, “check”, “model”, “generate”, “run” and “ws” actions. The
+“config” command is used when you are starting a Newt Project. It is an
 interactive command prompting for various choices regarding the
 application you want to create.</p>
 <p>The “check” will analyze the the YAML file and report results of the
 analyze and as well as validate the YAML syntax.</p>
 <p>The “model” is used to manage your data models. It is interactive
-like “init”.</p>
+like “config”.</p>
 <p>The “generate” will run the Newt Generator to create the SQL,
 PostgREST configuration and Mustache templates. It’ll also update the
 Newt YAML file’s routes and templates properties as needed for the
@@ -53,8 +53,8 @@ you are debugging static web assets for your project.</p>
 for a file with the directory’s name and “.yaml” extension and if that
 is not found it’ll look for “app.yaml”.</p>
 <p>If you are working in the root of a Git repository when you run
-“init” you will get a warning about which files should be added to your
-<code>.gitignore</code>.</p>
+“config” you will get a warning about which files should be added to
+your <code>.gitignore</code>.</p>
 <h1 id="options">OPTIONS</h1>
 <p>The following options are supported by <strong>newt</strong>.</p>
 <dl>
@@ -77,7 +77,7 @@ If set provide verbose debugging output for requests
 </dl>
 <h1 id="action">ACTION</h1>
 <dl>
-<dt>init <a href="#yaml_file">YAML_FILE</a></dt>
+<dt>config <a href="#yaml_file">YAML_FILE</a></dt>
 <dd>
 this will create or refresh your Newt YAML file based on a set of
 interactive questions. It will suggest updates to your
@@ -101,12 +101,8 @@ templates based on the contents of your Newt YAML file.
 <dd>
 this will run the defined services in the application attribute of the
 Newt YAML file. This is intended for use in development. In a production
-setting you’d setup the individual services to run from systemd or init
-as services.
-</dd>
-<dt>ws <a href="#yaml_file">YAML_FILE</a></dt>
-<dd>
-run Newt’s static web server.
+setting you’d setup the individual services to run from systemd or
+config as services.
 </dd>
 </dl>
 <h1 id="yaml_file">YAML_FILE</h1>
@@ -212,7 +208,11 @@ This property is only used by Newt router and Newt code generator.</p>
 <dd>
 (required) This identifies the pipeline. It maybe used in code
 generation. It must conform to variable name rules<a href="#fn1"
-class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.
+You may have more than one route associated with an identifier but they
+may not share the same method. This allows us to group routes by
+actions. E.g. creating an object would include a GET to retrieve the web
+form and a POST to handle the submission. Both should use the same id.
 </dd>
 <dt><code>description</code></dt>
 <dd>
@@ -284,52 +284,38 @@ set the timeout to a small number.
 </dl>
 <h2 id="the-models-property">the “models” property</h2>
 <p>Models holds a list of individual models used by our data pipelines.
-The models are by Newt code generator and the Newt router. Models
-defines a superset of the GitHub YAML issue template syntax (abbr:
-GHYITS).</p>
+The models are describe by a list of HTML5 form elements which intern
+are described by their attributes.</p>
 <h3 id="a-model-object">a model object</h3>
-<p>The model object is based largely on GitHub YAML issue template
-syntax with a couple extra properties that are Newt enhancements.</p>
+<p>The model object was inspired by GitHub YAML issue template syntax.
+It is much simpler and more focus on representing HTML5 webform elements
+and their attributes directly. HTML5 form elements imply a mapping to
+SQL data types.</p>
 <dl>
 <dt>id</dt>
 <dd>
-(required, newt specific) this is the name identifying the model. It
-must conform to variable name rules<a href="#fn2" class="footnote-ref"
-id="fnref2" role="doc-noteref"><sup>2</sup></a>
-</dd>
-</dl>
-<p>The following properties are based on the GitHub YAML issue template
-syntax<a href="#fn3" class="footnote-ref" id="fnref3"
-role="doc-noteref"><sup>3</sup></a> (abbr: GHYITS)</p>
-<dl>
-<dt>name</dt>
-<dd>
-(required: GHYITS, optional: newt) Must be unique to use with GitHub
-YAML issue templates<a href="#fn4" class="footnote-ref" id="fnref4"
-role="doc-noteref"><sup>4</sup></a>. In Newt it will be used in
-populating comments in generated SQL
+(required) this is the name identifying the model. It must conform to
+variable name rules<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a>
 </dd>
 <dt>description</dt>
 <dd>
-(required: GHYITS, optional: newt) A human description of the model, It
-will appear in the web form and SQL components generated from the model
+(optional) A human description of the model, It will appear in the web
+form and SQL components generated from the model
 </dd>
-<dt>body</dt>
+<dt>elements</dt>
 <dd>
 (required) A a list of input types. Each input type maps to columns in
 SQL, input element in web forms and or HTML elements in read only pages
 </dd>
 </dl>
 <h4 id="a-models-input-types">a model’s input types</h4>
-<p>This is based on GitHub YAML issue template (abbr: GHYITS) input
-types<a href="#fn5" class="footnote-ref" id="fnref5"
-role="doc-noteref"><sup>5</sup></a>.</p>
 <dl>
 <dt>id</dt>
 <dd>
 (required) an identifier for the element. Must conform to variable name
-rules<a href="#fn6" class="footnote-ref" id="fnref6"
-role="doc-noteref"><sup>6</sup></a>. It is used to SQL as a column name
+rules<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>. It is used to SQL as a column name
 and in web forms for the input property.
 </dd>
 <dt>type</dt>
@@ -340,31 +326,21 @@ checkbox, dropdown).
 <dt>attributes</dt>
 <dd>
 (optional) A key-value list that define properties of the element. These
-used in rendering the element in SQL or HTML.
+used in rendering the element in SQL or HTML. These correspond with the
+attributess you’d find in HTML 5 input elements.
 </dd>
-<dt>validations</dt>
+<dt>primary_key</dt>
 <dd>
-(optional, encouraged) A set of key-value pairs setting constraints of
-the element content. E.g. required, regexp properties, validation rule
-provided with certain identifiers (e.g. DOI, ROR, ORCID).
+(boolean, defaults to false) if true then Newt will use this element as
+the identifier in the SQL code and routes. You can only have one element
+used as the object identifier and it must be unique.
 </dd>
 </dl>
 <h2 id="input-types">input types</h2>
-<p>Both the routes and models may contain input types. The types
-supported in Newt are based on the types found in the GHYITS for
-scheme<a href="#fn7" class="footnote-ref" id="fnref7"
-role="doc-noteref"><sup>7</sup></a>. They include</p>
+<p>Inputs must map to their HTML 5 form element types. Here is an
+example of HTML 5 input types.</p>
 <dl>
-<dt>markdown</dt>
-<dd>
-(models only) markdown request displayed to the user but not submitted
-to the user but not submitted by forms.
-</dd>
-<dt>textarea</dt>
-<dd>
-(models only) A multi-line text field
-</dd>
-<dt>input</dt>
+<dt>text</dt>
 <dd>
 A single line text field. This conforms to value input types in HTML 5
 and can be expressed using the CSS selector notation. E.g.
@@ -372,10 +348,9 @@ and can be expressed using the CSS selector notation. E.g.
 a date column type in SQL, a date input type in HTML forms and in
 formatting other HTML elements for display.
 </dd>
-<dt>dropdown</dt>
+<dt>textarea</dt>
 <dd>
-A dropdown menu. In SQL this could render as an enumerated type. In HTML
-it would render as a drop down list
+A multi-line text field
 </dd>
 <dt>checkboxes</dt>
 <dd>
@@ -384,9 +359,30 @@ button) then the result is stored in a single column, if multiple checks
 are allowed it is stored as a JSON Array column.
 </dd>
 </dl>
-<p>Newt may add additional types in the future.</p>
-<h2 id="example-newt-yaml-file-app.yaml">Example Newt YAML file,
-“app.yaml”</h2>
+<p>More comple types include</p>
+<dl>
+<dt>radio</dt>
+<dd>
+For generating a radio button list
+</dd>
+<dt>select</dt>
+<dd>
+A dropdown menu. In SQL this could render as an enumerated type. In HTML
+it would render as a drop down list
+</dd>
+<dt>auto_complete</dt>
+<dd>
+A input plus data list, useful for large vocabularies
+</dd>
+</dl>
+<p>NOTE: The file input type is explicitly NOT supported by Newt at this
+time. Newt may add additional types in the future through aliasing input
+with regular expression validation or web components.</p>
+<h2
+id="example-newt-yaml-file-app.yaml-generated-with-the-newt-config-app.yaml-and">Example
+Newt YAML file, “app.yaml” generated with the
+<code>newt config app.yaml</code> and</h2>
+<p>`newt model app.yaml commands.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtrouter</span><span class="kw">:</span></span>
@@ -482,63 +478,83 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="
 <span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:8011/app_list</span></span>
 <span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This template handles app list</span></span>
 <span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_create</span></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_create_form.tmpl</span></span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display a app for create</span></span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_create_response</span></span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_create_response.tmpl</span></span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This is an result template for app create</span></span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_update</span></span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_update_form.tmpl</span></span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display a app for update</span></span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_update_response</span></span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_update_response.tmpl</span></span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This is an result template for app update</span></span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_delete</span></span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_delete_form.tmpl</span></span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display a app for delete</span></span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_delete_response</span></span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_delete_response.tmpl</span></span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This is an result template for app delete</span></span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_read</span></span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_read.tmpl</span></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This template handles app read</span></span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_list</span></span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_list.tmpl</span></span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This template handles app list</span></span></code></pre></div>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_create</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_create</span></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_create_form.tmpl</span></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display a app for create</span></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_create</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_create_response</span></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_create_response.tmpl</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This is an result template for app create</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_update</span></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_update</span></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_update_form.tmpl</span></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display a app for update</span></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_update</span></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_update_response</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_update_response.tmpl</span></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This is an result template for app update</span></span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_delete</span></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_delete</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_delete_form.tmpl</span></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display a app for delete</span></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_delete</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_delete_response</span></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_delete_response.tmpl</span></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This is an result template for app delete</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_read</span></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_read</span></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_read.tmpl</span></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This template handles app read</span></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> app_list</span></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /app_list</span></span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_list.tmpl</span></span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This template handles app list</span></span></code></pre></div>
 <h2 id="templates-property">templates property</h2>
 <p>This property is used by Newt Mustache. It is ignore by Newt router
 and code generator.</p>
 <dl>
 <dt>templates</dt>
 <dd>
-(optional: newtmustache) this holds a list of template objects
+(optional) this holds a list of template objects
 </dd>
 </dl>
 <h3 id="template-object-model">template object model</h3>
 <p>The template objects are used by Newt Mustache template engine. If
 you’re not using it you can skip these.</p>
 <dl>
-<dt><code>request [METHOD ][PATH]</code></dt>
+<dt><code>id</code></dt>
 <dd>
-(required) This holds the request HTTP method and path. If the HTTP
-method is missing a POST is assumed
+(required) is the template id. It can be used to relate one or more
+templates to an action. E.g. a web form an submission result.
+</dd>
+<dt><code>request [PATH]</code></dt>
+<dd>
+(required) This holds the request HTTP method and path. Note the HTTP
+method is missing as all request to Newt Mustache must be done using
+POST.
 </dd>
 <dt><code>template</code></dt>
 <dd>
-(required: newtmustache only) This is the path to the template
-associated with request. NOTE: Pandoc web service does not support
-partial templates. Mustache does support partial templates
+(required) This is the path to the template associated with request.
+NOTE: Pandoc web service does not support partial templates. Mustache
+does support partial templates
 </dd>
 <dt><code>partials</code></dt>
 <dd>
-(optional, newtmustache only) A list of paths to partial Mustache
-templates used by <code>.template</code>.
+(optional) A list of paths to partial Mustache templates used by
+<code>.template</code>.
+</dd>
+<dt><code>vocabulary</code></dt>
+<dd>
+(opitonal) A path to a “vocabulary” file which is read in when the Newt
+Mustache is started and the contents are available to the template for
+processing.
 </dd>
 <dt><code>options</code></dt>
 <dd>
-(optional, newtmustache only) An object that can be merged in with JSON
-received for processing by your Mustache template
+(optional) An object that can be merged in with JSON received for
+processing by your Mustache template
 </dd>
 <dt><code>debug</code></dt>
 <dd>
@@ -551,23 +567,27 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtmustache</span><span class="kw">:</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8012</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hello/{name}</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hello</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hi/{name}</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /hi</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span></code></pre></div>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /hello/{name}</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /hello</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hi</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /hi/{name}</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hi</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /hi</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span></code></pre></div>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
@@ -578,25 +598,9 @@ href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>variable numbers must start with a letter, may contain
 numbers but not spaces or punctuation except the underscore<a
 href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>See <a
-href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms"
-class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms</a>,<a
-href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>See <a
-href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms"
-class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms</a>,<a
-href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>See <a
-href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
-class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
-href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>variable numbers must start with a letter, may contain
+<li id="fn3"><p>variable numbers must start with a letter, may contain
 numbers but not spaces or punctuation except the underscore<a
-href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>See <a
-href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
-class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
-href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 </section>

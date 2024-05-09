@@ -15,7 +15,7 @@ Newt's niche is as a rapid web application development platform for libraries, a
 
 ## Proposed Solution
 
-If the data model DSL was inspired by GitHub YAML issue template syntax[^53] (abbr: GHYITS). Most of that syntax describes the HTML5 web form elements needed to generate and process a issue request. I've simplified that model further focusing on the HTML5 form element itself.  Both approaches have the advantage of describing HTML5 input elements and can easily infer a SQL data type. It was through experimentation that I realized directly support GHYITS was unnecessary and significantly iincreased Newt's implementaiton complexity for little benefit. If compatibily is needed it would be straight forward to create a program that crosswalked the more complex GHYITS to the simplier Newt data model.
+If the data model DSL was inspired by GitHub YAML issue template syntax[^53] (abbr: GHYITS). Most of that syntax describes the HTML5 web form elements needed to generate and process a issue request. I've simplified that model further focusing on the HTML5 form element itself.  Both approaches have the advantage of describing HTML5 input elements and can easily infer a SQL data type. It was through experimentation that I realized directly support GHYITS was unnecessary and significantly increased Newt's implementation complexity for little benefit. If compatibly is needed it would be straight forward to create a program that cross walked the more complex GHYITS to the simpler Newt data model.
 
 ### Advantages of adopting a common syntax
 

@@ -47,9 +47,9 @@ one service then take its output and send it to the next service. Newt
 does this by providing a data router. Newt can manage the request
 sequence through a simple YAML description of the pipeline. While it is
 possible to create pipelines using Apache and NginX proxy features in
-practice quickly becomes an unmanagable configuration problem. You could
-encampsulate clusters of processes in containers but this too becomes
-complex to manage. Newt’s router can cut through the hairball of
+practice quickly becomes an unmanageable configuration problem. You
+could encapsulate clusters of processes in containers but this too
+becomes complex to manage. Newt’s router can cut through the hairball of
 configurations and define pipelines per route request. With Newt a
 pipeline the last service completed hands its result to the Newt Router
 which returns the result to the web browser.</p>

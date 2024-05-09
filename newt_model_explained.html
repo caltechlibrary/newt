@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Newt -- newt_explained</title>
+    <title>Newt -- newt_model_explained</title>
     <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
     <base href="./">
 </head>
@@ -27,8 +27,8 @@
 <p>The core of Newt is the command <code>newt</code>. It handles the
 following for your Newt based project.</p>
 <ol type="1">
-<li>Generate an initialize Newt YAML file through an interactive
-dialog</li>
+<li>Generate a Newt YAML file through an interactive dialog using the
+“config” action.</li>
 <li>Generate and manage your models through an interactive dialog</li>
 <li>Create an manage the initial routing in your Newt Application based
 on your models</li>
@@ -54,7 +54,7 @@ Mustache template engine
 </dd>
 <dt>models</dt>
 <dd>
-This holds the data models your applicaiton will implement, this
+This holds the data models your application will implement, this
 property is inspired by the <a href="">GitHub YAML issue template
 syntax</a>
 </dd>
@@ -75,9 +75,9 @@ with Newt Mustache starts and are not re-read until you restart Newt
 Mustache.
 </dd>
 </dl>
-<h2 id="initializing-your-newt-yaml-file">Initializing your Newt YAML
-file</h2>
-<p>The <code>newt</code> command supports an “init” action. This will
+<h2 id="create-an-configure-your-newt-yaml-file">Create an configure
+your Newt YAML file</h2>
+<p>The <code>newt</code> command supports an “config” action. This will
 create or update a Newt YAML file. It does this through a dialog of
 questions which you provide answers for. Based on the answers then the
 Newt YAML file will be modified to reflect your answers. Before the Newt
@@ -85,27 +85,27 @@ YAML file is written to disk you will be prompted if it is OK to save
 the name file. If the file already exists than the old one will be
 renamed with a “.bak” file extension. If a “.bak” file exist it will be
 replaced.</p>
-<p>Here is an example of creating a “app.yaml” file using the “init”
+<p>Here is an example of creating a “app.yaml” file using the “config”
 action.</p>
-<pre class="shell"><code>newt init app.yaml</code></pre>
-<p>NOTE: You can press “control C” to quit the “init” action without
+<pre class="shell"><code>newt config app.yaml</code></pre>
+<p>NOTE: You can press “control C” to quit the “config” action without
 writing the YAML to disk.</p>
 <h2 id="modeling-your-data">Modeling your data</h2>
 <p>The <code>newt</code> command provides an “model” action. This lets
 you add, modify or remove a data model from your Newt YAML file. Like
-the “init” action it will provide you with the opportunity to review
+the “config” action it will provide you with the opportunity to review
 changes before writing them to disk.</p>
-<p>The modeling process is more complex than the “init” action. You may
-have model than one model, you may have many properties per model. As a
-result the dialog between you and <code>newt model</code> is separated
-into stages. First you are asked to manage the model(s) by either adding
-or removing them. You can then “modify” a model where it will allow you
-to add or remove a list of model properties. Each model will have at
-least one property, the “oid” property. “oid” stands for object
-indentifier. By default an object identifier is represented as a UUID.
-In string form these can be long but they allow for millions of object
-to be managed. If you prefer a shorter string representaition for your
-object identifiers these can be selected but you cannot remove the
+<p>The modeling process is more complex than the “config” action. You
+may have model than one model, you may have many properties per model.
+As a result the dialog between you and <code>newt model</code> is
+separated into stages. First you are asked to manage the model(s) by
+either adding or removing them. You can then “modify” a model where it
+will allow you to add or remove a list of model properties. Each model
+will have at least one property, the “oid” property. “oid” stands for
+object indentifier. By default an object identifier is represented as a
+UUID. In string form these can be long but they allow for millions of
+object to be managed. If you prefer a shorter string representaition for
+your object identifiers these can be selected but you cannot remove the
 object identifier from the model. It remains required.</p>
 <h3 id="top-level-dialog">Top level dialog</h3>
 <p>The top level dialog lets you perform one of four different actions.
@@ -169,9 +169,9 @@ It also includes some customized input specific to the gallery, library,
 archive and museum metadata domain. These will be expressed in as
 standard HTML elements the Mustache templates but can be further vetted
 from within Postgres via Python’s idutils package.</p>
-<p>When you press entere when listing the property attributes it accepts
+<p>When you press enter when listing the property attributes it accepts
 the current settings and take you back to the modify model dialog.
-Typing “c” for cancel will tak take you back to he modify model dialog
+Typing “c” for cancel will take you back to he modify model dialog
 without changing the property’s attributes.</p>
 <p>If you type “m” to modify your model you when will be shown a list of
 properties associated with the model. There will always be at least one
@@ -181,18 +181,18 @@ an “oid” property. By default the “type” is UUID for the object
 identifier. UUID are a good way to support object identification in a
 modern SQL database like Postgres. They have only one drawback. The way
 we express the value of a UUID tends to be as a long string. This can be
-unwieldly for URLs. You can choice an alternate identifier type that
+unwieldy for URLs. You can choice an alternate identifier type that
 results in sorter or numeric identifiers. The shorter identifiers limit
 the total number of objects you can manage but typically these is not a
 problem (e.g. Caltech Library’s Authors repository has 100,000 objects,
 someday it might have 200,000 objects. Each object could still have a
 unique identifiers of with a six or seven character string). Finally you
 can also use an integer value which is incremented with each added
-object. This tends to be short but comes at the expense of limitting you
+object. This tends to be short but comes at the expense of limiting you
 to a single database instance in many cases.</p>
 <p>Typing “s” will save the property settings. Tying “q” will save then
 exit the property dialog. Typing “c” for cancel will exit the property
-dialog without making changings.</p>
+dialog without making changes.</p>
 <h2 id="support-input-types">Support input types</h2>
 <p>FIXME: Need to write up the basic supported input types and how they
 related to presentations in HTML and SQL.</p>

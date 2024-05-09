@@ -88,14 +88,14 @@ Lines    Files
 - A few "Off the shelf" microservices can make application construction easier
 - Orchestrating the data pipeline in YAML is reasonable
 - SQL turns some people off
-  - models could be bootstraped from Newt's YAML
+  - models could be bootstrapped from Newt's YAML
 - Pandoc templates are simple to learn and well documented at [pandoc.org](https://pandoc.org)
 - Newt stack plays well with HTML5 and front-end best practices
 - I encountered an unexpected result ...
 
 # An unexpected result
 
-- Newt like PostgREST and Pandoc **do not require** shared syncronous state
+- Newt like PostgREST and Pandoc **do not require** shared synchronous state
 - Postgres can be deployed in a [HA cluster](High-availability "high available cluster")
 
 > The Newt stack can scale really big
