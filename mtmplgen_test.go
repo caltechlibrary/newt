@@ -15,14 +15,14 @@ models:
     name: People Profiles
     description: |
       This models a curated set of profiles of colleagues
-    body:
+    elements:
       - id: people_id
         type: input
         attributes:
           label: A unique person id, no spaces, alpha numeric
           placeholder: ex. jane-do-007
-        validations:
           required: true
+        is_object_id: true
       - id: display_name
         type: input
         attributes:
@@ -33,7 +33,6 @@ models:
         attributes:
           label: (required) A person's family name or singular when only one name exists
           placeholder: ex. Doe
-        validations:
           required: true
       - id: given_name
         type: input
@@ -45,7 +44,6 @@ models:
         attributes:
           label: (optional) A person's ORCID identifier
           placeholder: ex. 0000-0000-0000-0000
-        validations:
           pattern: "[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
       - id: ror
         type: input

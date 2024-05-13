@@ -218,7 +218,7 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 				opt = getAnswer(readBuffer, "", true)
 			}
 			if !isValidVarname(opt) {
-				fmt.Fprint(eout, "%q is not a valid attribute name\n", opt)
+				fmt.Fprintf(eout, "%q is not a valid attribute name\n", opt)
 			} else {
 				model.Attributes[opt] = ""
 				model.isChanged = true
@@ -283,7 +283,7 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 				opt = getAnswer(readBuffer, "", true)
 			}
 			if !isValidVarname(opt) {
-				fmt.Fprint(eout, "%q is not a valid attribute name\n", opt)
+				fmt.Fprintf(eout, "%q is not a valid attribute name\n", opt)
 			} else {
 				elem.Attributes[opt] = ""
 				elem.isChanged = true
@@ -363,7 +363,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 			}
 		case "p":
 			if attr == "" {
-				fmt.Fprint(out, "Enter the regexp to use: ")
+				fmt.Fprintf(out, "Enter the regexp to use: ")
 				attr = getAnswer(readBuffer, "", false)
 			}
 			// FIXME: how do I clear a pattern if I nolonger want to use one?

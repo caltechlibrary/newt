@@ -126,7 +126,7 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 					}
 					port, err := strconv.Atoi(opt)
 					if err != nil {
-						fmt.Fprint(out, "ERROR: port number must be an intereger, got %q\n", opt)
+						fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 					} else {
 						ast.Applications.PostgREST.Port = port
 						ast.isChanged = true
@@ -215,7 +215,7 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 					}
 					port, err := strconv.Atoi(opt)
 					if err != nil {
-						fmt.Fprint(out, "ERROR: port number must be an intereger, got %q\n", opt)
+						fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 					} else {
 						ast.Applications.PostgREST.Port = port
 						ast.isChanged = true
@@ -292,7 +292,7 @@ func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName stri
 					}
 					port, err := strconv.Atoi(opt)
 					if err != nil {
-						fmt.Fprint(out, "ERROR: port number must be an intereger, got %q\n", opt)
+						fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 					} else {
 						ast.Applications.PostgREST.Port = port
 						ast.isChanged = true
@@ -602,7 +602,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 				case "":
 					quit = true
 				default:
-					fmt.Fprint(out, "do not understand %q\n", menu)
+					fmt.Fprintf(out, "do not understand %q\n", menu)
 			}
 		}
 	}
@@ -661,7 +661,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 				case "":
 					quit = true
 				default:
-					fmt.Fprint(out, "do not understand %q\n", menu)
+					fmt.Fprintf(out, "do not understand %q\n", menu)
 			}
 		}
 	}

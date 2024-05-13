@@ -66,10 +66,6 @@ func TestLoadAST(t *testing.T) {
 				t.Errorf("expceted model content for %q in %q, got nil", mId, fName)
 			}
 		}
-		names := ast.GetModelNames()
-		if len(names) != len(ids) {
-			t.Errorf("expected %d model names for %q, got %d", len(ids), fName, len(names))
-		}
 	}
 }
 

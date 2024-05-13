@@ -1,111 +1,102 @@
-#
-# This YAML describes the public view of a blog built using Newt.
-#
-application:
-  port: 4040
-  htdocs: testdata/htdocs
-  environment:
-    - DB_USER
-    - DB_PASSWORD
+applications:
+  newtrouter:
+    port: 8010
+    htdocs: htdocs
+  newtmustache:
+    port: 8011
+  newtgenerator:
+    namespace: blog.yaml
+  postgres:
+    port: 5432
+    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/blog.yaml
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
+    port: 3000
+  enviroment:
+    - PGUSER
+    - PGPASSWORD
 models:
   - id: post
-    name: Blog Post
     description: A blog post or article
-    body:
-      - id: post_id
-        description: post id is formed from sluggifying the title, must be unique so may have an optional suffix
-        type: input
-        is_model_identifier: true
-      - id: title
-        type: input
+    elements:
+      - type: input
+        id: post_id
+        is_object_id: true
+      - type: input
+        id: title
         attributes:
           name: title
           placeholdertext: ex. My Blog Post for Today
-        validation:
-          required: false
-      - id: byline
-        type: input
+          required: "false"
+      - type: input
+        id: byline
         attributes:
           name: byline
           placeholdertext: ex. By Jane Jones, 1912-12-12
-        validation:
-          required: false
-      - id: content
-        type: textarea
-        description: The content of your post or article
+          required: "false"
+      - type: textarea
+        id: content
         attributes:
           name: content
-        validation:
-          required: true
-      - id: pubDate
-        type: input[type=date]
-        description: date to publish the post
+          required: "true"
+      - type: input[type=date]
+        id: pubDate
         attributes:
           name: pubDate
-        validation:
-          required: true
+          required: "true"
 routes:
   - id: retrieve_all_posts
     request: GET /
     description: This route returns the full blog content
     pipeline:
-      - description: |
+      - service: GET http://localhost:3000/rpc/view_all_posts
+        description: |
           Retrieve the blog posts order by descending date
-        service: GET http://localhost:3000/rpc/view_all_posts
-        content_type: application/json
-      - description: render the posts using the list_posts.tmpl
-        service: POST http://localhost:3032/list_posts.tmpl
-        content_type: application/json
+      - service: POST http://localhost:3032/list_posts.tmpl
+        description: render the posts using the list_posts.tmpl
   - id: retrieve_year posts
     request: GET /${year}
     description: This route retrieves all the posts in a specific year
     pipeline:
-      - description: Retrieve the posts for a specific year
-        service: GET http://localhost:3000/rpc/year_posts/${year}
-        content_type: application/json
-      - description: Turn the JSON list into a web page.
-        service: POST http://localhost:3032/list_posts.tmpl
-        content_type: application/json
+      - service: GET http://localhost:3000/rpc/year_posts/${year}
+        description: Retrieve the posts for a specific year
+      - service: POST http://localhost:3032/list_posts.tmpl
+        description: Turn the JSON list into a web page.
   - id: retrieve_month_posts
     request: GET /{year}/{month}
     description: This route retrieves all the posts in a specific year/month
     pipeline:
-      - description: Retrieve the posts in the DB for year/month
-        service: GET http://localhost:3000/rpc/month_posts/${year}/${month}
-        content_type: application/json
-      - description: Transform monthly list into web page
-        service: POST http://localhost:3032/list_posts.tmpl
-        content_type: application/json
+      - service: GET http://localhost:3000/rpc/month_posts/${year}/${month}
+        description: Retrieve the posts in the DB for year/month
+      - service: POST http://localhost:3032/list_posts.tmpl
+        description: Transform monthly list into web page
   - id: retrieve_day_posts
     request: GET /{year}/{month}/{day}
     description: Retrieve all the posts on a specific day
     pipeline:
-      - description: Retrieve the posts happending on year/month/day
-        service: GET http://localhost:3000/rpc/day_posts/${year}/${month}
-        content_type: application/json
+      - service: GET http://localhost:3000/rpc/day_posts/${year}/${month}
+        description: Retrieve the posts happending on year/month/day
   - id: retrieve_recent_posts
     request: GET /recent/
     description: This route retrieves the recent 10 posts.
     pipeline:
-      - description: Use the recent_post view to retrieve the recent posts in descending date order
-        service: GET http://localhost:3000/rpc/recent_posts
-        content_type: application/json
-      - description: Take the JSON for recent posts and turn it into a web page
-        service: GET http://localhost:3032/list_posts.tmpl
-        content_type: application/json
+      - service: GET http://localhost:3000/rpc/recent_posts
+        description: Use the recent_post view to retrieve the recent posts in descending date order
+      - service: GET http://localhost:3032/list_posts.tmpl
+        description: Take the JSON for recent posts and turn it into a web page
   - id: retrieve_a_post
     request: GET /post/{post_id}
     description: Retrieve a specific host and display it
     pipeline:
-      - description: retrieve the requested post from the blog path
-        service: GET http://localhost:3000/{yr}/{mo}/{post_id}
-        content_type: application/json
-      - description: Turn the JSON into a web page
-        service: GET http://localhost:3032/blog_post.tmpl
-        content_type: application
+      - service: GET http://localhost:3000/{yr}/{mo}/{post_id}
+        description: retrieve the requested post from the blog path
+      - service: GET http://localhost:3032/blog_post.tmpl
+        description: Turn the JSON into a web page
 templates:
-  - request: /post
+  - id: post
+    request: /post
     template: post.tmpl
-  - request: /list
+  - id: list
+    request: /list
     template: list.tmpl
-    
