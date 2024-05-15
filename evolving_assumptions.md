@@ -54,15 +54,19 @@
   - A "front end developer" probably isn't a web designer
 - 2019, Gemini Project is initiated, something between Gopher and a text centered web wide web experience
 
-Web development seen in this abbreviated timeline shows growth complexity of implement and expectations. In 2024 I think many people and organizations operating on the maxim, "the web is complex so my tools need to be complex and what I create will be necessarily complex". The maxim is not sustainable. 
+The evolution seen in this abbreviated timeline illustrates a growth complexity, implementation and expectations around web development. In 2024 many organizations and people appear to operating with a maxim, "the web is complex, my tools need to be complex, I create complex things". This maxim is not sustainable in software. 
 
-The seeds of simplification are out there. They've cropped up at almost every turning point in the web evolution. Sometimes the seeds of simplification can actually result in more complexity, e.g. my experience with early NodeJS work was liberating. I went from projects where I dealt with give or six programming and configuration languages to four language (e.g. JavaScript, HTML, CSS and SQL). Yet the NodeJS/NPM combo also ushered in the assumption of a complex ecosystem to build your "web application" from.  Static website deployments came back into vogue (in part due to cost advantages of using S3 buckets) but we also got increasing numbers of web services, API, and "single page apps" which are just a web site with navigation taken out of the hands of the URL. 
+The seeds of simplification are out there. They've cropped up at almost every turning point in the web evolution. Sometimes the seeds of simplification can actually result in more complexity, e.g. my experience with early NodeJS work was liberating. I went from projects where I worked in five or six programming and configuration languages to four language (e.g. JavaScript, HTML, CSS and SQL). That same liberation also laid the foundation for NodeJS+NPM which ushered in the assumption of a complex ecosystem.  Static website deployments came back into vogue (in part due to cost advantages of using S3 buckets) but some of the static site generators, e.g. Jekyll, seemed to have missed the boat on simplifying things.  These types of simplifications came from developers for developers in many cases. One simplification freed the conceptual bandwidth to create something more complex.
 
-Importantly I think there is beginning to be a sense of a course change. Some of this is technical, some political, some social and importantly economic. Today the web and the "cloud" is a landlord's market. Just as many countries are facing housing crisis for various reasons (e.g. war, wealth gaps, climate change) the web experience is facing one now. In North America organizations are faced with renting resources in data centers just as they faced renting the communications lines in the past. The big change is that you no longer have the option of ownership in the sense that your software isn't under your control. It's under the control of the landlord and their interest and how they want to rent you out.
+On the other hand simplifications which had multiple motivators seem to stick around a while. Static sites are common practice for libraries since they provide a robust platform for distributing information and are also low cost to support (rental of an S3 bucket is cheap for small files). 
 
-We need to focus on simplification at many levels. Simplification of our starts (or at least how we conceptualize them), simplification in the code we write, and simplification of our expectations about web we want from the web.
+You also see other forces encouraging a rethink. The race to the "cloud" has lead to a landlord's market place. For commercial software it is difficult to "buy" software but often forcing us to rent[^4].
+
+I think it is high time to focus our simplification at all levels. Getting to simple in part is an engineering problem, in part a human organizational problem and significantly a "market force" problem. As humans we can take steps to change that if we choose to.
 
 [^2]: E.g. Prototype 2005, Mootools, YUI and jQuery 2006.
 
 [^3]: Ryan Dahl releases introduces NodeJS. This quickly replaces Rhino, Narwhal and Jaxer JavaScript server side efforts
+
+[^4]: Example try buying Windows, macOS, or Adobe Photoshop, we rent the software only. 
 
