@@ -150,7 +150,7 @@ func addModelStub(ast *AST, modelId string) ([]string, error) {
 
 // modifyModelTUI modify a specific model (e.g. add, modify remove model attributes)
 func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
-	readBuffer := bufio.NewReader(in)
+	buf := bufio.NewReader(in)
 	model, ok := ast.GetModelById(modelId)
 	if !ok {
 		return fmt.Errorf("cannot find %q", modelId)
@@ -173,7 +173,7 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 		case "d":
 			if opt == "" {
 				fmt.Fprintf(out, "\nEnter model description: ")
-				opt = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 			}
 			if opt != "" {
 				model.Description = opt
@@ -194,7 +194,7 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 
 // modifyModelAttributesTUI provides a text UI for managing a model's attributes
 func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer) error {
-	readBuffer := bufio.NewReader(in)
+	buf := bufio.NewReader(in)
 	if model.Attributes == nil {
 		model.Attributes = map[string]string{}
 	}
@@ -215,7 +215,7 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 		case "a":
 			if opt == "" {
 				fmt.Fprintf(out, "Enter attribute name: ")
-				opt = getAnswer(readBuffer, "", true)
+				opt = getAnswer(buf, "", true)
 			}
 			if !isValidVarname(opt) {
 				fmt.Fprintf(eout, "%q is not a valid attribute name\n", opt)
@@ -226,10 +226,10 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 		case "m":
 			if opt == "" {
 				fmt.Fprintf(out, "Enter attribute name: ")
-				opt = getAnswer(readBuffer, "", true)
+				opt = getAnswer(buf, "", true)
 			}
 			fmt.Fprintf(out, "Enter %s's value: ", opt)
-			val := getAnswer(readBuffer, "", false)
+			val := getAnswer(buf, "", false)
 			if val != "" {
 				model.Attributes[opt] = val
 				model.isChanged = true
@@ -237,7 +237,7 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 		case "r":
 			if opt == "" {
 				fmt.Fprintf(out, "Enter attribute name to remove: ")
-				opt = getAnswer(readBuffer, "", true)
+				opt = getAnswer(buf, "", true)
 				opt, ok = getIdFromList(attributeList, opt)
 			}
 			if ok {
@@ -261,7 +261,7 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 
 // modifyElementAttributesTUI provides a text UI for managing a model's element's attributes
 func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
-	readBuffer := bufio.NewReader(in)
+	buf := bufio.NewReader(in)
 	elem, _ := model.GetElementById(elementId)
 	for quit := false; !quit; {
 		var ok bool
@@ -280,7 +280,7 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 		case "a":
 			if opt == "" {
 				fmt.Fprintf(out, "Enter attribute name: ")
-				opt = getAnswer(readBuffer, "", true)
+				opt = getAnswer(buf, "", true)
 			}
 			if !isValidVarname(opt) {
 				fmt.Fprintf(eout, "%q is not a valid attribute name\n", opt)
@@ -291,10 +291,10 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 		case "m":
 			if opt == "" {
 				fmt.Fprintf(out, "Enter attribute name: ")
-				opt = getAnswer(readBuffer, "", true)
+				opt = getAnswer(buf, "", true)
 			}
 			fmt.Fprintf(out, "Enter %s's value: ", opt)
-			val := getAnswer(readBuffer, "", false)
+			val := getAnswer(buf, "", false)
 			if val != "" {
 				elem.Attributes[opt] = val
 				elem.isChanged = true
@@ -302,7 +302,7 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 		case "r":
 			if opt == "" {
 				fmt.Fprintf(out, "Enter attribute name to remove: ")
-				opt = getAnswer(readBuffer, "", true)
+				opt = getAnswer(buf, "", true)
 				opt, ok = getIdFromList(attributeList, opt)
 			}
 			if ok {
@@ -323,56 +323,169 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 	return nil
 }
 
+func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
+	buf := bufio.NewReader(in)
+	if elem.Options == nil {
+		elem.Options = []map[string]string{}
+	}
+	for quit := false; !quit; {
+
+	    optionsList := getValueLabelList(elem.Options)
+		menu, opt := selectMenuItem(in, out, 
+		    fmt.Sprintf("Manage %s.%s options", modelId, elem.Id),
+			"Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)",
+			optionsList,
+			true, "", "", true)
+		if len(menu) > 0 {
+			menu = menu[0:1]
+		}
+		opt, _ = getIdFromList(optionsList, opt)
+		var (
+			val string
+			label string
+		)
+		switch menu {
+			case "a":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter a value followed by a label: ")
+					val, label = getAnswers(buf, "", "", true)
+				} else {
+					if strings.Contains(opt, " ") {
+						parts := strings.SplitN(opt, " ", 2)
+						val, label = parts[0], parts[1]
+					}
+				}
+				if label == "" {
+					label = val
+				}
+				if val == "" {
+					fmt.Fprintf(eout, "Must an option requires a value\n")
+				} else {
+					elem.Options = append(elem.Options, map[string]string{ val: label })
+				}
+			case "m":
+			    if opt == "" {
+					fmt.Fprintf(out, "Enter value you want to change: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != "" {
+					pos, ok := getItemNoFromList(optionsList, opt)
+					if ok {
+						fmt.Fprintf(out, "Enter a value followed by a label: ")
+						val, label = getAnswers(buf,"", "", true)
+						if label == "" {
+							label = val
+						}
+						if val == "" {
+							fmt.Fprintf(eout, "Must an option requires a value\n")
+						} else {
+							elem.Options[pos] = map[string]string{val: label}
+						}
+					}
+				}
+			case "r":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter value you want to change: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != "" {
+					pos, ok := getItemNoFromList(optionsList, opt)
+					if ok {
+						elem.Options = append(elem.Options[0:pos], elem.Options[(pos+1):]...)
+					}
+				}
+			case "q":
+				quit = true
+			case "":
+				// do nothing
+			default:
+				fmt.Fprintf(eout, "did not understand, %s %s\n", menu, opt)
+		}
+	}
+	return nil
+}
+
 func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
-	var (
-		answer string
-	)
-	readBuffer := bufio.NewReader(in)
+	buf := bufio.NewReader(in)
 	elem, ok := model.GetElementById(elementId)
 	if !ok {
 		return fmt.Errorf("could not find %q element", elementId)
 	}
+	var (
+		menu string
+		opt string
+	)
 	for quit := false; !quit; {
 		attributeList := getAttributeIds(elem.Attributes)
-		menu, attr := selectMenuItem(in, out,
+		switch elem.Type {
+		case "select":
+			optionsList := getValueLabelList(elem.Options)
+			menu, opt = selectMenuItem(in, out,
+			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
+			"Menu [t]ype, [a]ttributes, [o]ptions, [q]uit (making changes)",
+			[]string{
+				fmt.Sprintf("id %s", elementId),
+				fmt.Sprintf("type %s", elem.Type),
+				fmt.Sprintf("attributes %s", strings.Join(attributeList, ",\n\t\t")),
+				fmt.Sprintf("options %s", strings.Join(optionsList, ",\n\t\t")),
+			},
+			false, "", "", true)
+		case "textarea":
+			menu, opt = selectMenuItem(in, out,
+			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
+			"Menu [t]ype, [a]ttributes, [q]uit (making changes)",
+			[]string{
+				fmt.Sprintf("id %s", elementId),
+				fmt.Sprintf("type %s", elem.Type),
+				fmt.Sprintf("attributes %s", strings.Join(attributeList, ",\n\t\t")),
+			},
+			false, "", "", true)
+		default:
+			menu, opt = selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
 			"Menu [t]ype, [p]attern, [a]ttributes, [o]bject id flag, [q]uit (making changes)",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
 				fmt.Sprintf("pattern %s", elem.Pattern),
-				fmt.Sprintf("attributes %s", strings.Join(attributeList, "\n\t\t")),
+				fmt.Sprintf("attributes %s", strings.Join(attributeList, ",\n\t\t")),
 				fmt.Sprintf("is object id %t", elem.IsObjectId),
 			},
 			false, "", "", true)
+		}
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
 		switch menu {
 		case "t":
-			if attr == "" {
+			if opt == "" {
 				fmt.Fprintf(out, `Enter type string (e.g. input, textarea, select, input[type=date]): `)
-				attr = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 			}
-			if attr != "" {
+			if opt != "" {
 				// FIXME: should probably validate this ..., should probably be a
 				// controlled vocabulary of supported type strings. e.g. button, checkbox, ORCID, ROR, etc
 				// FIXME: If elem.Type is select I need to provide an choices TUI for values and labels
-				elem.Type, elem.Pattern = normalizeInputType(attr)
+				elem.Type, elem.Pattern = normalizeInputType(opt)
 				elem.isChanged = true
+				if elem.Type == "select" {
+					if err := modifySelectElementTUI(elem, in, out, eout, model.Id); err != nil {
+						fmt.Fprintf(eout, "ERROR (%q): %s\n", elementId, err)
+					}
+				}
 			}
 		case "p":
-			if attr == "" {
+			if opt == "" {
 				fmt.Fprintf(out, "Enter the regexp to use: ")
-				attr = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 			}
 			// FIXME: how do I clear a pattern if I nolonger want to use one?
-			if attr != "" {
+			if opt != "" {
 				// NOTE: remove a pattern by having it match everything, i.e. astrix
-				if attr == "*" {
+				if opt == "*" {
 					elem.Pattern = ""
 				} else {
-					elem.Pattern = attr
+					elem.Pattern = opt
 				}
 				model.isChanged = true
 			}
@@ -381,14 +494,20 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				fmt.Fprintf(eout, "%s\n", err)
 			}
 		case "o":
-			elem.IsObjectId = !elem.IsObjectId
-			elem.isChanged = true
+			if elem.Type == "select" {
+				if err := modifySelectElementTUI(elem, in, out, eout, model.Id); err != nil {
+					fmt.Fprintf(eout, "ERROR (%q): %s\n", elem.Id, err)
+				}
+			} else {
+				elem.IsObjectId = !elem.IsObjectId
+				elem.isChanged = true
+			}
 		case "q":
 			quit = true
 		case "":
 			// do nothing
 		default:
-			fmt.Fprintf(eout, "did not understand %q\n", answer)
+			fmt.Fprintf(eout, "did not understand %q\n", menu)
 		}
 	}
 	return nil
@@ -405,13 +524,13 @@ func removeElementFromModel(model *Model, elementId string) error {
 	return fmt.Errorf("%s not found", elementId)
 }
 
-// modifyElementTUI modify a specific model's element list.
+// modifyElementsTUI modify a specific model's element list.
 func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model) error {
 	var (
 		err    error
 		answer string
 	)
-	readBuffer := bufio.NewReader(in)
+	buf := bufio.NewReader(in)
 	// FIXME: Need to support editing model attributes, then allow for modifying model's body to be modified.
 	for quit := false; !quit; {
 		elementList := model.GetElementIds()
@@ -426,7 +545,7 @@ func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model
 		case "a":
 			if !ok {
 				fmt.Fprintf(out, "Enter element id to add: ")
-				opt = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 				elementId, ok = getIdFromList(elementList, opt)
 			}
 			if ok {
@@ -438,7 +557,7 @@ func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model
 		case "m":
 			if elementId == "" {
 				fmt.Fprintf(out, "Enter element id to modify: ")
-				opt = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 				elementId, ok = getIdFromList(elementList, opt)
 			}
 			if err := modifyElementTUI(model, in, out, eout, elementId); err != nil {
@@ -447,7 +566,7 @@ func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model
 		case "r":
 			if elementId == "" {
 				fmt.Fprintf(out, "Enter element id to remove: ")
-				opt = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 				elementId, ok = getIdFromList(elementList, opt)
 			}
 			if ok {
@@ -473,7 +592,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 		err    error
 		answer string
 	)
-	readBuffer := bufio.NewReader(in)
+	buf := bufio.NewReader(in)
 	if ast.Models == nil {
 		ast.Models = []*Model{}
 	}
@@ -500,7 +619,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 		case "a":
 			if !ok {
 				fmt.Fprintf(out, "Enter model id to add: ")
-				opt = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 				modelId, ok = getIdFromList(modelList, opt)
 			}
 			if ok {
@@ -512,7 +631,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 		case "m":
 			if !ok {
 				fmt.Fprintf(out, "Enter model id to modify: ")
-				opt = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 				modelId, ok = getIdFromList(modelList, opt)
 			}
 			if err := modifyModelTUI(ast, in, out, eout, modelId); err != nil {
@@ -521,7 +640,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 		case "r":
 			if !ok {
 				fmt.Fprintf(out, "Enter model id to remove: ")
-				opt = getAnswer(readBuffer, "", false)
+				opt = getAnswer(buf, "", false)
 				modelId, ok = getIdFromList(modelList, opt)
 			}
 			if err := removeModelRoutesAndTemplates(ast, in, out, eout, modelId); err != nil {
@@ -538,7 +657,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 	}
 	if ast.HasChanges() {
 		fmt.Fprintf(out, "Save before exiting (Y/n)? ")
-		answer = getAnswer(readBuffer, "y", true)
+		answer = getAnswer(buf, "y", true)
 		if answer == "y" {
 			if err := saveModelsRoutesAndTemplates(configName, ast); err != nil {
 				return err

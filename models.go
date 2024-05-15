@@ -132,8 +132,8 @@ type Element struct {
 	// to generate appropriate validation code server side. 
 	Pattern string `json:"pattern,omitempty" yaml:"pattern,omitempty"`
 
-	// Choices holds the value and their labels used for select elements and their option child elements, 
-	Choices []map[string]string `json:"choices,omitempty" yaml:"choices,omitempty"`
+	// Options holds a list of values and their labels used for HTML select elements in rendering their option child elements
+	Options []map[string]string `json:"optoins,omitempty" yaml:"options,omitempty"`
 
     
 	// IsObjectId (e.g. primary key) used by for the modeled data.
