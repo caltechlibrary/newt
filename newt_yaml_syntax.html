@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- newt_yaml_syntax</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-yaml-syntax">Newt YAML syntax</h1>
+<p>The Newt programs are configured in a YAML file. Each Newt program
+may focus on some properties and ignore others. What is described below
+is the complete YAML syntax use in a Newt project that uses all of the
+Newt programs.</p>
+<h2 id="top-level-properties">Top level properties</h2>
+<p>These are the top level properties in YAML files.</p>
+<dl>
+<dt><code>applications</code></dt>
+<dd>
+(optional) holds the run time configuration used by the Newt
+applications.
+</dd>
+<dt><code>models</code></dt>
+<dd>
+(required by newtgenerator) This holds the description of the data
+models in your application. Each model describes a series of HTML 5
+elements that make up the model.
+</dd>
+<dt><code>routes</code></dt>
+<dd>
+(required by newtrouter) This holds the routes for the data pipeline
+(e.g. JSON API and template engine sequence)
+</dd>
+<dt><code>templates</code></dt>
+<dd>
+(required by newtmustache)
+</dd>
+</dl>
+<h2 id="the-applications-property">The applications property</h2>
+<p>The applications properties are optional. Some maybe set via command
+line. See Newt application’s manual page for specific ones. These
+properties lets you override the default settings of Newt programs.</p>
+<dl>
+<dt><code>newtrouter</code></dt>
+<dd>
+this contains configuration for the Newt Router, i.e. port and htdocs
+</dd>
+<dt><code>newtgenerator</code></dt>
+<dd>
+this contains configuration for the Newt Generator, i.e. namespace
+</dd>
+<dt><code>newtmustache</code></dt>
+<dd>
+this contains configuration for Newt Mustache, i.e. port
+</dd>
+<dt><code>postgres</code></dt>
+<dd>
+this contains configuration information for the running Postgres
+database
+</dd>
+<dt><code>postgrest</code></dt>
+<dd>
+this contains configuration information managing PostgREST application
+with <code>newt</code>
+</dd>
+<dt><code>options</code></dt>
+<dd>
+holds key value pairs of which can be referenced in the values of
+models, routes and templates.
+</dd>
+<dt><code>environment</code></dt>
+<dd>
+(optional) this is a list of operating system environment variables that
+will be available to models, routes and templates. You can use this to
+pass in secrets (e.g. credentials) to your pipelined services. The
+pairing of environment variable and value are merged into the options
+when Newt services start up.
+</dd>
+</dl>
+<h3 id="configuring-newt-programs">Configuring Newt programs</h3>
+<dl>
+<dt><code>app_path</code></dt>
+<dd>
+(newt) the path to the program(s) managed by <code>newt</code>
+</dd>
+<dt><code>namespace</code></dt>
+<dd>
+(newtgenerator) uses this in the SQL generated for setting up
+Postgres+PostgREST
+</dd>
+<dt><code>port</code></dt>
+<dd>
+(all) Port number to used for Newt web service running on localhost
+</dd>
+<dt><code>htdocs</code></dt>
+<dd>
+(newtrouter) Directory that holds your application’s static content
+</dd>
+</dl>
+<h2 id="the-routes-property">the “routes” property</h2>
+<p>Routes hosts a list of request descriptions and their data pipelines.
+This property is only used by Newt router and Newt code generator.</p>
+<h3 id="a-route-object">a route object</h3>
+<dl>
+<dt><code>id</code></dt>
+<dd>
+(required) This identifies the pipeline. It maybe used in code
+generation. It must conform to variable name rules<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+</dd>
+<dt><code>description</code></dt>
+<dd>
+(optional, encouraged) This is a human readable description of what
+you’re trying to accomplish in this specific route. It may be used in
+comments or by documentation generators.
+</dd>
+<dt><code>request [METHOD ][PATH]</code></dt>
+<dd>
+(required) This is a string that expresses the HTTP method and URL path
+to used to trigger running the data pipeline. If METHOD is not provided
+it will match using just the path. This is probably NOT what you want.
+You can express embedded variables in the PATH element. This is done by
+using single curl braces around a variable name. E.g.
+<code>GET /items/{item_id}</code> would make <code>item_id</code>
+available in building your service paths in the pipeline. The pattern
+takes up a whole path segment so <code>/blog/{year}-{month}-{day}</code>
+would not work but <code>/blog/{year}/{month}/{day}</code> would capture
+the individual elements. The Newt router sits closely on top of the Go
+1.22 HTTP package route handling. For the details on how Go 1.22 and
+above request handlers and patterns form see See <a
+href="https://tip.golang.org/doc/go1.22#enhanced_routing_patterns"
+class="uri">https://tip.golang.org/doc/go1.22#enhanced_routing_patterns</a>
+and <a href="https://pkg.go.dev/net/http#hdr-Patterns"
+class="uri">https://pkg.go.dev/net/http#hdr-Patterns</a> for
+explanations.
+</dd>
+<dt><code>pipeline</code></dt>
+<dd>
+(required) this is a list of URLs to one or more web services visible on
+localhost. The first stage to fail will abort the pipeline returning an
+HTTP error status. If done fail then the result of the last stage it
+returned to the requesting browser.
+</dd>
+<dt><code>debug</code></dt>
+<dd>
+(optional) if set to true the <code>newt</code> service will log verbose
+results to standard out for this specific pipeline
+</dd>
+</dl>
+<h4 id="a-pipeline-object">a pipeline object</h4>
+<p>A pipeline is a list of web services containing a type, URL, method
+and content types</p>
+<dl>
+<dt><code>service [METHOD ][URL]</code></dt>
+<dd>
+(required) The HTTP method is included in the URL The URL to be used to
+contact the web service, may contain embedded variable references drawn
+from the request path as well as those passed in through
+<code>.application.environment</code>. All the elements extracted from
+the elements derived from the request path are passed through strings.
+These are then used to construct a simple key-value object of variable
+names and objects which are then passed through the Mustache template
+representing the target service URL.
+</dd>
+<dt><code>description</code></dt>
+<dd>
+(optional, encouraged) This is a description of what this stage of the
+pipe does. It is used when debug is true in the log output and in
+program documentation.
+</dd>
+<dt><code>timeout</code></dt>
+<dd>
+(optional) Set the timeout in seconds for receiving a response from the
+web server. Remember the time spent at each stage is the cumulative time
+your browser is waiting for a response. For this reason you may want to
+set the timeout to a small number.
+</dd>
+</dl>
+<h2 id="the-models-property">the “models” property</h2>
+<p>Models holds a list of individual models used by our data pipelines.
+The models are used by Newt code generator and the Newt router. Models
+were inspired by a subset of GitHub YAML issue template syntax (abbr:
+GHYITS). Models contain lists of elements, elements are descriptions of
+HTML5 input elements and their attributes.</p>
+<h3 id="a-model-object">a model object</h3>
+<p>The model object is based largely on GitHub YAML issue template
+syntax with a couple extra properties that are Newt enhancements.</p>
+<dl>
+<dt><code>id</code></dt>
+<dd>
+(required) this is the name identifying the model. It must conform to
+variable name rules<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a>
+</dd>
+</dl>
+<p>The following properties are inspired by GitHub YAML issue template
+syntax<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a> (abbr: GHYITS)</p>
+<dl>
+<dt><code>description</code></dt>
+<dd>
+(required: GHYITS, optional: newt) A human description of the model, It
+will appear in the web form and SQL components generated from the model
+</dd>
+<dt><code>elements</code></dt>
+<dd>
+(required) A a list of input types. Each input type maps to columns in
+SQL, input element in web forms and or HTML elements in read only pages
+</dd>
+</dl>
+<h4 id="a-models-input-types">a model’s input types</h4>
+<p>This is based on HTML5 form input types. They were inspired by GitHub
+YAML issue template (abbr: GHYITS) input types<a href="#fn4"
+class="footnote-ref" id="fnref4"
+role="doc-noteref"><sup>4</sup></a>.</p>
+<dl>
+<dt><code>id</code></dt>
+<dd>
+(required) an identifier for the element. Must conform to variable name
+rules<a href="#fn5" class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a>. It is used to SQL as a column name
+and in web forms for the input property.
+</dd>
+<dt><code>type</code></dt>
+<dd>
+(required) Identifies the type of elements (input, textarea, markdown,
+checkbox, dropdown).
+</dd>
+<dt><code>attributes</code></dt>
+<dd>
+(optional) A key-value list that define properties of the element. These
+used in rendering the element in SQL or HTML.
+</dd>
+<dt><code>primary_key</code></dt>
+<dd>
+(boolean, defaults to false) if true this element is treat as the object
+identifier or primary key. It used in routing and in generate SQL schema
+and queries.
+</dd>
+</dl>
+<h2 id="input-types">input types</h2>
+<p>The model types supported in Newt are based on the HTML5 form input
+types. They are inspired by GHYITS scheme<a href="#fn6"
+class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.
+Example types include</p>
+<dl>
+<dt><code>text</code></dt>
+<dd>
+A single line text field. This conforms to value input types in HTML 5
+and can be expressed using the CSS selector notation as
+<code>input[type=date]</code>.
+</dd>
+<dt><code>textarea</code></dt>
+<dd>
+(models only) A multi-line text field
+</dd>
+<dt><code>dropdown</code></dt>
+<dd>
+A dropdown menu. In SQL this could render as an enumerated type. In HTML
+it would render as a drop down list
+</dd>
+<dt><code>checkboxes</code></dt>
+<dd>
+A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio
+button) then the result is stored in a single column, if multiple checks
+are allowed it is stored as a JSON Array column.
+</dd>
+<dt><code>email</code></dt>
+<dd>
+This conforms to a text string with validation for email format
+</dd>
+</dl>
+<p>See <a
+href="https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types"
+class="uri">https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types</a>
+for more possibilities.</p>
+<p>IMPORTANT: Newt does NOT support the file input type because Newt
+applications do not support file uploads.</p>
+<p>Newt extends support for additional identifiers used by galleries,
+libraries, archives and museum by generating the necessary validation at
+the SQL level and use regular expressions in the pattern attribute of
+HTML5 input elements. When expressed as HTML these can be identified by
+the additional attribute “extended-type”.</p>
+<dl>
+<dt>orcid</dt>
+<dd>
+This identifies the element as an ORCID. Server side validation will be
+generated at the SQL level and client side validation via HTML5 input
+element with pattern attribute.
+</dd>
+</dl>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">input</span><span class="ot"> type</span><span class="op">=</span><span class="st">&quot;text&quot;</span><span class="ot"> extended-type</span><span class="op">=</span><span class="st">&quot;orcid&quot;</span><span class="ot"> pattern</span><span class="op">=</span><span class="st">&quot;[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9A-Z]&quot;</span><span class="dt">&gt;</span></span></code></pre></div>
+<h2 id="example-newt-yaml-for-router-and-code-generator">Example Newt
+YAML for router and code generator</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtgenerator</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> people</span><span class="co"> # E.g. &quot;people&quot; Namespace to use generating Postgres SQL</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtrouter</span><span class="kw">:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8011</span><span class="co"> # Port number for Newt Router</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">htdocs</span><span class="kw">:</span><span class="at"> htdocs</span><span class="co"> # Path to static content directory if required</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtmustache</span><span class="kw">:</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8012</span><span class="co"> # Port number for Newt Mustache </span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">postgres</span><span class="kw">:</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">5432</span><span class="co"> # Where to find the Postgres port</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">postgrest</span><span class="kw">:</span><span class="co"> # Configuration for running PostgREST via newt</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">3000</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app_path</span><span class="kw">:</span><span class="at"> /usr/local/bin/postgrest</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">conf</span><span class="kw">:</span><span class="at"> people.conf</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PGUSER</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PGPASSWORD</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PGHOST</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">models</span><span class="kw">:</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> people</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> People Profiles</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">    description</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      This models a curated set of profiles of colleagues</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">elements</span><span class="kw">:</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> people_id</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> A unique person id, no spaces, alpha numeric</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. jane-do-007</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> display_name</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person display name</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. J. Doe, journalist</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> family_name</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (required) A person&#39;s family name or singular when only one name exists</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. Doe</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> given_name</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> input</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional, encouraged) A person&#39;s given name</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. Jane</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> orcid</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> orcid</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person&#39;s ORCID identifier</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. 0000-0000-0000-0000</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> email</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> email</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person public email address</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> website</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> url</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">attributes</span><span class="kw">:</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">label</span><span class="kw">:</span><span class="at"> (optional) A person&#39;s public website</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">placeholder</span><span class="kw">:</span><span class="at"> ex. https://jane.doe.example.org</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> create_person</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Create new person profile</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /person</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This will generate a new user in the database</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST &quot;https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people&quot;</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="kw">      - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>          This sends the results of creating a person to the template engine</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3032/people_update_result.tmpl</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> read_person</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">desciption</span><span class="kw">:</span><span class="at"> Update a person&#39;s profile</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;GET /person/{{people.people_id}}&quot;</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Retrieve a person&#39;s profile</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST &quot;https://{{DB_USER}}@{{DB_HOST}}:3000/person/{{people.people_id}}&quot;</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a><span class="kw">      - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>          Render a person&#39;s profile</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http:localhost:3032/profile.tmpl</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> update_person</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Update person&#39;s profile</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;PUT /person/{{people.people_id}}&quot;</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This will update a person record in the database</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> PUT &quot;https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people&quot;</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="kw">      - </span><span class="fu">description</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>          This sends the results of updating a person to the template engine</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3032/people_update_result.tmpl</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> delete_person</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Remove person&#39;s profile</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;DELETE /person/{{people.people_id}}&quot;</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Remove the person for the database</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> DELETE &quot;https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}&quot;</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Displace the result of what happed in the removal</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3032/removed_person.tmpl</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> list_people</span></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> List people profiles available</span></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /people</span></span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Retrieve a list of all people profiles available</span></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET https://{{DB_HOST}}@{{DB_HOST}}:3000/people</span></span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> application/json</span></span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">discription</span><span class="kw">:</span><span class="at"> format a browsable people list linking to individual profiles</span></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3030/list_people.tmpl</span></span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">content_type</span><span class="kw">:</span><span class="at"> applicatin/json</span></span></code></pre></div>
+<h2 id="templates-property">templates property</h2>
+<p>This property is used by Newt Mustache. It allows Newt Mustache to
+map a POST to a specific template or template and set of partials.</p>
+<dl>
+<dt>templates</dt>
+<dd>
+(optional: newtmustache) this holds a list of template objects.
+</dd>
+</dl>
+<h3 id="template-object-model">template object model</h3>
+<p>The template objects are used by Newt Mustache template engine. If
+you’re not using it you can skip these. Newt Mustache only responds to
+POST methods which have a defined path in the templates section of the
+Newt YAML template file.</p>
+<dl>
+<dt><code>id</code></dt>
+<dd>
+(required) the identifier for related templates. E.g. a web form and the
+response form are associated with a common identifier. Newt’s modeler
+uses this field to manage template updates and removals.
+</dd>
+<dt><code>request [PATH]</code></dt>
+<dd>
+(required) This holds the request HTTP method and path. If the HTTP
+method is missing a POST is assumed. Requests in templates like with
+request in routes can contain inline string variables. Example would be
+<code>{name}</code> used in the YAML below.
+</dd>
+<dt><code>template</code></dt>
+<dd>
+(required) This is the path to the template associated with request.
+NOTE: Pandoc web service does not support partial templates. Mustache
+does support partial templates
+</dd>
+<dt><code>partials</code></dt>
+<dd>
+(optional) A list of paths to partial Mustache templates used by
+<code>.template</code>.
+</dd>
+<dt><code>vocabularies</code></dt>
+<dd>
+(optional) This is a YAML file containing “vocabulary” items that can be
+incorporated into the output of your Mustache template. Example would be
+auto complete form elements. It is read at Newt Mustache startup along
+with the template.
+</dd>
+<dt><code>options</code></dt>
+<dd>
+(optional) An object that can be merged in with JSON received for
+processing by your Mustache template. Options can be set per template
+but are also inherited from the resolved names and values in the
+applications’ attribute of the Newt YAML file.
+</dd>
+<dt><code>debug</code></dt>
+<dd>
+(optional) this turns on debugging output for this template.
+</dd>
+</dl>
+<p>Example of newtmustache YAML:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtmustache</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8012</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello/{name}</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/simple.mustache</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hi</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hi/{name}</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hi</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hi</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> testdata/hithere.html</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> testdata/name.mustache</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span></code></pre></div>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>variable numbers must start with a letter, may contain
+numbers but not spaces or punctuation except the underscore<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>variable numbers must start with a letter, may contain
+numbers but not spaces or punctuation except the underscore<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms</a>,<a
+href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
+href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>variable numbers must start with a letter, may contain
+numbers but not spaces or punctuation except the underscore<a
+href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>See <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema"
+class="uri">https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema</a><a
+href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

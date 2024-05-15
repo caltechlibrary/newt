@@ -36,3 +36,7 @@
 - [Installing PostgREST](INSTALL-PostgREST.md) from source (developer notes)
 - [Installing Pandoc](INSTALL-Pandoc.md) from source (developer notes, Pandoc is needed to compile Newt)
 
+## Reference
+
+- [Evolving Assumption](evolving_assumptions.md), a timeline of web related technological changes
+- [Structured Data Representation](structured_data_representation.md), a musing on how to handle complex data objects in HTML, CSS and JavaScript
