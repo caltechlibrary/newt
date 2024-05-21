@@ -7,8 +7,10 @@
 # @author: R. S. Doiel <rsdoiel@caltech.edu>
 #
 application:
-  port: 8011
-  citation: CITATION.cff
+  router:
+    port: 8011
+  postgres:
+    namespace: cold
   environemnt:
     - DB_USER
     - DB_PASSWORD

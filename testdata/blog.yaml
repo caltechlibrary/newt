@@ -1,12 +1,11 @@
 applications:
-  newtrouter:
+  router:
     port: 8010
     htdocs: htdocs
-  newtmustache:
+  mustache:
     port: 8011
-  newtgenerator:
-    namespace: blog.yaml
   postgres:
+    namespace: blog
     port: 5432
     dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/blog.yaml
   postgrest:
@@ -20,16 +19,16 @@ models:
   - id: post
     description: A blog post or article
     elements:
-      - type: input
+      - type: text
         id: post_id
         is_object_id: true
-      - type: input
+      - type: text
         id: title
         attributes:
           name: title
           placeholdertext: ex. My Blog Post for Today
           required: "false"
-      - type: input
+      - type: text
         id: byline
         attributes:
           name: byline
@@ -40,7 +39,7 @@ models:
         attributes:
           name: content
           required: "true"
-      - type: input[type=date]
+      - type: date
         id: pubDate
         attributes:
           name: pubDate

@@ -35,14 +35,14 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 				ast.Applications.Router.Htdocs = ""
 			}
 		}
-		for quit := false; ! quit; {
-			menuList := []string {
-		   		fmt.Sprintf("Set [p]ort: %d", ast.Applications.Router.Port),
-		   		fmt.Sprintf("Set [h]tdocs: %q", ast.Applications.Router.Htdocs),
+		for quit := false; !quit; {
+			menuList := []string{
+				fmt.Sprintf("Set [p]ort: %d", ast.Applications.Router.Port),
+				fmt.Sprintf("Set [h]tdocs: %s", ast.Applications.Router.Htdocs),
 			}
-			menu, opt := selectMenuItem(buf, out, 
-		   		"Manage Newt Router Settings",
-		   		"Type menu letter and press enter to modify or press enter when done",
+			menu, opt := selectMenuItem(buf, out,
+				"Manage Newt Router Settings",
+				"Type menu letter and press enter to modify or press enter when done",
 				menuList, false, "", "", true)
 			if len(menu) > 0 {
 				menu = menu[0:1]
@@ -50,6 +50,7 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 			switch menu {
 			case "p":
 				if opt == "" {
+					fmt.Fprintf(out, "Enter Port number: ")
 					opt = getAnswer(buf, strconv.Itoa(ROUTER_PORT), true)
 				}
 				port, err := strconv.Atoi(opt)
@@ -61,16 +62,17 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 				}
 			case "h":
 				if opt == "" {
+					fmt.Fprintf(out, "Enter htdocs value: ")
 					opt = getAnswer(buf, "", false)
 				}
-				if ast.Applications.Router.Htdocs != opt {
+				if opt != ast.Applications.Router.Htdocs {
 					ast.Applications.Router.Htdocs = opt
 					ast.isChanged = true
 				}
 			case "q":
 				quit = true
 			case "":
-			  	quit = true
+				quit = true
 			default:
 				fmt.Fprintf(out, "failed to understand %q\n", menu)
 			}
@@ -106,55 +108,56 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 			ast.Applications.PostgREST.AppPath = "postgrest"
 			ast.Applications.PostgREST.ConfPath = "postgrest.conf"
 		}
-		for quit := false; ! quit; {
-			menuList := []string {
+		for quit := false; !quit; {
+			menuList := []string{
 				fmt.Sprintf("Set [p]ort: %d", ast.Applications.PostgREST.Port),
 				fmt.Sprintf("Set [a]pp path: %q", ast.Applications.PostgREST.AppPath),
 				fmt.Sprintf("Set [c]onf path: %q", ast.Applications.PostgREST.ConfPath),
 			}
 			menu, opt := selectMenuItem(buf, out,
-		   		"Manage PostgREST Settings",
-		   		"Type menu letter and press enter to modify or press enter when done",
+				"Manage PostgREST Settings",
+				"Type menu letter and press enter to modify or press enter when done",
 				menuList, false, "", "", true)
 			if len(menu) > 0 {
 				menu = menu[0:1]
 			}
 			switch menu {
-				case "p":
-					if opt == "" {
-						opt = getAnswer(buf, strconv.Itoa(POSTGREST_PORT), true)
-					}
-					port, err := strconv.Atoi(opt)
-					if err != nil {
-						fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
-					} else {
-						ast.Applications.PostgREST.Port = port
-						ast.isChanged = true
-					}
-				case "a":
-					if opt == "" {
-						fmt.Fprintf(out, "Enter the path to PostgREST application (an empty path is OK): ")
-						opt = getAnswer(buf, "", false)
-					}
-					if ast.Applications.PostgREST.AppPath != opt {
-						ast.Applications.PostgREST.AppPath = opt
-						ast.isChanged = true
-					}
-				case "c":
-					if opt == "" {
-						fmt.Fprintf(out, "Enter the path to PostgREST configuration (an empty path is OK): ")
-						opt = getAnswer(buf, "", false)
-					}
-					if ast.Applications.PostgREST.ConfPath != opt {
-						ast.Applications.PostgREST.ConfPath = opt
-						ast.isChanged = true
-					}
-				case "q":
-					quit = true
-				case "":
-					quit = true
-				default:
-					fmt.Fprintf(out, "failed to understand request, %q\n", menu)
+			case "p":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Postgres port number: ")
+					opt = getAnswer(buf, strconv.Itoa(POSTGREST_PORT), true)
+				}
+				port, err := strconv.Atoi(opt)
+				if err != nil {
+					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
+				} else {
+					ast.Applications.PostgREST.Port = port
+					ast.isChanged = true
+				}
+			case "a":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter the path to PostgREST application (an empty path is OK): ")
+					opt = getAnswer(buf, "", false)
+				}
+				if ast.Applications.PostgREST.AppPath != opt {
+					ast.Applications.PostgREST.AppPath = opt
+					ast.isChanged = true
+				}
+			case "c":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter the path to PostgREST configuration (an empty path is OK): ")
+					opt = getAnswer(buf, "", false)
+				}
+				if ast.Applications.PostgREST.ConfPath != opt {
+					ast.Applications.PostgREST.ConfPath = opt
+					ast.isChanged = true
+				}
+			case "q":
+				quit = true
+			case "":
+				quit = true
+			default:
+				fmt.Fprintf(out, "failed to understand request, %q\n", menu)
 			}
 		}
 	} else {
@@ -183,6 +186,9 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 		if ast.Applications.Postgres.Port == 0 {
 			ast.Applications.Postgres.Port = POSTGRES_PORT
 		}
+		if ast.Applications.Postgres.Namespace == "" {
+			ast.Applications.Postgres.Namespace = appFName
+		}
 		if ast.Applications.Postgres.DSN == "" {
 			ast.Applications.Postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", ast.Applications.Postgres.Port, appFName)
 			// Now we need to make sure we allow PGUSER and PGPASSWORD to pass through in the environment
@@ -191,63 +197,66 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 			}
 			ast.Applications.Environment = append(ast.Applications.Environment, "PGUSER", "PGPASSWORD")
 		}
-		if ast.Applications.NewtGenerator == nil {
-			ast.Applications.NewtGenerator = &Application{
-				Namespace: appFName,
-			}
-		}
-		for quit := false; ! quit; {
-			menuList := []string {
+		for quit := false; !quit; {
+			menuList := []string{
 				fmt.Sprintf("Set [p]ort: %d", ast.Applications.Postgres.Port),
-				fmt.Sprintf("Set [d]sn (data source name): %q", ast.Applications.Postgres.DSN),
+				fmt.Sprintf("Set [d]sn (data source name): %s", ast.Applications.Postgres.DSN),
+				fmt.Sprintf("Set [n]amespace: %s", ast.Applications.Postgres.Namespace),
 			}
 			menu, opt := selectMenuItem(buf, out,
-		   		"Manage Postgres Settings",
-		   		"Type menu letter and press enter to modify or press enter when done",
+				"Manage Postgres Settings",
+				"Type menu letter and press enter to modify or press enter when done",
 				menuList, false, "", "", true)
 			if len(menu) > 0 {
 				menu = menu[0:1]
 			}
 			switch menu {
-				case "p":
-					if opt == "" {
-						opt = getAnswer(buf, strconv.Itoa(POSTGRES_PORT), true)
-					}
-					port, err := strconv.Atoi(opt)
-					if err != nil {
-						fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
-					} else {
-						ast.Applications.PostgREST.Port = port
-						ast.isChanged = true
-					}
-				case "d":
-					if opt == "" {
-						fmt.Fprintf(out, "Enter DSN in uri form: ")
-						opt = getAnswer(buf, "", false)
-					}
-					if ast.Applications.PostgREST.DSN != opt {
-						ast.Applications.PostgREST.DSN = opt
-						ast.isChanged = true
-					}
-				case "q":
-					quit = true
-				case "":
-					quit = true
-				default:
-					fmt.Fprintf(out, "failed to understand request, %q\n", menu)
+			case "n":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter namespace value: ")
+					opt = getAnswer(buf, appFName, true)
+				}
+				if opt != ast.Applications.Postgres.Namespace {
+					ast.Applications.Postgres.Namespace = opt
+					ast.isChanged = true
+				}
+			case "p":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Postgres port: ")
+					opt = getAnswer(buf, strconv.Itoa(POSTGRES_PORT), true)
+				}
+				port, err := strconv.Atoi(opt)
+				if err != nil {
+					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
+				} else {
+					ast.Applications.PostgREST.Port = port
+					ast.isChanged = true
+				}
+			case "d":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter DSN in uri form: ")
+					opt = getAnswer(buf, "", false)
+				}
+				if ast.Applications.PostgREST.DSN != opt {
+					ast.Applications.PostgREST.DSN = opt
+					ast.isChanged = true
+				}
+			case "q":
+				quit = true
+			case "":
+				quit = true
+			default:
+				fmt.Fprintf(out, "failed to understand request, %q\n", menu)
 			}
 		}
 	} else {
 		if ast.Applications != nil {
 			ast.Applications.Postgres = nil
 		}
-		if ast.Applications.NewtGenerator != nil {
-			ast.Applications.NewtGenerator.Namespace = ""
-		}
 	}
 }
 
-func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+func setupMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
 	var answer string
 	if skipPrompts {
 		answer = "y"
@@ -259,60 +268,63 @@ func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName stri
 		if ast.Applications == nil {
 			ast.Applications = NewApplications()
 		}
-		if ast.Applications.NewtMustache == nil {
-			ast.Applications.NewtMustache = NewApplication()
+		if ast.Applications.Mustache == nil {
+			ast.Applications.Mustache = NewApplication()
 		}
-		if ast.Applications.NewtMustache.Port == 0 {
-			ast.Applications.NewtMustache.Port = MUSTACHE_PORT
+		if ast.Applications.Mustache.Port == 0 {
+			ast.Applications.Mustache.Port = MUSTACHE_PORT
 		}
 		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
 		// When the model list changes then the related templates should change to.
 		// A scan of the template routes for removed models needs to happen when the model is "removed" by the modeler.
 		if ast.Templates == nil {
-			ast.Templates = []*MustacheTemplate{}
-			if err := setupMustacheTemplateHandlers(ast); err != nil {
+			ast.Templates = []*Template{}
+			if err := setupTemplateHandlers(ast); err != nil {
 				fmt.Fprintf(out, "WARNINGS: %s\n", err)
 			}
 		}
-		for quit := false; ! quit; {
-			menuList := []string {
-				fmt.Sprintf("Set [p]ort: %d", ast.Applications.PostgREST.Port),
+		for quit := false; !quit; {
+			menuList := []string{}
+			if ast.Applications.Mustache != nil {
+				menuList = append(menuList, fmt.Sprintf("Set [p]ort: %d", ast.Applications.Mustache.Port))
 			}
+			// FIXME: You show the current template list here..
 			menu, opt := selectMenuItem(buf, out,
-		   		"Manage Newt Mustache Settings",
-		   		"Type menu letter and press enter to modify or press enter when done",
+				"Manage Newt Mustache Settings",
+				"Type menu letter and press enter to modify or press enter when done",
 				menuList, false, "", "", true)
 			if len(menu) > 0 {
 				menu = menu[0:1]
 			}
 			switch menu {
-				case "p":
-					if opt == "" {
-						opt = getAnswer(buf, strconv.Itoa(MUSTACHE_PORT), true)
-					}
-					port, err := strconv.Atoi(opt)
-					if err != nil {
-						fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
-					} else {
-						ast.Applications.PostgREST.Port = port
-						ast.isChanged = true
-					}
-				case "q":
-					quit = true
-				case "":
-					quit = true
-				default:
-					fmt.Fprintf(out, "failed to understand request, %q\n", menu)
+			case "p":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter port number: ")
+					opt = getAnswer(buf, strconv.Itoa(MUSTACHE_PORT), true)
+				}
+				port, err := strconv.Atoi(opt)
+				if err != nil {
+					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
+				} else {
+					ast.Applications.Mustache.Port = port
+					ast.isChanged = true
+				}
+			case "q":
+				quit = true
+			case "":
+				quit = true
+			default:
+				fmt.Fprintf(out, "failed to understand request, %q\n", menu)
 			}
 		}
 	} else {
 		if ast.Applications != nil {
-			ast.Applications.NewtMustache = nil
+			ast.Applications.Mustache = nil
 		}
 	}
 }
 
-func setupMustacheTemplateHandlers(ast *AST) error {
+func setupTemplateHandlers(ast *AST) error {
 	eBuf := bytes.NewBuffer([]byte{})
 	hasError := false
 	for _, m := range ast.Models {
@@ -336,22 +348,6 @@ func setupMustacheTemplateHandlers(ast *AST) error {
 		return fmt.Errorf("%s", eBuf.Bytes())
 	}
 	return nil
-}
-
-func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
-	if ast.Applications == nil {
-		ast.Applications = NewApplications()
-	}
-	if ast.Applications.NewtGenerator == nil {
-		ast.Applications.NewtGenerator = NewApplication()
-	}
-	if ast.Applications.NewtGenerator.Namespace == "" {
-		ast.Applications.NewtGenerator.Namespace = appFName
-	}
-	if ast.Models == nil {
-		// FIXME: This is the same add adding a model in modeler.go so this code needs to be unified.
-		ast.Models = []*Model{}
-	}
 }
 
 // setupPostgRESTService creates a Service object for interacting with PostgREST
@@ -402,8 +398,8 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 // setupTemplService creates a Service object to process with a template
 func setupTmplService(ast *AST, tmplPattern string, description string) *Service {
 	var port int
-	if ast.Applications != nil && ast.Applications.NewtMustache != nil {
-		port = ast.Applications.NewtMustache.Port
+	if ast.Applications != nil && ast.Applications.Mustache != nil {
+		port = ast.Applications.Mustache.Port
 	} else {
 		port = 8011
 	}
@@ -413,7 +409,6 @@ func setupTmplService(ast *AST, tmplPattern string, description string) *Service
 		Description: description,
 	}
 }
-
 
 // setupWebFormHandling generates the routes and template handling for retrieving and submitting
 // webforms for "create", "update" or "delete".
@@ -448,13 +443,13 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 			return err
 		}
 	}
-	
+
 	tSuffix := "_form.tmpl"
 	tmplName := mkName(objName, action, tSuffix)
 	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
 	tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
-	ast.Templates = append(ast.Templates, &MustacheTemplate{
-		Id: templateId,
+	ast.Templates = append(ast.Templates, &Template{
+		Id:          templateId,
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
@@ -483,8 +478,8 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	tmplName = mkName(objName, action, "_response.tmpl")
 	tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
 	tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
-	ast.Templates = append(ast.Templates, &MustacheTemplate{
-		Id: templateId,
+	ast.Templates = append(ast.Templates, &Template{
+		Id:          templateId,
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
@@ -527,13 +522,13 @@ func setupReadHandling(ast *AST, model *Model, action string) error {
 	tmplName := mkName(model.Id, action, ".tmpl")
 	tmplPattern := fmt.Sprintf("/%s_%s", model.Id, action)
 	tmplDescription := fmt.Sprintf("This template handles %s %s", model.Id, action)
-	ast.Templates = append(ast.Templates, &MustacheTemplate{
-		Id: templateId,
+	ast.Templates = append(ast.Templates, &Template{
+		Id:          templateId,
 		Pattern:     tmplPattern,
 		Template:    tmplName,
 		Description: tmplDescription,
 	})
-	
+
 	// Handle requesting object or list of objects
 	routeDescription := fmt.Sprintf("Retrieve object(s) for %s %s", model.Id, action)
 	request := fmt.Sprintf("%s /%s_%s", http.MethodPost, model.Id, action)
@@ -568,7 +563,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 			menu, opt := selectMenuItem(buf, out,
 				fmt.Sprintf("Manage Environment availability in %s", appFName),
 				"Menu [a]dd, [r]emove, [q]uit (making changes)",
-					ast.Applications.Environment, true, "", "", true)
+				ast.Applications.Environment, true, "", "", true)
 			if val, ok := getIdFromList(ast.Applications.Environment, opt); ok {
 				opt = val
 			}
@@ -576,33 +571,33 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 				menu = menu[0:1]
 			}
 			switch menu {
-				case "a":
-				   if opt == "" {
-					   fmt.Fprintf(out, "Enter environment name to include: ")
-					   opt = getAnswer(buf, "", false)
-				   }
-				   if opt != "" {
-						ast.Applications.Environment = append(ast.Applications.Environment, opt)
+			case "a":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter environment name to include: ")
+					opt = getAnswer(buf, "", false)
+				}
+				if opt != "" {
+					ast.Applications.Environment = append(ast.Applications.Environment, opt)
+					ast.isChanged = true
+				}
+			case "r":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter environment name to remove: ")
+					opt = getAnswer(buf, "", false)
+				}
+				if opt != "" {
+					pos, ok := getItemNoFromList(ast.Applications.Environment, opt)
+					if ok {
+						ast.Applications.Environment = append(ast.Applications.Environment[:pos], ast.Applications.Environment[(pos+1):]...)
 						ast.isChanged = true
-				   }
-				case "r":
-					if opt == "" {
-						fmt.Fprintf(out, "Enter environment name to remove: ")
-					    opt = getAnswer(buf, "", false)
 					}
-					if opt != "" {
-						pos, ok := getItemNoFromList(ast.Applications.Environment, opt)
-						if ok {
-							ast.Applications.Environment = append(ast.Applications.Environment[:pos], ast.Applications.Environment[(pos+1):]...)
-							ast.isChanged = true
-						}
-					}
-				case "q":
-					quit = true
-				case "":
-					quit = true
-				default:
-					fmt.Fprintf(out, "do not understand %q\n", menu)
+				}
+			case "q":
+				quit = true
+			case "":
+				quit = true
+			default:
+				fmt.Fprintf(out, "do not understand %q\n", menu)
 			}
 		}
 	}
@@ -628,7 +623,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 			menu, opt := selectMenuItem(buf, out,
 				"Enter menu command and option name",
 				"Menu [a]dd, [r]emove, [q]uit (making changes)",
-					optionsList, false, "", "", true)
+				optionsList, false, "", "", true)
 			if val, ok := getIdFromList(optionsList, opt); ok {
 				opt = val
 			}
@@ -636,32 +631,32 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 				menu = menu[0:1]
 			}
 			switch menu {
-				case "a":
-				   if opt == "" {
-					   fmt.Fprintf(out, "Enter option name: ")
-					   opt = getAnswer(buf, "", false)
-				   }
-				   fmt.Fprintf(out, "Enter option value: ")
-				   val := getAnswer(buf, "", false)
-				   if opt != "" && val != ""{
-					    ast.Applications.Options[opt] = val
-						ast.isChanged = true
-				   }
-				case "r":
-					if opt == "" {
-						fmt.Fprintf(out, "Enter option name to remove: ")
-					    opt = getAnswer(buf, "", false)
-					}
-					if opt != "" {
-						delete(ast.Applications.Options, opt)
-						ast.isChanged = true
-					}
-				case "q":
-					quit = true
-				case "":
-					quit = true
-				default:
-					fmt.Fprintf(out, "do not understand %q\n", menu)
+			case "a":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter option name: ")
+					opt = getAnswer(buf, "", false)
+				}
+				fmt.Fprintf(out, "Enter option value: ")
+				val := getAnswer(buf, "", false)
+				if opt != "" && val != "" {
+					ast.Applications.Options[opt] = val
+					ast.isChanged = true
+				}
+			case "r":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter option name to remove: ")
+					opt = getAnswer(buf, "", false)
+				}
+				if opt != "" {
+					delete(ast.Applications.Options, opt)
+					ast.isChanged = true
+				}
+			case "q":
+				quit = true
+			case "":
+				quit = true
+			default:
+				fmt.Fprintf(out, "do not understand %q\n", menu)
 			}
 		}
 	}

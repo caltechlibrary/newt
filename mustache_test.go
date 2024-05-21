@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestNewNewtMustache(t *testing.T) {
+func TestNewMustache(t *testing.T) {
 	ast := NewAST()
 	fName := path.Join("testdata", "blog.yaml")
 	src, err := os.ReadFile(fName)
@@ -20,7 +20,7 @@ func TestNewNewtMustache(t *testing.T) {
 		t.Errorf("failed to unpack AST %q, %s, aborting test", fName, err)
 		t.FailNow()
 	}
-	mustache, err := NewNewtMustache(ast)
+	mustache, err := NewMustache(ast)
 	if err != nil {
 		t.Error(err)
 	}
@@ -35,12 +35,12 @@ func TestMustache(t *testing.T) {
 	buf := bytes.NewBuffer([]byte{})
 	out := bufio.NewWriter(buf)
 	//eout := bufio.NewWriter([]byte{})
-	mustache, err := NewNewtMustache(ast)
+	mustache, err := NewMustache(ast)
 	if err != nil {
 		t.Error(err)
 	}
 	if mustache == nil {
-		t.Errorf("NewNewtMustache(ast) failed to create a new mustache engine")
+		t.Errorf("NewMustache(ast) failed to create a new mustache engine")
 	}
 	if ok := mustache.Check(out); ok {
 		t.Errorf("expected mustache.Check(out) to be false, nothing has been configured yet. %s", buf.Bytes())
@@ -55,12 +55,12 @@ func TestMustache(t *testing.T) {
 		t.Errorf("failed to unpack AST %q, %s, aborting test", fName, err)
 		t.FailNow()
 	}
-	mustache, err = NewNewtMustache(ast)
+	mustache, err = NewMustache(ast)
 	if err != nil {
 		t.Error(err)
 	}
 	if mustache == nil {
-		t.Errorf("NewNewtMustache(ast) failed to create a new mustache engine")
+		t.Errorf("NewMustache(ast) failed to create a new mustache engine")
 	}
 	if ok := mustache.Check(out); !ok {
 		t.Errorf("expected mustache.Check(out) to be true, %s", buf.Bytes())

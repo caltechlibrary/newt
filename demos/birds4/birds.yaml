@@ -1,9 +1,9 @@
 # Birds 4 is a demonstration of the 2nd Newt Prototype. The YAML
 # file has gone through quite a transformation now.
 applications:
-  newtrouter:
+  router:
     port: 8010
-  newtmustache:
+  mustache:
     port: 8011
   postgrest:
     app_path: postgrest

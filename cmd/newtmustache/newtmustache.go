@@ -226,5 +226,5 @@ func main() {
 		fmt.Fprintf(out, "%s %s %s\n", appName, version, releaseHash)
 		os.Exit(0)
 	}
-	os.Exit(newt.RunNewtMustache(in, out, eout, args, port, timeout, verbose))
+	os.Exit(newt.RunMustache(in, out, eout, args, port, timeout, verbose))
 }

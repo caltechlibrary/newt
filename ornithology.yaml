@@ -3,12 +3,12 @@
 # Particularly the generator.
 #
 applications:
-  newtrouter:
+  router:
     htdocs: /Users/rsdoiel/Sites/rsdoiel.github.io/
     port: 8020
-  newtmustache:
+  mustache:
     port: 8030
-  newtgenerator:
+  postgres:
     namespace: ornithology
   postgrest:
     port: 3000

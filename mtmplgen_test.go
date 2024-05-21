@@ -1,8 +1,8 @@
 package newt
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"testing"
 )
 

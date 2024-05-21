@@ -25,12 +25,12 @@ func TestRunNewtGenerator(t *testing.T) {
 	t.Errorf("TestRunNewtGenerator() not implemented")
 }
 
-func TestRunNewtMustache(t *testing.T) {
-	t.Errorf("TestRunNewtMustache() not implemented")
+func TestRunMustache(t *testing.T) {
+	t.Errorf("TestRunMustache() not implemented")
 }
 
 func TestRunRouter(t *testing.T) {
-	t.Errorf("TestRunNewtMustache() not implemented")
+	t.Errorf("TestRunMustache() not implemented")
 }
 
 func TestRunStaticWebServer(t *testing.T) {
@@ -60,4 +60,3 @@ func TestRunNewtConfig(t *testing.T) {
 func TestRunModeler(t *testing.T) {
 	t.Errorf("TestRunModeler() not implemented")
 }
-

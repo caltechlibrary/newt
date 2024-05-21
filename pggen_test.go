@@ -19,16 +19,16 @@ func TestPgGenerators(t *testing.T) {
 		t.Errorf("Missing .Applications from %q, aborting test", fName)
 		t.FailNow()
 	}
-	if ast.Applications.NewtGenerator == nil {
-		t.Errorf("Missing .Applications.NewtGenerator from %q, aborting test", fName)
+	if ast.Applications.Postgres == nil {
+		t.Errorf("Missing .Applications.Postgres from %q", fName)
 		t.FailNow()
 	}
-	if ast.Applications.NewtGenerator.Namespace == "" {
-		t.Errorf("Missing .Applications.NewtGenerator.Namespace from %q, aborting test", fName)
+	if ast.Applications.Postgres.Namespace == "" {
+		t.Errorf("Missing .Applications.Postgres.Namespace from %q, aborting test", fName)
 		t.FailNow()
 	}
 	expected := "birds"
-	got := ast.Applications.NewtGenerator.Namespace
+	got := ast.Applications.Postgres.Namespace
 	if expected != got {
 		t.Errorf("expected namepsace %q, got %q", expected, got)
 	}

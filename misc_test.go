@@ -2,12 +2,12 @@ package newt
 
 import (
 	"fmt"
- 	"testing"
+	"testing"
 )
 
 func TestMkName(t *testing.T) {
-	mIds := []string{ "people", "groups", "funders", "publishers", "publications" }
-	actions := []string { "create", "update", "delete" }
+	mIds := []string{"people", "groups", "funders", "publishers", "publications"}
+	actions := []string{"create", "update", "delete"}
 	for _, mId := range mIds {
 		for _, action := range actions {
 			expected := fmt.Sprintf("%s_%s_form.tmpl", mId, action)
@@ -20,9 +20,9 @@ func TestMkName(t *testing.T) {
 }
 
 func TestInList(t *testing.T) {
-	l := []string{ "one", "two", "three" }
+	l := []string{"one", "two", "three"}
 	for _, item := range l {
-		if ! inList(item, l) {
+		if !inList(item, l) {
 			t.Errorf("expected %q to found in list %+v", item, l)
 		}
 	}
@@ -31,4 +31,3 @@ func TestInList(t *testing.T) {
 		t.Errorf("expected to NOT find %q in list %+v", item, l)
 	}
 }
-	

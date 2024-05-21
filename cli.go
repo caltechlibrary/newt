@@ -101,7 +101,7 @@ func hasArg(option string, args []string) bool {
 	return false
 }
 
-func renderTemplate(generator *NewtGenerator, tType string, modelID string, action string, fName string) error {
+func renderTemplate(generator *Generator, tType string, modelID string, action string, fName string) error {
 	var err error
 	if _, err = os.Stat(fName); err == nil {
 		if err = backupFile(fName); err != nil {
@@ -120,8 +120,8 @@ func renderTemplate(generator *NewtGenerator, tType string, modelID string, acti
 	return nil
 }
 
-// RunNewtGenerator is a runner for generating SQL and templates from our Newt YAML file.
-func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
+// RunGenerator is a runner for generating SQL and templates from our Newt YAML file.
+func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
 	fName := getNewtYamlFName(args)
 	if fName == "" {
 		fmt.Fprintf(eout, "missing Newt YAML filename\n")
@@ -133,17 +133,11 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
-	if ast.Applications == nil || ast.Applications.NewtGenerator == nil {
-		fmt.Fprintf(eout, "missing newtgenerator configuration, aborting\n")
-		return CONFIG
-	}
 	generator, err := NewGenerator(ast)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
+		return GENERATOR_FAIL
 	}
-	generator.out = out
-	generator.eout = eout
 	//NOTE: I need to generate each of the files needed for Postgres and PostgREST
 	for _, fName := range []string{"setup.sql", "models.sql"} {
 		if err := renderTemplate(generator, "postgres", "", "setup", fName); err != nil {
@@ -209,8 +203,8 @@ func RunNewtGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string
 	return OK
 }
 
-// RunNewtMustache is a runner for a Mustache redner engine service based on the Pandoc server API.
-func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
+// RunMustache is a runner for a Mustache redner engine service based on the Pandoc server API.
+func RunMustache(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
 	appName := "Newt Mustache"
 	// ASTure the template bundler webservice
 	fName := getNewtYamlFName(args)
@@ -226,7 +220,7 @@ func RunNewtMustache(in io.Reader, out io.Writer, eout io.Writer, args []string,
 		return CONFIG
 	}
 	// Instantiate the specific application with the filename and AST object
-	mt, err := NewNewtMustache(ast)
+	mt, err := NewMustache(ast)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
@@ -418,8 +412,8 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				}
 			}
 		}
-		if ast.Applications.NewtMustache != nil {
-			port := ast.Applications.NewtMustache.Port
+		if ast.Applications.Mustache != nil {
+			port := ast.Applications.Mustache.Port
 			if port == 0 {
 				port = MUSTACHE_PORT
 			}
@@ -466,7 +460,7 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	case "generate":
 		//FIXME: I need to back up all the expected filenames for project first, then
 		// for each generate action option a new output buffer to render each new version of the file.
-		return RunNewtGenerator(in, out, eout, args)
+		return RunGenerator(in, out, eout, args)
 	case "run":
 		return RunNewtApplications(in, out, eout, args, verbose)
 	case "ws":
@@ -516,9 +510,9 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		cmd.Process.Release()
 	}
 	// Setup and start Newt Mustache first
-	if ast.Applications != nil && ast.Applications.NewtMustache != nil {
+	if ast.Applications != nil && ast.Applications.Mustache != nil {
 		go func() {
-			RunNewtMustache(in, out, eout, args, 0, 0, verbose)
+			RunMustache(in, out, eout, args, 0, 0, verbose)
 		}()
 	}
 
@@ -615,13 +609,13 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 	if skipPrompts {
 		answer = "y"
 	}
-	if ! skipPrompts {
+	if !skipPrompts {
 		if _, err := os.Stat(appFName); err == nil {
 			fmt.Fprintf(out, "Opening %q\n", appFName)
 			ast, err = LoadAST(appFName)
 		} else if len(args) <= 1 {
 			fmt.Fprintf(out, "Creating %q\n", appFName)
-		} 
+		}
 	}
 	// Step 2. Decide which services you're going to use (a .Applications will need to exist).
 	if ast.Applications == nil {
@@ -632,8 +626,7 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
 		setupPostgres(ast, readBuffer, out, appFName, skipPrompts)
 		setupPostgREST(ast, readBuffer, out, appFName, skipPrompts)
-		setupNewtMustache(ast, readBuffer, out, appFName, skipPrompts)
-		setupNewtGenerator(ast, readBuffer, out, appFName, skipPrompts)
+		setupMustache(ast, readBuffer, out, appFName, skipPrompts)
 		setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
 		setupOptions(ast, readBuffer, out, appFName, skipPrompts)
 
@@ -712,10 +705,10 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 		return MODELER_FAIL
 	}
 	if ast.Applications == nil ||
-			ast.Applications.Router == nil ||
-			ast.Applications.Postgres == nil ||
-			ast.Applications.PostgREST == nil ||
-			ast.Applications.NewtMustache == nil {
+		ast.Applications.Router == nil ||
+		ast.Applications.Postgres == nil ||
+		ast.Applications.PostgREST == nil ||
+		ast.Applications.Mustache == nil {
 		fmt.Fprintf(out, "Applications are not configured for %q, try\n\n", appFName)
 		appName := path.Base(os.Args[0])
 		fmt.Fprintf(out, "\t%s config %q\n\n", appName, appFName)

@@ -1,5 +1,5 @@
 applications:
-  newtgenerator:
+  postgres:
     namespace: people # E.g. "people" Namespace to use generating Postgres SQL
 models:
   - id: people

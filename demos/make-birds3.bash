@@ -57,7 +57,7 @@ In a seperate shell session start Pandoc server
 
 In a separate shell session start up Newt
 
-1. 'newt birds.yaml'
+1. 'newt run birds.yaml'
 
 
 EOT

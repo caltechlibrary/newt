@@ -33,7 +33,7 @@ type AST struct {
 
 	// Templates holds an array of mapsthe request to template to request for
 	// Newt Mustache
-	Templates []*MustacheTemplate `json:"templates,omitempty" yaml:"templates,omitempty"`
+	Templates []*Template `json:"templates,omitempty" yaml:"templates,omitempty"`
 
 	// isChanged is a convience variable for tracking if the data structure has changed.
 	isChanged bool `json:"-" yaml:"-"`
@@ -43,13 +43,10 @@ type AST struct {
 // template engine.
 type Applications struct {
 	// Newt Router runtime config
-	Router *Application `json:"newtrouter,omitempty" yaml:"newtrouter,omitempty"`
+	Router *Application `json:"router,omitempty" yaml:"router,omitempty"`
 
 	// Newt Mustache runtime config
-	NewtMustache *Application `json:"newtmustache,omitempty" yaml:"newtmustache,omitempty"`
-
-	// Newt Generator runtime config
-	NewtGenerator *Application `json:"newtgenerator,omitempty" yaml:"newtgenerator,omitempty"`
+	Mustache *Application `json:"mustache,omitempty" yaml:"mustache,omitempty"`
 
 	// Postgres runtime config, e.g. port number to use for connecting.
 	Postgres *Application `json:"postgres,omitempty" yaml:"postgres,omitempty"`
@@ -101,13 +98,12 @@ func NewApplication() *Application {
 // NewApplications will create an empty Application with top level attributes
 func NewApplications() *Applications {
 	return &Applications{
-		Router:        NewApplication(),
-		NewtMustache:  NewApplication(),
-		NewtGenerator: NewApplication(),
-		Postgres:      NewApplication(),
-		PostgREST:     NewApplication(),
-		Options:       map[string]string{},
-		Environment:   []string{},
+		Router:      NewApplication(),
+		Mustache:    NewApplication(),
+		Postgres:    NewApplication(),
+		PostgREST:   NewApplication(),
+		Options:     map[string]string{},
+		Environment: []string{},
 	}
 }
 
@@ -329,7 +325,7 @@ func (ast *AST) RemoveRouteById(id string) error {
 			routeFound = true
 		}
 	}
-	if ! routeFound {
+	if !routeFound {
 		return fmt.Errorf("failed to find route %s", id)
 	}
 	return nil
@@ -345,7 +341,7 @@ func (ast *AST) RemoveTemplateById(id string) error {
 			templateFound = true
 		}
 	}
-	if ! templateFound {
+	if !templateFound {
 		return fmt.Errorf("failed to find template %s", id)
 	}
 	return nil
@@ -402,7 +398,7 @@ func (ast *AST) GetAllTemplates() []string {
 }
 
 // GetTemplateByPrimary returns the template entry using primary template filename
-func (ast *AST) GetTemplateByPrimary(fName string) (*MustacheTemplate, bool) {
+func (ast *AST) GetTemplateByPrimary(fName string) (*Template, bool) {
 	if ast.Templates != nil {
 		for _, t := range ast.Templates {
 			if t.Template == fName {
@@ -439,10 +435,10 @@ func (ast *AST) Check(buf io.Writer) bool {
 		}
 	} else {
 		if ast.Applications.Router == nil {
-			fmt.Fprintf(buf, "application.router not configured")
+			fmt.Fprintf(buf, "application.router not configured\n")
 			ok = false
 		} else if ast.Applications.Router.Port == 0 {
-			fmt.Fprintf(buf, "application.router.port not set")
+			fmt.Fprintf(buf, "application.router.port not set\n")
 			ok = false
 		}
 		for i, r := range ast.Routes {
@@ -453,16 +449,16 @@ func (ast *AST) Check(buf io.Writer) bool {
 		}
 	}
 	if ast.Templates == nil || len(ast.Templates) == 0 {
-		if ast.Applications.NewtMustache != nil {
+		if ast.Applications.Mustache != nil {
 			fmt.Fprintf(buf, "no templates defined but Newt Mustache enabled\n")
 			ok = false
 		}
 	} else {
-		if ast.Applications.NewtMustache == nil {
-			fmt.Fprintf(buf, "application.newt_mustache not configured")
+		if ast.Applications.Mustache == nil {
+			fmt.Fprintf(buf, "application.mustache not configured\n")
 			ok = false
-		} else if ast.Applications.NewtMustache.Port  == 0 {
-			fmt.Fprintf(buf, "application.newt_mustache.port not set")
+		} else if ast.Applications.Mustache.Port == 0 {
+			fmt.Fprintf(buf, "application.mustache.port not set\n")
 			ok = false
 		}
 		for i, t := range ast.Templates {
@@ -474,4 +470,3 @@ func (ast *AST) Check(buf io.Writer) bool {
 	}
 	return ok
 }
-

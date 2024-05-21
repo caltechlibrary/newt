@@ -56,7 +56,6 @@ func getValueLabelList(list []map[string]string) []string {
 	return options
 }
 
-
 func getIdFromList(list []string, id string) (string, bool) {
 	// NOTE: nRe tests if modelId is a string representation of a positive integer
 	nRe := regexp.MustCompile(`^[0-9]+$`)

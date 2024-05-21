@@ -23,13 +23,10 @@ These are the top level properties in YAML files.
 
 The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
-`newtrouter`
+`router`
 : this contains configuration for the Newt Router, i.e. port and htdocs
 
-`newtgenerator`
-: this contains configuration for the Newt Generator, i.e. namespace
-
-`newtmustache`
+`mustache`
 : this contains configuration for Newt Mustache, i.e. port
 
 `postgres`
@@ -50,7 +47,7 @@ The applications properties are optional. Some maybe set via command line. See N
 : (newt) the path to the program(s) managed by `newt`
 
 `namespace`
-: (newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
+: (postgres) uses this in the SQL generated for setting up Postgres+PostgREST
 
 `port`
 : (all) Port number to used for Newt web service running on localhost

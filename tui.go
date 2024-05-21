@@ -1,15 +1,15 @@
 package newt
 
 import (
-	"io"
 	"bufio"
 	"fmt"
+	"io"
 	"strings"
 )
 
 const (
 	TuiStandardMenuHelp = `Enter menu letter and id`
-	TuiStandardMenu = `Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)`
+	TuiStandardMenu     = `Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)`
 )
 
 // getAnswer get a Y/N response from buffer
@@ -60,7 +60,7 @@ func selectMenuItem(in io.Reader, out io.Writer, topMsg string, bottomMsg string
 	fmt.Fprintf(out, "%s\n\n", topMsg)
 	for i, item := range list {
 		if numberedList {
-			fmt.Fprintf(out, "\t%d: %s\n", (i+1), item)
+			fmt.Fprintf(out, "\t%d: %s\n", (i + 1), item)
 		} else {
 			fmt.Fprintf(out, "\t%s\n", item)
 		}

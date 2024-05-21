@@ -1,8 +1,8 @@
 package newt
 
 import (
-	"bytes"
 	"bufio"
+	"bytes"
 	"os"
 	"path"
 	"testing"

@@ -18,13 +18,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// NewtMustache defines the `newtmustache` application configuration YAML
-type NewtMustache struct {
+// Mustache defines the `newtmustache` application configuration YAML
+type Mustache struct {
 	// Port number to run the web service on
 	Port int
 
 	// Templates defined for the service
-	Templates []*MustacheTemplate
+	Templates []*Template
 
 	// Timeout setting for the web service
 	Timeout time.Duration
@@ -35,8 +35,8 @@ type NewtMustache struct {
 	Options map[string]string
 }
 
-// MustacheTemplate hold the request to template mapping for NewtMustache struct
-type MustacheTemplate struct {
+// Template hold the request to template mapping for Mustache struct
+type Template struct {
 	// Id ties a set of one or more template together, e.g. a web form and its response
 	Id string `json:"id,required" yaml:"id,omitempty"`
 
@@ -66,7 +66,7 @@ type MustacheTemplate struct {
 	// Vocabulary holds the path to a YAML file used to populate Vocabulary at startup.
 	Vocabulary string `json:"vocabulary,omitempty" yaml:"vocabulary,omitempty"`
 
-	// Voc holds a map of variable names to values. It is read in when NewtMustache starts from a separate YAML
+	// Voc holds a map of variable names to values. It is read in when Mustache starts from a separate YAML
 	// file.
 	Voc map[string]interface{} `json:"-" yaml:"-"`
 
@@ -80,17 +80,17 @@ type MustacheTemplate struct {
 	Vars []string `json:"-" yaml:"-"`
 }
 
-// NewNewtMustache create a new NewtMustache struct. If a filename
+// NewMustache create a new Mustache struct. If a filename
 // is provided it reads the file and sets things up accordingly.
-func NewNewtMustache(ast *AST) (*NewtMustache, error) {
-	nm := &NewtMustache{
+func NewMustache(ast *AST) (*Mustache, error) {
+	nm := &Mustache{
 		Templates: ast.Templates,
 	}
-	if ast.Applications.NewtMustache.Port != 0 {
-		nm.Port = ast.Applications.NewtMustache.Port
+	if ast.Applications.Mustache.Port != 0 {
+		nm.Port = ast.Applications.Mustache.Port
 	}
-	if ast.Applications.NewtMustache.Timeout != 0 {
-		nm.Timeout = ast.Applications.NewtMustache.Timeout * time.Second
+	if ast.Applications.Mustache.Timeout != 0 {
+		nm.Timeout = ast.Applications.Mustache.Timeout * time.Second
 	}
 	if len(ast.Applications.Options) > 0 {
 		nm.Options = map[string]string{}
@@ -101,8 +101,8 @@ func NewNewtMustache(ast *AST) (*NewtMustache, error) {
 	return nm, nil
 }
 
-// Check makes sure the NewtMustache struct is populated
-func (nm *NewtMustache) Check(buf io.Writer) bool {
+// Check makes sure the Mustache struct is populated
+func (nm *Mustache) Check(buf io.Writer) bool {
 	ok := true
 	if nm == nil {
 		fmt.Fprintf(buf, "templates not defined\n")
@@ -125,8 +125,8 @@ func (nm *NewtMustache) Check(buf io.Writer) bool {
 	return ok
 }
 
-// Check evaluates the *MustacheTemplate and outputs finding. Returns true of no error, false if errors found
-func (mt *MustacheTemplate) Check(buf io.Writer) bool {
+// Check evaluates the *Template and outputs finding. Returns true of no error, false if errors found
+func (mt *Template) Check(buf io.Writer) bool {
 	ok := true
 	if mt == nil {
 		fmt.Fprintf(buf, "template is nil\n")
@@ -144,7 +144,7 @@ func (mt *MustacheTemplate) Check(buf io.Writer) bool {
 
 // LoadVocabary retrieves the YAML file contents found in .VocabularFName and builds the map[string]interface{} that
 // holds .Vocabulary
-func (mt *MustacheTemplate) LoadVocabulary() error {
+func (mt *Template) LoadVocabulary() error {
 	voc := map[string]interface{}{}
 	if mt.Vocabulary != "" {
 		src, err := os.ReadFile(mt.Vocabulary)
@@ -162,7 +162,7 @@ func (mt *MustacheTemplate) LoadVocabulary() error {
 }
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (mt *MustacheTemplate) ResolvePath() error {
+func (mt *Template) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
 	if strings.Contains(mt.Pattern, "{") {
 		if !strings.Contains(mt.Pattern, "}") {
@@ -180,7 +180,7 @@ func (mt *MustacheTemplate) ResolvePath() error {
 
 // ResolvesTemplate is responsible for reading and parse the template and partials associated with a mapped request.
 // If an error is encountered a error value is returned.
-func (mt *MustacheTemplate) ResolveTemplate() error {
+func (mt *Template) ResolveTemplate() error {
 	if mt.Template != "" {
 		if len(mt.Partials) > 0 {
 			if mt.Debug {
@@ -234,7 +234,7 @@ func (mt *MustacheTemplate) ResolveTemplate() error {
 }
 
 // Handler decodes a the request body and then processes that as a Mustache template.
-func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
+func (mt *Template) Handler(w http.ResponseWriter, r *http.Request) {
 	if mt.Debug {
 		log.Printf(".Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
@@ -348,7 +348,7 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(src)
 }
 
-func (nm *NewtMustache) ListenAndServe() error {
+func (nm *Mustache) ListenAndServe() error {
 	mux := http.NewServeMux()
 	// Setup our handlers, POST for process data with the template and GET to retreive the template
 	// ast.

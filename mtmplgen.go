@@ -30,7 +30,7 @@ var (
 		"email":          `<input type="email" id=%q name=%q value="{{%s}}" %s>`,
 		"button":         `<input type="button" id=%q name=%q value="{{%s}}" %s>`,
 		// Alias of orcid example
-		"orcid":          `<input type="text" extended-type="orcid" id=%q name=%q value="{{%s}}" pattern="[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9A-Z]">`,
+		"orcid": `<input type="text" extended-type="orcid" id=%q name=%q value="{{%s}}" pattern="[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9A-Z]">`,
 	}
 )
 

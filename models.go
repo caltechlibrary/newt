@@ -78,7 +78,6 @@ func (m *Model) GetAttributeIds() []string {
 	return getAttributeIds(m.Attributes)
 }
 
-
 // GetElementIds returns a slice of element ids found in the model's .Elements
 func (m *Model) GetElementIds() []string {
 	ids := []string{}
@@ -129,13 +128,12 @@ type Element struct {
 
 	// Pattern holds a validation pattern. When combined with an input type (or input type alias, e.g. orcid)
 	// produces a form element that sports a specific client side validation exceptation.  This intern can be used
-	// to generate appropriate validation code server side. 
+	// to generate appropriate validation code server side.
 	Pattern string `json:"pattern,omitempty" yaml:"pattern,omitempty"`
 
 	// Options holds a list of values and their labels used for HTML select elements in rendering their option child elements
 	Options []map[string]string `json:"optoins,omitempty" yaml:"options,omitempty"`
 
-    
 	// IsObjectId (e.g. primary key) used by for the modeled data.
 	// It is used in calculating routes and templates where the object identifier is required.
 	IsObjectId bool `json:"is_object_id,omitempty" yaml:"is_object_id,omitempty"`
@@ -184,7 +182,7 @@ func NewElement(elementId string) (*Element, error) {
 	}
 	element := new(Element)
 	element.Id = elementId
-	element.Attributes = map[string]string{ "name": elementId }
+	element.Attributes = map[string]string{"name": elementId}
 	element.Type = "input"
 	element.Attributes["title"] = "... element description text goes here ..."
 	element.IsObjectId = false

@@ -5,8 +5,8 @@ import (
 	"io"
 )
 
-// NewtGenerator holds our Newt Generator structures for rendering code.
-type NewtGenerator struct {
+// Generator holds our Newt Generator structures for rendering code.
+type Generator struct {
 	// Namespace is used when generating the SQL/conf for setting up Postgres+PostgREST
 	Namespace string
 
@@ -30,12 +30,12 @@ type NewtGenerator struct {
 
 // NewGenerator instaitates a new Generator object form a filename and AST object
 // It returns a Generator object and error value.
-func NewGenerator(ast *AST) (*NewtGenerator, error) {
-	if ast.Applications == nil || ast.Applications.NewtGenerator == nil {
-		return nil, fmt.Errorf("configuration missing for Newt Generator")
+func NewGenerator(ast *AST) (*Generator, error) {
+	if ast.Applications == nil {
+		return nil, fmt.Errorf("configuration missing for applications")
 	}
-	generator := &NewtGenerator{}
-	generator.Namespace = ast.Applications.NewtGenerator.Namespace
+	generator := &Generator{}
+	generator.Namespace = ast.Applications.Postgres.Namespace
 	generator.Models = ast.Models
 	generator.Options = map[string]string{}
 	if ast.Applications.Postgres != nil {
@@ -45,7 +45,7 @@ func NewGenerator(ast *AST) (*NewtGenerator, error) {
 		generator.PostgREST = ast.Applications.PostgREST
 	}
 	// NOTE: LoadCondfig handles loading the environment into options. We just need to
-	// copy into the NewtGenerator struct.
+	// copy into the Generator struct.
 	if len(ast.Applications.Options) > 0 {
 		for k, v := range ast.Applications.Options {
 			generator.Options[k] = v
@@ -66,7 +66,7 @@ func NewGenerator(ast *AST) (*NewtGenerator, error) {
 //
 // The "models_test" contains SQL to test your models and ensure they
 // were created successfully.
-func (g *NewtGenerator) renderPostgreSQL(action string) error {
+func (g *Generator) renderPostgreSQL(action string) error {
 	switch action {
 	case "setup":
 		return pgSetup(g.out, g.Namespace)
@@ -81,7 +81,7 @@ func (g *NewtGenerator) renderPostgreSQL(action string) error {
 
 // renderPostgREST does what its name implies. It the configuration
 // file used when starting up PostgREST.
-func (g *NewtGenerator) renderPostgREST() error {
+func (g *Generator) renderPostgREST() error {
 	port := "5432"
 	if g.Postgres != nil && g.Postgres.Port != 0 {
 		port = fmt.Sprintf("%d", g.Postgres.Port)
@@ -91,7 +91,7 @@ func (g *NewtGenerator) renderPostgREST() error {
 
 // renderMustache will render a mustache template for a given model id. The action corresponds
 // to the model id.
-func (g *NewtGenerator) renderMustache(modelId string, action string) error {
+func (g *Generator) renderMustache(modelId string, action string) error {
 	for _, model := range g.Models {
 		if modelId == model.Id {
 			return MTmplGen(g.out, model, action)
@@ -101,7 +101,7 @@ func (g *NewtGenerator) renderMustache(modelId string, action string) error {
 }
 
 // renderHtml will render HTML forms for given action and model id.
-func (g *NewtGenerator) renderHtml(modelId string, action string) error {
+func (g *Generator) renderHtml(modelId string, action string) error {
 	return fmt.Errorf("g.renderHtml(%q, %q) not implemented", modelId, action)
 }
 
@@ -134,7 +134,7 @@ func validateModelId(modelId string, models []*Model) error {
 // - generatorName is the generator to use
 // - action is a parameter that the selected generator can use (e.g. PostgreSQL has setup as well as )
 // - modelId references the `.id` attribute of the model needing code generation
-func (g *NewtGenerator) Generate(generatorName string, modelId string, action string) error {
+func (g *Generator) Generate(generatorName string, modelId string, action string) error {
 	pgActions := []string{"setup", "models", "models_test"}
 	//modelActions := []string{ "create", "read", "update", "delete", "list", "page" }
 	templateActions := []string{

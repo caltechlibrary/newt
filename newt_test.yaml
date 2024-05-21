@@ -8,12 +8,12 @@
 # services are up and running on their ports correctly.
 #
 applications:
-  newtrouter:
+  router:
     htdocs: .
     port: 8001
-  newtmustache:
+  mustache:
     port: 8002
-  newtgenerator:
+  postgres:
     namespace: ornithology
 routes:
   - id: birds_1_index

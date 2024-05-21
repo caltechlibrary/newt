@@ -262,6 +262,12 @@ func NewRouter(ast *AST) (*Router, error) {
 	router := &Router{
 		Routes: ast.Routes,
 	}
+	if ast.Applications == nil {
+		return nil, fmt.Errorf("applications and router not configured")
+	}
+	if ast.Applications.Router == nil {
+		return nil, fmt.Errorf("router not configured")
+	}
 	if ast.Applications.Router.Htdocs != "" {
 		router.Htdocs = ast.Applications.Router.Htdocs
 	}
@@ -305,7 +311,7 @@ func (rtr *Router) Check(buf io.Writer) bool {
 		ok = false
 	}
 	for _, nr := range rtr.Routes {
-		if ! nr.Check(buf) {
+		if !nr.Check(buf) {
 			ok = false
 		}
 	}
