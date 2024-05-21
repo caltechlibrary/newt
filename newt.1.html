@@ -31,8 +31,8 @@ href="#yaml_file">YAML_FILE</a></p>
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>newt</strong> is a developer tool. It can set up and run your
 Newt application during development. <strong>newt</strong> supports the
-“config”, “check”, “model”, “generate”, “run” and “ws” actions. The
-“config” command is used when you are starting a Newt Project. It is an
+“config”, “check”, “model”, “generate”, and “run” actions. The “config”
+command is used when you are starting a Newt Project. It is an
 interactive command prompting for various choices regarding the
 application you want to create.</p>
 <p>The “check” will analyze the the YAML file and report results of the
@@ -46,8 +46,6 @@ generated content.</p>
 <p>The “run” action will run Newt Router, Newt Mustache and PostgREST
 for testing and development. This allows you to quick run and stop the
 services from one command.</p>
-<p>The “ws” action runs a simple static web service. It is useful when
-you are debugging static web assets for your project.</p>
 <p>If a Newt YAML filename isn’t supplied when you invoke
 <strong>newt</strong> the application will look in the current directory
 for a file with the directory’s name and “.yaml” extension and if that
@@ -58,7 +56,7 @@ your <code>.gitignore</code>.</p>
 <h1 id="options">OPTIONS</h1>
 <p>The following options are supported by <strong>newt</strong>.</p>
 <dl>
-<dt>-h, -help</dt>
+<dt>-help</dt>
 <dd>
 display this help message
 </dd>
@@ -138,16 +136,16 @@ which can be set using the interactive <code>newt model</code> command.
 line. See Newt application’s manual page for specific ones. These
 properties lets you override the default settings of Newt programs.</p>
 <dl>
-<dt>newtrouter</dt>
+<dt>router</dt>
 <dd>
 this contains configuration for the Newt Router, i.e. port and htdocs
 </dd>
-<dt>newtgenerator</dt>
+<dt>generator</dt>
 <dd>
 this contains configuration for code generation. e.g. namespace used by
 Postgres and PostgREST.
 </dd>
-<dt>newtmustache</dt>
+<dt>mustache</dt>
 <dd>
 this contains configuration for Newt Mustache, i.e. port
 </dd>
@@ -168,7 +166,7 @@ application may have one or more of these properies.</h3>
 <dl>
 <dt>namespace</dt>
 <dd>
-(newtgenerator) uses this in the SQL generated for setting up
+(postgres) uses this in the SQL generated for setting up
 Postgres+PostgREST
 </dd>
 <dt>port</dt>
@@ -177,12 +175,11 @@ Postgres+PostgREST
 </dd>
 <dt>htdocs</dt>
 <dd>
-(newtrouter) Directory that holds your application’s static content
+(router) Directory that holds your application’s static content
 </dd>
 <dt>timeout</dt>
 <dd>
-(newt router, newt mustache) The time in seconds to timeout a HTTP
-transaction
+(router, mustache) The time in seconds to timeout a HTTP transaction
 </dd>
 <dt>dsn</dt>
 <dd>

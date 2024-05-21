@@ -109,10 +109,8 @@ type Element struct {
 	// Type, The type of element that you want to input. It is required. Valid values are
 	// checkboxes, dropdown, input, markdown and text area.
 	//
-	// The "input" type can be very expressive using CSS selector syntax. E.g. `input[type=URL]` would
-	// create an input for URLs and validate using HTML basic intrinsic containts. You can also express
-	// many other HTML form elements using the input notation. E.g. A button can be expressed as
-	// `input[type=button]` where the attribute `value` becomes the inner HTML of `<button></button>`.
+	// The input type corresponds to the native input types defined for HTML 5. E.g. text, textarea,
+	// email, phone, date, url, checkbox, radio, button, submit, cancel, select
 	// See MDN developer docs for input, <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input>
 	Type string `json:"type,required" yaml:"type,omitempty"`
 
@@ -183,7 +181,7 @@ func NewElement(elementId string) (*Element, error) {
 	element := new(Element)
 	element.Id = elementId
 	element.Attributes = map[string]string{"name": elementId}
-	element.Type = "input"
+	element.Type = "text"
 	element.Attributes["title"] = "... element description text goes here ..."
 	element.IsObjectId = false
 	element.isChanged = true
@@ -204,7 +202,7 @@ func NewModel(modelId string) (*Model, error) {
 	element := new(Element)
 	element.Id = "oid"
 	element.IsObjectId = true
-	element.Type = "input"
+	element.Type = "text"
 	element.Attributes = map[string]string{"readonly": "true"}
 	if err := model.InsertElement(0, element); err != nil {
 		return nil, err

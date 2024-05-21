@@ -9,6 +9,17 @@ import (
 	"strings"
 )
 
+// isSupportedElementType checks if the element type is supported by Newt, returns true if OK false is it is not
+func isSupportedElementType(eType string) bool {
+	eType = strings.TrimSpace(strings.ToLower(eType))
+	for _, sType := range []string{"text", "textarea", "button", "checkbox", "radio", "date", "phone", "url", "email", "number", "integer", "select", "submit", "reset", "orcid" } {
+		if eType == sType {
+			return true
+		}
+	}
+	return false
+}
+
 // removeElement removes an element from a model
 func removeElement(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
 	elemFound := false
@@ -176,7 +187,7 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 				opt = getAnswer(buf, "", false)
 			}
 			if opt != "" {
-				model.Description = opt
+				model.Description = strings.TrimSpace(opt)
 				model.isChanged = true
 			}
 		case "e":
@@ -459,18 +470,21 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		switch menu {
 		case "t":
 			if opt == "" {
-				fmt.Fprintf(out, `Enter type string (e.g. input, textarea, select, input[type=date]): `)
+				fmt.Fprintf(out, `Enter type string (e.g. text, email, date, textarea, select, orcid): `)
 				opt = getAnswer(buf, "", false)
 			}
 			if opt != "" {
-				// FIXME: should probably validate this ..., should probably be a
-				// controlled vocabulary of supported type strings. e.g. button, checkbox, ORCID, ROR, etc
-				// FIXME: If elem.Type is select I need to provide an choices TUI for values and labels
-				elem.Type, elem.Pattern = normalizeInputType(opt)
-				elem.isChanged = true
-				if elem.Type == "select" {
-					if err := modifySelectElementTUI(elem, in, out, eout, model.Id); err != nil {
-						fmt.Fprintf(eout, "ERROR (%q): %s\n", elementId, err)
+				eType := strings.TrimSpace(opt)
+				if ok := isSupportedElementType(eType); ! ok {
+					fmt.Fprintf(eout, "%q is not a supported element type", opt)
+				} else {
+					// FIXME: If elem.Type is select I need to provide an choices TUI for values and labels
+					elem.Type, elem.Pattern = normalizeInputType(eType)
+					elem.isChanged = true
+					if elem.Type == "select" {
+						if err := modifySelectElementTUI(elem, in, out, eout, model.Id); err != nil {
+							fmt.Fprintf(eout, "ERROR (%q): %s\n", elementId, err)
+						}
 					}
 				}
 			}
@@ -485,7 +499,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				if opt == "*" {
 					elem.Pattern = ""
 				} else {
-					elem.Pattern = opt
+					elem.Pattern = strings.TrimSpace(opt)
 				}
 				model.isChanged = true
 			}

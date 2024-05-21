@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // setupRouter prompt to configure the Router
@@ -66,7 +67,7 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 					opt = getAnswer(buf, "", false)
 				}
 				if opt != ast.Applications.Router.Htdocs {
-					ast.Applications.Router.Htdocs = opt
+					ast.Applications.Router.Htdocs = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "q":
@@ -140,7 +141,7 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 					opt = getAnswer(buf, "", false)
 				}
 				if ast.Applications.PostgREST.AppPath != opt {
-					ast.Applications.PostgREST.AppPath = opt
+					ast.Applications.PostgREST.AppPath = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "c":
@@ -149,7 +150,7 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 					opt = getAnswer(buf, "", false)
 				}
 				if ast.Applications.PostgREST.ConfPath != opt {
-					ast.Applications.PostgREST.ConfPath = opt
+					ast.Applications.PostgREST.ConfPath = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "q":
@@ -187,7 +188,7 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 			ast.Applications.Postgres.Port = POSTGRES_PORT
 		}
 		if ast.Applications.Postgres.Namespace == "" {
-			ast.Applications.Postgres.Namespace = appFName
+			ast.Applications.Postgres.Namespace = fNameToNamespace(appFName)
 		}
 		if ast.Applications.Postgres.DSN == "" {
 			ast.Applications.Postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", ast.Applications.Postgres.Port, appFName)
@@ -217,7 +218,7 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 					opt = getAnswer(buf, appFName, true)
 				}
 				if opt != ast.Applications.Postgres.Namespace {
-					ast.Applications.Postgres.Namespace = opt
+					ast.Applications.Postgres.Namespace = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "p":
@@ -238,7 +239,7 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 					opt = getAnswer(buf, "", false)
 				}
 				if ast.Applications.PostgREST.DSN != opt {
-					ast.Applications.PostgREST.DSN = opt
+					ast.Applications.PostgREST.DSN = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "q":

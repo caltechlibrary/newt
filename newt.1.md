@@ -1,5 +1,5 @@
 ---
-title: newt(1) user manual | 0.0.8 a401ffe
+title: newt(1) user manual | 0.0.8 2c7bc85
 pubDate: 2024-05-21
 author: R. S. Doiel
 ---
@@ -16,7 +16,7 @@ newt [OPTIONS] ACTION [YAML_FILE]
 
 **newt** is a developer tool. It can set up and run your Newt application
 during development.  **newt** supports the "config", "check", "model", "generate",
-"run" and "ws" actions. The "config" command is used when you are starting a
+and "run" actions. The "config" command is used when you are starting a
 Newt Project. It is an interactive command prompting for various choices regarding
 the application you want to create.  
 
@@ -33,10 +33,6 @@ The "run" action will run Newt Router, Newt Mustache and PostgREST
 for testing and development.  This allows you to quick run and stop the services
 from one command. 
 
-The "ws" action runs a simple static web service. It is useful when you are debugging
-static web assets for your project.
-
-
 If a Newt YAML filename isn't supplied when you invoke **newt** the application
 will look in the current directory for a file with the directory's name and ".yaml" 
 extension and if that is not found it'll look for "app.yaml".
@@ -48,7 +44,7 @@ get a warning about which files should be added to your `.gitignore`.
 
 The following options are supported by **newt**.
 
--h, -help
+-help
 : display this help message
 
 -license
@@ -106,13 +102,13 @@ templates
 
 The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
-newtrouter
+router
 : this contains configuration for the Newt Router, i.e. port and htdocs
 
-newtgenerator
+generator
 : this contains configuration for code generation. e.g. namespace used by Postgres and PostgREST.
 
-newtmustache
+mustache
 : this contains configuration for Newt Mustache, i.e. port
 
 options
@@ -124,16 +120,16 @@ environment
 ### Each application may have one or more of these properies.
 
 namespace
-: (newtgenerator) uses this in the SQL generated for setting up Postgres+PostgREST
+: (postgres) uses this in the SQL generated for setting up Postgres+PostgREST
 
 port
 : (all) Port number to used for Newt web service running on localhost
 
 htdocs
-: (newtrouter) Directory that holds your application's static content
+: (router) Directory that holds your application's static content
 
 timeout
-: (newt router, newt mustache) The time in seconds to timeout a HTTP transaction
+: (router, mustache) The time in seconds to timeout a HTTP transaction
 
 dsn
 : (postgres) The data source name (URI for database connection string). Using to connect to Postgres

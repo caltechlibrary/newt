@@ -2,6 +2,7 @@ package newt
 
 import (
 	"fmt"
+	"path"
 	"regexp"
 	"sort"
 	"strconv"
@@ -108,4 +109,14 @@ func getItemNoFromList(list []string, id string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+// fNameToNamespace trunes a filename (e.g. app.yaml) into a namespace (e.g. app)
+func fNameToNamespace(s string) string {
+	bName := path.Base(s)
+	ext := path.Ext(bName)
+	if len(ext) > 0 {
+		return strings.TrimSuffix(bName, ext)	
+	}
+	return bName
 }
