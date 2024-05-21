@@ -3,9 +3,9 @@
 
 ## What is in the Newt toolbox?
 
-- [Newt](newt.1.md), is a development tool. It provides a code generator as well as the ability to run NewtRouter, NewtMustache and PostgREST as you construct and test your data models for your application.
-- [Newt Router](newtrouter.1.md) is a web service that manages your requests and data pipelines as well as static file hosting
-- [Newt Mustache](newtmustache.1.md) is a web service providing a light weight template engine
+- [Newt](newt.1.md), is a development tool. It provides a code generator as well as the ability to run Newt's router and template engine as well as PostgREST as you construct and test your data models for your application.
+- [Newt's router](newtrouter.1.md) is a web service that manages your requests and data pipelines as well as static file hosting
+- [Newt's template engine](newtmustache.1.md) is a web service providing a light weight template engine
 
 ## Newt YAML syntax (draft)
 
@@ -20,7 +20,7 @@
     - [Checking your YAML](newt_check_explained.md)
     - [Generating code](newt_generator_explained.md)
 - Running your Newt App
-    - [Newt Routing Explained](newtrouter_explained.md)
+    - [Newt router Explained](newtrouter_explained.md)
     - [Newt Mustache Explained](newtmustache_explained.md)
 - [Have more questions?](more_questions.md)
 - [Reference Material](reference_material.md), links to prior art

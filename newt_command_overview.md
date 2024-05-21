@@ -2,7 +2,7 @@
 # Newt's `newt` command
 
 The core of Newt is the command `newt`. It handles the following for your Newt based project. The command first parameter is an "action" The actions
-let you progress from configuration, to data modeling and ending with generating code.
+let you progress from configuration, to data modeling, check the Newt YAML file, code generation and end with a running application.
 
 1. Create a Newt YAML file through an interactive dialog using the "config" action.
 2. Generate and manage your models through an interactive dialog using the "model" action.
