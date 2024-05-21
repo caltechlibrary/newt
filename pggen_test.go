@@ -47,37 +47,38 @@ func TestPgGenerators(t *testing.T) {
 -- would not be stored in the file!
 --
 
--- Uncomment these two lines if you have used Postgres' createdb yet.
--- DROP DATABASE IF EXISTS birds;
--- CREATE DATABASE EXISTS birds;
+-- Uncomment these two lines if you have used not used Postgres' createdb yet.
+-- drop database if exists birds;
+-- create database birds;
 
 -- Make sure we are in the birds namespace/database
-\c birds
+-- \c birds
 
 --
 -- Setup a Postgres "schema" (a.k.a. namespace) for
 -- working with PostgREST
 --
-DROP SCHEMA IF EXISTS birds CASCADE;
-CREATE SCHEMA birds;
+drop schema if exists birds cascade;
+create schema birds;
 
 --
 -- The following additional steps are needed for PostgREST access
 -- are birds schema and database.
 --
-DROP ROLE IF EXISTS birds_anonymous;
-CREATE ROLE birds_anonymous NOLOGIN;
+drop role if exists birds_anonymous;
+create role birds_anonymous nologin;
 
 --
 -- NOTE: The "CREATE ROLE" line is the problem line for
 -- checking into your source control system. It contains a secret!
 -- **DO NOT** store secrets in your SQL if you can avoid it!
 --
-DROP ROLE IF EXISTS birds;
-CREATE ROLE birds NOINHERIT LOGIN PASSWORD '__change_me_password_goes_here__';
-GRANT birds_anonymous TO birds;
+drop role if exists birds_authenticator;
+create role birds_authenticator noinherit login password '__change_me_password_goes_here__';
+grant birds_anonymous to birds_authenticator;
 `)
 	if len(expectedBytes) != len(data) {
+		t.Errorf("expected src\n%s\ngot\n%s\n", expectedBytes, data)
 		t.Errorf("expected len %d, got len %d", len(expectedBytes), len(data))
 	}
 

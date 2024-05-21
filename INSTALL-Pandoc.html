@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- INSTALL-Pandoc</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="installing-pandoc-from-source">Installing Pandoc from
+source</h1>
+<p>I’ve had the best results compiling Pandoc on macOS using GHCup to
+provide my Haskell build environment. This doesn’t replace the
+recommendations at the <a href="https://pandoc.org">Pandoc Website</a>.
+It’s the my notes about how I got things up on my Mac Mini with an M1
+process while using Mac Ports. The basic recipe is modified because of a
+potential link conflict in which libiconv if you’ve also installed Mac
+Ports to get reliable development tools like Git. Pandoc needs to link
+against the macOS supplied libiconv but Mac Ports also provides this and
+the Git that comes with Mac Ports relies on the Mac Ports libiconv. The
+trick then is to do all the Git commands before before temporarily
+uninstalling the libiconv that comes with Mac Ports. You can then
+invoking Cabal and put libiconv back afterward Pandoc installation is
+complete. If you’re not using the libiconv installed as part of Mac
+Ports applications you can skip those steps.</p>
+<p>The basic recipe</p>
+<ol type="1">
+<li>Install Haskell with <a
+href="https://www.haskell.org/ghcup/">GHCup</a> (I accept the defaults
+and use the “recommended” versions set via <code>ghcup tui</code>)</li>
+<li>Make sure the GHCup environment is available,
+<code>source $HOME/.ghcup/env</code></li>
+<li>Make sure you are using the “recommended” of GHC, Cabal, Stack,
+etc.</li>
+<li>Clone <a href="https://github.com/jgm/pandoc">Pandoc</a> repository
+from GitHub</li>
+<li>Change into the Pandoc directory</li>
+<li>Checkout the version of Pandoc you want to build (e.g. 3.1.4)</li>
+<li>Remove the Mac Ports libiconv library using Ports command</li>
+<li>Run the usual Haskell/Cabal build process</li>
+<li>Put the Mac Ports libiconv back using the Ports command</li>
+</ol>
+<pre><code>curl --proto &#39;=https&#39; --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+source $HOME/.ghcup/env
+ghcup tui
+git clone git@github.com:jgm/pandoc
+cd pandoc
+git checkout 3.1.4
+sudo port uninstall libiconv
+cabal clean
+cabal update
+cabal install pandoc-cli
+sudo port install libiconv
+cd ..</code></pre>
+<p>NOTE: Even though you are using cabal with the “install pandoc-cli”
+option the resulting Pandoc can function as the Pandoc web service by
+invoking Pandoc server command option.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

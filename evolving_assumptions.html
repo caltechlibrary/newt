@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- evolving_assumptions</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h2 id="evolving-assumptions">Evolving assumptions</h2>
+<ul>
+<li>1992, implementing a list of authors would required multiple round
+trips to the web server
+<ul>
+<li>A form submit would be required to add or remove an author from a
+list</li>
+<li>The original HTML inputs were simpler than the current HTML5
+iteration (e.g. no date, URL, color types)</li>
+<li>You synthesized an list behavior by leveraging input element names
+(e.g. <code>family_name_1</code>)</li>
+</ul></li>
+<li>1993 NCSA httpd web server introduced
+<ul>
+<li>CGI, common gateway interface, enable an easier path for dynamic web
+development</li>
+</ul></li>
+<li>1995, Apache Web Server JavaScript is introduced</li>
+<li>non-standard, initially Netscape only, IE adds slightly incompatible
+support trying to push embedded Visual Basic</li>
+<li>1996, CSS introduced, CSS is a DSL for controlling the
+display/layout of HTML elements</li>
+<li>Initial browser support problematic</li>
+<li>Slow convergence of supported features</li>
+<li>Differences leads to the practice of creating a CSS reset style</li>
+<li>1998, term LAMP coined, becoming a mainstream web platform</li>
+<li>Linux, Apache, MySQL and (Perl, PHP or Python)</li>
+<li>1999, JavaScript can call home</li>
+<li>Event Handlers allow form validation, menus, etc.</li>
+<li>XMLHttpRequest and JavaScript can call home or anyplace else of the
+net XMLHttpRequest</li>
+<li><strong>Building a list of authors doesn’t require a page
+refresh</strong>, feels a little more like a “native application”</li>
+<li>2000, JSON “discovered” by Douglas Crockford, slow rise replacing
+XML for transfer data
+<ul>
+<li>You start to see a divergence between “front end” and “back end” web
+developers</li>
+<li>A “web designer” and a “web developer” are not necessarily the same
+thing</li>
+<li>User Experience is a big topic eventually leading to a specialist
+role in web developer down the road</li>
+</ul></li>
+<li>2005, 2006 JavaScript libraries and frameworks<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+rise in adoption
+<ul>
+<li>Designers start needing programming knowledge</li>
+<li>Frameworks promise to make building rich web forms and site
+navigation easier</li>
+<li>CSS is included as part of JavaScript frameworks, e.g. <a
+href="https://en.wikipedia.org/wiki/YUI_Library">YUI</a>
+<ul>
+<li>CSS reset stylesheets appear</li>
+</ul></li>
+</ul></li>
+<li>2006, Mozilla <a
+href="https://en.wikipedia.org/wiki/XULRunner">XULRunner</a> allows
+building stand alone desktop apps using HTML, CSS and JavaScript, SQLite
+and XML</li>
+<li>2007, independent CSS frameworks start to appear (e.g. <a
+href="https://en.wikipedia.org/wiki/Blueprint_(CSS_framework)">Blueprint</a></li>
+<li>2007, iPhone introduced, initially 3rd Party apps are expected to be
+websites</li>
+<li>2008/2009, <a
+href="https://en.wikipedia.org/wiki/Apache_Cordova">PhoneGap</a> brings
+web development mobile native platforms
+<ul>
+<li>You can develop a mobile app using HTML, CSS and JavaScript and
+target both iPhones and Android devices</li>
+</ul></li>
+<li>2009, Server side JavaScript goes mainstream
+<ul>
+<li>Ryan Dahl introduces NodeJS<a href="#fn2" class="footnote-ref"
+id="fnref2" role="doc-noteref"><sup>2</sup></a>, demos a <a
+href="https://en.wikipedia.org/wiki/C10k_problem">C10K</a> solution in
+JavaScript using efficient event loops</li>
+<li>NodeJS supplants <a
+href="https://en.wikipedia.org/wiki/Rhino_(JavaScript_engine)">Rhino</a>,
+Narwhal, <a
+href="https://en.wikipedia.org/wiki/Aptana#Aptana_Jaxer">Jaxer</a></li>
+<li>NodeJS inspires embedded web servers in other programming languages
+(e.g. Python, PHP, Go)</li>
+</ul></li>
+<li>2009, A “web developer” can create back end web services, native
+Desktop and mobile applications</li>
+<li>2009, static web site builders emerge and become popular</li>
+<li>2010, npm building on the prior art of other programming language
+package systems is introduce
+<ul>
+<li>This starts a shift in “front end” web developers using GUI/WYSIWYG
+tools towards tools on the command line</li>
+<li>Unix shell/command line as a resurgence in popularity</li>
+<li>“Build systems” become mainstream as part of front end
+development</li>
+</ul></li>
+<li>2014, seeds of Simplification
+<ul>
+<li><a
+href="https://medium.com/message/tilde-club-i-had-a-couple-drinks-and-woke-up-with-1-000-nerds-a8904f0a2ebf">Tilde
+club</a></li>
+<li>A renaissance for public Unix systems and Gopher?</li>
+</ul></li>
+<li>2016 (approaching a decade ago), assumptions start to settle in
+<ul>
+<li>front end developers are expected to work at the command line</li>
+<li>they are expected to use complex build systems</li>
+<li>assumption is they will use a framework for CSS and one for
+JavaScript</li>
+<li>NPM, the JavaScript package manager, has a common tool to build on
+for automating front end packaging and assembly (e.g. Grunt, Gulp,
+Yeoman)</li>
+<li>A “front end developer” probably isn’t a web designer</li>
+</ul></li>
+<li>2019, Gemini Project is initiated, something between Gopher and a
+text centered web wide web experience</li>
+</ul>
+<p>The evolution seen in this abbreviated timeline illustrates a growth
+complexity, implementation and expectations around web development. In
+2024 many organizations and people appear to operating with a maxim,
+“the web is complex, my tools need to be complex, I create complex
+things”. This maxim is not sustainable in software.</p>
+<p>The seeds of simplification are out there. They’ve cropped up at
+almost every turning point in the web evolution. Sometimes the seeds of
+simplification can actually result in more complexity, e.g. my
+experience with early NodeJS work was liberating. I went from projects
+where I worked in five or six programming and configuration languages to
+four language (e.g. JavaScript, HTML, CSS and SQL). That same liberation
+also laid the foundation for NodeJS+NPM which ushered in the assumption
+of a complex ecosystem. Static website deployments came back into vogue
+(in part due to cost advantages of using S3 buckets) but some of the
+static site generators, e.g. Jekyll, seemed to have missed the boat on
+simplifying things. These types of simplifications came from developers
+for developers in many cases. One simplification freeing conceptual
+bandwidth to facilate an increase in complexity.</p>
+<p>On the other hand simplifications which had multiple motivators seem
+to stick around a while. Static sites are common practice for libraries
+since they provide a robust platform for distributing information and
+are also low cost to support (rental of an S3 bucket is cheap for small
+files).</p>
+<p>You also see other forces encouraging a rethink. The race to the
+“cloud” has lead to a landlord’s market place. For commercial software
+it is difficult to “buy” software but often forcing us to rent<a
+href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>.</p>
+<p>I think it is high time to focus our simplification at all levels.
+Getting to simple in part is an engineering problem, in part a human
+organizational problem and significantly a “market force” problem. As
+humans we can take steps to change that if we choose to.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>E.g. Prototype 2005, Mootools, YUI and jQuery 2006.<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Ryan Dahl releases introduces NodeJS. This quickly
+replaces Rhino, Narwhal and Jaxer JavaScript server side efforts<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Example try buying Windows, macOS, or Adobe Photoshop,
+we rent the software only.<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

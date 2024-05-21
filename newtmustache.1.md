@@ -1,5 +1,5 @@
 ---
-title: newtmustache(1) user manual | 0.0.8 e146d30
+title: newtmustache(1) user manual | 0.0.8 8ed7bc3
 pubDate: 2024-05-21
 author: R. S. Doiel
 ---

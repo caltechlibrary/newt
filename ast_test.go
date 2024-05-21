@@ -8,6 +8,14 @@ import (
 	"testing"
 )
 
+// TestNewtAST() tests NewAST() and NewApplications()
+func TestNewAST(t *testing.T) {
+	ast := NewAST()
+	if ast.Applications == nil {
+		t.Errorf("ast.Applications should not be nil")
+	}
+}
+
 // TestUnmarshalAST tests unmarshalling YAML into a Newt AST object
 func TestUnmarshalAST(t *testing.T) {
 	configFiles := []string{

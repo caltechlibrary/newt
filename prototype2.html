@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- prototype2</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="prototype-2">Prototype 2</h1>
+<h2 id="features">Features</h2>
+<ul>
+<li>newt developer tool
+<ul>
+<li>config (configure the stack used with your Newt application)</li>
+<li>model (model your data)</li>
+<li>generate (generate configuration file, SQL and templates)</li>
+<li>run (Newt Router, Newt Mustache and PostgREST)</li>
+</ul></li>
+<li>newt router (a data router web service)
+<ul>
+<li>validator (a service that read the models and tests the submissions
+for valid data)</li>
+<li>data pipelines</li>
+<li>static file service</li>
+<li>related routes linked by an id</li>
+</ul></li>
+<li>newt mustache (a Mustache template engine inspired by Pandoc’s
+server mode)
+<ul>
+<li>stateless template engine</li>
+<li>loads templates at startup</li>
+<li>support partial templates</li>
+<li>templates referenced through unique path</li>
+<li>related templates linked by an id</li>
+</ul></li>
+<li>Extensible to support for other JSON data sources through editing
+Newt YAML</li>
+</ul>
+<h2 id="constraints">Constraints</h2>
+<ul>
+<li>Simple data models</li>
+<li>No file upload support</li>
+<li>Modeler assumes the Postgres+PostgREST stack</li>
+<li>Newt services required to restricted to localhost</li>
+<li>Access control defered to front end web service
+<ul>
+<li>Apache 2 or NginX plus Shibboleth and acls for URL paths</li>
+</ul></li>
+</ul>
+<h2 id="data-types">Data Types</h2>
+<p>Newt presents HTML 5 form elements as the native (base) set of data
+types. These imply predictable SQL column types when persisting the data
+in Postgres.</p>
+<p>Additional data types implemented via HTML 5 input element’s pattern
+attribute (e.g. similar to validation found in Python’s idutils
+package)</p>
+<p>Complex data types implented as textarea containing YAML (for
+fallback) and using web components to provide more intitive user
+experience if JavaScript is available in the browser.</p>
+<h2 id="proposed-roadmap-for-prototype-2">Proposed Roadmap for Prototype
+2</h2>
+<ul>
+<li>Targeted for use in developing <a
+href="https://caltechlibrary.github.io/cold">cold</a> for Caltech
+Library</li>
+<li>Demonstration to DLD group</li>
+<li>Demonstration to Caltech Library staff</li>
+<li>Demonstration for SoCal Code4Lib Meetup</li>
+<li>Promote via</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2023-2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

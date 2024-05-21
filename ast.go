@@ -93,6 +93,31 @@ type Application struct {
 	DSN string `json:"dsn,omitemity" yaml:"dsn,omitempty"`
 }
 
+// NewApplication will create an empty Application struct
+func NewApplication() *Application {
+	return &Application{}
+}
+
+// NewApplications will create an empty Application with top level attributes
+func NewApplications() *Applications {
+	return &Applications{
+		Router:        NewApplication(),
+		NewtMustache:  NewApplication(),
+		NewtGenerator: NewApplication(),
+		Postgres:      NewApplication(),
+		PostgREST:     NewApplication(),
+		Options:       map[string]string{},
+		Environment:   []string{},
+	}
+}
+
+// NewAST will create an empty AST with top level attributes
+func NewAST() *AST {
+	ast := new(AST)
+	ast.Applications = NewApplications()
+	return ast
+}
+
 // UnmarshalAST will read []byte of YAML or JSON,
 // populate the provided *AST object and return an error.
 //
@@ -116,15 +141,7 @@ func UnmarshalAST(src []byte, ast *AST) error {
 		}
 	}
 	if ast.Applications == nil {
-		ast.Applications = &Applications{
-			Router:        &Application{},
-			NewtMustache:  &Application{},
-			NewtGenerator: &Application{},
-			Postgres:      &Application{},
-			PostgREST:     &Application{},
-			Options:       map[string]string{},
-			Environment:   []string{},
-		}
+		ast.Applications = NewApplications()
 	}
 	return nil
 }
@@ -153,13 +170,7 @@ func LoadAST(configFName string) (*AST, error) {
 	}
 
 	if ast.Applications == nil {
-		ast.Applications = &Applications{
-			Router:        &Application{},
-			NewtMustache:  &Application{},
-			NewtGenerator: &Application{},
-			Options:       map[string]string{},
-			Environment:   []string{},
-		}
+		ast.Applications = NewApplications()
 	}
 	// Load environment if missing from config file.
 	if len(ast.Applications.Environment) == 0 {

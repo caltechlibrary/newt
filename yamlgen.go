@@ -21,10 +21,10 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 	}
 	if answer == "y" {
 		if ast.Applications == nil {
-			ast.Applications = &Applications{}
+			ast.Applications = NewApplications()
 		}
 		if ast.Applications.Router == nil {
-			ast.Applications.Router = &Application{}
+			ast.Applications.Router = NewApplication()
 		}
 		// NOTE: If port is zero, we haven't configure the router.
 		if ast.Applications.Router.Port == 0 {
@@ -96,10 +96,10 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 	}
 	if answer == "y" {
 		if ast.Applications == nil {
-			ast.Applications = &Applications{}
+			ast.Applications = NewApplications()
 		}
 		if ast.Applications.PostgREST == nil {
-			ast.Applications.PostgREST = &Application{}
+			ast.Applications.PostgREST = NewApplication()
 		}
 		if ast.Applications.PostgREST.Port == 0 {
 			ast.Applications.PostgREST.Port = POSTGREST_PORT
@@ -175,10 +175,10 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 	}
 	if answer == "y" {
 		if ast.Applications == nil {
-			ast.Applications = &Applications{}
+			ast.Applications = NewApplications()
 		}
 		if ast.Applications.Postgres == nil {
-			ast.Applications.Postgres = &Application{}
+			ast.Applications.Postgres = NewApplication()
 		}
 		if ast.Applications.Postgres.Port == 0 {
 			ast.Applications.Postgres.Port = POSTGRES_PORT
@@ -257,10 +257,10 @@ func setupNewtMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName stri
 	}
 	if answer == "y" {
 		if ast.Applications == nil {
-			ast.Applications = &Applications{}
+			ast.Applications = NewApplications()
 		}
 		if ast.Applications.NewtMustache == nil {
-			ast.Applications.NewtMustache = &Application{}
+			ast.Applications.NewtMustache = NewApplication()
 		}
 		if ast.Applications.NewtMustache.Port == 0 {
 			ast.Applications.NewtMustache.Port = MUSTACHE_PORT
@@ -340,10 +340,10 @@ func setupMustacheTemplateHandlers(ast *AST) error {
 
 func setupNewtGenerator(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
 	if ast.Applications == nil {
-		ast.Applications = &Applications{}
+		ast.Applications = NewApplications()
 	}
 	if ast.Applications.NewtGenerator == nil {
-		ast.Applications.NewtGenerator = &Application{}
+		ast.Applications.NewtGenerator = NewApplication()
 	}
 	if ast.Applications.NewtGenerator.Namespace == "" {
 		ast.Applications.NewtGenerator.Namespace = appFName
