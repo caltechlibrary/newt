@@ -18,25 +18,28 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// NewtMustache defines the `newtmustache` application configuration YAML
-type NewtMustache struct {
+// Mustache defines the `newtmustache` application configuration YAML
+type Mustache struct {
 	// Port number to run the web service on
-	Port      int
-	
+	Port int
+
 	// Templates defined for the service
-	Templates []*MustacheTemplate
-	
+	Templates []*Template
+
 	// Timeout setting for the web service
-	Timeout   time.Duration
-	
+	Timeout time.Duration
+
 	// Options hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
 	// the Newt Mustache template as `options`.
 	Options map[string]string
 }
 
-// MustacheTemplate hold the request to template mapping for NewtMustache struct
-type MustacheTemplate struct {
+// Template hold the request to template mapping for Mustache struct
+type Template struct {
+	// Id ties a set of one or more template together, e.g. a web form and its response
+	Id string `json:"id,required" yaml:"id,omitempty"`
+
 	// Pattern holds a request path, e.g. `/blog_post`. NOTE: the method is ignored. A POST
 	// is presumed to hold data that will be processed by the template engine. A GET retrieves the
 	// unresolved template.
@@ -63,9 +66,9 @@ type MustacheTemplate struct {
 	// Vocabulary holds the path to a YAML file used to populate Vocabulary at startup.
 	Vocabulary string `json:"vocabulary,omitempty" yaml:"vocabulary,omitempty"`
 
-	// Voc holds a map of variable names to values. It is read in when NewtMustache starts from a separate YAML
+	// Voc holds a map of variable names to values. It is read in when Mustache starts from a separate YAML
 	// file.
-	Voc map[string]interface{}  `json:"-" yaml:"-"`
+	Voc map[string]interface{} `json:"-" yaml:"-"`
 
 	// Options hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
@@ -77,30 +80,71 @@ type MustacheTemplate struct {
 	Vars []string `json:"-" yaml:"-"`
 }
 
-// NewNewtMustache create a new NewtMustache struct. If a filename
+// NewMustache create a new Mustache struct. If a filename
 // is provided it reads the file and sets things up accordingly.
-func NewNewtMustache(cfg *Config) (*NewtMustache, error) {
-	nm := &NewtMustache{
-		Templates: cfg.Templates,
+func NewMustache(ast *AST) (*Mustache, error) {
+	nm := &Mustache{
+		Templates: ast.Templates,
 	}
-	if cfg.Applications.NewtMustache.Port != 0 {
-		nm.Port = cfg.Applications.NewtMustache.Port
+	if ast.Applications.Mustache.Port != 0 {
+		nm.Port = ast.Applications.Mustache.Port
 	}
-	if cfg.Applications.NewtMustache.Timeout != 0 {
-		nm.Timeout = cfg.Applications.NewtMustache.Timeout * time.Second
+	if ast.Applications.Mustache.Timeout != 0 {
+		nm.Timeout = ast.Applications.Mustache.Timeout * time.Second
 	}
-	if len(cfg.Applications.Options) > 0 {
+	if len(ast.Applications.Options) > 0 {
 		nm.Options = map[string]string{}
-		for k, v := range cfg.Applications.Options {
+		for k, v := range ast.Applications.Options {
 			nm.Options[k] = v
 		}
 	}
 	return nm, nil
 }
 
+// Check makes sure the Mustache struct is populated
+func (nm *Mustache) Check(buf io.Writer) bool {
+	ok := true
+	if nm == nil {
+		fmt.Fprintf(buf, "templates not defined\n")
+		ok = false
+	}
+	if nm.Templates == nil || len(nm.Templates) == 0 {
+		fmt.Fprintf(buf, "not templates found\n")
+		ok = false
+	}
+	if nm.Port == 0 {
+		fmt.Fprintf(buf, "port not set\n")
+		ok = false
+	}
+	for i, t := range nm.Templates {
+		if !t.Check(buf) {
+			fmt.Fprintf(buf, "template (#%d) failed check\n", i)
+			ok = false
+		}
+	}
+	return ok
+}
+
+// Check evaluates the *Template and outputs finding. Returns true of no error, false if errors found
+func (mt *Template) Check(buf io.Writer) bool {
+	ok := true
+	if mt == nil {
+		fmt.Fprintf(buf, "template is nil\n")
+		ok = false
+	}
+	if mt.Pattern == "" {
+		fmt.Fprintf(buf, "template does not have an associated path/pattern\n")
+		ok = false
+	}
+	if mt.Template == "" {
+		fmt.Fprintf(buf, "missing path to template for %s\n", mt.Pattern)
+	}
+	return ok
+}
+
 // LoadVocabary retrieves the YAML file contents found in .VocabularFName and builds the map[string]interface{} that
 // holds .Vocabulary
-func (mt *MustacheTemplate) LoadVocabulary() error {
+func (mt *Template) LoadVocabulary() error {
 	voc := map[string]interface{}{}
 	if mt.Vocabulary != "" {
 		src, err := os.ReadFile(mt.Vocabulary)
@@ -118,7 +162,7 @@ func (mt *MustacheTemplate) LoadVocabulary() error {
 }
 
 // ResolvePath reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (mt *MustacheTemplate) ResolvePath() error {
+func (mt *Template) ResolvePath() error {
 	// Does the `.Request` hold a pattern or a fixed string?
 	if strings.Contains(mt.Pattern, "{") {
 		if !strings.Contains(mt.Pattern, "}") {
@@ -136,7 +180,7 @@ func (mt *MustacheTemplate) ResolvePath() error {
 
 // ResolvesTemplate is responsible for reading and parse the template and partials associated with a mapped request.
 // If an error is encountered a error value is returned.
-func (mt *MustacheTemplate) ResolveTemplate() error {
+func (mt *Template) ResolveTemplate() error {
 	if mt.Template != "" {
 		if len(mt.Partials) > 0 {
 			if mt.Debug {
@@ -190,7 +234,7 @@ func (mt *MustacheTemplate) ResolveTemplate() error {
 }
 
 // Handler decodes a the request body and then processes that as a Mustache template.
-func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
+func (mt *Template) Handler(w http.ResponseWriter, r *http.Request) {
 	if mt.Debug {
 		log.Printf(".Handler(w, %s %s)", r.Method, r.URL.Path)
 	}
@@ -304,10 +348,10 @@ func (mt *MustacheTemplate) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(src)
 }
 
-func (nm *NewtMustache) ListenAndServe() error {
+func (nm *Mustache) ListenAndServe() error {
 	mux := http.NewServeMux()
 	// Setup our handlers, POST for process data with the template and GET to retreive the template
-	// source.
+	// ast.
 	for _, mt := range nm.Templates {
 		//FIXME: Need to map in the options passed in from the Newt Applications property
 		if err := mt.LoadVocabulary(); err != nil {

@@ -26,16 +26,15 @@
 <h1 id="newt-user-manual">Newt User Manual</h1>
 <h2 id="what-is-in-the-newt-toolbox">What is in the Newt toolbox?</h2>
 <ul>
-<li><a href="newt.1.html">Newt</a>, a development tool that will
-generate a basic Newt YAML file; allow you to generate SQL, PostgREST
-configuration and Mustache templates; runs Newt Router and Mustache as
-one process; can manage PostgREST in another process</li>
-<li><a href="newtrouter.1.html">Newt Router</a>, manages your requests
-and data pipelines</li>
-<li><a href="newtmustache.1.html">Newt Mustache</a>, a light weight
-template engine</li>
-<li><a href="newtgenerator.1.html">Newt Generator</a>, bootstraps your
-SQL and Mustache templates (being written)</li>
+<li><a href="newt.1.html">Newt</a>, is a development tool. It provides a
+code generator as well as the ability to run NewtRouter, NewtMustache
+and PostgREST as you construct and test your data models for your
+application.</li>
+<li><a href="newtrouter.1.html">Newt Router</a> is a web service that
+manages your requests and data pipelines as well as static file
+hosting</li>
+<li><a href="newtmustache.1.html">Newt Mustache</a> is a web service
+providing a light weight template engine</li>
 </ul>
 <h2 id="newt-yaml-syntax-draft">Newt YAML syntax (draft)</h2>
 <ul>
@@ -44,22 +43,30 @@ SQL and Mustache templates (being written)</li>
 <h2 id="tutorials-and-reference-materials-drafts">Tutorials and
 reference materials (drafts)</h2>
 <ul>
-<li>Getting Started with Newt (being written)</li>
+<li>Getting Started with Newt
+<ul>
+<li><a href="newt_command_overview.html">Newt Overview</a></li>
+<li><a href="newt_config_explained.html">Configuring</a></li>
+<li><a href="newt_model_explained.html">Modeling Data</a></li>
+<li><a href="newt_check_explained.html">Checking your YAML</a></li>
+<li><a href="newt_generator_explained.html">Generating code</a></li>
+</ul></li>
+<li>Running your Newt App
+<ul>
 <li><a href="newtrouter_explained.html">Newt Routing Explained</a></li>
 <li><a href="newtmustache_explained.html">Newt Mustache
 Explained</a></li>
-<li><a href="newtgenerator_explained.html">Newt Generator
-Explained</a></li>
+</ul></li>
 <li><a href="more_questions.html">Have more questions?</a></li>
 <li><a href="reference_material.html">Reference Material</a>, links to
 prior art</li>
 </ul>
 <h2 id="presentations">Presentations</h2>
 <ul>
-<li><a href="presentation2/">Newt Prototype 2</a>, (draft, April 19,
-2024)</li>
-<li>Original <a href="presentation/">Newt Presentation</a>, Code4Lib
-Meetup at UCLA, July 14, 2023 (covers first prototype)</li>
+<li><a href="presentation2/">Newt Prototype 2</a>, SoCal Code4Lib Meetup
+at USC, April 19, 2024 (covers second prototype)</li>
+<li>Original <a href="presentation/">Newt Presentation</a>, SoCal
+Code4Lib Meetup at UCLA, July 14, 2023 (covers first prototype)</li>
 </ul>
 <h2 id="installation">Installation</h2>
 <ul>
@@ -67,7 +74,15 @@ Meetup at UCLA, July 14, 2023 (covers first prototype)</li>
 <li><a href="INSTALL-PostgREST.html">Installing PostgREST</a> from
 source (developer notes)</li>
 <li><a href="INSTALL-Pandoc.html">Installing Pandoc</a> from source
-(developer notes)</li>
+(developer notes, Pandoc is needed to compile Newt)</li>
+</ul>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a href="evolving_assumptions.html">Evolving Assumption</a>, a
+timeline of web related technological changes</li>
+<li><a href="structured_data_representation.html">Structured Data
+Representation</a>, a musing on how to handle complex data objects in
+HTML, CSS and JavaScript</li>
 </ul>
 </section>
 

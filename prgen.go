@@ -7,8 +7,8 @@ import (
 	"github.com/cbroglie/mustache"
 )
 
-// prConfig renders a PostgREST configuration given a namespace value.
-func prConfig(out io.Writer, namespace string, port string) error {
+// postgRESTConf renders a PostgREST configuration given a namespace value.
+func postgRESTConf(out io.Writer, namespace string, port string) error {
 	txt := `
 db-uri = "postgres://{{namespace}}_authenticator:{{secret}}@localhost:{{port}}/postgres"
 db-schemas = "{{nampespace}}"
@@ -20,8 +20,8 @@ db-anon-role = "{{namespace}}_anonymous"
 	}
 	data := map[string]string{
 		"namespace": namespace,
-		"port": port,
-		"secret": "__change_me_password_goes_here__",
+		"port":      port,
+		"secret":    "__change_me_password_goes_here__",
 	}
 	return tmpl.FRender(out, data)
 }

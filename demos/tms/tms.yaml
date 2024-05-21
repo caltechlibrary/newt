@@ -7,14 +7,13 @@
 # RDM review queie or published record, (assuming RDM v12 or later).
 #
 applications:
-  newtrouter:
+  router:
     port: 8010
     htdocs: htdocs
-  newtmustache:
+  mustache:
     port: 8011
-  newtgenerator:
-    namespace: tms
   postgrest:
+    namespace: tms
     app_path: postgrest
     conf_path: postgrest.conf
     port: 3000

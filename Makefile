@@ -114,7 +114,7 @@ check: .FORCE
 	for FNAME in $(shell ls -1 *.go); do go fmt $$FNAME; done
 	go vet *.go
 
-test: clean build
+test: .FORCE
 	#dropdb birds
 	#createdb birds
 	#cd testdata && psql -d birds -c '\i birds-setup.sql'

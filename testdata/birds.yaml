@@ -1,29 +1,27 @@
 applications:
-  newtgenerator:
+  postgres:
     namespace: birds
 models:
   - id: bird_sighting
     name: Bird Sighting
     description: Basic bird sighting information
-    body:
+    elements:
       - id: bird_name
-        type: input
+        type: text
         description: Record the type of bird seen or heard
         attributes:
           name: bird_name
-        validations:
           required: true
+        is_object_id: true
       - id: place
-        type: input
+        type: text
         description: describe where you saw or heard the bird
         attributes:
           name: place
-        validations:
           required: true
       - id: sighted
-        type: input[type=date]
-        description: date an time of sighting
+        type: datetime
+        description: date and time of sighting
         attributes:
           name: sighted
-        validations:
           required: true

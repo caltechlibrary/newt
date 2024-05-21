@@ -1,4 +1,6 @@
-port: 8003
+applications:
+  router:
+    port: 8003
 routes:
   - req_path: /
     req_method: GET

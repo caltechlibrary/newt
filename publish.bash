@@ -21,6 +21,8 @@ else
 		echo "Pulling changes from $WORKING_BRANCH info gh-pages"
 		git pull origin "$WORKING_BRANCH"
 		echo "Merging changes from $WORKING_BRANCH"
+		make version.go
+		make
 		make -f website.mak base_url=/newt
 		git commit -am "merging $WORKING_BRANCH with gh-pages"
 		echo "Pushing changes up and publishing"

@@ -15,8 +15,48 @@ func TestDryRunRouter(t *testing.T) {
 	eout := os.Stderr
 	args := []string{}
 	args = append(args, path.Join("testdata", "blog.yaml"))
-	exitCode := RunNewtRouter(in, out, eout, args, true, 8011, path.Join("testdata", "htdocs"), false)
+	exitCode := RunRouter(in, out, eout, args, true, 8011, path.Join("testdata", "htdocs"), false)
 	if exitCode != 0 {
 		t.Errorf("expected exit code zero, got %d\n", exitCode)
 	}
+}
+
+func TestRunNewtGenerator(t *testing.T) {
+	t.Errorf("TestRunNewtGenerator() not implemented")
+}
+
+func TestRunMustache(t *testing.T) {
+	t.Errorf("TestRunMustache() not implemented")
+}
+
+func TestRunRouter(t *testing.T) {
+	t.Errorf("TestRunMustache() not implemented")
+}
+
+func TestRunStaticWebServer(t *testing.T) {
+	t.Errorf("TestRunStaticWebServer() not implemented")
+}
+
+func TestRunNewtCheckYAML(t *testing.T) {
+	t.Errorf("TestRunCheckYAML() not implemented")
+}
+
+func TestRunNewt(t *testing.T) {
+	t.Errorf("TestRunNewt() not implemented")
+}
+
+func TestRunNewtApplications(t *testing.T) {
+	t.Errorf("TestRunNewthApplications() not implemented")
+}
+
+func TestRunMustacheCLI(t *testing.T) {
+	t.Errorf("TestRunMustacheCLI() not implemented")
+}
+
+func TestRunNewtConfig(t *testing.T) {
+	t.Errorf("TestRunNewtConfig() not implemented")
+}
+
+func TestRunModeler(t *testing.T) {
+	t.Errorf("TestRunModeler() not implemented")
 }

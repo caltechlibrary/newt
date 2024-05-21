@@ -10,23 +10,25 @@ import (
 	"time"
 )
 
-// NewtRouter is used to implement the Newt Router
-type NewtRouter struct {
+// Router is used to implement the Newt Router
+type Router struct {
 	// Port is the port the router will listen on
 	Port int
 
 	// Routes holds a list of route
-	Routes []*NewtRoute
+	Routes []*Route
 
 	// Htdocs holds the location of a the static files if used
 	Htdocs string
 }
 
 // This holds the route definitions, e.g. request, description, pipeline, debug
-type NewtRoute struct {
-	// Id holds an id for the route. This should be unique. It is useful in debugging.
+type Route struct {
+	// Id holds an id for the route. It is unique for each set of HTTP methods. E.g. The id can
+	// tie a GET (retrieve a webform) and POST (submit the form) but NOT two GET or two POST.
+	// This allows us to work with simple and complex actions.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	
+
 	// Pattern holds the HTTP Method and URL path, may include Go 1.22 patterns
 	Pattern string `json:"request,required" yaml:"request,omitempty"`
 
@@ -46,9 +48,9 @@ type NewtRoute struct {
 	Vars []string `json:"-" yaml:"-"`
 }
 
-// Service holds the necessary information to contact a data source and retrieve the results for use in a pipeline.
+// Service holds the necessary information to contact a data ast and retrieve the results for use in a pipeline.
 type Service struct {
-	// Service holds the http Request Pattern to request a resource from a service
+	// Service holds the http Request Pattern to request a reast from a service
 	Service string `json:"service,required" yaml:"service,omitempty"`
 
 	// Description describes the service and purpose of contact. Human readable.
@@ -58,8 +60,31 @@ type Service struct {
 	Timeout time.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
 }
 
+// Check will review the route and return true if no errors and false othise.
+// It will write error descriptions to buf.
+func (nr *Route) Check(buf io.Writer) bool {
+	ok := true
+	if nr == nil {
+		fmt.Fprintf(buf, "route is nil\n")
+		ok = false
+	}
+	if nr.Id == "" {
+		fmt.Fprintf(buf, "route is missing id\n")
+		ok = false
+	}
+	if nr.Pattern == "" {
+		fmt.Fprintf(buf, "route %q has no pattern (request path)\n", nr.Id)
+		ok = false
+	}
+	if nr.Pipeline == nil || len(nr.Pipeline) == 0 {
+		fmt.Fprintf(buf, "route %q is missing a pipelnie\n", nr.Id)
+		ok = false
+	}
+	return ok
+}
+
 // ResolveRoute reviews the `.Request` attribute and updates the Vars using PatternKeys()
-func (nr *NewtRoute) ResolveRoute() error {
+func (nr *Route) ResolveRoute() error {
 	// Does the `.Request` hold a pattern or a fixed string?
 	if strings.Contains(nr.Pattern, "{") {
 		if !strings.Contains(nr.Pattern, "}") {
@@ -145,7 +170,7 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, contentType s
 	return data, response.StatusCode, contentType, nil
 }
 
-func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]string) ([]byte, int, string, error) {
+func (nr *Route) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]string) ([]byte, int, string, error) {
 	var (
 		input  []byte
 		output []byte
@@ -188,7 +213,7 @@ func (nr *NewtRoute) RunPipeline(w http.ResponseWriter, r *http.Request, env map
 
 // ResolvePattern takes the request Pattern and pulls out the values from the actual request.
 // returns values in map[string]string and an error value.
-func (nr *NewtRoute) ResolvePattern(r *http.Request) map[string]string {
+func (nr *Route) ResolvePattern(r *http.Request) map[string]string {
 	// Copy in our options, then overwrite with any  vars
 	m := map[string]string{}
 	for k, v := range nr.Options {
@@ -205,7 +230,7 @@ func (nr *NewtRoute) ResolvePattern(r *http.Request) map[string]string {
 }
 
 // Handler creates an http handler func for a given route.
-func (nr *NewtRoute) Handler(w http.ResponseWriter, r *http.Request) {
+func (nr *Route) Handler(w http.ResponseWriter, r *http.Request) {
 	// Resolve the enviroment with options and path values
 	env := nr.ResolvePattern(r)
 
@@ -232,26 +257,32 @@ func (nr *NewtRoute) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// NewNewtRouter creates a newt router suprisingly
-func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
-	router := &NewtRouter{
-		Routes: cfg.Routes,
+// NewRouter creates a newt router suprisingly
+func NewRouter(ast *AST) (*Router, error) {
+	router := &Router{
+		Routes: ast.Routes,
 	}
-	if cfg.Applications.NewtRouter.Htdocs != "" {
-		router.Htdocs = cfg.Applications.NewtRouter.Htdocs
+	if ast.Applications == nil {
+		return nil, fmt.Errorf("applications and router not configured")
 	}
-	if cfg.Applications.NewtRouter.Port != 0 {
-		router.Port = cfg.Applications.NewtRouter.Port
+	if ast.Applications.Router == nil {
+		return nil, fmt.Errorf("router not configured")
+	}
+	if ast.Applications.Router.Htdocs != "" {
+		router.Htdocs = ast.Applications.Router.Htdocs
+	}
+	if ast.Applications.Router.Port != 0 {
+		router.Port = ast.Applications.Router.Port
 	}
 	// Populate an env from our allowed environment variables
 	for _, route := range router.Routes {
 		// Copy in the applications options without overwriting the route specific
 		// defined options.  NOTE: Application options have already been resolved
-		// with the environment by cfg.LoadConfig()
-		if route.Options == nil && len(cfg.Applications.Options) > 0 {
+		// with the environment by ast.LoadAST()
+		if route.Options == nil && len(ast.Applications.Options) > 0 {
 			route.Options = map[string]string{}
 		}
-		for k, v := range cfg.Applications.Options {
+		for k, v := range ast.Applications.Options {
 			if _, conflict := route.Options[k]; !conflict {
 				route.Options[k] = v
 			}
@@ -260,8 +291,35 @@ func NewNewtRouter(cfg *Config) (*NewtRouter, error) {
 	return router, nil
 }
 
+// GetRouteIds returns a list of route ids defined in the Router.
+func (rtr *Router) GetRouteIds() []string {
+	rIds := []string{}
+	for _, route := range rtr.Routes {
+		if route.Id != "" {
+			rIds = append(rIds, route.Id)
+		}
+	}
+	return rIds
+}
+
+// Check will review the router and its routes and return true if no errors
+// found and false otherwise. It will write error descriptions to buf.
+func (rtr *Router) Check(buf io.Writer) bool {
+	ok := true
+	if rtr.Port == 0 && rtr.Htdocs == "" {
+		fmt.Fprintf(buf, "port and htdocs is unset")
+		ok = false
+	}
+	for _, nr := range rtr.Routes {
+		if !nr.Check(buf) {
+			ok = false
+		}
+	}
+	return ok
+}
+
 // ListenAndServe() runs the router web service
-func (rtr *NewtRouter) ListenAndServe() error {
+func (rtr *Router) ListenAndServe() error {
 	mux := http.NewServeMux()
 	for _, nr := range rtr.Routes {
 		// FIXME: need to warn if the patter is / when the htdocs
@@ -277,7 +335,7 @@ func (rtr *NewtRouter) ListenAndServe() error {
 			nr.Handler(w, r)
 		})
 	}
-	// Do we need to support htdocs static resources?
+	// Do we need to support htdocs static reasts?
 	if rtr.Htdocs != "" {
 		fsys := dotFileHidingFileSystem{http.Dir(rtr.Htdocs)}
 		mux.Handle("/", http.FileServer(fsys))

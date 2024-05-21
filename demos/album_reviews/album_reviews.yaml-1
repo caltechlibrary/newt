@@ -1,5 +1,5 @@
 applications:
-  newtrouter:
+  router:
     port: 8010
   postgrest:
     port: 3000

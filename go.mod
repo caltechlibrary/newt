@@ -1,6 +1,6 @@
 module github.com/caltechlibrary/newt
 
-go 1.22.2
+go 1.22.3
 
 require (
 	github.com/cbroglie/mustache v1.4.0
@@ -23,5 +23,6 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d // indirect
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e // indirect
+	github.com/stretchr/testify v1.7.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
 )
