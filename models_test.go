@@ -24,3 +24,11 @@ func TestModelFuncs(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestNewModel(t *testing.T) {
+	t.Errorf("TestNewModel() not implemented")
+}
+
+func TestNewElement(t *testing.T) {
+	t.Errorf("TestNewElement() not implemented")
+}

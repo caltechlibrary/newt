@@ -160,7 +160,7 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 		//attributeList := model.GetAttributeIds()
 		menu, opt := selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s model", modelId),
-			"Menu: model [d]escription, [e]lements, [q]uit (making changes)",
+			"Menu: model [d]escription, [e]lements, [q]uit making changes",
 			[]string{
 				fmt.Sprintf("Model Id: %s", model.Id),
 				fmt.Sprintf("Description: %s", model.Description),
@@ -333,7 +333,7 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 	    optionsList := getValueLabelList(elem.Options)
 		menu, opt := selectMenuItem(in, out, 
 		    fmt.Sprintf("Manage %s.%s options", modelId, elem.Id),
-			"Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)",
+			"Menu [a]dd, [m]odify, [r]emove, [q]uit making changes",
 			optionsList,
 			true, "", "", true)
 		if len(menu) > 0 {
@@ -422,7 +422,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 			optionsList := getValueLabelList(elem.Options)
 			menu, opt = selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
-			"Menu [t]ype, [a]ttributes, [o]ptions, [q]uit (making changes)",
+			"Menu [t]ype, [a]ttributes, [o]ptions, [q]uit making changes",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
@@ -433,7 +433,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		case "textarea":
 			menu, opt = selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
-			"Menu [t]ype, [a]ttributes, [q]uit (making changes)",
+			"Menu [t]ype, [a]ttributes, [q]uit making changes",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
@@ -443,7 +443,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		default:
 			menu, opt = selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
-			"Menu [t]ype, [p]attern, [a]ttributes, [o]bject id flag, [q]uit (making changes)",
+			"Menu [t]ype, [o]bject id flag, [p]attern, [a]ttributes, [q]uit making changes",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),

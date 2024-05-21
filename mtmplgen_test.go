@@ -114,3 +114,12 @@ models:
 		t.Errorf("test of output to MTmplGen(out, model %q) not implemented", action)
 	}
 }
+
+func TestDisplayElement(t *testing.T) {
+	t.Errorf("TestDisplayElement() not implemented")
+}
+
+func TestInputElement(t *testing.T) {
+	t.Errorf("TestInputElement() not implemented")
+}
+
