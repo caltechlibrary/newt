@@ -8,17 +8,80 @@ It is possible to run `newt model` before running `newt config`.  Whichever orde
 
 ## Modeling your data
 
-The `newt` command provides an "model" action. This lets you add, modify or remove a data model from your Newt YAML file.  Like the "config" action it will provide you with the opportunity to review changes before writing them to disk.
+The `newt model` lets you add, modify or remove a data model from your Newt YAML file.  Like the "config" action it will provide you with the opportunity to review changes and before exiting saving the changes to disk.
 
-The modeling process is more complex than the "config" action. You may have model than one model, you may have many properties per model.  As a result the dialog between you and `newt model` is separated into stages. First you are asked to manage the model(s) by either adding or removing them.  You can then "modify" a model where it will allow you to add or remove a list of model properties.  Each model will have at least one property, the "oid" property. "oid" stands for object indentifier. By default an object identifier is represented as a UUID. In string form these can be long but they allow for millions of object to be managed.  If you prefer a shorter string representaition for your object identifiers these can be selected but you cannot remove the object identifier from the model. It remains required.
+The modeling process is more complex than the "config" action. You may have model than one model, you may have many properties per model.  As a result the dialog between you and `newt model` is separated into stages. First you are asked to manage the model(s) by either adding, modifying or removing them. When you add model it creates an empty model. You can then "modify" the model which in turns allows you to add or remove a list of model properties and elements.  Each model will have at least one element, the "oid" property. "oid" stands for object indentifier. This is a unique identifier. When the SQL is generated it will be set as a primary key. This is one place where you may want to modify the generated SQL. There are lots of choices for unique identifiers, e.g. auto increment values, UUID and other shorter indentifiers more URL friendly. If you don't want to use "oid" as your object identifier you can remove it and designate another element as being the primary key. At least one element in your model should be the primary key to avoid problems.
 
 NOTE: You can press "control C" to quit the "config" action without writing the YAML to disk.
 
-### Top level menu
+Let's step through how the dialogs and menus are organized.
 
-The top level menu lets you perform one of four different actions. Add a model, Modify a model, Remove a model and quit.  The top level model will list any models hat are defined already.
+### Top level dialog, "Manage Models"
+
+The top level dialog is the "manage models" (note the plural). It has a menu displayed after any models listed.  The dialog's menu lets you perform one of four different actions. Add a model, modify a model, remove a model and quit. The quit action at the top level will exit the program if you don't need to save changes.  The top level model will list any models hat are defined already. By default it is an empty list.
 
 When you choose "add model" you will then be prompted for a model identifier. This identifier must start with an alphabetical character followed by one or more alphanumeric characters or underscore characters. E.g. "my_bird_list" is an example of a valid model name while "2bots!" is not a valid name. The reason for these restrictions is the model id is used when generating SQL as well as when we generate Mustache Templates. An example is in Postgres the model id will be used as the Postgres table name. Model names must be unique inside your application for the same reason that Postgres tables require uniqueness in a given Postgres database.
+
+The added model will then appear in your model list. An added modify will be empty. You should proceed to "modify" that model after you've added. 
+
+Models may also be removed.  You may have as many models as you want. Each will wind up with their own set of routes and templates that will be used with the generated configuration, SQL and set of Mustache templates.
+
+### 2nd level dialog, "Manage model"
+
+The second level menu has a title like `Manage <MODEL_NAME> model` where `<MODEL_NAME>` is the name of the model you're modifying. You should update the description with a brief explanation of what the model's purpose is. This is used in the comments of the generated SQL. 
+
+The dialog's menu choices are description, elements and quit. The elements are the important part of your model. If you think of your model as a table elements would be columns.  In object oriented jargon these are usually called attributes or properties. The elements describe a key/value relation between an element's id and value stored.  
+
+The quit menu option exists the manage model dialog and takes you to the top level dialog, "manage models".
+
+### 3rd level dialog, "Manage Elements"
+
+If you have selected elements from the 2nd level dialog you will find your self in the "manage element" dialog. This dialog lists any elements that may have been defined. By default their is a "oid" unless you've removed it. Like with the top level "manage models". Managing elements is much like managing models. The menu indicates you can add, modify, remove and quit. Quit, just like the other dialog, lets you leave the current diolog taking you to the second level dialog, "Manage Model". Add will let you add elements, remove will remove the elements. Modify will let yo modify a specific element.
+
+Like with models you first add an element then you modify it. The defaults are probably not what you want unless your form is very simple.
+
+
+### 4th level dialog, "Manage Element"
+
+When you select modify element from the 3rd level dialog "Manage Elements" you can now define the specifics of the element.  The menu in this dialog as the following actions type, pattern, attributes, label and primary key.
+
+Conceptually you can think of an element as an HTML5 native input element. There is a loose corrolation in the attribute names.
+
+`[t]ype` 
+: Sets the element type. The types are the same types supported by HTML5 native elements with the exception of "file". Additionally there are some library specific elements that leverage the "pattern" attribute such as orcid and issn.
+
+`[l]abel`
+: This is holds the value of any associated HTML label element linked to the input element through the set attribute and input's id attribute.
+
+`[p]attern`
+: This is a regular expression used for browser side validation and when generating SQL to validate submitted objects.
+
+`[a]ttributes`
+: This holds an HTML5 specific attributes you may wish to include, e.g. name, placeholdertext, title
+
+`[o]bject key`
+: This holds true or false that this element is used as the primary key of the modeled object. The dialog shows the current state. Selecting this menu item toggles it.
+
+An elemenet's properties have a loose corrolation with the native HTML5 input elements attributes. E.g. id, type, pattern are based on the HTML5 input element attributes.  Primay key is bool value used when generating SQL to indicate that this element should map to the primary key of the model. You can have one primary key per model. 
+
+The types of elements are taken directly from what can be expressed in native HTML5 elements excluding the "file" type. E.g. text, textarea, select, checkbox, radio, button, date, time, datetime, email, phone, and url. Additional are library oriented types like issn and orcid that use the "pattern" attribute for client side validation. The element types infer the SQL columns modeled your Newt application.
+
+The attributes menu option lets you add any additional HTML specific attributes you may need. E.g. required, class, placeholdertext, title.
+
+The select element type triggers an additional dialog since it the HTML of the select element has "option" elements as children.
+
+### 5th level dialog, "Manage Options"
+
+This menu lets you provide a value, label and default flag for the options in the select element. The dialog's menu lets you
+add, modify, remove and quit. 
+
+When you add an option you will be prompted for a value, a label and optional default status. The value will get converted to lower case.
+The label will be left as you typed it.
+
+When you modify or remove an option you do so by provided the number of options listed since options values are not necessarily unique.
+
+
+## Walking through the process
 
 ### Adding a model
 
@@ -45,45 +108,24 @@ You will see
 Enter model id to add:
 ~~~
 
-Enter "my_bird_list" without the quotes and then press the enter key.
+Enter "garden" without the quotes and then press the enter key.
 
 You should now see
 
 ~~~shell
 Enter menu letter and id
 
-	1: my_bird_list
+	1: garden
 
 Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)
 ~~~
 
-You've successfully created an empty model called "my_bird_list".
+You've successfully created an empty model called "garden".
 
-### Modifying a model
+If you want to see what is in the model or to modify it you would select "m" for modify model.
 
-The modify model menu will show you a list of properties associated with the model.  A model must always have an "oid" (i.e. object identifier) property. While you can't remove the object identifier property you can modify it's type. Currently an "oid" defaults to a UUID (native to Postgres) but you many choose to use a [shortuuid/v4](https://github.com/lithammer/shortuuid) stored as a 22 character string, [Mongo BON ObjectID](https://pkg.go.dev/github.com/mongodb/mongo-go-driver/bson/objectid) stored as a 24 character string.
+### Modifying our "garden" model
 
-The modifying model view allows you to add a property, modify a property or remove a property.
+The modify model menu will show you a list of properties associated with the model. When you created our "garden" model it automatically created an "oid", object identifier, element in the model. We're going to get rid of this and create a new one.
 
-In the modify model dialog you can choose add a property, modify a property or remove a property. To add a property type "a" and you will be prompted to provide a property identifiers. This, like model identifiers, needs to start with an alphabetical characters followed by one or more alphanumeric characters or underscore. Press enter and you are taken to the property dialog. By default the added property is of "input" type. You can modify it to define different property attributes such as different types of property.
-
-If you want to modify or remove a property you can specify the property by entering the integer to the left of the property name or my typing the property. If you follow this by "m" then you'll be taken to the property modification dialog. If you type "r" it'll remove the property and if you press enter you will be taken back to the property list for the current model.
-
-Typing "s" will save the current model. Typing "q" will save then take you back to the top level dialog. Typing "c" for cancel will return to the top level dialog without saving the changes.
-
-
-### Property dialog
-
-Modifying property has a similar interface to the models dialog and the modify model dialog. It presents you with a list of current attributes. It differs in that when you ave the options of select the specific attribute of the property to modify. Note that what is presented is tied to the type value of the property. The type corresponds to the basic HTML input element types defined on at [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input). It also includes some customized input specific to the gallery, library, archive and museum metadata domain. These will be expressed in as standard HTML elements the Mustache templates but can be further vetted from within Postgres via Python's idutils package.
-
-When you press enter when listing the property attributes it accepts the current settings and take you back to the modify model dialog. Typing "c" for cancel will   take you back to he modify model dialog without changing the property's attributes.
-
-If you type "m" to modify your model you when will be shown a list of properties associated with the model. There will always be at least one property, the "oid" or object identifier property.  The object identifier property is special. It can be modified but NOT removed. All models have an "oid" property.  By default the "type" is UUID for the object identifier. UUID are a good way to support object identification in a modern SQL database like Postgres.  They have only one drawback. The way we express the value of a UUID tends to be as a long string. This can be unwieldy for URLs. You can choice an alternate identifier type that results in sorter or numeric identifiers. The shorter identifiers limit the total number of objects you can manage but typically these is not a problem (e.g. Caltech Library's Authors repository has 100,000 objects, someday it might have 200,000 objects. Each object could still have a unique identifiers of with a six or seven character string). Finally you can also use an integer value which is incremented with each added object. This tends to be short but comes at the expense of limiting you to a single database instance in many cases.
-
-Typing "s" will save the property settings. Tying "q" will save then exit the property dialog. Typing "c" for cancel will exit the property dialog without making changes.
-
-
-## Support input types
-
-FIXME: Need to write up the basic supported input types and how they related to presentations in HTML and SQL.
-
+// FIXME: NEed to finish tutorial ...

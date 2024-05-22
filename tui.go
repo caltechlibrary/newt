@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -11,6 +12,24 @@ const (
 	TuiStandardMenuHelp = `Enter menu letter and id`
 	TuiStandardMenu     = `Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)`
 )
+
+// getDigit get a numeric answer for a string input that is
+// greater than or equal than zero and less than the length of the list.
+// NOTE: This returns a zero based array position.
+func getDigit(buf *bufio.Reader, list []string) (int, bool) {
+    answer := getAnswer(buf, "", true)
+	if answer != "" {
+		pos, err := strconv.Atoi(answer)
+		if err == nil {
+			// Adjust input to zero based array address.
+			pos--
+			if pos >= 0 && pos < len(list) {
+				return pos, true
+			}
+		}
+	}
+	return -1, false
+}
 
 // getAnswer get a Y/N response from buffer
 func getAnswer(buf *bufio.Reader, defaultAnswer string, lower bool) string {

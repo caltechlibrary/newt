@@ -43,19 +43,28 @@ func getAttributeIds(m map[string]string) []string {
 	return ids
 }
 
+// Get return the first key and value pair
+func getValAndLabel(option map[string]string) (string, string, bool) {
+	for val, label := range option {
+		return val, label, true
+	}
+	return "", "", false
+}
+
+
 // getValueLabelList takes an array of map[string]string and yours a list of
 // strings indicating the value and label
 func getValueLabelList(list []map[string]string) []string {
 	options := []string{}
 	for _, m := range list {
-		for val, label := range m {
-			if val != "" {
-				options = append(options, fmt.Sprintf("value: %q,  label: %q", val, label))
-			}
+		val, label, ok := getValAndLabel(m)
+		if ok {
+			options = append(options, fmt.Sprintf("%s %s", val, label))
 		}
 	}
 	return options
 }
+
 
 func getIdFromList(list []string, id string) (string, bool) {
 	// NOTE: nRe tests if modelId is a string representation of a positive integer

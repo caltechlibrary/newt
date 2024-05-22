@@ -1,5 +1,5 @@
 ---
-title: newtrouter(1) user manual | 0.0.8 8c46485
+title: newtrouter(1) user manual | 0.0.8 ea131b9
 pubDate: 2024-05-22
 author: R. S. Doiel
 ---
@@ -102,77 +102,154 @@ newtrouter blog.yaml
 An example of a YAML file describing blog like application based on Postgres+PostgREST.
 
 ~~~
-application:
+applications:
   router:
-    port: 3030
+    port: 8010
     htdocs: htdocs
-  mustache:
-    port: 3032
+  template_engine:
+    port: 8011
   postgres:
     namespace: blog
     port: 5432
-    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/guestbook.yaml
-  template_engine:
-    port: 3032
-  environment:
+    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/blog.yaml
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
+    port: 3000
+  enviroment:
     - PGUSER
     - PGPASSWORD
-#
-# Postgres+PostgREST is listening on port 3000
-# Newt template engine is listening on port 3032
-#
-# PGUSER and PGPASSWORD required to access the PostgREST JSON API
-# so is passed in via the environment.
+models:
+  - id: post
+    description: A blog post or article
+    elements:
+      - type: text
+        id: post_id
+        attributes:
+          name: post_id
+          placeholdertext: e.g. /<YYYY>/<MM>/<DD>/<SLUG>
+          title: (required) Enter the path for the blog entry with a unique slug
+		  required: true
+      - type: text
+        id: title
+        attributes:
+          name: title
+          title: (optional) Enter a title for your post
+          placeholdertext: ex. My Blog Post for Today
+      - type: text
+        id: byline
+        attributes:
+          name: byline
+		  title: (optional) Include a byline for your post
+          placeholdertext: ex. By Jane Jones, 1912-12-12
+      - type: textarea
+        id: content
+        attributes:
+          name: content
+          title: (required) Write your post here
+          placeholdertext: ex. Something exciting happened today...
+          required: true
+      - type: date
+        id: pubDate
+        attributes:
+          name: pubDate
+          required: "true"
 routes:
-  - id: retrieve_all_posts
-    request: GET /archives
-    description: This route returns the full blog content
+  - id: post_create
+    request: GET /post_create
+    description: Handle retrieving the webform for post create
     pipeline:
-      - description: |
-          Retrieve the blog posts order by descending date
-        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/view_all_posts
-      - description: render the posts using the list_posts.tmpl
-        service: POST http://localhost:3032/list_posts.tmpl
-  - id: retrieve_year posts
-    request: GET /{year}
-    description: This route retrieves all the posts in a specific year
+      - service: POST http://localhost:8011/post_create
+        description: Display a post for create
+  - id: post_create
+    request: POST /post_create
+    description: Handle form submission for post create
     pipeline:
-      - description: Retrieve the posts for a specific year
-        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/year_posts/{year}
-      - description: Turn the JSON list into a web page.
-        service: POST http://localhost:3032/list_posts.tmpl
-  - id: retrieve_month_posts
-    request: GET /{year}/{month}
-    description: This route retrieves all the posts in a specific year/month
+      - service: POST http://localhost:3000/rpc/post_create
+        description: Access PostgREST API for post create
+      - service: POST http://localhost:8011/post_create_response
+        description: This is an result template for post create
+  - id: post_update
+    request: GET /post_update/{oid}
+    description: Handle retrieving the webform for post update
     pipeline:
-      - description: Retrieve the posts in the DB for year/month
-        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/month_posts/{year}/{month}
-      - description: Transform monthly list into web page
-        service: POST http://localhost:3032/list_posts.tmpl
-  - id: retrieve_day_posts
-    request: GET /{year}/{month}/{day}
-    description: Retrieve all the posts on a specific day
+      - service: GET http://localhost:3000/rpc/post_read/{oid}
+        description: Retrieve post from PostgREST API before update
+      - service: POST http://localhost:8011/post_update
+        description: Display a post for update
+  - id: post_update
+    request: POST /post_update
+    description: Handle form submission for post update
     pipeline:
-      - description: Retrieve the posts happening on year/month/day
-        service: GET http://{PGUSER}:{PGPASSWOR}@localhost:3000/rpc/day_posts/{year}/{month}/{day}
-      - description: Transform monthly list into web page
-        service: POST http://localhost:3032/list_posts.tmpl
-  - id: retrieve_recent_posts
-    request: GET /
-    description: This route retrieves the recent 10 posts.
+      - service: PUT http://localhost:3000/rpc/post_update/{oid}
+        description: Access PostgREST API for post update
+      - service: POST http://localhost:8011/post_update_response
+        description: This is an result template for post update
+  - id: post_delete
+    request: GET /post_delete/{oid}
+    description: Handle retrieving the webform for post delete
     pipeline:
-      - description: Use the recent_post view to retrieve the recent posts in descending date order
-        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/rpc/recent_posts
-      - description: Take the JSON for recent posts and turn it into a web page
-        service: GET http://localhost:3032/list_posts.tmpl
-  - id: retrieve_a_post
-    request: GET /{year}/{month}/{day}/{title-slug}
-    description: Retrieve a specific host and display it
+      - service: GET http://localhost:3000/rpc/post_read/{oid}
+        description: Retrieve post from PostgREST API before delete
+      - service: POST http://localhost:8011/post_delete
+        description: Display a post for delete
+  - id: post_delete
+    request: POST /post_delete
+    description: Handle form submission for post delete
     pipeline:
-      - description: retrieve the requested post from the blog path
-        service: GET http://{PGUSER}:{PGPASSWORD}@localhost:3000/{year}/{month}/{day}/{title-slug}
-      - description: Turn the JSON into a web page
-        service: GET http://localhost:3032/blog_post.tmpl
+      - service: DELETE http://localhost:3000/rpc/post_delete/{oid}
+        description: Access PostgREST API for post delete
+      - service: POST http://localhost:8011/post_delete_response
+        description: This is an result template for post delete
+  - id: post_read
+    request: POST /post_read
+    description: Retrieve object(s) for post read
+    pipeline:
+      - service: GET http://localhost:3000/rpc/post_read/{oid}
+        description: Access PostgREST API for post read
+      - service: POST http://localhost:8011/post_read
+        description: This template handles post read
+  - id: post_list
+    request: POST /post_list
+    description: Retrieve object(s) for post list
+    pipeline:
+      - service: GET http://localhost:3000/rpc/post_list
+        description: Access PostgREST API for post list
+      - service: POST http://localhost:8011/post_list
+        description: This template handles post list
+templates:
+  - id: post_create
+    request: /post_create
+    template: post_create_form.tmpl
+    description: Display a post for create
+  - id: post_create
+    request: /post_create_response
+    template: post_create_response.tmpl
+    description: This is an result template for post create
+  - id: post_update
+    request: /post_update
+    template: post_update_form.tmpl
+    description: Display a post for update
+  - id: post_update
+    request: /post_update_response
+    template: post_update_response.tmpl
+    description: This is an result template for post update
+  - id: post_delete
+    request: /post_delete
+    template: post_delete_form.tmpl
+    description: Display a post for delete
+  - id: post_delete
+    request: /post_delete_response
+    template: post_delete_response.tmpl
+    description: This is an result template for post delete
+  - id: post_read
+    request: /post_read
+    template: post_read.tmpl
+    description: This template handles post read
+  - id: post_list
+    request: /post_list
+    template: post_list.tmpl
+    description: This template handles post list
 ~~~
 
 

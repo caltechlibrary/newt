@@ -40,3 +40,4 @@
 
 - [Evolving Assumption](evolving_assumptions.md), a timeline of web related technological changes
 - [Structured Data Representation](structured_data_representation.md), a musing on how to handle complex data objects in HTML, CSS and JavaScript
+- [History Lesson](history_lesson.md), A short history of web development and databases

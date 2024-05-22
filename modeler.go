@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -340,17 +341,15 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 		elem.Options = []map[string]string{}
 	}
 	for quit := false; !quit; {
-
 	    optionsList := getValueLabelList(elem.Options)
 		menu, opt := selectMenuItem(in, out, 
 		    fmt.Sprintf("Manage %s.%s options", modelId, elem.Id),
-			"Menu [a]dd, [m]odify, [r]emove, [q]uit making changes",
+			"Menu [a]dd, [m]odify option no., [r]emove option no., [q]uit making changes",
 			optionsList,
 			true, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
 		}
-		opt, _ = getIdFromList(optionsList, opt)
 		var (
 			val string
 			label string
@@ -358,52 +357,74 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 		switch menu {
 			case "a":
 				if opt == "" {
-					fmt.Fprintf(out, "Enter a value followed by a label: ")
-					val, label = getAnswers(buf, "", "", true)
+					fmt.Fprintf(out, "Enter an option value: ")
+					val = getAnswer(buf, "", true)
 				} else {
-					if strings.Contains(opt, " ") {
-						parts := strings.SplitN(opt, " ", 2)
-						val, label = parts[0], parts[1]
-					}
-				}
-				if label == "" {
-					label = val
+					val = strings.TrimSpace(opt)
 				}
 				if val == "" {
-					fmt.Fprintf(eout, "Must an option requires a value\n")
+					fmt.Fprintf(eout, "Error, an option value required\n")
 				} else {
-					elem.Options = append(elem.Options, map[string]string{ val: label })
+					fmt.Fprintf(out, "Enter an option label: ")
+					label = getAnswer(buf, "", false)
+					if label == "" {
+						label = val
+					}
+					option := map[string]string{
+						val: label,
+					}
+					elem.Options = append(elem.Options, option)
+					elem.isChanged = true
 				}
 			case "m":
-			    if opt == "" {
-					fmt.Fprintf(out, "Enter value you want to change: ")
-					opt = getAnswer(buf, "", true)
-				}
-				if opt != "" {
-					pos, ok := getItemNoFromList(optionsList, opt)
-					if ok {
-						fmt.Fprintf(out, "Enter a value followed by a label: ")
-						val, label = getAnswers(buf,"", "", true)
-						if label == "" {
-							label = val
-						}
-						if val == "" {
-							fmt.Fprintf(eout, "Must an option requires a value\n")
-						} else {
-							elem.Options[pos] = map[string]string{val: label}
-						}
+				pos, ok := -1, false
+				if i, err := strconv.Atoi(opt); err == nil {
+					// Adjust to a zero based array
+					if i > 0 && i <= len(optionsList) {
+						pos, ok = (i - 1), true
 					}
+				} 
+				if ! ok {
+					fmt.Fprintf(out, "Enter option number: ")
+					pos, ok = getDigit(buf, optionsList)
+
+				}
+				if ok {
+					option := elem.Options[pos]
+					val, label, _ := getValAndLabel(option)
+					fmt.Fprintf(out, "Enter an option label (for %q): ", val)
+					answer := getAnswer(buf, "", false)
+					if answer != "" {
+						label = answer
+					}
+					if label == "" {
+						label = val
+					}
+					option = map[string]string{
+						val: label,
+					}
+					// Replace the option in the options list.
+					elem.Options[pos] = option
+					elem.isChanged = true
+				} else {
+					fmt.Fprintf(eout, "Failed to identify option %q\n", opt)
 				}
 			case "r":
-				if opt == "" {
-					fmt.Fprintf(out, "Enter value you want to change: ")
-					opt = getAnswer(buf, "", true)
-				}
-				if opt != "" {
-					pos, ok := getItemNoFromList(optionsList, opt)
-					if ok {
-						elem.Options = append(elem.Options[0:pos], elem.Options[(pos+1):]...)
+				pos, ok := -1, false
+				if i, err := strconv.Atoi(opt); err == nil {
+					// Adjust to a zero based array
+					if i > 0 && i <= len(optionsList) {
+						pos, ok = (i - 1), true
 					}
+				} else {
+					fmt.Fprintf(out, "Enter option number: ")
+					pos, ok = getDigit(buf, optionsList)
+				}
+				if ok {
+					elem.Options = append(elem.Options[0:pos], elem.Options[(pos+1):]...)
+					elem.isChanged = true
+				} else {
+					fmt.Fprintf(eout, "failed to remove option number (%d) %q\n", pos, opt)
 				}
 			case "q":
 				quit = true
@@ -432,35 +453,38 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		case "select":
 			optionsList := getValueLabelList(elem.Options)
 			menu, opt = selectMenuItem(in, out,
-			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
-			"Menu [t]ype, [a]ttributes, [o]ptions, [q]uit making changes",
+			fmt.Sprintf("Manage %s.%s element", model.Id, elementId),
+			"Menu [t]ype, [l]abel, [a]ttributes, [o]ptions, [q]uit making changes",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
+				fmt.Sprintf("label %s", elem.Label),
 				fmt.Sprintf("attributes %s", strings.Join(attributeList, ",\n\t\t")),
 				fmt.Sprintf("options %s", strings.Join(optionsList, ",\n\t\t")),
 			},
 			false, "", "", true)
 		case "textarea":
 			menu, opt = selectMenuItem(in, out,
-			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
-			"Menu [t]ype, [a]ttributes, [q]uit making changes",
+			fmt.Sprintf("Manage %s.%s element", model.Id, elementId),
+			"Menu [t]ype, [l]abel, [a]ttributes, [q]uit making changes",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
+				fmt.Sprintf("label %s", elem.Label),
 				fmt.Sprintf("attributes %s", strings.Join(attributeList, ",\n\t\t")),
 			},
 			false, "", "", true)
 		default:
 			menu, opt = selectMenuItem(in, out,
-			fmt.Sprintf("Manage %s.%s properties", model.Id, elementId),
-			"Menu [t]ype, [o]bject id flag, [p]attern, [a]ttributes, [q]uit making changes",
+			fmt.Sprintf("Manage %s.%s element", model.Id, elementId),
+			"Menu [t]ype, [l]abel, [o]bject key, [p]attern, [a]ttributes, [q]uit making changes",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
+				fmt.Sprintf("label %s", elem.Label),
 				fmt.Sprintf("pattern %s", elem.Pattern),
 				fmt.Sprintf("attributes %s", strings.Join(attributeList, ",\n\t\t")),
-				fmt.Sprintf("is object id %t", elem.IsObjectId),
+				fmt.Sprintf("primary key %t", elem.IsObjectId),
 			},
 			false, "", "", true)
 		}
@@ -500,6 +524,18 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 					elem.Pattern = ""
 				} else {
 					elem.Pattern = strings.TrimSpace(opt)
+				}
+				model.isChanged = true
+			}
+		case "l":
+			if opt == "" {
+				fmt.Fprintf(out, "Enter a label: ")
+				opt = getAnswer(buf, "", false)
+			}
+			if opt != "" {
+				// NOTE: remove a pattern by having it match everything, i.e. astrix
+				if opt != elem.Label {
+					elem.Label = strings.TrimSpace(opt)
 				}
 				model.isChanged = true
 			}

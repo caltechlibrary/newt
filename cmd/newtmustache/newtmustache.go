@@ -150,32 +150,33 @@ The template objects are used by Newt template engine. If you're not using it yo
 
 # EXAMPLES
 
-Example of newtmustache YAML:
+Example of newtmustache YAML that only runs the template engine by itself.
+The paths are used to provide template content.
 
 ~~~yaml
 applications:
-  newtmustache:
+  template_engine:
     port: 8011
 templates:
   - id: hello
     request: /hello/{name}
-    template: testdata/simple.mustache
+    template: testdata/simple.tmpl
   - id: hello
     request: /hello
-    template: testdata/simple.mustache
+    template: testdata/simple.tmpl
     options:
       name: Universe
   - id: hi
     request: /hi/{name}
-    template: testdata/hithere.html
+    template: testdata/hithere.tmpl
     partials:
-      - testdata/name.mustache
+      - testdata/name.tmpl
     debug: true
   - id: hi
     request: /hi
-    template: testdata/hithere.html
+    template: testdata/hithere.tmpl
     partials:
-      - testdata/name.mustache
+      - testdata/name.tmpl
     options:
       name: Universe
 ~~~

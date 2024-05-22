@@ -251,35 +251,41 @@ the future through aliasing input with regular expression validation or web comp
 
 ~~~yaml
 applications:
-  newtrouter:
+  router:
     port: 8010
-  newtmustache:
+    htdocs: htdocs
+  template_engine:
     port: 8011
-  newtgenerator:
-    namespace: app
   postgres:
+    namespace: app
     port: 5432
-    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/app
+    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/app.yaml
   postgrest:
     app_path: postgrest
     conf_path: postgrest.conf
     port: 3000
-  environment:
+  enviroment:
     - PGUSER
     - PGPASSWORD
 models:
   - id: app
     description: This is where you would model your application data
-    body:
-      - type: input
+    elements:
+      - type: text
+        id: oid
+		attributes:
+          name: oid
+          title: this is the object identifier for your model
+          placeholdertext: enter a unique identifier
+          required: "true"
+        primary_key: true
+      - type: text
         id: data_attribute
         attributes:
-          description: This is an example input element
           name: data_attribute
-          placeholdertext: ex. of placeholder text
           title: this is an example element in your model
-        validations:
-          required: true
+          placeholdertext: ex. of placeholder text
+          required: "true"
 routes:
   - id: app_create
     request: GET /app_create
@@ -413,36 +419,6 @@ submission result.
 
 `+"`"+`debug`+"`"+`
 : (optional) this turns on debugging output for this template
-
-Example of newtmustache YAML:
-
-~~~yaml
-applications:
-  newtmustache:
-    port: 8012
-templates:
-  - id: hello
-    request: POST /hello/{name}
-    template: testdata/simple.mustache
-  - id: hello
-    request: POST /hello
-    template: testdata/simple.mustache
-    options:
-      name: Universe
-  - id: hi
-    request: POST /hi/{name}
-    template: testdata/hithere.html
-    partials:
-      - testdata/name.mustache
-    debug: true
-  - id: hi
-    request: POST /hi
-    template: testdata/hithere.html
-    partials:
-      - testdata/name.mustache
-    options:
-      name: Universe
-~~~
 
 `
 

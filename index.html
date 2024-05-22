@@ -45,14 +45,14 @@ role="doc-noteref"><sup>1</sup></a>.</p>
 <p>With data pipelines we can accept a request and feed that request to
 one service then take its output and send it to the next service. Newt
 does this by providing a data router. Newt can manage the request
-sequence through a simple YAML description of the pipeline. While it is
-possible to create pipelines using Apache and NginX proxy features in
-practice that approach quickly becomes an unmanageable configuration
-problem. You could encapsulate clusters of processes in containers but
-this too becomes complex to manage. Newt’s router can cut through the
-hairball of configurations and define pipelines per request route. With
-a Newt pipeline the last service completed hands its result to the
-Newt’s router which returns the result to the web browser.</p>
+sequence through a simple YAML described pipeline. While it is possible
+to create pipelines using Apache and NginX proxy features in practice
+that approach quickly becomes an unmanageable configuration problem. You
+could encapsulate clusters of processes in containers but this too
+becomes complex to manage. Newt’s router can cut through the hairball of
+configurations and define pipelines per request route. With a Newt
+pipeline the last service completed hands its result to the Newt’s
+router which returns the result to the web browser.</p>
 <p>Why is this important? Much of the “back end” of a web application is
 already available as off the shelf software. Here is a short list of
 examples used by Caltech Library.</p>
@@ -82,15 +82,16 @@ In the second Newt prototype our focus is on using Postgres+PostgREST as
 a JSON data source. Newt’s code generation lends a hand here. Using
 Newt’s YAML file the code generator can generate SQL and configuration
 for setting up Postgres+PostgREST. Newt’s code generator can also render
-Mustache templates used to transform with the JSON data source into
-something you can interact with in your web browser. Between the
-generated configuration, SQL, templates, Newt’s router, Newt’ template
-engine and Postgres+PostgREST you have service oriented application
-providing basic CRUD-L<a href="#fn2" class="footnote-ref" id="fnref2"
-role="doc-noteref"><sup>2</sup></a> operations for managing custom
-metadata. You can enhance your application further through customizing
-the generated Mustache templates, SQL or by adding routes and pipelines
-leveraging other JSON data sources (e.g. Solr).</p>
+Mustache templates. These can transform JSON data into a web page.
+Between the generated configuration, SQL, templates, Newt’s router,
+Newt’ template engine and Postgres+PostgREST you have service oriented
+application providing basic CRUD-L<a href="#fn2" class="footnote-ref"
+id="fnref2" role="doc-noteref"><sup>2</sup></a> operations. This is
+nicely suited for metadata management applications. You can enhance your
+application further through customizing the generated SQL and templates
+or through leveraging JavaScript and static content. Of course other
+JSON data sources maybe leverage in a data pipeline (e.g. Solr,
+ElasticSearch, OpenSearch).</p>
 <h2 id="does-newt-clean-my-house-or-make-cocktails">Does Newt clean my
 house or make cocktails?</h2>
 <p>Newt is a narrowly focused rapid application development toolbox.
@@ -107,18 +108,23 @@ through a pipeline. Many GLAM applications like ArchivesSpace and
 Invenio RDM provide JSON API. It is possible to extended those systems
 by creating simpler services that can talk to those JSON data sources.
 Newt is well suited to this “development at the edges” approach.</p>
-<p>What if those systems aren’t available on localhost? Services not
-available on localhost must be proxied to integrate with your Newt
-application. What is this necessary? Short answer, security. Newt seeks
-to reduce the attack surface of your web applicaiton. It does that by
-only trusting services offerred directly on localhost. Additoinal Newt
-services are intended to be hosted behind a front end web server like
-Apache 2, NginX or Lighttd. These web server can provide access control
-and form the first line of defense against a cracker. However you you
-trust the external service (e.g ORCID, ROR, CrossRef or DataCite) then
-you can create a proxied relation using your front end or other web
-server software. It’s even possible to write a simple proxy service in
-Python, Go, Deno and popular programming.</p>
+<blockquote>
+<p>What if those systems aren’t available on localhost?</p>
+</blockquote>
+<p>Services not available on localhost must be proxied to integrate with
+your Newt application. Why is this necessary? Short answer, security.
+Newt seeks to reduce the attack surface of your web application as much
+as possible. It does that by only trusting services offered directly on
+localhost. Newt’s application models presumes you’re running behind a
+“front end web server” like Apache 2, NginX or Lighttd. These systems
+can be configured to provide access control as well as perform proxy
+services. The front end web server is your first line of defense against
+a cracker.</p>
+<p>External web services integrate through a proxy setup (e.g ORCID,
+ROR, CrossRef or DataCite). This can be done via the front end web
+server or by writing a dedicated problem. Most of the popular web
+programming languages (e.g. Python, PHP, Go, TypeScript/JavaScript on
+Deno) provide libraries or packages that may this straight forward.</p>
 <h2 id="how-does-newt-impact-web-application-development">How does Newt
 impact web application development?</h2>
 <p>A Newt application encourages the following.</p>
@@ -177,49 +183,13 @@ of metadata records. Sometimes these metadata records are quite complex
 (e.g. ArchivesSpace, RDM records) but often they are simple (e.g. a list
 of authors, a list of citations). Newt’s primary target is generating
 applications to manage simple data models. Simple data models are those
-which can be expressed in HTML5 web forms via HTML native input
-elements.</p>
+which can be expressed in web forms via HTML5 native input elements.</p>
 <h2 id="motivation">Motivation</h2>
 <p>Over the last several decades web applications became very complex.
 This complexity is expensive in terms of reliability, enhancement, bug
 fixes and software sustainability. Newt address this by reducing the
 code you write and focusing your efforts on declaring what you want.</p>
-<blockquote>
-<p>A brief historic detour to set context</p>
-</blockquote>
-<p>Databases have been used to generate web pages since the early web.
-Databases are well suited to managing data. When the web became dynamic,
-databases continued to be use for data persistence. By 1993 the web as
-an application platform was born<a href="#fn3" class="footnote-ref"
-id="fnref3" role="doc-noteref"><sup>3</sup></a> and with it a good
-platform for providing useful organizational and institutional
-software.</p>
-<p>By the mid 1990s the Open Source databases like MySQL and Postgres
-were popular choices for building web applications. It is important to
-note neither MySQL or Postgres spoke HTTP<a href="#fn4"
-class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>. To
-solve this problem many people wrote software in languages like Perl,
-PHP and Python that ran inside the popular Apache web server. It was a
-pain to setup but once setup relatively easy to build things that relied
-on databases. This led the web to explode with bespoke systems. By the
-late 1990s and early 2000s the practice of “mashing up” sites
-(i.e. content reuse) was the rage. Bespoke systems took advantage of
-content reuse too. <a
-href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo Pipes</a> was a
-very interesting expression of the “mashup culture”<a href="#fn5"
-class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.
-Yahoo Pipes inspired Newt’s data pipelines. Eventual the bespoke systems
-gave way to common use cases<a href="#fn6" class="footnote-ref"
-id="fnref6" role="doc-noteref"><sup>6</sup></a>. A good example of a
-common use case is Apache’s <a href="https://solr.apache.org">Solr</a>
-search engine. Another example is how bespoke content management systems
-gave way to <a href="https://plone.org">Plone</a>, <a
-href="https://drupal.org">Drupal</a> and <a
-href="https://wordpress.org">WordPress</a>.</p>
-<blockquote>
-<p>fast forward to 2024, context set</p>
-</blockquote>
-<p>Much of the back end of web applications can largely be assemble from
+<p>In 2024 the back end of web applications can largely be assemble from
 off the shelf software. Middleware however remains complex. I believe
 this to be a by product of inertia in software development practices and
 the assumption that what is good for “Google Scale” is good for
@@ -229,11 +199,11 @@ spark that conversation</strong>. My observation is most software
 doesn’t need to scale large. Even in the research and GLAM communities
 we don’t routinely write software that scales as large as <a
 href="https://zenodo.org/">Zenodo</a>. We don’t typically support tens
-of thousands of simultaneous users. If you accept that premise then we
-can focus our efforts around orchestrating off the shelf components and
-put our remaining development efforts into improving the human
-experience of using our software. A better human experience is an
-intended side effect of Newt.</p>
+of thousands of simultaneous users. I think we can focus our efforts
+around orchestrating off the shelf components and put our remaining
+development efforts into improving the human experience of using our
+software. A better human experience is an intended side effect of
+Newt.</p>
 <p>A big key to simplification is narrowing the focus of our middleware.
 When our middleware has to implement everything it becomes very complex.
 Look at Drupal and WordPress. They implement data modeling, data
@@ -260,13 +230,13 @@ sophisticated features of our web browsers. This is true even without
 using Newt. There is a problem though. If we only use the above software
 to build our application we must rely on JavaScript (or WASM module)
 running in the web browser to interact with the server. This sounds
-simple. In practice this is a terrible idea<a href="#fn7"
-class="footnote-ref" id="fnref7"
-role="doc-noteref"><sup>7</sup></a>.</p>
+simple. In practice this is a terrible idea<a href="#fn3"
+class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>.</p>
 <p>What we should do is use Newt to tie those JSON services together and
 send rendered HTML back to the web browser. Newt’s router provides
 static file service and a means of pipelining our JSON data source
-through a template engine. Newt provies a Mustache template engine for
+through a template engine. Newt provides a Mustache template engine for
 that purpose. Newt provides the missing bits from my original list so we
 don’t need to send JavaScript down the wire to the web browser. The Newt
 approach uses less bandwidth, fewer network accesses and less
@@ -344,34 +314,10 @@ href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 and List”. These are the basic actions used to manage metadata or
 objects.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Web applications proceeded to eat all the venerable
-green screen systems they could find. Today’s web is mired in
-surveillance tech and complex solutions. It has drifted far from Sir.
-Tim’s vision of sharing science documents. We need to refocus on the
-“good ideas” and jettison the complexity that came with the surveillance
-economy. Newt can be part of that solution. Develop your Newt
-application with consideration for others.<a href="#fnref3"
-class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>HTTP being the protocol the communicates with.
-Essentially at the time RDBMS spoke a dialect of SQL as the unifying
-language. The web of the time understood HTML and to a certain degree
-XML. By 2000 people were looking for something simpler than XML to move
-structured data about. <a
-href="https://en.wikipedia.org/wiki/JSON">JSON</a> quickly became the
-answer.<a href="#fnref4" class="footnote-back"
-role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>The basic concept was to make it easy to work with “data
-feeds” and combined them into a useful human friendly web pages. It even
-included a visual programming language to make it friendly to the
-non-programmer crowd.<a href="#fnref5" class="footnote-back"
-role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>If a use case is solved reliably enough it becomes “off
-the shelf” software.<a href="#fnref6" class="footnote-back"
-role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>See <a
+<li id="fn3"><p>See <a
 href="https://infrequently.org/2024/01/performance-inequality-gap-2024/"
 class="uri">https://infrequently.org/2024/01/performance-inequality-gap-2024/</a>
-for a nice discussion of the problem.<a href="#fnref7"
+for a nice discussion of the problem.<a href="#fnref3"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
