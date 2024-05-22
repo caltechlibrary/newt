@@ -62,7 +62,7 @@ Newt's 2nd prototype is being tested building applications based on
 
 The Newt YAML ties this together expressing
 
-- applications (run time information for Newt's router, Newt's Mustache and PostgREST)
+- applications (run time information for Newt's router, Newt's template engine and PostgREST)
 - models (descriptions of data as you would provided in a web form)
 - routes (web requests differentiated by a HTTP method and URL path that trigger processing in a data pipeline)
 - templates (pairs a request with a template to transform a JSON into some other format such as an HTML document)
@@ -113,7 +113,7 @@ With the above list we can build capable applications relying on the sophisticat
 
 [^17]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
-What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt's router provides static file service and a means of pipelining our JSON data source through a template engine. Newt's Mustache provides a template engine. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
+What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt's router provides static file service and a means of pipelining our JSON data source through a template engine. Newt provies a Mustache template engine for that purpose. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
 
 ### A new baseline
 

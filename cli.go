@@ -203,9 +203,9 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 	return OK
 }
 
-// RunMustache is a runner for a Mustache redner engine service based on the Pandoc server API.
-func RunMustache(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
-	appName := "Newt Mustache"
+// RunTemplateEngine is a runner for a Newt's template engine.
+func RunTemplateEngine(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
+	appName := "Newt Template Engine"
 	// ASTure the template bundler webservice
 	fName := getNewtYamlFName(args)
 	if fName == "" {
@@ -220,7 +220,7 @@ func RunMustache(in io.Reader, out io.Writer, eout io.Writer, args []string, por
 		return CONFIG
 	}
 	// Instantiate the specific application with the filename and AST object
-	mt, err := NewMustache(ast)
+	mt, err := NewTemplateEngine(ast)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
@@ -412,13 +412,13 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				}
 			}
 		}
-		if ast.Applications.Mustache != nil {
-			port := ast.Applications.Mustache.Port
+		if ast.Applications.TemplateEngine != nil {
+			port := ast.Applications.TemplateEngine.Port
 			if port == 0 {
 				port = MUSTACHE_PORT
 			}
-			fmt.Fprintf(out, "Newt Mustache configured, port set to :%d\n", port)
-			fmt.Fprintf(out, "%d Mustache Templates are defined\n", len(ast.Templates))
+			fmt.Fprintf(out, "Newt template engine configured, port set to :%d\n", port)
+			fmt.Fprintf(out, "%d templates are defined\n", len(ast.Templates))
 			for _, mt := range ast.Templates {
 				tList := []string{
 					mt.Template,
@@ -436,7 +436,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 	return OK
 }
 
-// RunNewt is a runner that can run Newt Mustache, Newt Router and PostgREST if defined in the Newt YAML file.
+// RunNewt is a runner that can run Newt's router and template engine plus PostgREST if defined in the Newt YAML file.
 func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
 	appName := path.Base(os.Args[0])
 	action := ""
@@ -509,10 +509,10 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		log.Printf("%s running with pid %d in the backround", postgREST.AppPath, cmd.Process.Pid)
 		cmd.Process.Release()
 	}
-	// Setup and start Newt Mustache first
-	if ast.Applications != nil && ast.Applications.Mustache != nil {
+	// Setup and start Newt template engine first
+	if ast.Applications != nil && ast.Applications.TemplateEngine != nil {
 		go func() {
-			RunMustache(in, out, eout, args, 0, 0, verbose)
+			RunTemplateEngine(in, out, eout, args, 0, 0, verbose)
 		}()
 	}
 
@@ -626,7 +626,7 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
 		setupPostgres(ast, readBuffer, out, appFName, skipPrompts)
 		setupPostgREST(ast, readBuffer, out, appFName, skipPrompts)
-		setupMustache(ast, readBuffer, out, appFName, skipPrompts)
+		setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)
 		setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
 		setupOptions(ast, readBuffer, out, appFName, skipPrompts)
 
@@ -708,7 +708,7 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 		ast.Applications.Router == nil ||
 		ast.Applications.Postgres == nil ||
 		ast.Applications.PostgREST == nil ||
-		ast.Applications.Mustache == nil {
+		ast.Applications.TemplateEngine == nil {
 		fmt.Fprintf(out, "Applications are not configured for %q, try\n\n", appFName)
 		appName := path.Base(os.Args[0])
 		fmt.Fprintf(out, "\t%s config %q\n\n", appName, appFName)

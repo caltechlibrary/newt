@@ -89,9 +89,9 @@ func (g *Generator) renderPostgREST() error {
 	return postgRESTConf(g.out, g.Namespace, port)
 }
 
-// renderMustache will render a mustache template for a given model id. The action corresponds
+// renderTemplateEngine will render a mustache template for a given model id. The action corresponds
 // to the model id.
-func (g *Generator) renderMustache(modelId string, action string) error {
+func (g *Generator) renderTemplateEngine(modelId string, action string) error {
 	for _, model := range g.Models {
 		if modelId == model.Id {
 			return MTmplGen(g.out, model, action)
@@ -158,7 +158,7 @@ func (g *Generator) Generate(generatorName string, modelId string, action string
 		if err := validateModelId(modelId, g.Models); err != nil {
 			return err
 		}
-		return g.renderMustache(modelId, action)
+		return g.renderTemplateEngine(modelId, action)
 	default:
 		return fmt.Errorf("%q is not supported at this time", generatorName)
 	}

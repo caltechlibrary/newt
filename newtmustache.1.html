@@ -89,8 +89,8 @@ based on Go package <a href="https://github.com/cbroglie/mustache"
 class="uri">https://github.com/cbroglie/mustache</a>.</p>
 <h2 id="features">Features</h2>
 <ul>
-<li>Newt Mustache only runs on localhost at the designated port (default
-is 8011).</li>
+<li>Newt template engine only runs on localhost at the designated port
+(default is 8011).</li>
 <li>Templates are read in at startup and are retained in memory bound to
 the request path.</li>
 <li>Vocabulary files are read in at startup and bound to the request
@@ -122,9 +122,9 @@ applications.
 line. See Newt application’s manual page for specific ones. These
 properties lets you override the default settings of Newt programs.</p>
 <dl>
-<dt>newtmustache</dt>
+<dt>template_engine</dt>
 <dd>
-this contains configuration for Newt Mustache, i.e. port
+this contains configuration for Newt template engine, i.e. port
 </dd>
 <dt>options</dt>
 <dd>
@@ -143,8 +143,8 @@ models, routes and templates.
 <p>Routes hosts a list of request descriptions and their data pipelines.
 This property is only used by Newt router and Newt code generator.</p>
 <h2 id="templates-property">templates property</h2>
-<p>This property is used by Newt Mustache. It is ignore by Newt router
-and code generator.</p>
+<p>This property is used by Newt template engine. It is ignore by Newt
+router and code generator.</p>
 <dl>
 <dt>templates</dt>
 <dd>
@@ -152,8 +152,8 @@ and code generator.</p>
 </dd>
 </dl>
 <h3 id="template-object-model">template object model</h3>
-<p>The template objects are used by Newt Mustache template engine. If
-you’re not using it you can skip these.</p>
+<p>The template objects are used by Newt template engine. If you’re not
+using it you can skip these.</p>
 <dl>
 <dt><code>request PATH</code></dt>
 <dd>

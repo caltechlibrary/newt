@@ -257,23 +257,23 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 	}
 }
 
-func setupMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
 	var answer string
 	if skipPrompts {
 		answer = "y"
 	} else {
-		fmt.Fprintf(out, "Will %s use Newt Mustache (Y/n)? ", appFName)
+		fmt.Fprintf(out, "Will %s use Newt's template engine (Y/n)? ", appFName)
 		answer = getAnswer(buf, "y", true)
 	}
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = NewApplications()
 		}
-		if ast.Applications.Mustache == nil {
-			ast.Applications.Mustache = NewApplication()
+		if ast.Applications.TemplateEngine == nil {
+			ast.Applications.TemplateEngine = NewApplication()
 		}
-		if ast.Applications.Mustache.Port == 0 {
-			ast.Applications.Mustache.Port = MUSTACHE_PORT
+		if ast.Applications.TemplateEngine.Port == 0 {
+			ast.Applications.TemplateEngine.Port = MUSTACHE_PORT
 		}
 		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
 		// When the model list changes then the related templates should change to.
@@ -286,12 +286,12 @@ func setupMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 		}
 		for quit := false; !quit; {
 			menuList := []string{}
-			if ast.Applications.Mustache != nil {
-				menuList = append(menuList, fmt.Sprintf("Set [p]ort: %d", ast.Applications.Mustache.Port))
+			if ast.Applications.TemplateEngine != nil {
+				menuList = append(menuList, fmt.Sprintf("Set [p]ort: %d", ast.Applications.TemplateEngine.Port))
 			}
 			// FIXME: You show the current template list here..
 			menu, opt := selectMenuItem(buf, out,
-				"Manage Newt Mustache Settings",
+				"Manage Newt's template engine Settings",
 				"Type menu letter and press enter to modify or press enter when done",
 				menuList, false, "", "", true)
 			if len(menu) > 0 {
@@ -307,7 +307,7 @@ func setupMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 				if err != nil {
 					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 				} else {
-					ast.Applications.Mustache.Port = port
+					ast.Applications.TemplateEngine.Port = port
 					ast.isChanged = true
 				}
 			case "q":
@@ -320,7 +320,7 @@ func setupMustache(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 		}
 	} else {
 		if ast.Applications != nil {
-			ast.Applications.Mustache = nil
+			ast.Applications.TemplateEngine = nil
 		}
 	}
 }
@@ -399,8 +399,8 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 // setupTemplService creates a Service object to process with a template
 func setupTmplService(ast *AST, tmplPattern string, description string) *Service {
 	var port int
-	if ast.Applications != nil && ast.Applications.Mustache != nil {
-		port = ast.Applications.Mustache.Port
+	if ast.Applications != nil && ast.Applications.TemplateEngine != nil {
+		port = ast.Applications.TemplateEngine.Port
 	} else {
 		port = 8011
 	}

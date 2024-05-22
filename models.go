@@ -13,7 +13,7 @@ import (
 // The Model structure is used by Newt to describe data models. It will be used in code generation and in validating
 // POST and PUT requests to the data router.
 //
-// Code generation will need to render to SQL, HTML, Mustache and Pandoc templates.
+// Code generation will need to render to SQL, HTML, Mustache templates.
 type Model struct {
 	// Id is a required field for Newt, it mapps to the HTML element id and name
 	Id string `json:"id,required" yaml:"id"`

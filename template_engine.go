@@ -18,8 +18,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Mustache defines the `newtmustache` application configuration YAML
-type Mustache struct {
+// TemplateEngine defines the `newtmustache` application configuration YAML
+type TemplateEngine struct {
 	// Port number to run the web service on
 	Port int
 
@@ -31,11 +31,11 @@ type Mustache struct {
 
 	// Options hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
-	// the Newt Mustache template as `options`.
+	// the Newt template engine `options`.
 	Options map[string]string
 }
 
-// Template hold the request to template mapping for Mustache struct
+// Template hold the request to template mapping for in the TemplateEngine
 type Template struct {
 	// Id ties a set of one or more template together, e.g. a web form and its response
 	Id string `json:"id,required" yaml:"id,omitempty"`
@@ -66,13 +66,13 @@ type Template struct {
 	// Vocabulary holds the path to a YAML file used to populate Vocabulary at startup.
 	Vocabulary string `json:"vocabulary,omitempty" yaml:"vocabulary,omitempty"`
 
-	// Voc holds a map of variable names to values. It is read in when Mustache starts from a separate YAML
+	// Voc holds a map of variable names to values. It is read in when template engine starts from a separate YAML
 	// file.
 	Voc map[string]interface{} `json:"-" yaml:"-"`
 
 	// Options hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
-	// the Newt Mustache template as `options`.
+	// the Newt template engine `options`.
 	Options map[string]string `json:"-" yaml:"-"`
 
 	// Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
@@ -80,17 +80,17 @@ type Template struct {
 	Vars []string `json:"-" yaml:"-"`
 }
 
-// NewMustache create a new Mustache struct. If a filename
+// NewTemplateEngine create a new TemplateEngine struct. If a filename
 // is provided it reads the file and sets things up accordingly.
-func NewMustache(ast *AST) (*Mustache, error) {
-	nm := &Mustache{
+func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
+	nm := &TemplateEngine{
 		Templates: ast.Templates,
 	}
-	if ast.Applications.Mustache.Port != 0 {
-		nm.Port = ast.Applications.Mustache.Port
+	if ast.Applications.TemplateEngine.Port != 0 {
+		nm.Port = ast.Applications.TemplateEngine.Port
 	}
-	if ast.Applications.Mustache.Timeout != 0 {
-		nm.Timeout = ast.Applications.Mustache.Timeout * time.Second
+	if ast.Applications.TemplateEngine.Timeout != 0 {
+		nm.Timeout = ast.Applications.TemplateEngine.Timeout * time.Second
 	}
 	if len(ast.Applications.Options) > 0 {
 		nm.Options = map[string]string{}
@@ -101,8 +101,8 @@ func NewMustache(ast *AST) (*Mustache, error) {
 	return nm, nil
 }
 
-// Check makes sure the Mustache struct is populated
-func (nm *Mustache) Check(buf io.Writer) bool {
+// Check makes sure the TemplateEngine struct is populated
+func (nm *TemplateEngine) Check(buf io.Writer) bool {
 	ok := true
 	if nm == nil {
 		fmt.Fprintf(buf, "templates not defined\n")
@@ -233,7 +233,7 @@ func (mt *Template) ResolveTemplate() error {
 	return fmt.Errorf("no template found")
 }
 
-// Handler decodes a the request body and then processes that as a Mustache template.
+// Handler decodes a the request body and then processes that as a template engine.
 func (mt *Template) Handler(w http.ResponseWriter, r *http.Request) {
 	if mt.Debug {
 		log.Printf(".Handler(w, %s %s)", r.Method, r.URL.Path)
@@ -348,7 +348,7 @@ func (mt *Template) Handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(src)
 }
 
-func (nm *Mustache) ListenAndServe() error {
+func (nm *TemplateEngine) ListenAndServe() error {
 	mux := http.NewServeMux()
 	// Setup our handlers, POST for process data with the template and GET to retreive the template
 	// ast.

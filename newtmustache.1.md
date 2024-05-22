@@ -1,5 +1,5 @@
 ---
-title: newtmustache(1) user manual | 0.0.8 3fd1b13
+title: newtmustache(1) user manual | 0.0.8 060b535
 pubDate: 2024-05-21
 author: R. S. Doiel
 ---
@@ -65,7 +65,7 @@ used is based on Go package <https://github.com/cbroglie/mustache>.
 
 ## Features
 
-- Newt Mustache only runs on localhost at the designated port (default is 8011).
+- Newt template engine only runs on localhost at the designated port (default is 8011).
 - Templates are read in at startup and are retained in memory bound to the request path.
 - Vocabulary files are read in at startup and bound to the request path.
 - Options are set at startup and mapped into the request path.
@@ -91,8 +91,8 @@ templates
 
 The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
-newtmustache
-: this contains configuration for Newt Mustache, i.e. port
+template_engine
+: this contains configuration for Newt template engine, i.e. port
 
 options
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
@@ -108,14 +108,14 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 
 ## templates property
 
-This property is used by Newt Mustache. It is ignore by Newt router and code generator.
+This property is used by Newt template engine. It is ignore by Newt router and code generator.
 
 templates
 : (optional: newtmustache) this holds a list of template objects
 
 ### template object model
 
-The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
+The template objects are used by Newt template engine. If you're not using it you can skip these.
 
 `request PATH`
 : (required) This holds the request URL's path. `newtmustache` only listens for POST method.
