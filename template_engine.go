@@ -102,42 +102,46 @@ func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
 }
 
 // Check makes sure the TemplateEngine struct is populated
-func (nm *TemplateEngine) Check(buf io.Writer) bool {
+func (tEng *TemplateEngine) Check(buf io.Writer) bool {
+	if tEng == nil {
+		fmt.Fprintf(buf, "template engine not defined\n")
+		return false
+	}
+	errMsgs := []string{}
 	ok := true
-	if nm == nil {
-		fmt.Fprintf(buf, "templates not defined\n")
+	if tEng.Port == 0 {
+		errMsgs = append(errMsgs, "template engine port not set")
 		ok = false
 	}
-	if nm.Templates == nil || len(nm.Templates) == 0 {
-		fmt.Fprintf(buf, "not templates found\n")
+	if tEng.Templates == nil || len(tEng.Templates) == 0 {
+		errMsgs = append(errMsgs, "no templates found")
 		ok = false
-	}
-	if nm.Port == 0 {
-		fmt.Fprintf(buf, "port not set\n")
-		ok = false
-	}
-	for i, t := range nm.Templates {
-		if !t.Check(buf) {
-			fmt.Fprintf(buf, "template (#%d) failed check\n", i)
-			ok = false
+	} else {
+		for i, t := range tEng.Templates {
+			tBuf := bytes.NewBuffer([]byte{})
+			if !t.Check(tBuf) {
+				errMsgs = append(errMsgs, fmt.Sprintf("template (#%d) failed check, %s\n", i, tBuf.Bytes()))
+				ok = false
+			}
 		}
 	}
+	fmt.Fprintf(buf, "%s\n", strings.Join(errMsgs, "\n"))
 	return ok
 }
 
 // Check evaluates the *Template and outputs finding. Returns true of no error, false if errors found
-func (mt *Template) Check(buf io.Writer) bool {
+func (tmpl *Template) Check(buf io.Writer) bool {
 	ok := true
-	if mt == nil {
+	if tmpl == nil {
 		fmt.Fprintf(buf, "template is nil\n")
-		ok = false
+		return false
 	}
-	if mt.Pattern == "" {
+	if tmpl.Pattern == "" {
 		fmt.Fprintf(buf, "template does not have an associated path/pattern\n")
 		ok = false
 	}
-	if mt.Template == "" {
-		fmt.Fprintf(buf, "missing path to template for %s\n", mt.Pattern)
+	if tmpl.Template == "" {
+		fmt.Fprintf(buf, "missing path to template for %s\n", tmpl.Pattern)
 	}
 	return ok
 }

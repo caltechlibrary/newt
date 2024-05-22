@@ -22,7 +22,7 @@ models:
           label: A unique person id, no spaces, alpha numeric
           placeholder: ex. jane-do-007
           required: true
-        is_object_id: true
+        primary_key: true
       - id: display_name
         type: text
         attributes:

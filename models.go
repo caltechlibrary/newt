@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"strings"
 )
 
 // Model implements a structure that can accomodate the GitHub YAML issue template syntax.
@@ -132,9 +133,13 @@ type Element struct {
 	// Options holds a list of values and their labels used for HTML select elements in rendering their option child elements
 	Options []map[string]string `json:"optoins,omitempty" yaml:"options,omitempty"`
 
-	// IsObjectId (e.g. primary key) used by for the modeled data.
+	// IsObjectId (i.e. primary key) used by for the modeled data.
 	// It is used in calculating routes and templates where the object identifier is required.
-	IsObjectId bool `json:"is_object_id,omitempty" yaml:"is_object_id,omitempty"`
+	IsObjectId bool `json:"primary_key,omitempty" yaml:"primary_key,omitempty"`
+
+	// Label is used when rendering an HTML form as a label element tied to the input element via the set attribute and
+	// the element's id.
+	Label string `json:"label,omitempty" yaml:"label,omitempty"`
 
 	//
 	// These fields are used by the modeler to manage the models and their elements
@@ -172,8 +177,7 @@ func isValidVarname(s string) bool {
 }
 
 // NewElement, makes sure element id is valid, populates an element as a basic input type.
-// The new element has the attributes "name" and "title" set to default values. Title needs
-// to be updated to reflect helpful text for the element which is displayed on hover.
+// The new element has the attribute "name" and label set to default values. 
 func NewElement(elementId string) (*Element, error) {
 	if !isValidVarname(elementId) {
 		return nil, fmt.Errorf("invalid element id, %q", elementId)
@@ -182,7 +186,7 @@ func NewElement(elementId string) (*Element, error) {
 	element.Id = elementId
 	element.Attributes = map[string]string{"name": elementId}
 	element.Type = "text"
-	element.Attributes["title"] = "... element description text goes here ..."
+	element.Label = strings.ToUpper(elementId[0:1]) + elementId[1:]
 	element.IsObjectId = false
 	element.isChanged = true
 	return element, nil

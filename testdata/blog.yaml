@@ -2,7 +2,7 @@ applications:
   router:
     port: 8010
     htdocs: htdocs
-  mustache:
+  template_engine:
     port: 8011
   postgres:
     namespace: blog

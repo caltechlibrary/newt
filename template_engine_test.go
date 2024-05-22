@@ -43,8 +43,11 @@ func TestTemplateEngine(t *testing.T) {
 		t.Errorf("NewTemplateEngine(ast) failed to create a new mustache engine")
 	}
 	if ok := mustache.Check(out); ok {
-		t.Errorf("expected mustache.Check(out) to be false, nothing has been configured yet. %s", buf.Bytes())
+		out.Flush()
+		t.Errorf("expected template.Check(out) to be false, nothing has been configured yet. %s", buf.Bytes())
 	}
+	buf = bytes.NewBuffer([]byte{})
+	out = bufio.NewWriter(buf)
 	fName := path.Join("testdata", "blog.yaml")
 	src, err := os.ReadFile(fName)
 	if err != nil {
@@ -63,6 +66,7 @@ func TestTemplateEngine(t *testing.T) {
 		t.Errorf("NewTemplateEngine(ast) failed to create a new mustache engine")
 	}
 	if ok := mustache.Check(out); !ok {
-		t.Errorf("expected mustache.Check(out) to be true, %s", buf.Bytes())
+		out.Flush()
+		t.Errorf("expected template.Check(out) to be true, %q", buf.Bytes())
 	}
 }

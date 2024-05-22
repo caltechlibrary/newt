@@ -44,7 +44,10 @@ The applications properties are optional. Some maybe set via command line. See N
 ### Configuring Newt programs
 
 `app_path`
-: (newt) the path to the program(s) managed by `newt`
+: (postgrest) the path to the program(s) managed by `newt`
+
+`conf_path`
+: (postgrest) path to PostgREST configuration file
 
 `namespace`
 : (postgres) uses this in the SQL generated for setting up Postgres+PostgREST
@@ -53,7 +56,7 @@ The applications properties are optional. Some maybe set via command line. See N
 : (all) Port number to used for Newt web service running on localhost
 
 `htdocs`
-: (newtrouter) Directory that holds your application's static content
+: (newt, newtrouter) Directory that holds your application's static content
 
 
 ## the "routes" property
@@ -166,118 +169,122 @@ orcid
 
 ~~~yaml
 applications:
-  newtgenerator:
-    namespace: people # E.g. "people" Namespace to use generating Postgres SQL
-  newtrouter:
-    port: 8011 # Port number for Newt Router
-    htdocs: htdocs # Path to static content directory if required
-  newtmustache:
-    port: 8012 # Port number for Newt Mustache 
+  router:
+    port: 8010
+    htdocs: htdocs
+  template_engine:
+    port: 8011
   postgres:
-    port: 5432 # Where to find the Postgres port
-  postgrest: # Configuration for running PostgREST via newt
+    namespace: people
+    port: 5432
+    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/people.yaml
+  postgrest:
+    app_path: postgrest
+    conf_path: postgrest.conf
     port: 3000
-    app_path: /usr/local/bin/postgrest
-    conf: people.conf
-  environment:
+  enviroment:
     - PGUSER
     - PGPASSWORD
-    - PGHOST
 models:
   - id: people
-    name: People Profiles
     description: |
       This models a curated set of profiles of colleagues
-    elements:
-      - id: people_id
-        type: input
-        attributes:
-          label: A unique person id, no spaces, alpha numeric
-          placeholder: ex. jane-do-007
-          required: true
-      - id: display_name
-        type: input
-        attributes:
-          label: (optional) A person display name
-          placeholder: ex. J. Doe, journalist
-      - id: family_name
-        type: input
-        attributes:
-          label: (required) A person's family name or singular when only one name exists
-          placeholder: ex. Doe
-          required: true
-      - id: given_name
-        type: input
-        attributes:
-          label: (optional, encouraged) A person's given name
-          placeholder: ex. Jane
-      - id: orcid
-        type: orcid
-        attributes:
-          label: (optional) A person's ORCID identifier
-          placeholder: ex. 0000-0000-0000-0000
-      - id: email
-        type: email
-        attributes:
-          label: (optional) A person public email address
-      - id: website
-        type: url
-        attributes:
-          label: (optional) A person's public website
-          placeholder: ex. https://jane.doe.example.org
 routes:
-  - id: create_person
-    description: Create new person profile
-    request: POST /person
+  - id: people_create
+    request: GET /people_create
+    description: Handle retrieving the webform for people create
     pipeline:
-      - description: This will generate a new user in the database
-        service: POST "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
-        content_type: application/json
-      - description: |
-          This sends the results of creating a person to the template engine
-        service: POST http://localhost:3032/people_update_result.tmpl
-        content_type: application/json
-  - id: read_person
-    desciption: Update a person's profile
-    request: "GET /person/{{people.people_id}}"
+      - service: POST http://localhost:8011/people_create
+        description: Display a people for create
+  - id: people_create
+    request: POST /people_create
+    description: Handle form submission for people create
     pipeline:
-      - description: Retrieve a person's profile
-        service: POST "https://{{DB_USER}}@{{DB_HOST}}:3000/person/{{people.people_id}}"
-        content_type: application/json
-      - description: |
-          Render a person's profile
-        service: POST http:localhost:3032/profile.tmpl
-        content_type: application/json
-  - id: update_person
-    description: Update person's profile
-    request: "PUT /person/{{people.people_id}}"
+      - service: POST http://localhost:3000/rpc/people_create
+        description: Access PostgREST API for people create
+      - service: POST http://localhost:8011/people_create_response
+        description: This is an result template for people create
+  - id: people_update
+    request: GET /people_update/{oid}
+    description: Handle retrieving the webform for people update
     pipeline:
-      - description: This will update a person record in the database
-        service: PUT "https://{{DB_USER}}@{{DB_HOST}}:3000/rpc/people"
-        content_type: application/json
-      - description: |
-          This sends the results of updating a person to the template engine
-        service: POST http://localhost:3032/people_update_result.tmpl
-        content_type: application/json
-  - id: delete_person
-    description: Remove person's profile
-    request: "DELETE /person/{{people.people_id}}"
+      - service: GET http://localhost:3000/rpc/people_read/{oid}
+        description: Retrieve people from PostgREST API before update
+      - service: POST http://localhost:8011/people_update
+        description: Display a people for update
+  - id: people_update
+    request: POST /people_update
+    description: Handle form submission for people update
     pipeline:
-      - description: Remove the person for the database
-        service: DELETE "https://{{DB_USER}}@{{DB_HOST}}:3000/people/{{people.people_id}}"
-        content_type: application/json
-      - description: Displace the result of what happed in the removal
-        service: POST http://localhost:3032/removed_person.tmpl
-  - id: list_people
-    description: List people profiles available
-    request: GET /people
+      - service: PUT http://localhost:3000/rpc/people_update/{oid}
+        description: Access PostgREST API for people update
+      - service: POST http://localhost:8011/people_update_response
+        description: This is an result template for people update
+  - id: people_delete
+    request: GET /people_delete/{oid}
+    description: Handle retrieving the webform for people delete
     pipeline:
-      - description: Retrieve a list of all people profiles available
-        service: GET https://{{DB_HOST}}@{{DB_HOST}}:3000/people
-        content_type: application/json
-      - discription: format a browsable people list linking to individual profiles
-        service: POST http://localhost:3030/list_people.tmpl
-        content_type: applicatin/json
+      - service: GET http://localhost:3000/rpc/people_read/{oid}
+        description: Retrieve people from PostgREST API before delete
+      - service: POST http://localhost:8011/people_delete
+        description: Display a people for delete
+  - id: people_delete
+    request: POST /people_delete
+    description: Handle form submission for people delete
+    pipeline:
+      - service: DELETE http://localhost:3000/rpc/people_delete/{oid}
+        description: Access PostgREST API for people delete
+      - service: POST http://localhost:8011/people_delete_response
+        description: This is an result template for people delete
+  - id: people_read
+    request: POST /people_read
+    description: Retrieve object(s) for people read
+    pipeline:
+      - service: GET http://localhost:3000/rpc/people_read/{oid}
+        description: Access PostgREST API for people read
+      - service: POST http://localhost:8011/people_read
+        description: This template handles people read
+  - id: people_list
+    request: POST /people_list
+    description: Retrieve object(s) for people list
+    pipeline:
+      - service: GET http://localhost:3000/rpc/people_list
+        description: Access PostgREST API for people list
+      - service: POST http://localhost:8011/people_list
+        description: This template handles people list
+templates:
+  - id: people_create
+    request: /people_create
+    template: people_create_form.tmpl
+    description: Display a people for create
+  - id: people_create
+    request: /people_create_response
+    template: people_create_response.tmpl
+    description: This is an result template for people create
+  - id: people_update
+    request: /people_update
+    template: people_update_form.tmpl
+    description: Display a people for update
+  - id: people_update
+    request: /people_update_response
+    template: people_update_response.tmpl
+    description: This is an result template for people update
+  - id: people_delete
+    request: /people_delete
+    template: people_delete_form.tmpl
+    description: Display a people for delete
+  - id: people_delete
+    request: /people_delete_response
+    template: people_delete_response.tmpl
+    description: This is an result template for people delete
+  - id: people_read
+    request: /people_read
+    template: people_read.tmpl
+    description: This template handles people read
+  - id: people_list
+    request: /people_list
+    template: people_list.tmpl
+    description: This template handles people list
 ~~~
 
 
@@ -326,28 +333,28 @@ Example of newtmustache YAML:
 
 ~~~yaml
 applications:
-  newtmustache:
+  template_engine:
     port: 8012
 templates:
   - id: hello
     request: /hello/{name}
-    template: testdata/simple.mustache
+    template: testdata/simple.tmpl
   - id: hello
     request: /hello
-    template: testdata/simple.mustache
+    template: testdata/simple.tmpl
     options:
       name: Universe
   - id: hi
     request: /hi/{name}
-    template: testdata/hithere.html
+    template: testdata/hithere.tmpl
     partials:
-      - testdata/name.mustache
+      - testdata/name.tmpl
     debug: true
   - id: hi
     request: /hi
-    template: testdata/hithere.html
+    template: testdata/hithere.tmpl
     partials:
-      - testdata/name.mustache
+      - testdata/name.tmpl
     options:
       name: Universe
 ~~~
