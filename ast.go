@@ -32,7 +32,7 @@ type AST struct {
 	Routes []*Route `json:"routes,omitempty" yaml:"routes,omitempty"`
 
 	// Templates holds an array of mapsthe request to template to request for
-	// Newt Mustache
+	// Newt (Mustache) template engine
 	Templates []*Template `json:"templates,omitempty" yaml:"templates,omitempty"`
 
 	// isChanged is a convience variable for tracking if the data structure has changed.
@@ -45,8 +45,8 @@ type Applications struct {
 	// Newt Router runtime config
 	Router *Application `json:"router,omitempty" yaml:"router,omitempty"`
 
-	// Newt Mustache runtime config
-	Mustache *Application `json:"mustache,omitempty" yaml:"mustache,omitempty"`
+	// Newt template engine runtime config
+	TemplateEngine *Application `json:"template_engine,omitempty" yaml:"template_engine,omitempty"`
 
 	// Postgres runtime config, e.g. port number to use for connecting.
 	Postgres *Application `json:"postgres,omitempty" yaml:"postgres,omitempty"`
@@ -99,7 +99,7 @@ func NewApplication() *Application {
 func NewApplications() *Applications {
 	return &Applications{
 		Router:      NewApplication(),
-		Mustache:    NewApplication(),
+		TemplateEngine:    NewApplication(),
 		Postgres:    NewApplication(),
 		PostgREST:   NewApplication(),
 		Options:     map[string]string{},
@@ -449,16 +449,16 @@ func (ast *AST) Check(buf io.Writer) bool {
 		}
 	}
 	if ast.Templates == nil || len(ast.Templates) == 0 {
-		if ast.Applications.Mustache != nil {
-			fmt.Fprintf(buf, "no templates defined but Newt Mustache enabled\n")
+		if ast.Applications.TemplateEngine != nil {
+			fmt.Fprintf(buf, "no templates defined but Newt's template engine enabled\n")
 			ok = false
 		}
 	} else {
-		if ast.Applications.Mustache == nil {
-			fmt.Fprintf(buf, "application.mustache not configured\n")
+		if ast.Applications.TemplateEngine == nil {
+			fmt.Fprintf(buf, "application.template_engine not configured\n")
 			ok = false
-		} else if ast.Applications.Mustache.Port == 0 {
-			fmt.Fprintf(buf, "application.mustache.port not set\n")
+		} else if ast.Applications.TemplateEngine.Port == 0 {
+			fmt.Fprintf(buf, "application.template_engine.port not set\n")
 			ok = false
 		}
 		for i, t := range ast.Templates {

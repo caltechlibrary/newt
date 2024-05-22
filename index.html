@@ -162,7 +162,7 @@ Postgres into a JSON API</li>
 <p>The Newt YAML ties this together expressing</p>
 <ul>
 <li>applications (run time information for Newt’s router, Newt’s
-Mustache and PostgREST)</li>
+template engine and PostgREST)</li>
 <li>models (descriptions of data as you would provided in a web
 form)</li>
 <li>routes (web requests differentiated by a HTTP method and URL path
@@ -266,15 +266,16 @@ role="doc-noteref"><sup>7</sup></a>.</p>
 <p>What we should do is use Newt to tie those JSON services together and
 send rendered HTML back to the web browser. Newt’s router provides
 static file service and a means of pipelining our JSON data source
-through a template engine. Newt’s Mustache provides a template engine.
-Newt provides the missing bits from my original list so we don’t need to
-send JavaScript down the wire to the web browser. The Newt approach uses
-less bandwidth, fewer network accesses and less computations cycles on
-your viewing device. The Newt approach takes advantage of what the web
-browser is really good at without turning your web pages into a web
-service. Newt YAML describes the system you want. You get the Newt
-capabilities without writing much code. Maybe without writing any code
-if Newt’s code generator does a sufficient job for your needs.</p>
+through a template engine. Newt provies a Mustache template engine for
+that purpose. Newt provides the missing bits from my original list so we
+don’t need to send JavaScript down the wire to the web browser. The Newt
+approach uses less bandwidth, fewer network accesses and less
+computations cycles on your viewing device. The Newt approach takes
+advantage of what the web browser is really good at without turning your
+web pages into a web service. Newt YAML describes the system you want.
+You get the Newt capabilities without writing much code. Maybe without
+writing any code if Newt’s code generator does a sufficient job for your
+needs.</p>
 <h3 id="a-new-baseline">A new baseline</h3>
 <p>Web services talk to other web services all the time. This isn’t new.
 It isn’t exotic. Newt scales down this approach to the single

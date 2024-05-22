@@ -1,5 +1,5 @@
 ---
-title: newt(1) user manual | 0.0.8 17c92ee
+title: newt(1) user manual | 0.0.8 54c733c
 pubDate: 2024-05-21
 author: R. S. Doiel
 ---
@@ -29,7 +29,7 @@ The "generate" will run the Newt Generator to create the SQL, PostgREST configur
 and Mustache templates. It'll also update the Newt YAML file's routes and templates
 properties as needed for the generated content. 
 
-The "run" action will run Newt Router, Newt Mustache and PostgREST
+The "run" action will run Newt's router, template engine and PostgREST
 for testing and development.  This allows you to quick run and stop the services
 from one command. 
 
@@ -103,13 +103,10 @@ templates
 The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
 
 router
-: this contains configuration for the Newt Router, i.e. port and htdocs
+: this contains configuration for the Newt's router, i.e. port and htdocs
 
-generator
-: this contains configuration for code generation. e.g. namespace used by Postgres and PostgREST.
-
-mustache
-: this contains configuration for Newt Mustache, i.e. port
+template_engine
+: this contains configuration for Newt's template engine, i.e. port setting
 
 options
 : holds key value pairs of which can be referenced in the values of models, routes and templates.

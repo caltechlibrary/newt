@@ -1,5 +1,5 @@
 ---
-title: newtrouter(1) user manual | 0.0.8 17c92ee
+title: newtrouter(1) user manual | 0.0.8 54c733c
 pubDate: 2024-05-21
 author: R. S. Doiel
 ---
@@ -14,7 +14,7 @@ newtrouter YAML_CONFIG_FILE
 
 # DESCRIPTION
 
-**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt Mustache. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
+**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt's Mustache template engine. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
 
 In additional content routing newtrouter can also service out static resources. This is handy during development but less useful if you are using a front end web server such as a production setting.
 
@@ -103,13 +103,23 @@ An example of a YAML file describing blog like application based on Postgres+Pos
 
 ~~~
 application:
-  htdocs: htdocs
+  router:
+    port: 3030
+    htdocs: htdocs
+  mustache:
+    port: 3032
+  postgres:
+    namespace: blog
+    port: 5432
+    dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/guestbook.yaml
+  template_engine:
+    port: 3032
   environment:
     - PGUSER
     - PGPASSWORD
 #
 # Postgres+PostgREST is listening on port 3000
-# Newt Mustache template engine is listening on port 3032
+# Newt template engine is listening on port 3032
 #
 # PGUSER and PGPASSWORD required to access the PostgREST JSON API
 # so is passed in via the environment.
