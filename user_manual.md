@@ -18,7 +18,7 @@
     - [Configuring](newt_config_explained.md)
     - [Modeling Data](newt_model_explained.md)
     - [Checking your YAML](newt_check_explained.md)
-    - [Generating code](newt_generator_explained.md)
+    - [Generating code](newt_generate_explained.md)
 - Running your Newt App
     - [Newt router Explained](newtrouter_explained.md)
     - [Newt Mustache Explained](newtmustache_explained.md)
@@ -38,6 +38,5 @@
 
 ## Reference
 
-- [Evolving Assumption](evolving_assumptions.md), a timeline of web related technological changes
-- [Structured Data Representation](structured_data_representation.md), a musing on how to handle complex data objects in HTML, CSS and JavaScript
-- [History Lesson](history_lesson.md), A short history of web development and databases
+- [Evolving Assumptions](evolving_assumptions.md), a timeline of web related technological changes
+- [Structured Data Representations](structured_data_representations.md), a musing on how to handle complex data objects in HTML, CSS and JavaScript

@@ -23,6 +23,37 @@
 </nav>
 
 <section>
+<h1 id="a-short-history-of-web-development-and-databases">A short
+history of web development and databases</h1>
+<p>Databases have been used to generate web pages since the early web.
+Databases are well suited to managing data. When the web became dynamic,
+databases continued to be use for data persistence. By 1993 the web as
+an application platform was born<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a> and with it a good
+platform for providing useful organizational and institutional
+software.</p>
+<p>By the mid 1990s the Open Source databases like MySQL and Postgres
+were popular choices for building web applications. It is important to
+note neither MySQL or Postgres spoke HTTP<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. To
+solve this problem many people wrote software in languages like Perl,
+PHP and Python that ran inside the popular Apache web server. It was a
+pain to setup but once setup relatively easy to build things that relied
+on databases. This led the web to explode with bespoke systems. By the
+late 1990s and early 2000s the practice of “mashing up” sites
+(i.e. content reuse) was the rage. Bespoke systems took advantage of
+content reuse too. <a
+href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo Pipes</a> was a
+very interesting expression of the “mashup culture”<a href="#fn3"
+class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.
+Yahoo Pipes inspired Newt’s data pipelines. Eventual the bespoke systems
+gave way to common use cases<a href="#fn4" class="footnote-ref"
+id="fnref4" role="doc-noteref"><sup>4</sup></a>. A good example of a
+common use case is Apache’s <a href="https://solr.apache.org">Solr</a>
+search engine. Another example is how bespoke content management systems
+gave way to <a href="https://plone.org">Plone</a>, <a
+href="https://drupal.org">Drupal</a> and <a
+href="https://wordpress.org">WordPress</a>.</p>
 <h2 id="evolving-assumptions">Evolving assumptions</h2>
 <ul>
 <li>1992, implementing a list of authors would required multiple round
@@ -66,8 +97,8 @@ thing</li>
 <li>User Experience is a big topic eventually leading to a specialist
 role in web developer down the road</li>
 </ul></li>
-<li>2005, 2006 JavaScript libraries and frameworks<a href="#fn1"
-class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+<li>2005, 2006 JavaScript libraries and frameworks<a href="#fn5"
+class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>
 rise in adoption
 <ul>
 <li>Designers start needing programming knowledge</li>
@@ -96,8 +127,8 @@ target both iPhones and Android devices</li>
 </ul></li>
 <li>2009, Server side JavaScript goes mainstream
 <ul>
-<li>Ryan Dahl introduces NodeJS<a href="#fn2" class="footnote-ref"
-id="fnref2" role="doc-noteref"><sup>2</sup></a>, demos a <a
+<li>Ryan Dahl introduces NodeJS<a href="#fn6" class="footnote-ref"
+id="fnref6" role="doc-noteref"><sup>6</sup></a>, demos a <a
 href="https://en.wikipedia.org/wiki/C10k_problem">C10K</a> solution in
 JavaScript using efficient event loops</li>
 <li>NodeJS supplants <a
@@ -166,8 +197,8 @@ files).</p>
 <p>You also see other forces encouraging a rethink. The race to the
 “cloud” has lead to a landlord’s market place. For commercial software
 it is difficult to “buy” software but often forcing us to rent<a
-href="#fn3" class="footnote-ref" id="fnref3"
-role="doc-noteref"><sup>3</sup></a>.</p>
+href="#fn7" class="footnote-ref" id="fnref7"
+role="doc-noteref"><sup>7</sup></a>.</p>
 <p>I think it is high time to focus our simplification at all levels.
 Getting to simple in part is an engineering problem, in part a human
 organizational problem and significantly a “market force” problem. As
@@ -176,13 +207,37 @@ humans we can take steps to change that if we choose to.</p>
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>E.g. Prototype 2005, Mootools, YUI and jQuery 2006.<a
-href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Ryan Dahl releases introduces NodeJS. This quickly
+<li id="fn1"><p>Web applications proceeded to eat all the venerable
+green screen systems they could find. Today’s web is mired in
+surveillance tech and complex solutions. It has drifted far from Sir.
+Tim’s vision of sharing science documents. We need to refocus on the
+“good ideas” and jettison the complexity that came with the surveillance
+economy. Newt can be part of that solution. Develop your Newt
+application with consideration for others.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>HTTP being the protocol the communicates with.
+Essentially at the time RDBMS spoke a dialect of SQL as the unifying
+language. The web of the time understood HTML and to a certain degree
+XML. By 2000 people were looking for something simpler than XML to move
+structured data about. <a
+href="https://en.wikipedia.org/wiki/JSON">JSON</a> quickly became the
+answer.<a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>The basic concept was to make it easy to work with “data
+feeds” and combined them into a useful human friendly web pages. It even
+included a visual programming language to make it friendly to the
+non-programmer crowd.<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>If a use case is solved reliably enough it becomes “off
+the shelf” software.<a href="#fnref4" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>E.g. Prototype 2005, Mootools, YUI and jQuery 2006.<a
+href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Ryan Dahl releases introduces NodeJS. This quickly
 replaces Rhino, Narwhal and Jaxer JavaScript server side efforts<a
-href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Example try buying Windows, macOS, or Adobe Photoshop,
-we rent the software only.<a href="#fnref3" class="footnote-back"
+href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Example try buying Windows, macOS, or Adobe Photoshop,
+we rent the software only.<a href="#fnref7" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
