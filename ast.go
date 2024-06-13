@@ -48,6 +48,9 @@ type Applications struct {
 	// Newt template engine runtime config
 	TemplateEngine *Application `json:"template_engine,omitempty" yaml:"template_engine,omitempty"`
 
+	// Dataset runtime config
+    Datasetd *Application `json:"datasetd,omitempty" yaml:"datasetd,omitempty"`
+
 	// Postgres runtime config, e.g. port number to use for connecting.
 	Postgres *Application `json:"postgres,omitempty" yaml:"postgres,omitempty"`
 
