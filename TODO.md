@@ -14,6 +14,10 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
+- [ ] Review [deno](https://deno.land) and [Typescript](https://typescript.org) as a target for generating a validation service for our models
+    - deno can compile typescript/javascript into an executable
+    - these could be installed next to the newt YAML project file
+    - the typescript could be rendered to JS and use browser side too
 - [ ] Newt should support dataset based applications since datasetd exists, newt wouldn't model apps in SQL in this case but would use the models to create the templates, validation, adata pipelines and routing
 - [ ] Adding modeler.go shows I need to cleanup code and normalize an API info working with models, updating routes and templates based on updated models list.
 - [ ] Postgres configuration in yamlgen.go needs to include a DSN to make the connection for loading our SQL
