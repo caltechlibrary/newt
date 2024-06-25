@@ -14,7 +14,7 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
-- [ ] Review [deno](https://deno.land) and [Typescript](https://typescript.org) as a target for generating a validation service for our models
+- [ ] Review [deno](https://deno.land) and [Typescript](https://www.typescriptlang.org/) as a target for generating a validation service for our models
     - deno can compile typescript/javascript into an executable
     - these could be installed next to the newt YAML project file
     - the typescript could be rendered to JS and use browser side too
