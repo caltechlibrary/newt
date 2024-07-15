@@ -47,9 +47,28 @@ bugs</label></li>
 </ul>
 <h2 id="next-for-the-second-prototype">Next for the second
 prototype</h2>
-<p>NOTE: X is completed, P is partial completion, D (dropped) is
-skipping implementation</p>
+<p>NOTE: X is completed, P is partial completion, D (dropped) from
+implementation plans</p>
 <ul class="task-list">
+<li><label><input type="checkbox" />Review <a
+href="https://github.com/webui-dev/go-webui">go-webui</a> for
+implementing a GUI for newt</label></li>
+<li><label><input type="checkbox" />Review <a
+href="https://deno.land">deno</a> and <a
+href="https://www.typescriptlang.org/">Typescript</a> as a target for
+generating a validation service for our models</label>
+<ul>
+<li>deno can compile typescript/javascript into an executable</li>
+<li>these could be installed in a bin directory next to the newt YAML
+project file</li>
+<li>the typescript can can run as a a validation service in the pipeline
+for the form processing</li>
+<li>I would need to map the service name sainly</li>
+</ul></li>
+<li><label><input type="checkbox" />Newt should support dataset based
+applications since datasetd exists, newt wouldn’t model apps in SQL in
+this case but would use the models to create the templates, validation,
+adata pipelines and routing</label></li>
 <li><label><input type="checkbox" />Adding modeler.go shows I need to
 cleanup code and normalize an API info working with models, updating
 routes and templates based on updated models list.</label></li>

@@ -20,6 +20,10 @@ NOTE: X is completed, P is partial completion, D (dropped) from implementation p
     - these could be installed in a bin directory next to the newt YAML project file
     - the typescript can can run as a a validation service in the pipeline for the form processing
     - I would need to map the service name sainly
+    - Investigate using embedding WASM code into Newt pipeline for validation, I could then generate TypeScript validation code compile to WASM using javy and transpile to JavaScript for browser (review how fresh doing this)
+- [ ] The configuration Newt YAML needs to specify PostgreSQL+PostgREST as one target and Deno+datasetd as another back end with/without Newt router
+- [ ] The generator for Newt needs to generate TypeScript apps for validation and could also be used to generate standalone Deno+datasetd based webapps
+- [ ] See if I can turn handlebarjs into a WASM module, then implement a NewtHandlebars service, mutch easier working with Handlebars then Mustache fo r the types of templates we do.
 - [ ] Newt should support dataset based applications since datasetd exists, newt wouldn't model apps in SQL in this case but would use the models to create the templates, validation, adata pipelines and routing
 - [ ] Adding modeler.go shows I need to cleanup code and normalize an API info working with models, updating routes and templates based on updated models list.
 - [ ] Postgres configuration in yamlgen.go needs to include a DSN to make the connection for loading our SQL
