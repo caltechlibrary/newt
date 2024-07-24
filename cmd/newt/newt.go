@@ -31,7 +31,7 @@ author: R. S. Doiel
 during development.  **{app_name}** supports the "config", "check", "model", "generate",
 and "run" actions. The "config" command is used when you are starting a
 Newt Project. It is an interactive command prompting for various choices regarding
-the application you want to create.  
+the application you want to create.
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.
@@ -39,19 +39,19 @@ well as validate the YAML syntax.
 The "model" is used to manage your data models. It is interactive like "config".
 
 The "generate" will run the Newt Generator to create the SQL, PostgREST configuration
-and Mustache templates. It'll also update the Newt YAML file's routes and templates
-properties as needed for the generated content. 
+and Handlebars templates. It'll also update the Newt YAML file's routes and templates
+properties as needed for the generated content.
 
 The "run" action will run Newt's router, template engine and PostgREST
 for testing and development.  This allows you to quick run and stop the services
-from one command. 
+from one command.
 
 If a Newt YAML filename isn't supplied when you invoke **{app_name}** the application
-will look in the current directory for a file with the directory's name and ".yaml" 
+will look in the current directory for a file with the directory's name and ".yaml"
 extension and if that is not found it'll look for "app.yaml".
 
 If you are working in the root of a Git repository when you run "config" you will
-get a warning about which files should be added to your `+"`"+`.gitignore`+"`"+`.
+get a warning about which files should be added to your ` + "`" + `.gitignore` + "`" + `.
 
 # OPTIONS
 
@@ -73,7 +73,7 @@ The following options are supported by **{app_name}**.
 
 config [YAML_FILE]
 : this will create or refresh your Newt YAML file based on a set of interactive
-questions. It will suggest updates to your `+"`"+`.gitignore`+"`"+`.
+questions. It will suggest updates to your ` + "`" + `.gitignore` + "`" + `.
 
 model [YAML_FILE]
 : this will read the current Newt YAML file and run the interactive modeler updating the Newt YAML file.
@@ -82,7 +82,7 @@ check [YAML_FILE]
 : analyze the Newt YAML file and report problems if found.
 
 generate [YAML_FILE]
-: this is used to generate your SQL, PostgREST configuration and Mustache templates
+: this is used to generate your SQL, PostgREST configuration and Handlebars templates
 based on the contents of your Newt YAML file.
 
 run [YAML_FILE]
@@ -90,9 +90,9 @@ run [YAML_FILE]
 This is intended for use in development. In a production setting you'd setup the individual
 services to run from systemd or config as services.
 
-# YAML_FILE 
+# YAML_FILE
 
-**{app_name}** is configured in a YAML file. What is described below is a summary of 
+**{app_name}** is configured in a YAML file. What is described below is a summary of
 YAML syntax use in a Newt project that uses all of the Newt programs.
 
 ## Top level properties
@@ -103,13 +103,13 @@ applications
 : (optional) holds the run time configuration used by the Newt applications.
 
 models
-: (required by newt generator) This holds the description of the data models in your application.  Each model uses HTML 5 element descriptions which can be set using the interactive `+"`"+`{app_name} model`+"`"+` command. 
+: (required by newt generator) This holds the description of the data models in your application.  Each model uses HTML 5 element descriptions which can be set using the interactive ` + "`" + `{app_name} model` + "`" + ` command.
 
 routes
 : (required by newt router) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 templates
-: (required by newt mustache)
+: (required by newt handbars)
 
 ## The applications property
 
@@ -125,7 +125,7 @@ options
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
 
 environment
-: (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+: (optional: newtrouter, newthandlebars) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
 ### Each application may have one or more of these properies.
 
@@ -139,7 +139,7 @@ htdocs
 : (router) Directory that holds your application's static content
 
 timeout
-: (router, mustache) The time in seconds to timeout a HTTP transaction
+: (router, handlebars) The time in seconds to timeout a HTTP transaction
 
 dsn
 : (postgres) The data source name (URI for database connection string). Using to connect to Postgres
@@ -156,32 +156,32 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 
 ### a route object
 
-`+"`"+`id`+"`"+`
+` + "`" + `id` + "`" + `
 : (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]. You may have more than one route associated with an identifier but they may not share the same method. This allows us to group routes by actions. E.g. creating an object would include a GET to retrieve the web form and a POST to handle the submission. Both should use the same id.
 
-`+"`"+`description`+"`"+`
+` + "`" + `description` + "`" + `
 : (optional, encouraged) This is a human readable description of what you're trying to accomplish in this specific route. It may be used in comments or by documentation generators.
 
-`+"`"+`request [METHOD ][PATH]`+"`"+`
-: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. `+"`"+`GET /items/{item_id}`+"`"+` would make `+"`"+`item_id`+"`"+` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `+"`"+`/blog/{year}-{month}-{day}`+"`"+` would not work but `+"`"+`/blog/{year}/{month}/{day}`+"`"+` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
+` + "`" + `request [METHOD ][PATH]` + "`" + `
+: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. ` + "`" + `GET /items/{item_id}` + "`" + ` would make ` + "`" + `item_id` + "`" + ` available in building your service paths in the pipeline. The pattern takes up a whole path segment so ` + "`" + `/blog/{year}-{month}-{day}` + "`" + ` would not work but ` + "`" + `/blog/{year}/{month}/{day}` + "`" + ` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
 
-`+"`"+`pipeline`+"`"+`
+` + "`" + `pipeline` + "`" + `
 : (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail will abort the pipeline returning an HTTP error status. If done fail then the result of the last stage it returned to the requesting browser.
 
-`+"`"+`debug`+"`"+`
-: (optional) if set to true the `+"`"+`newt`+"`"+` service will log verbose results to standard out for this specific pipeline
+` + "`" + `debug` + "`" + `
+: (optional) if set to true the ` + "`" + `newt` + "`" + ` service will log verbose results to standard out for this specific pipeline
 
 #### a pipeline object
 
 A pipeline is a list of web services containing a type, URL, method and content types
 
-`+"`"+`service [METHOD ][URL]`+"`"+`
-: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `+"`"+`.application.environment`+"`"+`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
+` + "`" + `service [METHOD ][URL]` + "`" + `
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through ` + "`" + `.application.environment` + "`" + `.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL.
 
-`+"`"+`description`+"`"+`
+` + "`" + `description` + "`" + `
 : (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
 
-`+"`"+`timeout`+"`"+`
+` + "`" + `timeout` + "`" + `
 : (optional) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
 
 
@@ -223,7 +223,7 @@ primary_key
 Inputs must map to their HTML 5 form element types. Here is an example of HTML 5 input types.
 
 text
-: A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. `+"`"+`input[type=data]`+"`"+` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
+: A single line text field. This conforms to value input types in HTML 5 and can be expressed using the CSS selector notation. E.g. ` + "`" + `input[type=data]` + "`" + ` would be a date type. This would result in a date column type in SQL, a date input type in HTML forms and in formatting other HTML elements for display.
 
 textarea
 : A multi-line text field
@@ -231,7 +231,7 @@ textarea
 checkboxes
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
-More comple types include 
+More comple types include
 
 radio
 : For generating a radio button list
@@ -246,8 +246,8 @@ auto_complete
 NOTE: The file input type is explicitly NOT supported by Newt at this time. Newt may add additional types in
 the future through aliasing input with regular expression validation or web components.
 
-## Example Newt YAML file, "app.yaml" generated with the `+"`"+`{app_name} config app.yaml`+"`"+` and
-`+"`"+`{app_name} model app.yaml`+` commands.
+## Example Newt YAML file, "app.yaml" generated with the ` + "`" + `{app_name} config app.yaml` + "`" + ` and
+` + "`" + `{app_name} model app.yaml` + ` commands.
 
 ~~~yaml
 applications:
@@ -389,35 +389,35 @@ templates:
 
 ## templates property
 
-This property is used by Newt Mustache. It is ignore by Newt router and code generator.
+This property is used by Newt Handlebars. It is ignore by Newt router and code generator.
 
 templates
 : (optional) this holds a list of template objects
 
 ### template object model
 
-The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
+The template objects are used by Newt Handlebars template engine. If you're not using it you can skip these.
 
-`+"`"+`id`+"`"+`
+` + "`" + `id` + "`" + `
 : (required) is the template id. It can be used to relate one or more templates to an action. E.g. a web form an
 submission result.
 
-`+"`"+`request [PATH]`+"`"+`
-: (required) This holds the request HTTP method and path. Note the HTTP method is missing as all request to Newt Mustache must be done using POST.
+` + "`" + `request [PATH]` + "`" + `
+: (required) This holds the request HTTP method and path. Note the HTTP method is missing as all request to Newt Handlebars must be done using POST.
 
-`+"`"+`template`+"`"+`
+` + "`" + `template` + "`" + `
 : (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
-`+"`"+`partials`+"`"+`
-: (optional) A list of paths to partial Mustache templates used by `+"`"+`.template`+"`"+`.
+` + "`" + `partials` + "`" + `
+: (optional) A list of paths to partial Handlebars templates used by ` + "`" + `.template` + "`" + `.
 
-`+"`"+`vocabulary`+"`"+`
-: (opitonal) A path to a "vocabulary" file which is read in when the Newt Mustache is started and the contents are available to the template for processing.
+` + "`" + `vocabulary` + "`" + `
+: (opitonal) A path to a "vocabulary" file which is read in when the Newt Handlebars is started and the contents are available to the template for processing.
 
-`+"`"+`options`+"`"+`
-: (optional) An object that can be merged in with JSON received for processing by your Mustache template
+` + "`" + `options` + "`" + `
+: (optional) An object that can be merged in with JSON received for processing by your Handlbears template
 
-`+"`"+`debug`+"`"+`
+` + "`" + `debug` + "`" + `
 : (optional) this turns on debugging output for this template
 
 `
@@ -439,7 +439,7 @@ func main() {
 	flag.BoolVar(&showHelp, "help", false, "display help")
 	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.BoolVar(&showVersion, "version", false, "display version")
-	
+
 	// App option(s)
 	verbose := false
 	flag.BoolVar(&verbose, "verbose", verbose, "display template debugging and request information")

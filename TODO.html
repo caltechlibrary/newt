@@ -64,7 +64,21 @@ project file</li>
 <li>the typescript can can run as a a validation service in the pipeline
 for the form processing</li>
 <li>I would need to map the service name sainly</li>
+<li>Investigate using embedding WASM code into Newt pipeline for
+validation, I could then generate TypeScript validation code compile to
+WASM using javy and transpile to JavaScript for browser (review how
+fresh doing this)</li>
 </ul></li>
+<li><label><input type="checkbox" />The configuration Newt YAML needs to
+specify PostgreSQL+PostgREST as one target and Deno+datasetd as another
+back end with/without Newt router</label></li>
+<li><label><input type="checkbox" />The generator for Newt needs to
+generate TypeScript apps for validation and could also be used to
+generate standalone Deno+datasetd based webapps</label></li>
+<li><label><input type="checkbox" />See if I can turn handlebarjs into a
+WASM module, then implement a NewtHandlebars service, mutch easier
+working with Handlebars then Mustache fo r the types of templates we
+do.</label></li>
 <li><label><input type="checkbox" />Newt should support dataset based
 applications since datasetd exists, newt wouldn’t model apps in SQL in
 this case but would use the models to create the templates, validation,

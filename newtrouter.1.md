@@ -1,6 +1,6 @@
 ---
-title: newtrouter(1) user manual | 0.0.8 301a7de
-pubDate: 2024-07-09
+title: newtrouter(1) user manual | 0.0.8 0961fb8
+pubDate: 2024-07-24
 author: R. S. Doiel
 ---
 
@@ -14,7 +14,7 @@ newtrouter YAML_CONFIG_FILE
 
 # DESCRIPTION
 
-**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt's Mustache template engine. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
+**newtrouter** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt's Handlebars template engine. **newtrouter** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
 
 In additional content routing newtrouter can also service out static resources. This is handy during development but less useful if you are using a front end web server such as a production setting.
 
@@ -41,7 +41,7 @@ In additional content routing newtrouter can also service out static resources. 
 Top level properties for **newtrouter** YAML.
 
 application
-: (optional: newtrouter, newtgenerator, newtmustache) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
+: (optional: newtrouter, newtgenerator, newtHandlebars) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
 
 routes
 : (optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
@@ -51,13 +51,13 @@ routes
 The application properties are optional.
 
 port
-: (optional: newtrouter, newtmustache) default is This port number the Newt web services uses to listen for request on localhost
+: (optional: newtrouter, newtHandlebars) default is This port number the Newt web services uses to listen for request on localhost
 
 htdocs
 : (optional: newtrouter only) Directory that holds your application's static content
 
 environment
-: (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+: (optional: newtrouter, newtHandlebars) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
 Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.
 
@@ -83,7 +83,7 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 A pipeline is a list of web services containing a type, URL, method and content types
 
 `service [METHOD ][URL]`
-: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Handlebars template representing the target service URL.
 
 `description`
 : (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.

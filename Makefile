@@ -9,11 +9,13 @@ RELEASE_DATE=$(shell date +'%Y-%m-%d')
 
 RELEASE_HASH=$(shell git log --pretty=format:'%h' -n 1)
 
-PROGRAMS = $(shell ls -1 cmd)
+PROGRAMS = newt newtrouter # $(shell ls -1 cmd)
 
-MAN_PAGES = $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
+TS_PROGRAMS = newthandlebars
 
-HTML_PAGES = $(shell find . -type f | grep -E '\.html')
+MAN_PAGES = newt.1 newtrouter.1 newthandlbebars.1 # $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
+
+HTML_PAGES = newt.1.html newtrouter.1.html newthandlebars.1.html # $(shell find . -type f | grep -E '\.html')
 
 VERSION = $(shell grep '"version":' codemeta.json | cut -d\"  -f 4)
 
@@ -39,7 +41,17 @@ endif
 
 DIST_FOLDERS = bin/*
 
-build: version.go $(PROGRAMS) man CITATION.cff about.md installer.sh installer.ps1
+build: version.go version.ts $(PROGRAMS) $(TS_PROGRAMS) man CITATION.cff about.md installer.sh installer.ps1
+
+version.ts: .FORCE
+	@echo '' | pandoc --from t2t --to plain \
+		--metadata-file codemeta.json \
+		--metadata package=$(PROJECT) \
+		--metadata version=$(VERSION) \
+		--metadata release_date=$(RELEASE_DATE) \
+		--metadata release_hash=$(RELEASE_HASH) \
+		--template codemeta-version-ts.tmpl \
+		LICENSE >version.ts
 
 version.go: .FORCE
 	@echo '' | pandoc --from t2t --to plain \
@@ -56,17 +68,17 @@ $(PROGRAMS): $(PACKAGE)
 	go build -o "bin/$@$(EXT)" cmd/$@/*.go
 	./bin/$@ -help >$@.1.md
 
-man: $(MAN_PAGES)
-
-$(MAN_PAGES): .FORCE
-	mkdir -p man/man1
-	pandoc $@.md --from markdown --to man -s >man/man1/$@
+$(TS_PROGRAMS): $(TS_PACKAGE)
+	@mkdir -p bin
+	env EXT=$(EXT) deno task compile_$@
+	@mkdir -p man/man1
+	pandoc $@.1.md --from markdown --to man -s >man/man1/$@
 
 CITATION.cff: .FORCE
 	@cat codemeta.json | sed -E   's/"@context"/"at__context"/g;s/"@type"/"at__type"/g;s/"@id"/"at__id"/g' >_codemeta.json
 	@echo '' | pandoc --metadata title="Cite $(PROJECT)" --metadata-file=_codemeta.json --template=codemeta-cff.tmpl >CITATION.cff
 
-about.md: .FORCE 
+about.md: .FORCE
 	@cat codemeta.json | sed -E 's/"@context"/"at__context"/g;s/"@type"/"at__type"/g;s/"@id"/"at__id"/g' >_codemeta.json
 	@echo "" | pandoc --metadata-file=_codemeta.json --template codemeta-about.tmpl >about.md 2>/dev/null;
 	@if [ -f _codemeta.json ]; then rm _codemeta.json; fi
@@ -84,6 +96,7 @@ installer.ps1: .FORCE
 presentations: .FORCE
 	- make -f presentation1.mak
 	- make -f presentation2.mak
+	- make -f presentation3.mak
 
 clean-website:
 	make -f website.mak clean
@@ -118,6 +131,7 @@ hash: .FORCE
 check: .FORCE
 	for FNAME in $(shell ls -1 *.go); do go fmt $$FNAME; done
 	go vet *.go
+	for FNAME in $(shell ls -1 *.ts); do deno fmt $$FNAME; deno check $$FNAME; done
 
 test: .FORCE
 	#dropdb birds
@@ -125,8 +139,9 @@ test: .FORCE
 	#cd testdata && psql -d birds -c '\i birds-setup.sql'
 	@echo 'NOTE: You need to run testdata/setup-for_tests.bash for test to succeed'
 	go test #-test.v
+	for FNAME in $(shell ls -1 *_test.ts); do deno test $$FNAME; done
 
-clean: 
+clean:
 	-if [ -d bin ]; then rm -fR bin; fi
 	-if [ -d dist ]; then rm -fR dist; fi
 	-if [ -d testout ]; then rm -fR testout; fi
@@ -154,18 +169,21 @@ publish: build website save .FORCE
 dist/Linux-x86_64: $(PROGRAMS)
 	@mkdir -p dist/bin
 	@for FNAME in $(PROGRAMS); do env  GOOS=linux GOARCH=amd64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target x86_64-unknown-linux-gnu" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Linux-x86_64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
 dist/Linux-aarch64: $(PROGRAMS)
 	@mkdir -p dist/bin
 	@for FNAME in $(PROGRAMS); do env  GOOS=linux GOARCH=arm64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target aarch64-unknown-linux-gnu" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Linux-aarch64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
 dist/macOS-x86_64: $(PROGRAMS)
 	@mkdir -p dist/bin
 	@for FNAME in $(PROGRAMS); do env GOOS=darwin GOARCH=amd64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target x86_64-apple-darwin" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-macOS-x86_64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
@@ -173,6 +191,7 @@ dist/macOS-x86_64: $(PROGRAMS)
 dist/macOS-arm64: $(PROGRAMS)
 	@mkdir -p dist/bin
 	@for FNAME in $(PROGRAMS); do env GOOS=darwin GOARCH=arm64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target aarch64-apple-darwin" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-macOS-arm64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
@@ -180,21 +199,26 @@ dist/macOS-arm64: $(PROGRAMS)
 dist/Windows-x86_64: $(PROGRAMS)
 	@mkdir -p dist/bin
 	@for FNAME in $(PROGRAMS); do env GOOS=windows GOARCH=amd64 go build -o "dist/bin/$${FNAME}.exe" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target x86_64-pc-windows-msvc" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Windows-x86_64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
-dist/Windows-arm64: $(PROGRAMS)
-	@mkdir -p dist/bin
-	@for FNAME in $(PROGRAMS); do env GOOS=windows GOARCH=arm64 go build -o "dist/bin/$${FNAME}.exe" cmd/$${FNAME}/*.go; done
-	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Windows-arm64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
-	@rm -fR dist/bin
+# NOTE: arm64 isn't supported for 32 bit Pi or Windows on ARM by Newt Handlebars
+#dist/Windows-arm64: $(PROGRAMS)
+#	@mkdir -p dist/bin
+#	@for FNAME in $(PROGRAMS); do env GOOS=windows GOARCH=arm64 go build -o "dist/bin/$${FNAME}.exe" cmd/$${FNAME}/*.go; done
+#	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target arch64-pc-windows-msvc" deno task compile_$$FNAME; done
+#	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Windows-arm64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
+#	@rm -fR dist/bin
 
 # Raspberry Pi OS 32 bit, reported by Raspberry Pi 3B+
-dist/Linux-armv7l: $(PROGRAMS)
-	@mkdir -p dist/bin
-	@for FNAME in $(PROGRAMS); do env GOOS=linux GOARCH=arm GOARM=7 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
-	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Linux-armv7l.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
-	@rm -fR dist/bin
+# NOTE: arm64 isn't supported for 32 bit Pi or Windows on ARM by Newt Handlebars
+#dist/Linux-armv7l: $(PROGRAMS)
+#	@mkdir -p dist/bin
+#	@for FNAME in $(PROGRAMS); do env GOOS=linux GOARCH=arm GOARM=7 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+#	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target arm7l-unknown-linux-gnu" deno task compile_$$FNAME; done
+#	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Linux-armv7l.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
+#	@rm -fR dist/bin
 
 
 distribute_docs:
@@ -206,6 +230,8 @@ distribute_docs:
 	@cp -v INSTALL.md dist/
 	@cp -vR man dist/
 
-release: .FORCE installer.sh build distribute_docs dist/Linux-x86_64 dist/Linux-aarch64 dist/macOS-x86_64 dist/macOS-arm64 dist/Windows-x86_64 dist/Windows-arm64 dist/Linux-armv7l
+release: .FORCE installer.sh build distribute_docs dist/Linux-x86_64 dist/Linux-aarch64 \
+	dist/macOS-x86_64 dist/macOS-arm64 \
+	dist/Windows-x86_64
 
 .FORCE:

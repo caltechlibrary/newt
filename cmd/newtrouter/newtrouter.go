@@ -27,7 +27,7 @@ author: R. S. Doiel
 
 # DESCRIPTION
 
-**{app_name}** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt's Mustache template engine. **{app_name}** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
+**{app_name}** is a web service designed to work along side JSON API like that form with Postgres + PostgREST, and a template engine like Newt's Handlebars template engine. **{app_name}** accepts a request, if it finds a matching route description it runs the request through a data pipeline of web services returning the results of the last one executed to the web browser or requester. It's just a data router that manages a pipeline of services for each defined request pattern.
 
 In additional content routing {app_name} can also service out static resources. This is handy during development but less useful if you are using a front end web server such as a production setting.
 
@@ -49,12 +49,12 @@ In additional content routing {app_name} can also service out static resources. 
 
 # YAML_CONFIG_FILE
 
-**{app_name}** is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the environment variables identified the `+"`"+`.appliction.environment`+"`"+` property. Here's a summary of the Newt YAML syntax that **{app_name}** uses.
+**{app_name}** is configured from a YAML file. The YAML should not include secrets. Instead you can pass these in via the environment variables identified the ` + "`" + `.appliction.environment` + "`" + ` property. Here's a summary of the Newt YAML syntax that **{app_name}** uses.
 
 Top level properties for **{app_name}** YAML.
 
 application
-: (optional: newtrouter, newtgenerator, newtmustache) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
+: (optional: newtrouter, newtgenerator, newtHandlebars) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
 
 routes
 : (optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
@@ -64,44 +64,44 @@ routes
 The application properties are optional.
 
 port
-: (optional: newtrouter, newtmustache) default is This port number the Newt web services uses to listen for request on localhost
+: (optional: newtrouter, newtHandlebars) default is This port number the Newt web services uses to listen for request on localhost
 
 htdocs
 : (optional: newtrouter only) Directory that holds your application's static content
 
 environment
-: (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+: (optional: newtrouter, newtHandlebars) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
 Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.
 
 ### a route object
 
-`+"`"+`id`+"`"+`
+` + "`" + `id` + "`" + `
 : (required) This identifies the pipeline. It maybe used in code generation. It must conform to variable name rules[^21]
 
-`+"`"+`description`+"`"+`
+` + "`" + `description` + "`" + `
 : (optional, encouraged) This is a human readable description of what you're trying to accomplish in this specific route. It may be used in comments or by documentation generators.
 
-`+"`"+`request [METHOD ][PATH]`+"`"+`
-: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. `+"`"+`GET /items/{item_id}`+"`"+` would make `+"`"+`item_id`+"`"+` available in building your service paths in the pipeline. The pattern takes up a whole path segment so `+"`"+`/blog/{year}-{month}-{day}`+"`"+` would not work but `+"`"+`/blog/{year}/{month}/{day}`+"`"+` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
+` + "`" + `request [METHOD ][PATH]` + "`" + `
+: (required) This is a string that expresses the HTTP method and URL path to used to trigger running the data pipeline. If METHOD is not provided it will match using just the path. This is probably NOT what you want. You can express embedded variables in the PATH element. This is done by using single curl braces around a variable name. E.g. ` + "`" + `GET /items/{item_id}` + "`" + ` would make ` + "`" + `item_id` + "`" + ` available in building your service paths in the pipeline. The pattern takes up a whole path segment so ` + "`" + `/blog/{year}-{month}-{day}` + "`" + ` would not work but ` + "`" + `/blog/{year}/{month}/{day}` + "`" + ` would capture the individual elements. The Newt router sits closely on top of the Go 1.22 HTTP package route handling. For the details on how Go 1.22 and above request handlers and patterns form see See <https://tip.golang.org/doc/go1.22#enhanced_routing_patterns> and <https://pkg.go.dev/net/http#hdr-Patterns> for explanations.
 
-`+"`"+`pipeline`+"`"+`
+` + "`" + `pipeline` + "`" + `
 : (required) this is a list of URLs to one or more web services visible on localhost. The first stage to fail will abort the pipeline returning an HTTP error status. If done fail then the result of the last stage it returned to the requesting browser.
 
-`+"`"+`debug`+"`"+`
-: (optional) if set to true the `+"`"+`{app_name}`+"`"+` service will log verbose results to standard out for this specific pipeline
+` + "`" + `debug` + "`" + `
+: (optional) if set to true the ` + "`" + `{app_name}` + "`" + ` service will log verbose results to standard out for this specific pipeline
 
 #### a pipeline object
 
 A pipeline is a list of web services containing a type, URL, method and content types
 
-`+"`"+`service [METHOD ][URL]`+"`"+`
-: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `+"`"+`.application.environment`+"`"+`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
+` + "`" + `service [METHOD ][URL]` + "`" + `
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through ` + "`" + `.application.environment` + "`" + `.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Handlebars template representing the target service URL.
 
-`+"`"+`description`+"`"+`
+` + "`" + `description` + "`" + `
 : (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
 
-`+"`"+`timeout`+"`"+`
+` + "`" + `timeout` + "`" + `
 : (optional) Set the timeout in seconds for receiving a response from the web server. Remember the time spent at each stage is the cumulative time your browser is waiting for a response. For this reason you may want to set the timeout to a small number.
 
 # EXAMPLES
@@ -285,8 +285,6 @@ func main() {
 	flag.BoolVar(&showHelp, "help", false, "display help")
 	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.BoolVar(&showVersion, "version", false, "display version")
-
-	
 
 	// App option(s)
 	dryRun, port, htdocs, verbose := false, 0, "", false

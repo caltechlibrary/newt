@@ -1,6 +1,6 @@
 ---
-title: newt(1) user manual | 0.0.8 301a7de
-pubDate: 2024-07-09
+title: newt(1) user manual | 0.0.8 0961fb8
+pubDate: 2024-07-24
 author: R. S. Doiel
 ---
 
@@ -18,7 +18,7 @@ newt [OPTIONS] ACTION [YAML_FILE]
 during development.  **newt** supports the "config", "check", "model", "generate",
 and "run" actions. The "config" command is used when you are starting a
 Newt Project. It is an interactive command prompting for various choices regarding
-the application you want to create.  
+the application you want to create.
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.
@@ -26,15 +26,15 @@ well as validate the YAML syntax.
 The "model" is used to manage your data models. It is interactive like "config".
 
 The "generate" will run the Newt Generator to create the SQL, PostgREST configuration
-and Mustache templates. It'll also update the Newt YAML file's routes and templates
-properties as needed for the generated content. 
+and Handlebars templates. It'll also update the Newt YAML file's routes and templates
+properties as needed for the generated content.
 
 The "run" action will run Newt's router, template engine and PostgREST
 for testing and development.  This allows you to quick run and stop the services
-from one command. 
+from one command.
 
 If a Newt YAML filename isn't supplied when you invoke **newt** the application
-will look in the current directory for a file with the directory's name and ".yaml" 
+will look in the current directory for a file with the directory's name and ".yaml"
 extension and if that is not found it'll look for "app.yaml".
 
 If you are working in the root of a Git repository when you run "config" you will
@@ -69,7 +69,7 @@ check [YAML_FILE]
 : analyze the Newt YAML file and report problems if found.
 
 generate [YAML_FILE]
-: this is used to generate your SQL, PostgREST configuration and Mustache templates
+: this is used to generate your SQL, PostgREST configuration and Handlebars templates
 based on the contents of your Newt YAML file.
 
 run [YAML_FILE]
@@ -77,9 +77,9 @@ run [YAML_FILE]
 This is intended for use in development. In a production setting you'd setup the individual
 services to run from systemd or config as services.
 
-# YAML_FILE 
+# YAML_FILE
 
-**newt** is configured in a YAML file. What is described below is a summary of 
+**newt** is configured in a YAML file. What is described below is a summary of
 YAML syntax use in a Newt project that uses all of the Newt programs.
 
 ## Top level properties
@@ -90,13 +90,13 @@ applications
 : (optional) holds the run time configuration used by the Newt applications.
 
 models
-: (required by newt generator) This holds the description of the data models in your application.  Each model uses HTML 5 element descriptions which can be set using the interactive `newt model` command. 
+: (required by newt generator) This holds the description of the data models in your application.  Each model uses HTML 5 element descriptions which can be set using the interactive `newt model` command.
 
 routes
 : (required by newt router) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 templates
-: (required by newt mustache)
+: (required by newt handbars)
 
 ## The applications property
 
@@ -112,7 +112,7 @@ options
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
 
 environment
-: (optional: newtrouter, newtmustache) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+: (optional: newtrouter, newthandlebars) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
 
 ### Each application may have one or more of these properies.
 
@@ -126,7 +126,7 @@ htdocs
 : (router) Directory that holds your application's static content
 
 timeout
-: (router, mustache) The time in seconds to timeout a HTTP transaction
+: (router, handlebars) The time in seconds to timeout a HTTP transaction
 
 dsn
 : (postgres) The data source name (URI for database connection string). Using to connect to Postgres
@@ -163,7 +163,7 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 A pipeline is a list of web services containing a type, URL, method and content types
 
 `service [METHOD ][URL]`
-: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL.
 
 `description`
 : (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
@@ -218,7 +218,7 @@ textarea
 checkboxes
 : A checkbox element. In SQL if the checkbox is exclusive (e.g. a radio button) then the result is stored in a single column, if multiple checks are allowed it is stored as a JSON Array column.
 
-More comple types include 
+More comple types include
 
 radio
 : For generating a radio button list
@@ -376,33 +376,33 @@ templates:
 
 ## templates property
 
-This property is used by Newt Mustache. It is ignore by Newt router and code generator.
+This property is used by Newt Handlebars. It is ignore by Newt router and code generator.
 
 templates
 : (optional) this holds a list of template objects
 
 ### template object model
 
-The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
+The template objects are used by Newt Handlebars template engine. If you're not using it you can skip these.
 
 `id`
 : (required) is the template id. It can be used to relate one or more templates to an action. E.g. a web form an
 submission result.
 
 `request [PATH]`
-: (required) This holds the request HTTP method and path. Note the HTTP method is missing as all request to Newt Mustache must be done using POST.
+: (required) This holds the request HTTP method and path. Note the HTTP method is missing as all request to Newt Handlebars must be done using POST.
 
 `template`
 : (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
 `partials`
-: (optional) A list of paths to partial Mustache templates used by `.template`.
+: (optional) A list of paths to partial Handlebars templates used by `.template`.
 
 `vocabulary`
-: (opitonal) A path to a "vocabulary" file which is read in when the Newt Mustache is started and the contents are available to the template for processing.
+: (opitonal) A path to a "vocabulary" file which is read in when the Newt Handlebars is started and the contents are available to the template for processing.
 
 `options`
-: (optional) An object that can be merged in with JSON received for processing by your Mustache template
+: (optional) An object that can be merged in with JSON received for processing by your Handlbears template
 
 `debug`
 : (optional) this turns on debugging output for this template

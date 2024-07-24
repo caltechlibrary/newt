@@ -1,20 +1,21 @@
-package newt
+/**
+ * newt information
+ */
+export const appInfo: {[k: string]: string} = {
+  // appName holds the application/package name
+  appName: "newt",
 
-import (
-	"strings"
-)
+  // Version number of release
+  version: "0.0.8",
 
-const (
-    // Version number of release
-    Version = "0.0.8"
+  // ReleaseDate, the date version.ts was generated
+  releaseDate: "2024-07-24",
 
-    // ReleaseDate, the date version.go was generated
-    ReleaseDate = "2024-07-24"
+  // ReleaseHash, the Git hash when version.go was generated
+  releaseHash: "0961fb8",
 
-    // ReleaseHash, the Git hash when version.go was generated
-    ReleaseHash = "0961fb8"
-
-    LicenseText = `
+  // licenseText holds a copy of the application license text.
+  licenseText: `
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -43,20 +44,35 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 `
-)
+}
 
-// FmtHelp lets you process a text block with simple curly brace markup.
-func FmtHelp(src string, appName string, version string, releaseDate string, releaseHash string) string {
-	m := map[string]string {
-		"{app_name}": appName,
-		"{version}": version,
-		"{release_date}": releaseDate,
-		"{release_hash}": releaseHash,
-	}
-	for k, v := range m {
-		if strings.Contains(src, k) {
-			src = strings.ReplaceAll(src, k, v)
-		}
-	}
-	return src
+/**
+ * fmtHelp lets you process a text block with simple curly brace markup.
+ * @param {src} src holds the help text to be processed with curly brace
+ * refernces for app_name, version, release_date, release_hash.
+ * @returns {string} returns the rendered help text.
+ *
+ * @example
+ * ```
+ *   import { appInfo, fmtHelp } from './version.ts';
+ *
+ *   const helpText = ` ... this is where you document your program in Pandoc manpage format `;
+ *   console.log(fmtHelp(helpText, appInfo));
+ * ```
+ */
+export function fmtHelp(src: string, appInfo: {[k: string]: string}): string {
+  const terms: { [k: string]: string } = {
+    app_name: appInfo.appName,
+    version: appInfo.version,
+    release_date: appInfo.releaseDate,
+    release_hash: appInfo.releaseHash
+  };
+  for (let key in terms) {
+    const val: string = terms[key];
+    const varname: string = ['{', key, '}'].join('');
+    if (src.indexOf(varname) > -1) {
+      src = src.replaceAll(varname, val)
+    }
+  }
+  return src
 }

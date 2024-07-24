@@ -10,8 +10,8 @@ func TestMkName(t *testing.T) {
 	actions := []string{"create", "update", "delete"}
 	for _, mId := range mIds {
 		for _, action := range actions {
-			expected := fmt.Sprintf("%s_%s_form.tmpl", mId, action)
-			got := mkName(mId, action, "_form.tmpl")
+			expected := fmt.Sprintf("%s_%s_form.hbs", mId, action)
+			got := mkName(mId, action, "_form.hbs")
 			if expected != got {
 				t.Errorf("expected %q, got %q for %s -> %s", expected, got, mId, action)
 			}
