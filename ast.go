@@ -91,8 +91,8 @@ type Application struct {
 	// Newt router.
 	Htdocs string `json:"htdocs,omitempty" yaml:"htdocs,omitempty"`
 
-	// HBBaseDir is used by Handlebars, usually holds the "views" directory.
-	HbBsaseDir string `json:"base_dir,omitempty" yaml:"base_dir,omitempty"`
+	// HbsBaseDir is used by Handlebars, usually holds the "views" directory.
+	HbsBaseDir string `json:"base_dir,omitempty" yaml:"base_dir,omitempty"`
 
 	// HbsExtName is used by Handlebars to set the expected extension (e.g. ".hbs")
 	HbsExtName string `json:"ext_name,omitempty" yaml:"ext_name,omitempty"`

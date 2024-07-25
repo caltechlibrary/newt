@@ -6,7 +6,9 @@ import {
   OptionsProcessor,
   defaultHttpPort,
   fmtHelp,
+  errorResponse,
   loadAndMergeNewtYAML,
+  renderTemplateObject
 } from "./deps.ts";
 
 /**
@@ -59,29 +61,6 @@ newthandlebars my_app.yaml
 }
 
 /**
- * errorResponse takes a status code and msg and returns a http response.
- * @param {Request} req holds the request to process for the error response.
- * @param {number} status_code holds the HTTP status code.
- * @param {string} msg holds the message to respond with.
- * @return {Response}
- */
-function errorResponse(
-  req: Request,
-  status_code: number,
-  msg: string,
-): Response {
-  const txt: string = `HTTP ERROR ${status_code}: ${req.method} ${new URL(req.url).pathname} ${msg}`;
-  const body: string = `<html>${txt}</html>`;
-  console.log(
-    `response ${status_code}, ${req.headers.get("content-type")}, ${txt}`,
-  );
-  return new Response(body, {
-    status: status_code,
-    headers: { "content-type": "text/html" },
-  });
-}
-
-/**
  * NewtHandlebarsHandler is a function forwards takes POSTS of JSON document and processes with the related
  * related URL's templates path names.
  *
@@ -126,19 +105,7 @@ export async function handleTemplateRequest(
   req: Request,
   config: { [k: string]: any },
 ): Promise<Response> {
-  const u = new URL(req.url);
-  const pathname = u.pathname;
-  console.log("DEBUG u.pathname ->", pathname);
-  const body = ` placeholder text, need to process the POST data with template indicated
-    by ${pathname}.
-`;
-  const status_code = 200;
-
-  return new Response(body, {
-    status: status_code,
-    headers: { "content-type": "text/html" },
-  });
-  return errorResponse(req, 501, "handleTemplateRequest method implemented");
+  return await renderTemplateObject(config, req);
 }
 
 /**
@@ -186,6 +153,7 @@ async function main() {
     console.log(`${appName} missing NEWT_YAML_FILENAME`);
     Deno.exit(1);
   }
+  console.log(`DEBUG loadAndMergeNewtYAML(${yaml_name}, options)`);
   const config = await loadAndMergeNewtYAML(yaml_name, options);
 
   console.log(

@@ -4,6 +4,30 @@
  */
 
 /**
+ * errorResponse takes a status code and msg and returns a http response.
+ * @param {Request} req holds the request to process for the error response.
+ * @param {number} status_code holds the HTTP status code.
+ * @param {string} msg holds the message to respond with.
+ * @return {Response}
+ */
+function errorResponse(
+  req: Request,
+  status_code: number,
+  msg: string,
+): Response {
+  const txt: string = `HTTP ERROR ${status_code}: ${req.method} ${new URL(req.url).pathname} ${msg}`;
+  const body: string = `<html>${txt}</html>`;
+  console.log(
+    `response ${status_code}, ${req.headers.get("content-type")}, ${txt}`,
+  );
+  return new Response(body, {
+    status: status_code,
+    headers: { "content-type": "text/html" },
+  });
+}
+
+
+/**
  * hasMethodAndPath gets a request method and url for an extact match of pathname and method
  * @param {Request} req holds the request to evaluatte
  * @param {string} method  holds the target method to match against
@@ -72,7 +96,7 @@ export function hasMethodAndPathRegExp(
  *
  * @example
  * ```
- *    const uri = new URL('https://localhost:8180/groups/LIGO');
+ *    const uri = 'https://localhost:8180/groups/LIGO';
  *    const clgid = pathIdentifier(uri);
  *    console.log("group identifier is", clgid);
  * ```

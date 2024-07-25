@@ -44,7 +44,16 @@ export interface ServiceInterface {
   timeout: number;
 }
 
-export interface TemplateInterface {}
+export interface TemplateInterface {
+	id: string;
+	pattern: RegExp,
+	template: string;
+	options: {[k:string]:string},
+	vacabulary: string;
+	vars: {[k:string]:string}
+	description: string,
+	debug: boolean;
+}
 
 export interface ASTInterface {
   applications: {

@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --allow-read --allow-net --allow-env --watch newthandlebars.ts",
+    "dev": "deno run --allow-read --allow-net --allow-env --watch newthandlebars.ts $1",
     "compile_newthandlebars": "deno compile --allow-read --allow-net -o bin/newthandlebars$EXT $TARGET newthandlebars.ts ; ./bin/newthandlebars$EXT --help >newthandlebars.1.md"
   },
   "imports": {

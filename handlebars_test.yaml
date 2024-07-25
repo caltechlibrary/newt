@@ -1,0 +1,26 @@
+applications:
+  template_engine:
+    port: 8020
+    base_dir: testdata
+    partials_dir: testdata/partials
+    layout_dir: testdata/layouts
+    ext_name: .hbs
+    cache_partials: false
+templates:
+  - id: hello
+    request: /hello/{name}
+    template: hithere.hbs
+  - id: hello
+    request: /hello
+    template: hithere.hbs
+    options:
+      name: Universe
+  - id: hi
+    request: /hi/{name}
+    template: hithere.html.hbs
+    debug: true
+  - id: hi
+    request: /hi
+    template: hithere.html.hbs
+    options:
+      name: Universe

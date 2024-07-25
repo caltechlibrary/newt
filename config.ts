@@ -1,7 +1,7 @@
 /**
  * config.ts holds the application configuration defaults.
  */
-import { yaml, ASTInterface } from "./deps.ts";
+import { yaml, ASTInterface, TemplateInterface } from "./deps.ts";
 
 export const defaultHttpPort: number = 3032;
 
@@ -19,4 +19,17 @@ export async function loadAndMergeNewtYAML(
   }
   console.log("DEBUG AST interface (after merge)", result);
   return result;
+}
+
+export function getTemplateFromId(config: ASTInterface, template_id: string) : TemplateInterface | undefined {
+	if (config.templates == undefined) {
+		return undefined;
+	}
+	for (let i of config.templates) {
+		const template = config.templates[i];
+		if (template.id === template_id) {
+			return template;
+		}
+	}
+	return undefined;
 }

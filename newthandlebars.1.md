@@ -1,6 +1,6 @@
-%newt(1) user manual | 0.0.8 2024-07-24
+%newt(1) user manual | 0.0.8 2024-07-25
 % R. S. Doiel
-% 2024-07-24 57d3074
+% 2024-07-25 bc2ab1d
 
 # NAME
 

@@ -25,6 +25,7 @@ export {
   getString,
   getNumber,
   getBoolean,
+  errorResponse,
 } from "./utils.ts";
 
 export type {

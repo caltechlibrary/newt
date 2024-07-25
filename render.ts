@@ -49,6 +49,22 @@ export async function renderPage(
 }
 
 /**
+ * renderTemplateObject takes a configuration and req build the page data object and
+ * calles renderPage with the results.
+ *
+ * @param {ASTInterface} config object
+ * @param {Request} request object
+ * @returns {Promise<Response>} returns a response 
+ */
+export async function reanderTemplate(config: ASTInterface, req: request): Promise<Response> {
+	const template_id = pathIdentifier(req.url);
+	if (template_id === undefined) {
+		return errorResponse(req, 404, `${template_id} not found`);
+	}
+	return errorResponse(req, 501, `renderTemplateObject(${JSON.stringify(config)}, ${JSON.stringify(req)}) has not been implemented`);
+}
+
+/**
  * makePage takes a template path and a page object and returns a Response object.
  *
  * @param {string} template: this name of the template in the views folder
