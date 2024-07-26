@@ -24,5 +24,7 @@ require (
 	github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d // indirect
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/webui-dev/go-webui/v2 v2.4.3-0.20240707212404-5778f985c4a3 // indirect
+	github.com/webui-dev/webui v0.0.0-20240708010315-f888f15dbdf1 // indirect
 	golang.org/x/net v0.24.0 // indirect
 )

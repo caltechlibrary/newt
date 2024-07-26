@@ -11,8 +11,9 @@ applications:
   router:
     htdocs: .
     port: 8001
-  mustache:
+  tempalte_engine:
     port: 8002
+    templates: ./views
   postgres:
     namespace: ornithology
 routes:

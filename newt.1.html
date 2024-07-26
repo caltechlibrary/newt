@@ -40,7 +40,7 @@ analyze and as well as validate the YAML syntax.</p>
 <p>The “model” is used to manage your data models. It is interactive
 like “config”.</p>
 <p>The “generate” will run the Newt Generator to create the SQL,
-PostgREST configuration and Mustache templates. It’ll also update the
+PostgREST configuration and Handlebars templates. It’ll also update the
 Newt YAML file’s routes and templates properties as needed for the
 generated content.</p>
 <p>The “run” action will run Newt’s router, template engine and
@@ -92,8 +92,8 @@ analyze the Newt YAML file and report problems if found.
 </dd>
 <dt>generate <a href="#yaml_file">YAML_FILE</a></dt>
 <dd>
-this is used to generate your SQL, PostgREST configuration and Mustache
-templates based on the contents of your Newt YAML file.
+this is used to generate your SQL, PostgREST configuration and
+Handlebars templates based on the contents of your Newt YAML file.
 </dd>
 <dt>run <a href="#yaml_file">YAML_FILE</a></dt>
 <dd>
@@ -128,7 +128,7 @@ which can be set using the interactive <code>newt model</code> command.
 </dd>
 <dt>templates</dt>
 <dd>
-(required by newt mustache)
+(required by newt handbars)
 </dd>
 </dl>
 <h2 id="the-applications-property">The applications property</h2>
@@ -152,9 +152,9 @@ models, routes and templates.
 </dd>
 <dt>environment</dt>
 <dd>
-(optional: newtrouter, newtmustache) this is a list of operating system
-environment that will be available to routes. This is used to pass in
-secrets (e.g. credentials) need in the pipeline
+(optional: newtrouter, newthandlebars) this is a list of operating
+system environment that will be available to routes. This is used to
+pass in secrets (e.g. credentials) need in the pipeline
 </dd>
 </dl>
 <h3 id="each-application-may-have-one-or-more-of-these-properies.">Each
@@ -175,7 +175,7 @@ Postgres+PostgREST
 </dd>
 <dt>timeout</dt>
 <dd>
-(router, mustache) The time in seconds to timeout a HTTP transaction
+(router, handlebars) The time in seconds to timeout a HTTP transaction
 </dd>
 <dt>dsn</dt>
 <dd>
@@ -510,7 +510,7 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="
 <span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> app_list.tmpl</span></span>
 <span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This template handles app list</span></span></code></pre></div>
 <h2 id="templates-property">templates property</h2>
-<p>This property is used by Newt Mustache. It is ignore by Newt router
+<p>This property is used by Newt Handlebars. It is ignore by Newt router
 and code generator.</p>
 <dl>
 <dt>templates</dt>
@@ -519,7 +519,7 @@ and code generator.</p>
 </dd>
 </dl>
 <h3 id="template-object-model">template object model</h3>
-<p>The template objects are used by Newt Mustache template engine. If
+<p>The template objects are used by Newt Handlebars template engine. If
 you’re not using it you can skip these.</p>
 <dl>
 <dt><code>id</code></dt>
@@ -530,7 +530,7 @@ templates to an action. E.g. a web form an submission result.
 <dt><code>request [PATH]</code></dt>
 <dd>
 (required) This holds the request HTTP method and path. Note the HTTP
-method is missing as all request to Newt Mustache must be done using
+method is missing as all request to Newt Handlebars must be done using
 POST.
 </dd>
 <dt><code>template</code></dt>
@@ -541,19 +541,19 @@ does support partial templates
 </dd>
 <dt><code>partials</code></dt>
 <dd>
-(optional) A list of paths to partial Mustache templates used by
+(optional) A list of paths to partial Handlebars templates used by
 <code>.template</code>.
 </dd>
 <dt><code>vocabulary</code></dt>
 <dd>
 (opitonal) A path to a “vocabulary” file which is read in when the Newt
-Mustache is started and the contents are available to the template for
+Handlebars is started and the contents are available to the template for
 processing.
 </dd>
 <dt><code>options</code></dt>
 <dd>
 (optional) An object that can be merged in with JSON received for
-processing by your Mustache template
+processing by your Handlbears template
 </dd>
 <dt><code>debug</code></dt>
 <dd>

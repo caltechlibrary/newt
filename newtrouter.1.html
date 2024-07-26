@@ -30,12 +30,12 @@
 <h1 id="description">DESCRIPTION</h1>
 <p><strong>newtrouter</strong> is a web service designed to work along
 side JSON API like that form with Postgres + PostgREST, and a template
-engine like Newt’s Mustache template engine. <strong>newtrouter</strong>
-accepts a request, if it finds a matching route description it runs the
-request through a data pipeline of web services returning the results of
-the last one executed to the web browser or requester. It’s just a data
-router that manages a pipeline of services for each defined request
-pattern.</p>
+engine like Newt’s Handlebars template engine.
+<strong>newtrouter</strong> accepts a request, if it finds a matching
+route description it runs the request through a data pipeline of web
+services returning the results of the last one executed to the web
+browser or requester. It’s just a data router that manages a pipeline of
+services for each defined request pattern.</p>
 <p>In additional content routing newtrouter can also service out static
 resources. This is handy during development but less useful if you are
 using a front end web server such as a production setting.</p>
@@ -75,7 +75,7 @@ Newt YAML syntax that <strong>newtrouter</strong> uses.</p>
 <dl>
 <dt>application</dt>
 <dd>
-(optional: newtrouter, newtgenerator, newtmustache) holds the run time
+(optional: newtrouter, newtgenerator, newtHandlebars) holds the run time
 configuration used by the Newt web service and metadata about the
 application you’re creating.
 </dd>
@@ -90,7 +90,7 @@ pipeline (e.g. JSON API and template engine sequence)
 <dl>
 <dt>port</dt>
 <dd>
-(optional: newtrouter, newtmustache) default is This port number the
+(optional: newtrouter, newtHandlebars) default is This port number the
 Newt web services uses to listen for request on localhost
 </dd>
 <dt>htdocs</dt>
@@ -100,9 +100,9 @@ static content
 </dd>
 <dt>environment</dt>
 <dd>
-(optional: newtrouter, newtmustache) this is a list of operating system
-environment that will be available to routes. This is used to pass in
-secrets (e.g. credentials) need in the pipeline
+(optional: newtrouter, newtHandlebars) this is a list of operating
+system environment that will be available to routes. This is used to
+pass in secrets (e.g. credentials) need in the pipeline
 </dd>
 </dl>
 <p>Routes hosts a list of request descriptions and their data pipelines.
@@ -165,7 +165,7 @@ from the request path as well as those passed in through
 <code>.application.environment</code>. All the elements extracted from
 the elements derived from the request path are passed through strings.
 These are then used to construct a simple key-value object of variable
-names and objects which are then passed through the Mustache template
+names and objects which are then passed through the Handlebars template
 representing the target service URL.
 </dd>
 <dt><code>description</code></dt>

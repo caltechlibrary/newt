@@ -211,10 +211,16 @@ type PartialGen func(io.Writer, *Model) error
 func mTmplPage(out io.Writer, model *Model, fn PartialGen) error {
 	fmt.Fprintf(out, `<!DOCTYPE html>
 <html lang="en-us">
+{{>head}}
 	<body>
+{{>header}}
+{{>nav}}
+<section>
 `)
 	err := fn(out, model)
 	fmt.Fprintf(out, `
+</section>
+{{>footer}}
 	</body>
 </html>`)
 	return err

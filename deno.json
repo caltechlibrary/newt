@@ -1,0 +1,23 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-read --allow-net --allow-env --watch newthandlebars.ts $1",
+    "compile_newthandlebars": "deno compile --allow-read --allow-net -o bin/newthandlebars$EXT $TARGET newthandlebars.ts ; ./bin/newthandlebars$EXT --help >newthandlebars.1.md"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.0",
+    "@std/csv": "jsr:@std/csv@^0.224.3",
+    "@std/datetime": "jsr:@std/datetime@^0.224.3",
+    "@std/dotenv": "jsr:@std/dotenv@^0.224.2",
+    "@std/encoding": "jsr:@std/encoding@^1.0.1",
+    "@std/fmt": "jsr:@std/fmt@^0.225.6",
+    "@std/front-matter": "jsr:@std/front-matter@^0.224.3",
+    "@std/fs": "jsr:@std/fs@^0.229.3",
+    "@std/html": "jsr:@std/html@^1.0.0",
+    "@std/http": "jsr:@std/http@^0.224.5",
+    "@std/log": "jsr:@std/log@^0.224.5",
+    "@std/media-types": "jsr:@std/media-types@^1.0.1",
+    "@std/path": "jsr:@std/path@^1.0.0",
+    "@std/url": "jsr:@std/url@^0.224.1",
+    "@std/yaml": "jsr:@std/yaml@^0.224.3"
+  }
+}

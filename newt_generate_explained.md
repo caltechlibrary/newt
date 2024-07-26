@@ -1,5 +1,7 @@
 
-# Newt Generator Explained
+# Newt's `newt generate` Explained
+
+// FIXME: Needs to be rewritten given code changes and evolution of AST.
 
 Newt comes with a code generator as part of the `newt` command. It uses the Newt YAML file to render Postgres SQL, PostgREST configuration and Mustache templates suitable to bootstrap your Newt based project.  How does it do this? What are the assumptions?
 

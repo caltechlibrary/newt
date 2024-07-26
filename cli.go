@@ -7,8 +7,8 @@ package newt
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/json"
+	//	"bytes"
+	//	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -19,9 +19,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	// 3rd Party Templates
-	"github.com/cbroglie/mustache"
 )
 
 const (
@@ -153,49 +150,49 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 
 	//NOTE: For each model generate a set of templates
 	for _, modelID := range ast.GetModelIds() {
-		// backup and generate {model}_create_form.tmpl, {model}_create_response.tmpl
-		fName = fmt.Sprintf("%s_create_form.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "create_form", fName); err != nil {
+		// backup and generate {model}_create_form.hbs, {model}_create_response.hbs
+		fName = fmt.Sprintf("%s_create_form.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "create_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_create_response.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "create_response", fName); err != nil {
+		fName = fmt.Sprintf("%s_create_response.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "create_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
 
-		// backup and generate {model}_read.tmpl
-		fName = fmt.Sprintf("%s_read.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "read", fName); err != nil {
+		// backup and generate {model}_read.hbs
+		fName = fmt.Sprintf("%s_read.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "read", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		// backup and generate {model}_update_form.tmpl, {model}_update_response.tmpl
-		fName = fmt.Sprintf("%s_update_form.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "update_form", fName); err != nil {
+		// backup and generate {model}_update_form.hbs, {model}_update_response.hbs
+		fName = fmt.Sprintf("%s_update_form.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "update_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_update_response.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "update_response", fName); err != nil {
+		fName = fmt.Sprintf("%s_update_response.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "update_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		// backup and generate {model}_delete_form.tmpl, {model}_delete_response.tmpl
-		fName = fmt.Sprintf("%s_delete_form.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "delete_form", fName); err != nil {
+		// backup and generate {model}_delete_form.hbs, {model}_delete_response.hbs
+		fName = fmt.Sprintf("%s_delete_form.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "delete_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_delete_response.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "delete_response", fName); err != nil {
+		fName = fmt.Sprintf("%s_delete_response.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "delete_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		// backup and generate {model}_list.tmpl
-		fName = fmt.Sprintf("%s_list.tmpl", modelID)
-		if err := renderTemplate(generator, "mustache", modelID, "list", fName); err != nil {
+		// backup and generate {model}_list.hbs
+		fName = fmt.Sprintf("%s_list.hbs", modelID)
+		if err := renderTemplate(generator, "handlebars", modelID, "list", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
@@ -206,69 +203,9 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 // RunTemplateEngine is a runner for a Newt's template engine.
 func RunTemplateEngine(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
 	appName := "Newt Template Engine"
-	// ASTure the template bundler webservice
-	fName := getNewtYamlFName(args)
-	if fName == "" {
-		fmt.Fprintf(eout, "missing Newt YAML filename\n")
-		return CONFIG
-	}
-	// Load the Newt YAML syntax file holding the configuration
-	// and make sure it conforms.
-	ast, err := LoadAST(fName)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
-	}
-	// Instantiate the specific application with the filename and AST object
-	mt, err := NewTemplateEngine(ast)
-	if err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return CONFIG
-	}
-	// If port is not set in the config, set it to the default port.
-	if mt.Port == 0 {
-		mt.Port = MUSTACHE_PORT
-	}
-	// See if we have a command line option for port to process.
-	if port != 0 {
-		mt.Port = port
-	}
-	if verbose {
-		fmt.Fprintf(out, "port set to %d\n", mt.Port)
-	}
-
-	if timeout != 0 {
-		mt.Timeout = time.Duration(timeout) * time.Second
-	}
-	if mt.Timeout == 0 {
-		mt.Timeout = MUSTACHE_TIMEOUT
-	}
-	if len(mt.Templates) == 0 {
-		fmt.Fprintf(eout, "no templates in configuration\n")
-		return CONFIG
-	}
-	// Create mux for http service
-	// Resolve partial templates and build handlers
-	for _, tmpl := range mt.Templates {
-		if verbose {
-			tmpl.Debug = true
-		}
-		if err := tmpl.ResolveTemplate(); err != nil {
-			fmt.Fprintf(eout, "%s failed to resolve, %s\n", tmpl.Template, err)
-			return RESOLVE
-		}
-		if err := tmpl.ResolvePath(); err != nil {
-			fmt.Fprintf(eout, "failed to build handler for %q, %s\n", tmpl.Pattern, err)
-			return HANDLER
-		}
-	}
-	// Launch web service
-	fmt.Printf("starting %s listening on port :%d (press Ctrl-c to exit)\n", appName, mt.Port)
-	if err := mt.ListenAndServe(); err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return MUSTACHE_FAIL
-	}
-	return OK
+	//FIXME: this needs to call out the the newthandler program. It is not a TypeScript program compiled by Deno.
+	fmt.Fprintf(eout, "RunTemplateEngine for %s is being replace, not implemented yet", appName)
+	return 1 // NOT implemented.
 }
 
 // RunRouter is a runner for Newt data router and static file service
@@ -423,9 +360,6 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				tList := []string{
 					mt.Template,
 				}
-				if len(mt.Partials) > 0 {
-					tList = append(tList, mt.Partials...)
-				}
 				fmt.Fprintf(out, "http://localhost:%d%s points at %s\n", port, mt.Pattern, strings.Join(tList, ", "))
 				if mt.Description != "" {
 					fmt.Fprintf(out, "\t%s\n\n", mt.Description)
@@ -533,63 +467,6 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 	// Block until any signal is received.
 	s := <-c
 	fmt.Println("exited with signal:", s)
-	return OK
-}
-
-// RunMustacheCLI this provides a cli for checking your templates using static JSON files and
-// displaying results to stdout.
-func RunMustacheCLI(in io.Reader, out io.Writer, eout io.Writer, args []string, pageElements map[string]interface{}) int {
-	var (
-		tmplFName string
-		dataFName string
-		txt       []byte
-		src       []byte
-		data      *interface{}
-		err       error
-	)
-	if len(args) == 1 {
-		tmplFName, dataFName = args[0], "-"
-	} else if len(args) == 2 {
-		tmplFName, dataFName = args[0], args[1]
-	} else {
-		fmt.Fprintf(eout, "expected a JSON data file and template filename\n")
-		return DATA_ERROR
-	}
-	txt, err = os.ReadFile(tmplFName)
-	if err != nil {
-		fmt.Fprintf(eout, "failed reading %q, %s\n", tmplFName, err)
-		return READ_ERROR
-	}
-
-	if dataFName == "" || dataFName == "-" {
-		dataFName = "stdin"
-		src, err = io.ReadAll(in)
-	} else {
-		src, err = os.ReadFile(dataFName)
-	}
-	if err != nil {
-		fmt.Fprintf(eout, "failed reading data %q, %s\n", dataFName, err)
-		return READ_ERROR
-	}
-	decoder := json.NewDecoder(bytes.NewBuffer(src))
-	decoder.UseNumber()
-	if err = decoder.Decode(&data); err != nil {
-		fmt.Fprintf(eout, "failed decoding %q, %s\n", dataFName, err)
-		return DECODE_ERROR
-	}
-	if pageElements == nil || len(pageElements) == 10 {
-		pageElements = map[string]interface{}{}
-	}
-
-	tmpl, err := mustache.ParseString(fmt.Sprintf("%s", txt))
-	if err != nil {
-		fmt.Fprintf(eout, "failed template parse error %q, %s\n", dataFName, err)
-		return TEMPLATE_ERROR
-	}
-	if err = tmpl.FRender(out, pageElements); err != nil {
-		fmt.Fprintf(eout, "failed render error %q, %s\n", dataFName, err)
-		return TEMPLATE_ERROR
-	}
 	return OK
 }
 

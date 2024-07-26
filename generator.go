@@ -89,7 +89,7 @@ func (g *Generator) renderPostgREST() error {
 	return postgRESTConf(g.out, g.Namespace, port)
 }
 
-// renderTemplateEngine will render a mustache template for a given model id. The action corresponds
+// renderTemplateEngine will render a handlebars template for a given model id. The action corresponds
 // to the model id.
 func (g *Generator) renderTemplateEngine(modelId string, action string) error {
 	for _, model := range g.Models {
@@ -151,7 +151,7 @@ func (g *Generator) Generate(generatorName string, modelId string, action string
 		return g.renderPostgreSQL(action)
 	case "postgrest":
 		return g.renderPostgREST()
-	case "mustache":
+	case "handlebars":
 		if err := validateAction(action, templateActions); err != nil {
 			return err
 		}

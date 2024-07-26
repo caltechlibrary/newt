@@ -445,7 +445,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 		}
 	}
 
-	tSuffix := "_form.tmpl"
+	tSuffix := "_form.hbs"
 	tmplName := mkName(objName, action, tSuffix)
 	tmplPattern := fmt.Sprintf("/%s_%s", objName, action)
 	tmplDescription := fmt.Sprintf("Display a %s for %s", objName, action)
@@ -476,7 +476,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	ast.Routes = append(ast.Routes, route)
 
 	// Setup template submit result
-	tmplName = mkName(objName, action, "_response.tmpl")
+	tmplName = mkName(objName, action, "_response.hbs")
 	tmplPattern = fmt.Sprintf("/%s_%s_response", objName, action)
 	tmplDescription = fmt.Sprintf("This is an result template for %s %s", objName, action)
 	ast.Templates = append(ast.Templates, &Template{
@@ -520,7 +520,7 @@ func setupReadHandling(ast *AST, model *Model, action string) error {
 		}
 	}
 	// Setup template for results of read request
-	tmplName := mkName(model.Id, action, ".tmpl")
+	tmplName := mkName(model.Id, action, ".hbs")
 	tmplPattern := fmt.Sprintf("/%s_%s", model.Id, action)
 	tmplDescription := fmt.Sprintf("This template handles %s %s", model.Id, action)
 	ast.Templates = append(ast.Templates, &Template{

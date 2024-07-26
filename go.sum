@@ -48,6 +48,10 @@ github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/webui-dev/go-webui/v2 v2.4.3-0.20240707212404-5778f985c4a3 h1:OFBKi9AKGextTyNbFSYwQA/krHmN+ClmfvDUmmdHHZ0=
+github.com/webui-dev/go-webui/v2 v2.4.3-0.20240707212404-5778f985c4a3/go.mod h1:wAuoPsuZW60krM633fOFAQFtnRgzFD1dGDRHQd6lfPY=
+github.com/webui-dev/webui v0.0.0-20240708010315-f888f15dbdf1 h1:VOeuxQ4q0DjrggaINOy8dy9bPkkbWfU2lnhxSROV4zk=
+github.com/webui-dev/webui v0.0.0-20240708010315-f888f15dbdf1/go.mod h1:/jtfG9N1lGg8McUx/rsPD0okOSNGUhuHinbAbmjtwTc=
 golang.org/x/net v0.24.0 h1:1PcaxkF854Fu3+lvBIx5SYn9wRlBzzcnHZSiaFFAb0w=
 golang.org/x/net v0.24.0/go.mod h1:2Q7sJY5mzlzWjKtYUEXSlBWCdyaioyXzRB2RtU8KVE8=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
