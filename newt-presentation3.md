@@ -1,5 +1,5 @@
 ---
-title: "Newt, the second prototype"
+title: "Newt, the third prototype"
 author: "R. S. Doiel, <rsdoiel@caltech.edu>"
 institute: |
   Caltech Library,
@@ -10,12 +10,12 @@ linkstyle: bold
 aspectratio: 169
 createDate: 2024-07-24
 updateDate: 2024-07-26
-#pubDate: 2024-04-19
-place: TBD
+#pubDate: TBD
+#place: TBD
 #date: TBD
 section-titles: false
 toc: true
-keywords: [ "web service", "micro service", "Postgres", "PostgREST", "Handlebars", "service oriented architecture", "RAD", "prototyping" ]
+keywords: [ "web service", "micro services", "service oriented architecture", "RAD", "prototyping" ]
 url: "https://caltechlibrary.github.io/newt/presentation3"
 ---
 
@@ -23,7 +23,7 @@ url: "https://caltechlibrary.github.io/newt/presentation3"
 
 - A rapid application develop tool
     - for applications that curate metadata
-- Audience: Libraries, Archives, Gallaries and Museums
+- Audience: Libraries, Archives, Galleries and Museums
 
 # Findings from Prototype 2:
 
@@ -36,23 +36,17 @@ Short answer is **yes**. Longer answer is more nuanced.
 > Is Newt and "off the shelf" software enough to create metadata curation applications?
 
 1. Newt's YAML file can grow very large for applications with many data models
-2. Model vetting and validation should happen early in the data pipeline, ideally as a generated program
+2. Model vetting and validation should happen early in the data pipeline, ideally as a generated program and browser side
 3. Postgres+PostgREST is a powerful combination but it'd be nice to have something simpler
 4. Managing the YAML file can be done conversationally
 
 # Questions raised by Prototype 2:
 
-- Where do I focus our simplification efforts?
-- How do I ensure that large YAML files remaining human managable?
+- Where do I focus my simplification efforts?
+- How do I ensure that large YAML files remaining human manageable?
 - Mustache template language is a little too simple, what should replace it?
 
-# Goal of Prototype 3: Answer these questions three.
-
-1. Is generating TypeScript programs a suitable way to solve the validator problem?
-2. Is HandlebarsJS via TypeScript a good fit for managing data views?
-3. What default JSON data sources should be supported? (e.g. Postgres+PostgREST, dataset+datasetd)
-
-# High level Concepts (remaing the same)
+# High level Concepts (remain the same)
 
 - describe the application you want
 - generate the application you described
@@ -60,29 +54,47 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 # Implementation Concepts (remaining the same)
 
-- data sources
-- data models
+- JSON data sources
+- data modeled in YAML
 - routing requests through data pipelines
 
-# Themes (remaing the same)
+# Themes (remains the same)
 
 - Pick Simple = (No coding) + (Less coding)
-- Compose applications using data pipelines and templates
+- Compose applications using data pipelines
 - Avoid inventing new things
 
-# Stack changes
+# Goal of Prototype 3: Questions to explore
 
-- render JSON responses via HandlebarJS template engine
-- generated validation code via TypeScript running in Deno
+1. What should the default JSON data source be? (dataset+datasetd or Postgres+PostgREST)
+2. Is generated TypeScript middleware the right fit? (e.g. validation service, template engine)
+3. Is Handlebars a good fit for managing data views and rendering HTML?
+4. Should the template engine be generic or a generated TypeScript program?
+
+# Goal of Prototype 3: Extra credit question
+
+- Can I leverage WASI+WASM to make useful Python libraries available to Deno and browser?
+
+# Changes from last prototype
+
+- Removed some Go cli (e.g. ws, mustache, newtmustache)
+- Adopting Handlebars as template langauage
+- Generating collection and YAML for dataset+datasetd
+- Generating TypeScript to run via Deno
+- Using Deno to generate JS/ES6 for web browser
 
 # Off the shelf (no coding)
 
 - Data Sources
   - [Dataset + datasetd](https://caltechlibrary.github.io/datasetd)
   - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
-  - [Solr](https://solr.apache.org) ??? [OpenSearch](https://opensearch.org) ???
-- Newt Handlebars => Transform JSON into web pages
+- Use Handlebars => Transform JSON into web pages
 - Newt Router, ties it all together
+
+# Off the self (optional)
+
+- [Solr](https://solr.apache.org)
+- [OpenSearch](https://opensearch.org)
 
 # Assemble app from YAML (less coding)
 
@@ -102,8 +114,8 @@ Short answer is **yes**. Longer answer is more nuanced.
 1. Interactively generate our application's YAML file
 2. Interactively define data models
 3. Generate our application code
-4. Setup a primary data source
-5. Run our app with Newt
+4. Run `newt setup ...` for primary data source
+5. Run `newt run ...`  to run the application
 
 # Steps one and two are interactive
 
@@ -118,34 +130,17 @@ Short answer is **yes**. Longer answer is more nuanced.
   newt generate app.yaml
 ~~~
 
-> Created a dataset collection and datasetd YAML file
-> or render SQL, PostgREST conf
+> Create a dataset collection and datasetd YAML file
 > Render Handlebars templates
+> Wires up routes
+> Adds tasks to deno.json
 
 # Step four, setup primary JSON data source
 
 ## Dataset collection
 
-> Collection generation is done "automagically" by `newt generate app.yaml`
+> Collection generation is done "auto magically" by `newt generate app.yaml`
 > datasetd YAML file gets generated so Newt can run the datasetd JSON API
-
-# Step four, setup the primary JSON data source
-
-## Postgres+PostgREST
-
-1. Use the generated SQL and configuration
-2. Setup and check via `createdb` and `psql`
-
-# Step four, setup Postgres and PostgREST
-
-~~~shell
-  createdb app
-  psql app -c '\i setup.sql'
-  psql app -c '\i models.sql'
-  psql app -c '\dt'
-~~~
-
-> should this be automated too?
 
 # Step five, run your application and test
 
@@ -170,9 +165,9 @@ Not yet, hopefully in early December 2024.
 - [X] Newt developer tool
 - [X] Router is implemented and working
 - [X] ~~Mustache template engine is working~~ (removed)
-- [ ] Handlebars template engine (planning and design)
 - [ ] Generator development (paused)
 - [ ] Modeler (design stage)
+- [ ] Handlebars template engine (planning and design)
 
 # Insights from prototypes 1 & 2
 
@@ -188,16 +183,15 @@ Not yet, hopefully in early December 2024.
 
 # What's next to wrap up prototype 3?
 
-- Implement new template engine, using HandlebarsJS, TypeScript and Deno
-- Debug and improve the code generator
-- Continue to implement a data modeler
+- Retarget, Debug and improve the code generator
+- Continue to design and implement a data modeler
+- Implement new template engine, using Handlebars, TypeScript and Deno
 - Generate validation layer written in TypeScript and run by Deno
 
 # Out of the box
 
 - Newt (development tool)
 - Newt Router
-- Newt Template Engine
 
 # Unanswered Questions
 
@@ -211,13 +205,13 @@ Not yet, hopefully in early December 2024.
 - A S3 protocol web service implementing object storage using OCFL
 - Web components for library, archive and museum metadata types
 - Extend Newt through WASI+WASM run time modules and expose to use in pipelines
+- WASI+WASM might be useful to conserve ports taken up in the data pipelines
 
 # Related resources
 
 - Newt <https://github.com/caltechlibrary/newt>
 - Dataset + datasetd <https://github.com/caltechlibrary/dataset>
-- Postgres <https://postgres.org> + PostgREST <https://postgrest.org>
-- [HandlebarsJS](https://handlebarsjs.com) programming languages support
+- [Handlebars](https://handlebarsjs.com) programming languages support
 
 # Thank you!
 

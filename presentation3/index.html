@@ -7,10 +7,9 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="R. S. Doiel, rsdoiel@caltech.edu" />
-  <meta name="keywords" content="web service, micro
-service, Postgres, PostgREST, Handlebars, service oriented
-architecture, RAD, prototyping" />
-  <title>Newt, the second prototype</title>
+  <meta name="keywords" content="web service, micro services, service
+oriented architecture, RAD, prototyping" />
+  <title>Newt, the third prototype</title>
   <style type="text/css">
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -35,7 +34,7 @@ architecture, RAD, prototyping" />
 </head>
 <body>
 <div class="slide titlepage">
-  <h1 class="title">Newt, the second prototype</h1>
+  <h1 class="title">Newt, the third prototype</h1>
   <p class="author">
 R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu"
 class="email">rsdoiel@caltech.edu</a>
@@ -54,7 +53,7 @@ class="email">rsdoiel@caltech.edu</a>
 <ul>
 <li>for applications that curate metadata</li>
 </ul></li>
-<li>Audience: Libraries, Archives, Gallaries and Museums</li>
+<li>Audience: Libraries, Archives, Galleries and Museums</li>
 </ul>
 </div>
 <div id="findings-from-prototype-2" class="slide section level1">
@@ -76,7 +75,7 @@ curation applications?</p>
 <li>Newt’s YAML file can grow very large for applications with many data
 models</li>
 <li>Model vetting and validation should happen early in the data
-pipeline, ideally as a generated program</li>
+pipeline, ideally as a generated program and browser side</li>
 <li>Postgres+PostgREST is a powerful combination but it’d be nice to
 have something simpler</li>
 <li>Managing the YAML file can be done conversationally</li>
@@ -85,28 +84,16 @@ have something simpler</li>
 <div id="questions-raised-by-prototype-2" class="slide section level1">
 <h1>Questions raised by Prototype 2:</h1>
 <ul>
-<li>Where do I focus our simplification efforts?</li>
+<li>Where do I focus my simplification efforts?</li>
 <li>How do I ensure that large YAML files remaining human
-managable?</li>
+manageable?</li>
 <li>Mustache template language is a little too simple, what should
 replace it?</li>
 </ul>
 </div>
-<div id="goal-of-prototype-3-answer-these-questions-three."
+<div id="high-level-concepts-remain-the-same"
 class="slide section level1">
-<h1>Goal of Prototype 3: Answer these questions three.</h1>
-<ol style="list-style-type: decimal">
-<li>Is generating TypeScript programs a suitable way to solve the
-validator problem?</li>
-<li>Is HandlebarsJS via TypeScript a good fit for managing data
-views?</li>
-<li>What default JSON data sources should be supported?
-(e.g. Postgres+PostgREST, dataset+datasetd)</li>
-</ol>
-</div>
-<div id="high-level-concepts-remaing-the-same"
-class="slide section level1">
-<h1>High level Concepts (remaing the same)</h1>
+<h1>High level Concepts (remain the same)</h1>
 <ul>
 <li>describe the application you want</li>
 <li>generate the application you described</li>
@@ -117,24 +104,49 @@ class="slide section level1">
 class="slide section level1">
 <h1>Implementation Concepts (remaining the same)</h1>
 <ul>
-<li>data sources</li>
-<li>data models</li>
+<li>JSON data sources</li>
+<li>data modeled in YAML</li>
 <li>routing requests through data pipelines</li>
 </ul>
 </div>
-<div id="themes-remaing-the-same" class="slide section level1">
-<h1>Themes (remaing the same)</h1>
+<div id="themes-remains-the-same" class="slide section level1">
+<h1>Themes (remains the same)</h1>
 <ul>
 <li>Pick Simple = (No coding) + (Less coding)</li>
-<li>Compose applications using data pipelines and templates</li>
+<li>Compose applications using data pipelines</li>
 <li>Avoid inventing new things</li>
 </ul>
 </div>
-<div id="stack-changes" class="slide section level1">
-<h1>Stack changes</h1>
+<div id="goal-of-prototype-3-questions-to-explore"
+class="slide section level1">
+<h1>Goal of Prototype 3: Questions to explore</h1>
+<ol style="list-style-type: decimal">
+<li>What should the default JSON data source be? (dataset+datasetd or
+Postgres+PostgREST)</li>
+<li>Is generated TypeScript middleware the right fit? (e.g. validation
+service, template engine)</li>
+<li>Is Handlebars a good fit for managing data views and rendering
+HTML?</li>
+<li>Should the template engine be generic or a generated TypeScript
+program?</li>
+</ol>
+</div>
+<div id="goal-of-prototype-3-extra-credit-question"
+class="slide section level1">
+<h1>Goal of Prototype 3: Extra credit question</h1>
 <ul>
-<li>render JSON responses via HandlebarJS template engine</li>
-<li>generated validation code via TypeScript running in Deno</li>
+<li>Can I leverage WASI+WASM to make useful Python libraries available
+to Deno and browser?</li>
+</ul>
+</div>
+<div id="changes-from-last-prototype" class="slide section level1">
+<h1>Changes from last prototype</h1>
+<ul>
+<li>Removed some Go cli (e.g. ws, mustache, newtmustache)</li>
+<li>Adopting Handlebars as template langauage</li>
+<li>Generating collection and YAML for dataset+datasetd</li>
+<li>Generating TypeScript to run via Deno</li>
+<li>Using Deno to generate JS/ES6 for web browser</li>
 </ul>
 </div>
 <div id="off-the-shelf-no-coding" class="slide section level1">
@@ -146,11 +158,16 @@ class="slide section level1">
 datasetd</a></li>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
-<li><a href="https://solr.apache.org">Solr</a> ??? <a
-href="https://opensearch.org">OpenSearch</a> ???</li>
 </ul></li>
-<li>Newt Handlebars =&gt; Transform JSON into web pages</li>
+<li>Use Handlebars =&gt; Transform JSON into web pages</li>
 <li>Newt Router, ties it all together</li>
+</ul>
+</div>
+<div id="off-the-self-optional" class="slide section level1">
+<h1>Off the self (optional)</h1>
+<ul>
+<li><a href="https://solr.apache.org">Solr</a></li>
+<li><a href="https://opensearch.org">OpenSearch</a></li>
 </ul>
 </div>
 <div id="assemble-app-from-yaml-less-coding"
@@ -178,8 +195,8 @@ pipelines</li>
 <li>Interactively generate our application’s YAML file</li>
 <li>Interactively define data models</li>
 <li>Generate our application code</li>
-<li>Setup a primary data source</li>
-<li>Run our app with Newt</li>
+<li>Run <code>newt setup ...</code> for primary data source</li>
+<li>Run <code>newt run ...</code> to run the application</li>
 </ol>
 </div>
 <div id="steps-one-and-two-are-interactive"
@@ -192,8 +209,8 @@ class="slide section level1">
 <h1>Step three, generate our code</h1>
 <pre class="shell"><code>  newt generate app.yaml</code></pre>
 <blockquote>
-<p>Created a dataset collection and datasetd YAML file or render SQL,
-PostgREST conf Render Handlebars templates</p>
+<p>Create a dataset collection and datasetd YAML file Render Handlebars
+templates Wires up routes Adds tasks to deno.json</p>
 </blockquote>
 </div>
 <div id="step-four-setup-primary-json-data-source"
@@ -201,29 +218,9 @@ class="slide section level1">
 <h1>Step four, setup primary JSON data source</h1>
 <h2 id="dataset-collection">Dataset collection</h2>
 <blockquote>
-<p>Collection generation is done “automagically” by
+<p>Collection generation is done “auto magically” by
 <code>newt generate app.yaml</code> datasetd YAML file gets generated so
 Newt can run the datasetd JSON API</p>
-</blockquote>
-</div>
-<div id="step-four-setup-the-primary-json-data-source"
-class="slide section level1">
-<h1>Step four, setup the primary JSON data source</h1>
-<h2 id="postgrespostgrest">Postgres+PostgREST</h2>
-<ol style="list-style-type: decimal">
-<li>Use the generated SQL and configuration</li>
-<li>Setup and check via <code>createdb</code> and <code>psql</code></li>
-</ol>
-</div>
-<div id="step-four-setup-postgres-and-postgrest"
-class="slide section level1">
-<h1>Step four, setup Postgres and PostgREST</h1>
-<pre class="shell"><code>  createdb app
-  psql app -c &#39;\i setup.sql&#39;
-  psql app -c &#39;\i models.sql&#39;
-  psql app -c &#39;\dt&#39;</code></pre>
-<blockquote>
-<p>should this be automated too?</p>
 </blockquote>
 </div>
 <div id="step-five-run-your-application-and-test"
@@ -255,11 +252,11 @@ tool</label></li>
 working</label></li>
 <li><label><input type="checkbox" checked="" /><del>Mustache template
 engine is working</del> (removed)</label></li>
-<li><label><input type="checkbox" />Handlebars template engine (planning
-and design)</label></li>
 <li><label><input type="checkbox" />Generator development
 (paused)</label></li>
 <li><label><input type="checkbox" />Modeler (design stage)</label></li>
+<li><label><input type="checkbox" />Handlebars template engine (planning
+and design)</label></li>
 </ul>
 </div>
 <div id="insights-from-prototypes-1-2" class="slide section level1">
@@ -282,10 +279,10 @@ and design)</label></li>
 class="slide section level1">
 <h1>What’s next to wrap up prototype 3?</h1>
 <ul>
-<li>Implement new template engine, using HandlebarsJS, TypeScript and
+<li>Retarget, Debug and improve the code generator</li>
+<li>Continue to design and implement a data modeler</li>
+<li>Implement new template engine, using Handlebars, TypeScript and
 Deno</li>
-<li>Debug and improve the code generator</li>
-<li>Continue to implement a data modeler</li>
 <li>Generate validation layer written in TypeScript and run by Deno</li>
 </ul>
 </div>
@@ -294,7 +291,6 @@ Deno</li>
 <ul>
 <li>Newt (development tool)</li>
 <li>Newt Router</li>
-<li>Newt Template Engine</li>
 </ul>
 </div>
 <div id="unanswered-questions" class="slide section level1">
@@ -315,6 +311,8 @@ OCFL</li>
 <li>Web components for library, archive and museum metadata types</li>
 <li>Extend Newt through WASI+WASM run time modules and expose to use in
 pipelines</li>
+<li>WASI+WASM might be useful to conserve ports taken up in the data
+pipelines</li>
 </ul>
 </div>
 <div id="related-resources" class="slide section level1">
@@ -325,10 +323,7 @@ class="uri">https://github.com/caltechlibrary/newt</a></li>
 <li>Dataset + datasetd <a
 href="https://github.com/caltechlibrary/dataset"
 class="uri">https://github.com/caltechlibrary/dataset</a></li>
-<li>Postgres <a href="https://postgres.org"
-class="uri">https://postgres.org</a> + PostgREST <a
-href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
-<li><a href="https://handlebarsjs.com">HandlebarsJS</a> programming
+<li><a href="https://handlebarsjs.com">Handlebars</a> programming
 languages support</li>
 </ul>
 </div>
