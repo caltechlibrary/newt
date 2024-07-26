@@ -31,10 +31,21 @@
 - [Newt Prototype 2](presentation2/), SoCal Code4Lib Meetup at USC, April 19, 2024 (covers second prototype)
 - Original [Newt Presentation](presentation/), SoCal Code4Lib Meetup at UCLA, July 14, 2023 (covers first prototype)
 
+## Miscellanea
+
+- [prototype 3 ideas](prototype3.md)
+- [prototype 2 ideas](prototype2.md)
+- [use cases](use_cases.md)
+- [improving the type dsl](improving_the_type_dsl.md)
+- [Other reference materials](reference_material.md)
+
 ## Installation
 
 - [Installing Newt](INSTALL.md)
-- [Installing Dataset and Datasetd](https://caltechlibrary.github.io/dataset/INSTALL.md)
+- [Installing Dataset and Datasetd](https://caltechlibrary.github.io/dataset/install.html)
+
+### Migth be useful
+
 - [Installing PostgREST](INSTALL-PostgREST.md) from source (developer notes)
 - [Installing Pandoc](INSTALL-Pandoc.md) from source (developer notes, Pandoc is needed to compile Newt)
 

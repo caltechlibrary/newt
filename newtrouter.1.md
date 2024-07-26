@@ -1,5 +1,5 @@
 ---
-title: newtrouter(1) user manual | 0.0.8 e95d29a
+title: newtrouter(1) user manual | 0.0.9 25e2123
 pubDate: 2024-07-26
 author: R. S. Doiel
 ---

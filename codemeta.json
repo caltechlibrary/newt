@@ -1,68 +1,56 @@
 {
-    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-    "@type": "SoftwareSourceCode",
-    "codeRepository": "git+https://github.com/caltechlibrary/newt",
-    "dateCreated": "2023-04-27",
-    "dateModified": "2024-04-10",
-    "downloadUrl": "https://github.com/caltechlibrary/releases",
-    "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
-    "name": "Newt",
-    "version": "0.0.8",
-    "description": "Newt is an experimental set of tools for rapid application development of metadata curation tools. Newt applications implement a service orient architecture to minimize the code written to run on the server. Newt comes with a data router, a Mustache template engine and a code generation. Each of these programs use YAML for configuration. The code generator targets configuration and SQL for use with Postgres and PostgREST as well Mustache templates. Newt's data router implements a data pipeline concept where the JSON output of one web service is be fed into the next. This is conceptually similar to Unix pipes. Newt works well with software that can produce and consume JSON data such as Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a few.  The data router also provides support for serving static files in additional to the content generated from a data pipeline.",
-    "applicationCategory": "computer science",
-    "releaseNotes": "This release implements the Newt second prototype. It uses a new simpler YAML syntax. It comes with four programs, newtrouter, newtmustache, newtgenerator and a developer tool called newt.",
-    "developmentStatus": "WIP",
-    "funder": {
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "codeRepository": "git+https://github.com/caltechlibrary/newt",
+  "dateCreated": "2023-04-27",
+  "dateModified": "2024-07-26",
+  "downloadUrl": "https://github.com/caltechlibrary/releases",
+  "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
+  "name": "Newt",
+  "version": "0.0.9",
+  "description": "Newt is an experimental set of tools for rapid application development of metadata curation tools. Newt applications implement a service orient architecture to minimize the code written to run on the server. Newt comes with a data router, a Mustache template engine and a code generation. Each of these programs use YAML for configuration. The code generator targets configuration and SQL for use with Postgres and PostgREST as well Mustache templates. Newt's data router implements a data pipeline concept where the JSON output of one web service is be fed into the next. This is conceptually similar to Unix pipes. Newt works well with software that can produce and consume JSON data such as Postgres+PostgREST, MySQL+MRS, Solr, Elasticsearch, Opensearch to name a few.  The data router also provides support for serving static files in additional to the content generated from a data pipeline.",
+  "applicationCategory": "computer science",
+  "releaseNotes": "This release implements the Newt second prototype. It uses a new simpler YAML syntax. It comes with four programs, newtrouter, newtmustache, newtgenerator and a developer tool called newt.",
+  "developmentStatus": "WIP",
+  "funder": {
+    "@type": "Organization",
+    "name": "Caltech Library"
+  },
+  "keywords": [
+    "web development",
+    "web service",
+    "service oriented architecture",
+    "micro service architecture",
+    "micro service",
+    "Pandoc",
+    "Mustache template",
+    "JSON API",
+    "data router",
+    "static web server",
+    "template engine",
+    "rapid application development"
+  ],
+  "programmingLanguage": ["YAML", "SQL", "Golang"],
+  "operatingSystem": ["Linux", "Windows", "macOS"],
+  "softwareRequirements": [
+    "Dataset >= 2.1",
+    "Deno >= 1.44",
+    "Pandoc > 3.1",
+    "Golang > 1.22",
+    "A front end web server supporting reverse proxy (e.g. Apache2, NGINX)"
+  ],
+  "relatedLink": ["https://caltechlibrary.github.io/newt"],
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0000-0003-0900-6903",
+      "givenName": "R. S.",
+      "familyName": "Doiel",
+      "email": "rsdoiel@caltech.edu",
+      "affiliation": {
         "@type": "Organization",
         "name": "Caltech Library"
-    },
-    "keywords": [
-        "web development",
-        "web service",
-        "service oriented architecture",
-        "micro service architecture",
-        "micro service",
-        "Postgres",
-        "PostgREST",
-        "Pandoc",
-        "Mustache template",
-        "JSON API",
-        "data router",
-        "static web server",
-        "template engine",
-        "rapid application development"
-    ],
-    "programmingLanguage": [
-        "YAML",
-        "SQL",
-        "Golang"
-    ],
-    "operatingSystem": [
-        "Linux",
-        "Windows",
-        "macOS"
-    ],
-    "softwareRequirements": [
-        "Postgres > 16",
-        "PostgREST > 12",
-        "Pandoc > 3",
-        "Golang > 1.22",
-        "A front end web server supporting reverse proxy (e.g. Apache2, NGINX)"
-    ],
-    "relatedLink": [
-        "https://caltechlibrary.github.io/newt"
-    ],
-    "author": [
-        {
-            "@type": "Person",
-            "@id": "https://orcid.org/0000-0003-0900-6903",
-            "givenName": "R. S.",
-            "familyName": "Doiel",
-            "email": "rsdoiel@caltech.edu",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "Caltech Library"
-            }
-        }
-    ]
+      }
+    }
+  ]
 }

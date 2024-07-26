@@ -23,10 +23,10 @@ authors:
 
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.8
+version: 0.0.9
 
 keywords: [ "web development", "web service", "service oriented
 architecture", "micro service architecture", "micro
-service", "Postgres", "PostgREST", "Pandoc", "Mustache template", "JSON
-API", "data router", "static web server", "template engine", "rapid
-application development" ]
+service", "Pandoc", "Mustache template", "JSON API", "data
+router", "static web server", "template engine", "rapid application
+development" ]
