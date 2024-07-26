@@ -5,9 +5,13 @@ Newt is an experimental set of tools for rapid application development. Specific
 
 How does Newt do that? Newt generates applications implementing a [service oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture).
 
-You can think of a web application as a sequence of requests and responses. Typically when a web browser contacts your web application one of two things will happen. Your app knows the answer and hands back the result. With the service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's enhancement to a basic service oriented architecture is to provide an easy means to construct data processing pipelines[^11] that implement a service oriented archtecture.
+You can think of a web application as a sequence of requests and responses. Typically when a web browser contacts your web application one of two things will happen. Your app knows the answer and hands back the result or tells you it can't do so (e.g. 404 HTTP STATUS CODE). With the service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
+
+> The data pipelines are defined in Newt' YAML configuration file. The pipelines are managed by Newt's data router.
 
 With data pipelines we can accept a request and feed that request to one service then take its output and send it to the next service. Newt does this by providing a data router. Newt can manage the request sequence through a simple YAML described pipeline. While it is possible to create pipelines using Apache and NginX proxy features in practice that approach quickly becomes an unmanageable configuration problem. You could encapsulate clusters of processes in containers but this too becomes complex to manage. Newt's router can cut through the hairball of configurations and define pipelines per request route. With a Newt pipeline the last service completed hands its result to the Newt's router which returns the result to the web browser.
+
+The pipelines are defined in Newt' YAML configuration file. The pipelines are managed by Newt's data router.
 
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples used by Caltech Library.
 
@@ -22,7 +26,7 @@ This is not an exhaustive list. These types of applications can all be integrate
 
 > Wait, what about my custom metadata needs?
 
-That role can be filled by services that provide a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as a JSON data source. Newt's code generation lends a hand here. Using Newt's YAML file the code generator can generate SQL and configuration for setting up Postgres+PostgREST. Newt's code generator can also render Mustache templates based on the data moduled in that YAML file. Combined these transform JSON data into a web page. Between the generated configuration, SQL, templates, Newt's router, Newt' template engine and Postgres+PostgREST you have service oriented application providing basic CRUD-L[^12] operations.
+That role can be filled by services that provide a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as a JSON data source. Newt's code generation lends a hand here. Using Newt's YAML file the code generator can generate SQL and configuration for setting up Postgres+PostgREST. Newt's code generator can also render Mustache templates based on the data modeled in that YAML file. Combined these transform JSON data into a web page. Between the generated configuration, SQL, templates, Newt's router, Newt' template engine and Postgres+PostgREST you have service oriented application providing basic CRUD-L[^12] operations.
 
 Metadata oriented applications tend to all need the CRUD-L features and nicely map to a service oriented architecture. Newt provides some of the missing glue
 
@@ -140,7 +144,7 @@ Newt is a project of Caltech Library's Digital Library Development group. It is 
 
 **The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is a partially implemented prototype (May 2024). However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>.
 
-Currently Newt is targetted at Windows on X86, macOS on x86 and ARM (e.g. M1, M2) and Linux on aarch64 (ARM 64) and x86.
+Currently Newt is targeted at Windows on X86, macOS on x86 and ARM (e.g. M1, M2) and Linux on aarch64 (ARM 64) and x86.
 
 ## Building from source
 

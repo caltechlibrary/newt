@@ -9,11 +9,11 @@ RELEASE_DATE=$(shell date +'%Y-%m-%d')
 
 RELEASE_HASH=$(shell git log --pretty=format:'%h' -n 1)
 
-PROGRAMS = newt newtrouter # $(shell ls -1 cmd)
+GO_PROGRAMS = newt newtrouter # $(shell ls -1 cmd)
 
 TS_PROGRAMS = newthandlebars
 
-MAN_PAGES = newt.1 newtrouter.1 newthandlbebars.1 # $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
+MAN_PAGES_1 = newt.1 newtrouter.1 newthandlebars.1 # $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
 
 HTML_PAGES = newt.1.html newtrouter.1.html newthandlebars.1.html # $(shell find . -type f | grep -E '\.html')
 
@@ -41,7 +41,7 @@ endif
 
 DIST_FOLDERS = bin/*
 
-build: version.go version.ts $(PROGRAMS) $(TS_PROGRAMS) man CITATION.cff about.md installer.sh installer.ps1
+build: version.go version.ts $(GO_PROGRAMS) $(TS_PROGRAMS) man CITATION.cff about.md installer.sh installer.ps1
 
 version.ts: .FORCE
 	@echo '' | pandoc --from t2t --to plain \
@@ -63,7 +63,7 @@ version.go: .FORCE
 		--template codemeta-version-go.tmpl \
 		LICENSE >version.go
 
-$(PROGRAMS): $(PACKAGE)
+$(GO_PROGRAMS): $(PACKAGE)
 	@mkdir -p bin
 	go build -o "bin/$@$(EXT)" cmd/$@/*.go
 	./bin/$@ -help >$@.1.md
@@ -71,8 +71,7 @@ $(PROGRAMS): $(PACKAGE)
 $(TS_PROGRAMS): $(TS_PACKAGE)
 	@mkdir -p bin
 	env EXT=$(EXT) deno task compile_$@
-	@mkdir -p man/man1
-	pandoc $@.1.md --from markdown --to man -s >man/man1/$@
+	./bin/$@$(EXT) -help >$@.1.md
 
 CITATION.cff: .FORCE
 	@cat codemeta.json | sed -E   's/"@context"/"at__context"/g;s/"@type"/"at__type"/g;s/"@id"/"at__id"/g' >_codemeta.json
@@ -104,12 +103,17 @@ clean-website:
 website: clean-website presentations .FORCE
 	make -f website.mak
 
+man: $(MAN_PAGES_1)
+
+$(MAN_PAGES_1): .FORCE
+	@mkdir -p man/man1
+	pandoc $@.md --from markdown --to man -s >man/man1/$@
 
 # NOTE: on macOS you must use "mv" instead of "cp" to avoid problems
 install: build man .FORCE
 	@if [ ! -d $(PREFIX)/bin ]; then mkdir -p $(PREFIX)/bin; fi
 	@echo "Installing programs in $(PREFIX)/bin"
-	@for FNAME in $(PROGRAMS); do if [ -f ./bin/$$FNAME ]; then mv -v ./bin/$$FNAME $(PREFIX)/bin/$$FNAME; fi; done
+	@for FNAME in $(GO_PROGRAMS); do if [ -f ./bin/$$FNAME ]; then mv -v ./bin/$$FNAME $(PREFIX)/bin/$$FNAME; fi; done
 	@echo ""
 	@echo "Make sure $(PREFIX)/bin is in your PATH"
 	@echo ""
@@ -121,7 +125,7 @@ install: build man .FORCE
 
 uninstall: .FORCE
 	@echo "Removing programs in $(PREFIX)/bin"
-	-for FNAME in $(PROGRAMS); do if [ -f $(PREFIX)/bin/$$FNAME ]; then rm -v $(PREFIX)/bin/$$FNAME; fi; done
+	-for FNAME in $(GO_PROGRAMS); do if [ -f $(PREFIX)/bin/$$FNAME ]; then rm -v $(PREFIX)/bin/$$FNAME; fi; done
 	-for MAN_PAGE in $(MAN_PAGES); do if [ -f "$(PREFIX)/man/man1/$$MAN_PAGE" ]; then rm "$(PREFIX)/man/man1/$$MAN_PAGE"; fi; done
 
 
@@ -166,56 +170,56 @@ publish: build website save .FORCE
 	./publish.bash
 
 
-dist/Linux-x86_64: $(PROGRAMS)
+dist/Linux-x86_64: $(GO_PROGRAMS)
 	@mkdir -p dist/bin
-	@for FNAME in $(PROGRAMS); do env  GOOS=linux GOARCH=amd64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(GO_PROGRAMS); do env  GOOS=linux GOARCH=amd64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
 	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target x86_64-unknown-linux-gnu" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Linux-x86_64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
-dist/Linux-aarch64: $(PROGRAMS)
+dist/Linux-aarch64: $(GO_PROGRAMS)
 	@mkdir -p dist/bin
-	@for FNAME in $(PROGRAMS); do env  GOOS=linux GOARCH=arm64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(GO_PROGRAMS); do env  GOOS=linux GOARCH=arm64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
 	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target aarch64-unknown-linux-gnu" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Linux-aarch64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
-dist/macOS-x86_64: $(PROGRAMS)
+dist/macOS-x86_64: $(GO_PROGRAMS)
 	@mkdir -p dist/bin
-	@for FNAME in $(PROGRAMS); do env GOOS=darwin GOARCH=amd64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(GO_PROGRAMS); do env GOOS=darwin GOARCH=amd64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
 	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target x86_64-apple-darwin" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-macOS-x86_64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
 
-dist/macOS-arm64: $(PROGRAMS)
+dist/macOS-arm64: $(GO_PROGRAMS)
 	@mkdir -p dist/bin
-	@for FNAME in $(PROGRAMS); do env GOOS=darwin GOARCH=arm64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(GO_PROGRAMS); do env GOOS=darwin GOARCH=arm64 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
 	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target aarch64-apple-darwin" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-macOS-arm64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
 
-dist/Windows-x86_64: $(PROGRAMS)
+dist/Windows-x86_64: $(GO_PROGRAMS)
 	@mkdir -p dist/bin
-	@for FNAME in $(PROGRAMS); do env GOOS=windows GOARCH=amd64 go build -o "dist/bin/$${FNAME}.exe" cmd/$${FNAME}/*.go; done
+	@for FNAME in $(GO_PROGRAMS); do env GOOS=windows GOARCH=amd64 go build -o "dist/bin/$${FNAME}.exe" cmd/$${FNAME}/*.go; done
 	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target x86_64-pc-windows-msvc" deno task compile_$$FNAME; done
 	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Windows-x86_64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 	@rm -fR dist/bin
 
 # NOTE: arm64 isn't supported for 32 bit Pi or Windows on ARM by Newt Handlebars
-#dist/Windows-arm64: $(PROGRAMS)
+#dist/Windows-arm64: $(GO_PROGRAMS)
 #	@mkdir -p dist/bin
-#	@for FNAME in $(PROGRAMS); do env GOOS=windows GOARCH=arm64 go build -o "dist/bin/$${FNAME}.exe" cmd/$${FNAME}/*.go; done
+#	@for FNAME in $(GO_PROGRAMS); do env GOOS=windows GOARCH=arm64 go build -o "dist/bin/$${FNAME}.exe" cmd/$${FNAME}/*.go; done
 #	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target arch64-pc-windows-msvc" deno task compile_$$FNAME; done
 #	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Windows-arm64.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 #	@rm -fR dist/bin
 
 # Raspberry Pi OS 32 bit, reported by Raspberry Pi 3B+
 # NOTE: arm64 isn't supported for 32 bit Pi or Windows on ARM by Newt Handlebars
-#dist/Linux-armv7l: $(PROGRAMS)
+#dist/Linux-armv7l: $(GO_PROGRAMS)
 #	@mkdir -p dist/bin
-#	@for FNAME in $(PROGRAMS); do env GOOS=linux GOARCH=arm GOARM=7 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
+#	@for FNAME in $(GO_PROGRAMS); do env GOOS=linux GOARCH=arm GOARM=7 go build -o "dist/bin/$${FNAME}" cmd/$${FNAME}/*.go; done
 #	@for FNAME in $(TS_PROGRAMS); do env EXT= TARGET="--target arm7l-unknown-linux-gnu" deno task compile_$$FNAME; done
 #	@cd dist && zip -r $(PROJECT)-v$(VERSION)-Linux-armv7l.zip LICENSE codemeta.json CITATION.cff *.md bin/* man/*
 #	@rm -fR dist/bin
