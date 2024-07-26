@@ -22,20 +22,20 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
-version: 0.0.8
+version: 0.0.9
 
 keywords: [ "web development", "web service", "service oriented
 architecture", "micro service architecture", "micro
-service", "Postgres", "PostgREST", "Pandoc", "Mustache template", "JSON
-API", "data router", "static web server", "template engine", "rapid
-application development" ]
+service", "Pandoc", "Mustache template", "JSON API", "data
+router", "static web server", "template engine", "rapid application
+development" ]
 
 ---
 
 About this software
 ===================
 
-## Newt 0.0.8
+## Newt 0.0.9
 
 ### Authors
 
@@ -76,8 +76,8 @@ additional to the content generated from a data pipeline.
 
 ### Software Requirements
 
-- Postgres &gt; 16
-- PostgREST &gt; 12
-- Pandoc &gt; 3
+- Dataset &gt;= 2.1
+- Deno &gt;= 1.44
+- Pandoc &gt; 3.1
 - Golang &gt; 1.22
 - A front end web server supporting reverse proxy (e.g. Apache2, NGINX)

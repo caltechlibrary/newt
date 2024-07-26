@@ -3,8 +3,8 @@
 
 ## Questions and Explorations
 
-- Generated middleware using TypeScript running in Deno (e.g. validation, data enhancement)
-- Should the template engine be generated or generic?
+- Generated middleware using TypeScript running in Deno (e.g. validation, data enhancement. template engine)
+  - Should the template engine be generated or generic?
 - Can I compile useful Python libraries to WASM and run via WASI in Deno+TypeScript?
 
 ## Desirable Features
