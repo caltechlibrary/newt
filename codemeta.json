@@ -30,7 +30,7 @@
     "template engine",
     "rapid application development"
   ],
-  "programmingLanguage": ["YAML", "SQL", "Golang"],
+  "programmingLanguage": ["YAML", "SQL", "Go", "TypeScript" ],
   "operatingSystem": ["Linux", "Windows", "macOS"],
   "softwareRequirements": [
     "Dataset >= 2.1",

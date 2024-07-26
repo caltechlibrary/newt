@@ -66,7 +66,8 @@ additional to the content generated from a data pipeline.
 
 - YAML
 - SQL
-- Golang
+- Go
+- TypeScript
 
 ### Operating Systems
 
