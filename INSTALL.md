@@ -4,7 +4,7 @@ Installation
 
 Newt is an experimental set of programs for rapid application development for libraries, archives and museums. It provides a data router, code generator and Mustache template engine. At this time you must install it from source code. The programs are likely broken, poorly documented and certainly contain bugs. It's a prototype!
 
-<!-- 
+<!--
 Quick install with curl or irm
 ------------------------------
 
@@ -28,8 +28,9 @@ Install from source
 
 ## Installation Requirements
 
-- Go > 1.22
-- Pandoc > 3 (to render Markdown content and some Go code)
+- Go >= 1.22.5
+- Deno >= 1.44
+- Pandoc > 3.1 (to render Markdown content and some Go code)
 - Git compatible tool for retrieving the GitHub repository of Newt
 - GNU Make > 4
 - GNU grep > 3
@@ -43,7 +44,7 @@ Install from source
 
 #### step 1
 
-The `./configure.sh` script or `.configure.bat` for Windows performs this step.
+The `./configure.sh` script or `.\configure.bat` for Windows performs this step.
 
 ~~~shell
 ./configure.sh
@@ -77,7 +78,7 @@ go test
 go install
 ~~~
 
-<!-- 
+<!--
 
 ## Precompiled binaries
 
@@ -99,4 +100,3 @@ The binaries are available in a Zip archive file for download. The name uses the
 ## Getting help
 
 **The Newt Project is an experiment!!**. The source code for the project is supplied "as is". Newt is most likely broken. At a stretch it could be considered a working prototype. You should not use it for production systems.  However if you'd like to ask a question or have something you'd like to contribute please feel free to file a GitHub issue, see <https://github.com/caltechlibrary/newt/issues>. Just keep in mind it remains an **experiment** as of February 2024.
-

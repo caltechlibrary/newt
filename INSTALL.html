@@ -29,7 +29,7 @@ development for libraries, archives and museums. It provides a data
 router, code generator and Mustache template engine. At this time you
 must install it from source code. The programs are likely broken, poorly
 documented and certainly contain bugs. It’s a prototype!</p>
-<!-- 
+<!--
 Quick install with curl or irm
 ------------------------------
 
@@ -50,8 +50,9 @@ irm https://caltechlibrary.github.io/newt/installer.ps1 | iex
 <h2 id="install-from-source">Install from source</h2>
 <h2 id="installation-requirements">Installation Requirements</h2>
 <ul>
-<li>Go &gt; 1.22</li>
-<li>Pandoc &gt; 3 (to render Markdown content and some Go code)</li>
+<li>Go &gt;= 1.22.5</li>
+<li>Deno &gt;= 1.44</li>
+<li>Pandoc &gt; 3.1 (to render Markdown content and some Go code)</li>
 <li>Git compatible tool for retrieving the GitHub repository of
 Newt</li>
 <li>GNU Make &gt; 4</li>
@@ -65,8 +66,8 @@ Newt</li>
 <li>Use the Go tool to build, test and run the application</li>
 </ol>
 <h4 id="step-1">step 1</h4>
-<p>The <code>./configure.sh</code> script or <code>.configure.bat</code>
-for Windows performs this step.</p>
+<p>The <code>./configure.sh</code> script or
+<code>.\configure.bat</code> for Windows performs this step.</p>
 <pre class="shell"><code>./configure.sh</code></pre>
 <h4 id="step-2">step 2</h4>
 <ol type="1">
@@ -91,7 +92,7 @@ you are still in the directory where you completed step 2.</p>
 <pre class="shell"><code>go build
 go test
 go install</code></pre>
-<!-- 
+<!--
 
 ## Precompiled binaries
 
