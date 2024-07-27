@@ -5,7 +5,6 @@
 
 - [Newt](newt.1.md), is a development tool. It's primary task is as a code generator and secondary task is a app runner. As an app runner it is capabile of running Newt's router and template engine and selected JSON data sources such as datasetd or PostgREST.
 - [Newt's router](newtrouter.1.md) is a web service that manages your requests and data pipelines as well as static file hosting
-- [Newt's template engine](newthandlebars.1.md) is a web service providing a light weight template engine supporting the [Handlebars](https://handlebarsjs.com) template language.
 
 ## Newt YAML syntax (draft)
 
@@ -14,16 +13,17 @@
 ## Tutorials and reference materials (drafts)
 
 - Getting Started with Newt
-    - [Newt Overview](newt_command_overview.md)
-    - [Configuring](newt_config_explained.md)
-    - [Modeling Data](newt_model_explained.md)
-    - [Checking your YAML](newt_check_explained.md)
-    - [Generating code](newt_generate_explained.md)
+  - [Newt Overview](newt_command_overview.md)
+  - [Configuring](newt_config_explained.md)
+  - [Modeling Data](newt_model_explained.md)
+  - [Checking your YAML](newt_check_explained.md)
+  - [Generating code](newt_generator_explained.md)
+- Generating your Newt App
+  - [Generated middleware](generated_middleware_explained.md)
+  - [Validator Explained](validator_explained.md)
+  - [Template Engine Explained](template_engine_explained.md)
 - Running your Newt App
-    - [Newt Router Explained](newtrouter_explained.md)
-    - [Newt Handlebars Explained](newthandlebars_explained.md)
-- [Have more questions?](more_questions.md)
-- [Reference Material](reference_material.md), links to prior art
+  - [Newt Router Explained](newtrouter_explained.md)
 
 ## Presentations
 
@@ -37,7 +37,8 @@
 - [prototype 2 ideas](prototype2.md)
 - [use cases](use_cases.md)
 - [improving the type dsl](improving_the_type_dsl.md)
-- [Other reference materials](reference_material.md)
+- [Have more questions?](more_questions.md)
+- [Reference Material](reference_material.md), links to prior art
 
 ## Installation
 
