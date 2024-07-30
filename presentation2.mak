@@ -8,11 +8,11 @@ presentation_dir: .FORCE
 	mkdir -p presentation2
 
 html: .FORCE
-	pandoc -V lang=en -s -t $(WEB_FORMAT) newt-presentation2.md -o presentation2/index.html
+	pandoc -V lang=en -s -t $(WEB_FORMAT) presentation2.md -o presentation2/index.html
 	git add presentation2/index.html
 
 pdf: .FORCE
-	pandoc -V lang=en -s -t beamer newt-presentation2.md -o presentation2/newt-p2.pdf
+	pandoc -V lang=en -s -t beamer presentation2.md -o presentation2/newt-p2.pdf
 
 pptx: .FORCE
 	pandoc -V lang=en -s newt-presentation2.md -o presentation2/newt-p2.pptx

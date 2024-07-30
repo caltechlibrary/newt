@@ -13,7 +13,7 @@ export type { HandlebarsConfig } from "https://deno.land/x/handlebars/mod.ts";
 
 /* App provided modules */
 export { defaultHttpPort, loadAndMergeNewtYAML } from "./config.ts";
-export { makePage, renderPage } from "./render.ts";
+export { makePage, renderPage, renderTemplateObject } from "./render.ts";
 export { appInfo, fmtHelp } from "./version.ts";
 export { OptionsProcessor } from "./options.ts";
 export {
@@ -31,6 +31,7 @@ export {
 export type {
   ASTInterface,
   ApplicationInterface,
+  TemplateInterface,
   ModelsInterface,
   ElementInterface,
   RouteInterface,

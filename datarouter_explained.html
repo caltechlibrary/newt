@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- datarouter_explained</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-router-explained">Newt router explained</h1>
+<h2 id="overview">Overview</h2>
+<p>The Newt Router is a data router. A data router takes a request then
+pass it on to a list one or more services returning the final result.
+The sequence of contacting one service and using the result as input to
+another service is called a pipeline. The Unix family of operating
+systems shells support this concept of piping the output of one program
+into another program. The Newt router provides a similar service but for
+connecting one or more web services<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a>. Newt was created to be
+able to route request between PostgREST and a template engine. The
+second Newt prototype supports this concept for any web service that is
+reachable via localhost. Typically this is still PostgREST and the Newt
+Mustache template engine. PostgREST returns JSON data and Newt Mustache
+can take the JSON data and render an HTML page using a Mustache
+template. You could swap PostgREST out for Solr and do the same thing.
+Newt Router supports pipelines of one or more services. The last service
+to respond has its results passed back to the requesting web
+browser.</p>
+<p>Newt Router is organized round two concepts, “routes” and
+“pipelines”. A “route” describes the HTTP method and URL path of a web
+browser sends to the service. The pipeline is the sequence of services
+that process that request. The Newt Router uses a YAML file to describe
+the mapping of requests to pipelines.</p>
+<p>The Newt Router can also function as a static web server. If you’re
+pipeline results in HTML output, the static assets (e.g. CSS,
+JavaScript, image files) can add the polish to your human facing
+interface.</p>
+<h2 id="a-brief-tour-albums-and-reviews">A brief tour, albums and
+reviews</h2>
+<p>Let’s say we have a database of music albums and reviews. Each
+database entry includes the album name, the review and a rating of
+“interesting”. The range is a zero (uninteresting) to five star rating
+(most interesting). This information is stored in a Postgres database
+and made available to the Newt Router via PostgREST. Our web application
+needs to be able to use the PostgREST JSON API to manage our list of
+albums and reviews. I am going to assume you have a Postgres “view”
+called “interesting_album_view” defined and that is available via
+PostgREST via a GET request at the URL
+“http://localhost:3000/interesting_albums_list”.</p>
+<h3 id="step-1.-prep-work">Step 1. Prep work</h3>
+<p>Before we can run through the tutorial somethings need to be up and
+running. We need Postgres 16 and PostgREST installed. Information about
+installing <a href="https://postgres.org">Postgres</a> and <a
+href="https://postgrest.org">PostgREST</a> can be found on their
+respective websites.</p>
+<p>The Postgres database needs to be created for our demo and it needs
+to be configured to allow PostgREST to access it. That can be
+accomplished by downloading this SQL file <a
+href="https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/setup_album_reviews_demo.sql"
+class="uri">https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/setup_album_reviews_demo.sql</a>.</p>
+<p>Here’s the steps.</p>
+<ol type="1">
+<li>Download the SQL file (I use curl for this)</li>
+<li>Edit the SQL file and change the line with “my_secret_password” to
+something more appropriate</li>
+<li>Create the “album_reviews” database</li>
+<li>Run the SQL program to do the setup.</li>
+</ol>
+<pre class="shell"><code>curl -L -o https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/setup_album_reviews_demo.sql
+nano setup_album_reviews_demo.sql
+createdb album_reviews
+psql album_reviews &lt; setup_album_reviews_demo.sql</code></pre>
+<p>Similarly you can get an example “postgrest.conf” from <a
+href="https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/postgrest.conf"
+class="uri">https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/postgrest.conf</a>.
+You’ll need to set the password to match the one you used in the SQL
+file setting up the Postgres and PostgREST.</p>
+<pre class="shell"><code>curl -L -o https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/postgrest.conf
+nano postgrest.conf</code></pre>
+<p>Remember when you edit the “postgrest.conf” file you need to have the
+password match the one you used in the “setup_album_reviews_demo.sql”
+file.</p>
+<h3 id="step-2.-building-our-application">Step 2. Building our
+application</h3>
+<p>Let’s create a Newt YAML file called “album_reviews.yaml”. Type in
+the following using your favorite text editor.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtrouter</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8010</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">postgrest</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">3000</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app_path</span><span class="kw">:</span><span class="at"> postgrest</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">conf_path</span><span class="kw">:</span><span class="at"> postgrest.conf</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /api/{$}</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/interesting_albums_list</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span></code></pre></div>
+<p>This file is going to define a single “route” with a one stage
+pipeline that proxies to PostgREST returning the results of our
+“interesting_albums_list” SQL view. You can check your YAML and to make
+sure you’ve typed in everything correctly using the command.</p>
+<pre class="shell"><code>newt -verbose check album_reviews.yaml</code></pre>
+<p>That should show some output like</p>
+<pre class="text"><code>WARNING: album_reviews.yaml has no models defined
+PostgREST configuration is postgrest.conf
+PostgREST will be run with the command &quot;postgrest postgrest.conf&quot;
+Newt Router configured, port set to :8010
+route interesting_album_view defined, request path GET /api/{$}, pipeline size 1</code></pre>
+<p>For now ignore the “WARNING” about models. The SQL program
+“setup_album_reviews_demo.sql” already created the database, table and
+functions that implement our data models so are not necessary for this
+demo.</p>
+<p>Now let’s run the Newt Router.</p>
+<pre class="shell"><code>newt run album_reviews.yaml</code></pre>
+<p>Point your web browser at the URL <a
+href="http://localhost:8010/api/"
+class="uri">http://localhost:8010/api/</a>.</p>
+<p>You should get back a JSON response that originated from
+Postgres+PostgREST. It’s not very useful yet. We have more to do. You
+should press “ctrl-c” to exit the newt command before continuing. This
+will stop both the Newt Router and the PostgREST service since we will
+be making changes in the second part.</p>
+<p>It is important to realize that the Newt Router loads it’s
+configuration at startup only. This means if the Newt Router is running
+and you change the YAML file the running router will not act on those
+changes.</p>
+<h2
+id="step-3.-improving-our-application-by-adding-routes-and-pipelines">Step
+3. Improving our application by adding routes and pipelines</h2>
+<p>We can improve our web application by expanding our pipelines to
+include generating HTML for the web browser. This can be done with
+Mustache templates run from Newt Mustache as part of our pipelines.</p>
+<p>Download the Mustache templates from <a
+href="https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_list.tmpl"
+class="uri">https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_list.tmpl</a>
+and <a
+href="https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_submitted.tmpl"
+class="uri">https://github.com/caltechlibrary/newt/blob/main/demos/album_reviews/review_submitted.tmpl</a>.
+Save them in your directory.</p>
+<p>Update the album_reviews.yaml to look like this.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtrouter</span><span class="kw">:</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8010</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">newtmustache</span><span class="kw">:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8011</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">postgrest</span><span class="kw">:</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app_path</span><span class="kw">:</span><span class="at"> postgrest</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">conf_path</span><span class="kw">:</span><span class="at"> postgrest.conf</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> interesting_album_view</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /api/{$}</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/interesting_albums_list</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> add_a_review</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> POST /add_a_review</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:3000/rpc/add_a_review</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Add a review via PostgREST function album_reviews.add_a_review</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:8011/review_submitted</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Display the submitted review with link back to list</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> show_reviews</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> GET /{$}</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pipeline</span><span class="kw">:</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> GET http://localhost:3000/interesting_albums_list</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Contact PostgREST and get back the intersting album list</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">service</span><span class="kw">:</span><span class="at"> POST http://localhost:8011/review_list</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Convert the JSON into HTML, show the list and web form</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /review_list</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> review_list.tmpl</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /review_submitted</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> review_submitted.tmpl</span></span></code></pre></div>
+<p>This is allot of YAML. Check your updated Newt YAML file with the
+following command.</p>
+<pre class="shell"><code>newt -verbose check album_reviews.yaml</code></pre>
+<p>This time you should see results like the following.</p>
+<pre class="text"><code>WARNING: album_reviews.yaml has no models defined
+PostgREST configuration is postgrest.conf
+PostgREST will be run with the command &quot;postgrest postgrest.conf&quot;
+Newt Router configured, port set to :8010
+route interesting_album_view defined, request path GET /api/{$}, pipeline size 1
+route add_a_review defined, request path POST /add_a_review, pipeline size 2
+route show_reviews defined, request path GET /{$}, pipeline size 2
+Newt Mustache configured, port set to 8011
+2 Mustache Templates are defined
+http://localhost8011/review_list points at review_list.tmpl
+http://localhost8011/review_submitted points at review_submitted.tmpl</code></pre>
+<p>If this matches what you’ve see we’re ready to run Newt again with
+our updated templates and YAML file.</p>
+<pre class="shell"><code>newt -verbose run album_reviews.yaml</code></pre>
+<p>Point your web browser at <a href="http://localhost:8010"
+class="uri">http://localhost:8010</a>. You should see an album list with
+one entry. You can add a review using the web form at the bottom of the
+page. Then you complete the web form and press the submit button it
+should take you to a page showing the review you just submitted. You can
+click the link to return to the list and see it has been updated.</p>
+<h2 id="what-have-we-done-exactly">What have we done exactly?</h2>
+<p>First we’ve built up a simple web application through defining some
+routes using data pipelines. In our first iteration we just verified
+that we could connect to PostgREST using a simple one stage pipeline. It
+was nice but not really compelling for must of us humans.</p>
+<p>In the second iteration we use the Newt Router to run two additional
+routes. The first one listed our review list like before but this time
+the results were displayed as a web page (i.e. HTML markup). This was
+accomplished by adding Newt Mustache in our pipelines. We use one route
+to display our list and include a web form for submitting another
+review. The second route we added displays the results from the
+submission.</p>
+<p>By typing in the Newt YAML file, adding some Mustache templates we
+have a functional web application that is built on what is provided by
+Postgres and PostgREST.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Newt Router was inspired by <a
+href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo Pipes!</a><a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

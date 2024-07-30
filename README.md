@@ -5,13 +5,11 @@ Newt is an experimental set of tools for rapid application development. Specific
 
 How does Newt do that? Newt generates applications implementing a [service oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture).
 
-You can think of a web application as a sequence of requests and responses. Typically when a web browser contacts your web application one of two things will happen. Your app knows the answer and hands back the result or tells you it can't do so (e.g. 404 HTTP STATUS CODE). With the service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
+You can think of a web application as a sequence of requests and responses. Traditionally a web browser contacts your web site or application one of two things will happen. Your app knows the answer and hands back the result or tells you it can't do so (e.g. 404 HTTP STATUS CODE). With a service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
+
+With data pipelines we can accept a request and feed that request to one service then take its output and send it to the next service. Newt does this by providing a data router. Newt can manage the request sequence through a simple YAML described pipeline. While it is possible to create pipelines using Apache and NginX proxy features in practice that approach quickly becomes an unmanageable configuration problem. You could encapsulate clusters of processes in containers but this too becomes complex to manage. Newt's router can cut through the hairball of configurations and define pipelines per request route. With Newt's pipelines the last service completed hands its result back to Newt's router which returns the result to the web browser.
 
 > The data pipelines are defined in Newt' YAML configuration file. The pipelines are managed by Newt's data router.
-
-With data pipelines we can accept a request and feed that request to one service then take its output and send it to the next service. Newt does this by providing a data router. Newt can manage the request sequence through a simple YAML described pipeline. While it is possible to create pipelines using Apache and NginX proxy features in practice that approach quickly becomes an unmanageable configuration problem. You could encapsulate clusters of processes in containers but this too becomes complex to manage. Newt's router can cut through the hairball of configurations and define pipelines per request route. With a Newt pipeline the last service completed hands its result to the Newt's router which returns the result to the web browser.
-
-The pipelines are defined in Newt' YAML configuration file. The pipelines are managed by Newt's data router.
 
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples used by Caltech Library.
 
@@ -22,16 +20,19 @@ Why is this important? Much of the "back end" of a web application is already av
 - [Invenio RDM](https://inveniordm.docs.cern.ch/) provides a JSON API web service
 - [Cantaloupe IIIF Image server](https://cantaloupe-project.github.io/) an IIIF [API](https://iiif.io/api/image/3.0/)
 
-This is not an exhaustive list. These types of applications can all be integrated into your application through configuring the connection in Newt's YAML file. Newt's router runs the data pipelines and can host static content.
+__This is not an exhaustive list__. These types of applications can all be integrated into your application through configuring the connection in Newt's YAML file. Newt's router runs the data pipelines and can host static content.
 
 > Wait, what about my custom metadata needs?
 
-That role can be filled by services that provide a JSON data source. In the second Newt prototype our focus is on using Postgres+PostgREST as a JSON data source. Newt's code generation lends a hand here. Using Newt's YAML file the code generator can generate SQL and configuration for setting up Postgres+PostgREST. Newt's code generator can also render Mustache templates based on the data modeled in that YAML file. Combined these transform JSON data into a web page. Between the generated configuration, SQL, templates, Newt's router, Newt' template engine and Postgres+PostgREST you have service oriented application providing basic CRUD-L[^12] operations.
+Metadata oriented applications tend to all need CRUD-L[^12] features. Customization tend towards data models.  Newt's configuration file includes simple YAML description of your data models. It uses the data model to render configuration, middleware and templates. Newt's data router ties them all together into an application using service oriented architecture.
 
-Metadata oriented applications tend to all need the CRUD-L features and nicely map to a service oriented architecture. Newt provides some of the missing glue
+Newt provides:
 
-1. Data routing
-2. Code generation
+- code generation
+- template engine
+- data routing
+
+Extending your basic CRUD-L application can be done through integrating additional data routes and services or through customizing the generated code.
 
 ## Does Newt clean my house or make cocktails?
 
@@ -43,11 +44,11 @@ Newt applications are well suited to interacting with other applications that pr
 
 Services not available on localhost must be proxied to integrate with your Newt application. Why is this necessary? Short answer, security. Newt seeks to reduce the attack surface of your web application as much as possible. It does that by only trusting services offered directly on localhost.  Newt's application models presumes you're running behind a "front end web server" like Apache 2, NginX or Lighttd. These systems can be configured to provide access control as well as perform proxy services. The front end web server is your first line of defense against a cracker.
 
-External web services integrate through a proxy setup (e.g ORCID, ROR, CrossRef or DataCite). This can be done via the front end web server or by writing a dedicated problem. Most of the popular web programming languages (e.g. Python, PHP, Go, TypeScript/JavaScript on Deno) provide libraries or packages that make this straight forward.
+External web services integrate through a proxy setup (e.g ORCID, ROR, CrossRef or DataCite). This can be done via the front end web server or by writing a dedicated proxy service.  Today writing proxy services us easily accomplished in most popular programming languages due to good support for web protocols. This is true of Python, PHP, JavaScript, Go, Rust and many others.
 
 [^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
-[^12]: CRUD-L, acronym meaning, "Create, Read, Update, Delete and List". These are the basic actions used to manage metadata or objects.
+[^12]: CRUD-L, acronym meaning, "Create, Read, Update, Delete and List". These are the basic actions used to manage metadata.
 
 ## How does Newt impact web application development?
 
@@ -65,23 +66,15 @@ A Newt application encourages the following.
 In 2024 there is allot of off the self software to build on. Newt provides a few tools to fill in the gaps.
 
 - `newt` is a development tool for data modeling, generating code, running Newt router, template engine and PostgREST or dataset collections
-- stand alone services for when you're ready to deploy your application
-    - `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web requests through a data pipelines built from other web services
-    - `newthandlebars` is a stateless template engine inspired by Pandoc server that supports the [Handlebarsjs](https://handlebarsjs.com) template language and is designed to process data from a JSON data source
+- `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web requests through a data pipelines built from other web services
+- `newtte` is a stateless template engine inspired by Pandoc server that supports the [Handlebarsjs](https://handlebarsjs.com) template language and is designed to process data from a JSON data source
 
-Newt's 2nd prototype is being tested building applications based on
+The Newt YAML configuration ties these together expressing
 
-- [Postgres](https://postgres.org), data management
-- [PostgREST](https://postgrest.org), a service that turns Postgres into a JSON API
-- newthandlebars as the template engine
-
-The Newt YAML ties this together expressing
-
-- applications (run time information for Newt's router, Newt's template engine and PostgREST)
-- models (descriptions of data as you would provided in a web form)
-- routes (web requests differentiated by a HTTP method and URL path that trigger processing in a data pipeline)
-- templates (pairs a request with a template to transform a JSON into some other format such as an HTML document)
-
+- application run time configuration
+- data models (descriptions of data as you would provided in a web form)
+- data routes (web requests differentiated by a HTTP method and URL path that trigger processing in a data pipeline)
+- template maps (path/template pairs used that can recieve JSON and render a results)
 
 ## What type of applications are supported by Newt?
 

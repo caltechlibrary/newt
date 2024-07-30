@@ -4,6 +4,9 @@ applications:
     htdocs: htdocs
   template_engine:
     port: 8011
+    base_dir: .
+    partials: partials
+    ext_name: .tmpl
   postgres:
     namespace: blog
     port: 5432

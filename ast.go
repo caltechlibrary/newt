@@ -16,8 +16,8 @@ import (
 	"time"
 
 	// 3rd Party
-
-	"gopkg.in/yaml.v3"
+	"github.com/hoisie/mustache"
+t	"gopkg.in/yaml.v3"
 )
 
 // AST holds a configuration for Newt for the data router and code generator.
@@ -91,29 +91,29 @@ type Application struct {
 	// Newt router.
 	Htdocs string `json:"htdocs,omitempty" yaml:"htdocs,omitempty"`
 
-	// HbsBaseDir is used by Handlebars, usually holds the "views" directory.
-	HbsBaseDir string `json:"base_dir,omitempty" yaml:"base_dir,omitempty"`
+	// BaseDir is used by Handlebars, usually holds the "views" directory.
+	BaseDir string `json:"base_dir,omitempty" yaml:"base_dir,omitempty"`
 
-	// HbsExtName is used by Handlebars to set the expected extension (e.g. ".hbs")
-	HbsExtName string `json:"ext_name,omitempty" yaml:"ext_name,omitempty"`
+	// ExtName is used by Handlebars to set the expected extension (e.g. ".hbs")
+	ExtName string `json:"ext_name,omitempty" yaml:"ext_name,omitempty"`
 
-	//HbsPartialsDir is used by Handlebars to find partial templates, usually inside the views directory
-	HbsPartialsDir string `json:"partials_dir,omitempty" yaml:"partials_dir,omitempty"`
+	// PartialsDir is used by Handlebars to find partial templates, usually inside the views directory
+	PartialsDir string `json:"partials_dir,omitempty" yaml:"partials_dir,omitempty"`
 
-	// HbsLayoutsDir is used by Handlebars to find the layouts, usually inside the views directory
-	HbsLayoutsDir string `json:"layouts_dir,omitempty" yaml:"layouts_dir,omitempty"`
+	// LayoutsDir is used by Handlebars to find the layouts, usually inside the views directory
+	LayoutsDir string `json:"layouts_dir,omitempty" yaml:"layouts_dir,omitempty"`
 
-	// HbsCachePartials will cache the partials if set true
-	HbsCachePartials bool `json:"cache_partials,omitempty" yaml:"cache_partials,omitempty"`
+	// CachePartials will cache the partials if set true
+	CachePartials bool `json:"cache_partials,omitempty" yaml:"cache_partials,omitempty"`
 
-	// HbsDefaultLayout holds the default layout if specified
-	HbsDefaultLayout string `json:"default_layout,omitempty" yaml:"default_layout,omitempty"`
+	// DefaultLayout holds the default layout if specified
+	DefaultLayout string `json:"default_layout,omitempty" yaml:"default_layout,omitempty"`
 
-	// HbsHelpers holds the map to handlebars help function
-	HbsHelpers map[string]string `json:"helpers,omitempty" yaml:"helpers,omitempty"`
+	// Helpers holds the map to handlebars help function
+	Helpers map[string]string `json:"helpers,omitempty" yaml:"helpers,omitempty"`
 
-	// HbsCompilerOptions holds a map of compiler options.
-	HbsCompilerOptions map[string]interface{} `json:"compiler_options,omitempty" yaml:"compiler_options,omitempty"`
+	// CompilerOptions holds a map of compiler options.
+	CompilerOptions map[string]interface{} `json:"compiler_options,omitempty" yaml:"compiler_options,omitempty"`
 
 	// DSN, data ast name is a URI connection string
 	DSN string `json:"dsn,omitemity" yaml:"dsn,omitempty"`
@@ -442,27 +442,27 @@ func (ast *AST) Check(buf io.Writer) bool {
 		fmt.Fprintf(buf, "no applications defined\n")
 		ok = false
 	}
-	if ast.Models == nil || len(ast.Models) == 0 {
-		fmt.Fprintf(buf, "no models defined\n")
-		ok = false
-	} else {
-		for i, m := range ast.Models {
-			if !m.Check(buf) {
-				fmt.Fprintf(buf, "model #%d is invalid\n", i)
-				ok = false
+
+	if ast.Applications.Postgres != nil || ast.Applications.Datasetd != nil {
+		if ast.Models == nil || len(ast.Models) == 0 {
+			fmt.Fprintf(buf, "no models defined for applications\n")
+			ok = false
+		} else {
+			for i, m := range ast.Models {
+				if !m.Check(buf) {
+					fmt.Fprintf(buf, "model #%d is invalid\n", i)
+					ok = false
+				}
 			}
 		}
 	}
-	if ast.Routes == nil || len(ast.Routes) == 0 {
-		if ast.Applications.Router != nil {
+
+	if ast.Applications.Router != nil {
+		if ast.Routes == nil || len(ast.Routes) == 0 {
 			fmt.Fprintf(buf, "no routes defined for Newt Router\n")
 			ok = false
 		}
-	} else {
-		if ast.Applications.Router == nil {
-			fmt.Fprintf(buf, "application.router not configured\n")
-			ok = false
-		} else if ast.Applications.Router.Port == 0 {
+		if ast.Applications.Router.Port == 0 {
 			fmt.Fprintf(buf, "application.router.port not set\n")
 			ok = false
 		}
@@ -473,22 +473,17 @@ func (ast *AST) Check(buf io.Writer) bool {
 			}
 		}
 	}
-	if ast.Templates == nil || len(ast.Templates) == 0 {
-		if ast.Applications.TemplateEngine != nil {
-			fmt.Fprintf(buf, "no templates defined but Newt's template engine enabled\n")
+	
+	if ast.Applications.TemplateEngine != nil {
+		if ast.Templates == nil || len(ast.Templates) == 0 {
+			fmt.Fprintf(buf, "template engine is defined but not templates are configured\n")
 			ok = false
-		}
-	} else {
-		if ast.Applications.TemplateEngine == nil {
-			fmt.Fprintf(buf, "application.template_engine not configured\n")
-			ok = false
-		} else if ast.Applications.TemplateEngine.Port == 0 {
-			fmt.Fprintf(buf, "application.template_engine.port not set\n")
-			ok = false
-		}
-		for i, t := range ast.Templates {
-			if !t.Check(buf) {
-				fmt.Fprintf(buf, "template (#%d) error\n", i)
+		} else {
+			t, err := NewTemplateEngine(ast)
+			if err != nil {
+				fmt.Fprintf(buf, fmt.Sprintf("application.template_engine not configured, %s\n", err))
+				ok = false
+			} else if ! t.Check(buf) {
 				ok = false
 			}
 		}
@@ -496,21 +491,38 @@ func (ast *AST) Check(buf io.Writer) bool {
 	return ok
 }
 
-// TemplateEngine defines the `newtmustache` application configuration YAML
+// TemplateEngine defines the `nte` application YAML file. It joins some of the Application struct
+// with an array of templates so that "check" can validate the YAML.
 type TemplateEngine struct {
-	// Port number to run the web service on
-	Port int
+	// Port is the name of the localhost port Newt will listen on.
+	Port int `json:"port,omitempty" yaml:"port,omitempty"`
+
+	// BaseDir is used by Handlebars, usually holds the "views" directory.
+	BaseDir string `json:"base_dir,omitempty" yaml:"base_dir,omitempty"`
+
+	// ExtName is used by Handlebars to set the expected extension (e.g. ".hbs")
+	ExtName string `json:"ext_name,omitempty" yaml:"ext_name,omitempty"`
+
+	// PartialsDir is used by Handlebars to find partial templates, usually inside the views directory
+	PartialsDir string `json:"partials_dir,omitempty" yaml:"partials_dir,omitempty"`
+
+	// LayoutsDir is used by Handlebars to find the layouts, usually inside the views directory
+	LayoutsDir string `json:"layouts_dir,omitempty" yaml:"layouts_dir,omitempty"`
+
+	// CachePartials will cache the partials if set true
+	CachePartials bool `json:"cache_partials,omitempty" yaml:"cache_partials,omitempty"`
+
+	// DefaultLayout holds the default layout if specified
+	DefaultLayout string `json:"default_layout,omitempty" yaml:"default_layout,omitempty"`
+
+	// Helpers holds the map to handlebars help function
+	Helpers map[string]string `json:"helpers,omitempty" yaml:"helpers,omitempty"`
+
+	// CompilerOptions holds a map of compiler options.
+	CompilerOptions map[string]interface{} `json:"compiler_options,omitempty" yaml:"compiler_options,omitempty"`
 
 	// Templates defined for the service
 	Templates []*Template
-
-	// Timeout setting for the web service
-	Timeout time.Duration
-
-	// Options hold the a map of values passed into it from the Newt YAML file in the applications
-	// property. These are a way to map in environment or application wide values. These are exposed in
-	// the Newt template engine `options`.
-	Options map[string]string
 }
 
 // Template hold the request to template mapping for in the TemplateEngine
@@ -533,40 +545,64 @@ type Template struct {
 	// Debug logs more verbosely if true
 	Debug bool `json:"debug,omitempty" yaml:"debug,omitempty"`
 
-	// Vocabulary holds the path to a YAML file used to populate Vocabulary at startup.
-	Vocabulary string `json:"vocabulary,omitempty" yaml:"vocabulary,omitempty"`
+	// Vocabularies holds the a list of paths to an external YAML files that map proterty names to YAML values.
+	// These are merged into Options at startup.
+	Vocabularies []string `json:"vocabularies,omitempty" yaml:"vocabularies,omitempty"`
 
-	// Voc holds a map of variable names to values. It is read in when template engine starts from a separate YAML
-	// file.
-	Voc map[string]interface{} `json:"-" yaml:"-"`
-
-	// Options hold the a map of values passed into it from the Newt YAML file in the applications
+	// Document hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
 	// the Newt template engine `options`.
-	Options map[string]string `json:"-" yaml:"-"`
+	Document map[string]string `json:"-" yaml:"-"`
 
 	// Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
 	// the output object.
 	Vars []string `json:"-" yaml:"-"`
+
+    // Body holds a map of data to process with the template
+	Body map[string]interface{} `json:"-" yaml:"-"`
+
+	Tmpl *mustache.Template `json:"-" yaml:"-"`
 }
 
 // NewTemplateEngine create a new TemplateEngine struct. If a filename
 // is provided it reads the file and sets things up accordingly.
 func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
-	nm := &TemplateEngine{
-		Templates: ast.Templates,
-	}
+	nm := &TemplateEngine{}
 	if ast.Applications.TemplateEngine.Port != 0 {
 		nm.Port = ast.Applications.TemplateEngine.Port
 	}
-	if ast.Applications.TemplateEngine.Timeout != 0 {
-		nm.Timeout = ast.Applications.TemplateEngine.Timeout * time.Second
+	if ast.Applications.TemplateEngine.BaseDir != "" {
+		nm.BaseDir = ast.Applications.TemplateEngine.BaseDir
 	}
-	if len(ast.Applications.Options) > 0 {
-		nm.Options = map[string]string{}
-		for k, v := range ast.Applications.Options {
-			nm.Options[k] = v
+	if ast.Applications.TemplateEngine.ExtName != "" {
+		nm.ExtName = ast.Applications.TemplateEngine.ExtName
+	}
+	if ast.Applications.TemplateEngine.PartialsDir != "" {
+		nm.PartialsDir = ast.Applications.TemplateEngine.PartialsDir
+	}
+	if ast.Applications.TemplateEngine.LayoutsDir != "" {
+		nm.LayoutsDir = ast.Applications.TemplateEngine.LayoutsDir
+	}
+	if ast.Applications.TemplateEngine.CachePartials {
+		nm.CachePartials = true
+	}
+	if ast.Applications.TemplateEngine.DefaultLayout != "" {
+		nm.DefaultLayout = ast.Applications.TemplateEngine.DefaultLayout
+	}
+	if ast.Applications.TemplateEngine.Helpers != nil && len(ast.Applications.TemplateEngine.Helpers) > 0 {
+		nm.Helpers = map[string]string{}
+		for k, v := range ast.Applications.TemplateEngine.Helpers {
+			nm.Helpers[k] = v
 		}
+	}
+	if ast.Applications.TemplateEngine.CompilerOptions != nil && len(ast.Applications.TemplateEngine.CompilerOptions) > 0 {
+		nm.CompilerOptions = map[string]interface{}{}
+		for k, v := range ast.Applications.TemplateEngine.CompilerOptions {
+			nm.CompilerOptions[k] = v
+		}
+	}
+	if ast.Templates != nil && len(ast.Templates) > 0 {
+		nm.Templates = append([]*Template{}, ast.Templates ...)
 	}
 	return nm, nil
 }
@@ -582,17 +618,38 @@ func (tEng *TemplateEngine) Check(buf io.Writer) bool {
 	if tEng.Port == 0 {
 		errMsgs = append(errMsgs, "template engine port not set")
 		ok = false
+	} else {
+		errMsgs = append(errMsgs, fmt.Sprintf("template engine will listen on port %d", tEng.Port))
+	}
+	if tEng.BaseDir == "" {
+		errMsgs = append(errMsgs, "base directory not set for templates")
+		ok = false
+	}
+	if tEng.ExtName == "" {
+		errMsgs = append(errMsgs, "template extension is not set")
+		ok = false
 	}
 	if tEng.Templates == nil || len(tEng.Templates) == 0 {
 		errMsgs = append(errMsgs, "no templates found")
 		ok = false
 	} else {
+		errMsgs = append(errMsgs, fmt.Sprintf("templates are located in %q", tEng.BaseDir))
+		if tEng.PartialsDir != "" {
+			errMsgs = append(errMsgs, fmt.Sprintf("partials are located in %q", path.Join(tEng.BaseDir, tEng.PartialsDir)))
+		}
+		if tEng.LayoutsDir != "" {
+			errMsgs = append(errMsgs, fmt.Sprintf("layouts are located in %q", path.Join(tEng.BaseDir, tEng.LayoutsDir)))
+		}
+		if tEng.ExtName != "" {
+			errMsgs = append(errMsgs, fmt.Sprintf("template extension is set to %q", tEng.ExtName))
+		}
+		errMsgs = append(errMsgs, fmt.Sprintf("%d template path(s) mapped", len(tEng.Templates)))
 		for i, t := range tEng.Templates {
 			tBuf := bytes.NewBuffer([]byte{})
 			if !t.Check(tBuf) {
 				errMsgs = append(errMsgs, fmt.Sprintf("template (#%d) failed check, %s\n", i, tBuf.Bytes()))
 				ok = false
-			}
+			} 
 		}
 	}
 	fmt.Fprintf(buf, "%s\n", strings.Join(errMsgs, "\n"))
@@ -612,6 +669,9 @@ func (tmpl *Template) Check(buf io.Writer) bool {
 	}
 	if tmpl.Template == "" {
 		fmt.Fprintf(buf, "missing path to template for %s\n", tmpl.Pattern)
+		ok = false
+	} else {
+		fmt.Fprintf(buf, "template name %s\n", tmpl.Template)
 	}
 	return ok
 }

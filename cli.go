@@ -312,7 +312,6 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		return CHECK_FAIL
 	}
 	if !ast.Check(eout) {
-		fmt.Fprintf(eout, "errors reported for %s\n", fName)
 		return CHECK_FAIL
 	}
 	if verbose {

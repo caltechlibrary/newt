@@ -10,7 +10,7 @@
  * @param {string} msg holds the message to respond with.
  * @return {Response}
  */
-function errorResponse(
+export function errorResponse(
   req: Request,
   status_code: number,
   msg: string,

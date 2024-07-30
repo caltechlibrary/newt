@@ -1,3 +1,14 @@
+export interface ASTInterface {
+  applications: {
+    [k: string]: ApplicationInterface;
+  };
+  models: ModelsInterface[];
+  routes: RouteInterface[];
+  templates: TemplateInterface[];
+  options: { [k: string]: string }[];
+  vars: string[];
+}
+
 export interface ApplicationInterface {
   app_path: string;
   conf_path: string;
@@ -9,7 +20,7 @@ export interface ApplicationInterface {
   cache_partials: string;
   default_layout: string;
   helpers: string;
-  compiler_options: string;
+  compiler_options: {[k:string]: any};
 }
 
 export interface ModelsInterface {
@@ -48,20 +59,10 @@ export interface TemplateInterface {
 	id: string;
 	pattern: RegExp,
 	template: string;
-	options: {[k:string]:string},
-	vacabulary: string;
-	vars: {[k:string]:string}
+	document: {[k:string]:string},
+	vacabularies: string[];
+	vars: {[k:string]:string};
 	description: string,
 	debug: boolean;
 }
 
-export interface ASTInterface {
-  applications: {
-    [k: string]: ApplicationInterface;
-  };
-  models: ModelsInterface[];
-  routes: RouteInterface[];
-  templates: TemplateInterface[];
-  options: { [k: string]: string }[];
-  vars: string[];
-}

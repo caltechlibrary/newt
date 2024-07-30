@@ -14,8 +14,8 @@ export async function loadAndMergeNewtYAML(
     src,
   )) as unknown as ASTInterface;
   console.log("DEBUG AST interface", result);
-  if (options.port !== undefined && typeof options.port === "number") {
-    result.applications.template_engine.port = options.port;
+  if (options.port !== undefined && typeof options.port === "number" && options.port > 0) {
+   	result.applications.template_engine.port = options.port;
   }
   console.log("DEBUG AST interface (after merge)", result);
   return result;
@@ -25,11 +25,15 @@ export function getTemplateFromId(config: ASTInterface, template_id: string) : T
 	if (config.templates == undefined) {
 		return undefined;
 	}
+	console.log("DEBUG config.templates type ->", typeof config.templates);
 	for (let i of config.templates) {
+		console.log("DEBUG i of config.templates ->", typeof i, i)
+		/*
 		const template = config.templates[i];
 		if (template.id === template_id) {
 			return template;
 		}
+		*/
 	}
 	return undefined;
 }

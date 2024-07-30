@@ -4,6 +4,10 @@
 import {
   Handlebars,
   HandlebarsConfig,
+  errorResponse,
+  ASTInterface,
+  TemplateInterface,
+  pathIdentifier,
 } from "./deps.ts";
 
 /**
@@ -56,11 +60,18 @@ export async function renderPage(
  * @param {Request} request object
  * @returns {Promise<Response>} returns a response 
  */
-export async function reanderTemplate(config: ASTInterface, req: request): Promise<Response> {
+export async function renderTemplateObject(config: ASTInterface, req: Request): Promise<Response> {
 	const template_id = pathIdentifier(req.url);
 	if (template_id === undefined) {
 		return errorResponse(req, 404, `${template_id} not found`);
 	}
+	const page: {[k: string]: any} = {};
+	page.body = await req.json(),
+	const template = await config.templates[template_id];
+
+	//FIXME: build page level object
+	// Do we have a POST? Is it content type "application/json"? 
+	
 	return errorResponse(req, 501, `renderTemplateObject(${JSON.stringify(config)}, ${JSON.stringify(req)}) has not been implemented`);
 }
 

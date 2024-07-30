@@ -4,7 +4,8 @@
 ## What is in the Newt toolbox?
 
 - [Newt](newt.1.md), is a development tool. It's primary task is as a code generator and secondary task is a app runner. As an app runner it is capabile of running Newt's router and template engine and selected JSON data sources such as datasetd or PostgREST.
-- [Newt's router](newtrouter.1.md) is a web service that manages your requests and data pipelines as well as static file hosting
+- [Newt's router](ndr.1.md) is a web service that manages your requests and data pipelines as well as static file hosting
+- [Newt's template engine](nte.1.md) is a simple template engine as web service
 
 ## Newt YAML syntax (draft)
 
@@ -13,17 +14,17 @@
 ## Tutorials and reference materials (drafts)
 
 - Getting Started with Newt
-  - [Newt Overview](newt_command_overview.md)
-  - [Configuring](newt_config_explained.md)
-  - [Modeling Data](newt_model_explained.md)
-  - [Checking your YAML](newt_check_explained.md)
-  - [Generating code](newt_generator_explained.md)
+  - [Newt Overview](command_overview.md)
+  - [Configuring](config_explained.md)
+  - [Modeling Data](data_model_explained.md)
+  - [Checking your YAML](check_explained.md)
+  - [Generating code](generator_explained.md)
 - Generating your Newt App
   - [Generated middleware](generated_middleware_explained.md)
   - [Validator Explained](validator_explained.md)
   - [Template Engine Explained](template_engine_explained.md)
 - Running your Newt App
-  - [Newt Router Explained](newtrouter_explained.md)
+  - [Data Router Explained](data_router_explained.md)
 
 ## Presentations
 

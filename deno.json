@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "dev": "deno run --allow-read --allow-net --allow-env --watch newthandlebars.ts $1",
-    "compile_newthandlebars": "deno compile --allow-read --allow-net -o bin/newthandlebars$EXT $TARGET newthandlebars.ts ; ./bin/newthandlebars$EXT --help >newthandlebars.1.md"
+    "dev": "deno run --allow-read --allow-net --allow-env --watch nte.ts $1",
+    "compile_nte": "deno compile --allow-read --allow-net -o bin/nte$EXT $TARGET nte.ts ; ./bin/nte$EXT --help >nte.1.md"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.0",
