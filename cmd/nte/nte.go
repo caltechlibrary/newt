@@ -27,27 +27,26 @@ author: R. S. Doiel
 
 # DESCRIPTION
 
-**{app_name}** is a web service that provides a Mustache template rendering engine inspired
+**{app_name}** is a web service that provides a template rendering engine inspired
 by Pandoc server.
 
-Unlike Pandoc web server, `+"`"+`{app_name}`+"`"+` expects a YAML_CONFIG_FILE. The format is
-described below. That file specifies the runtime configuration. It specifies the request path
-to template mapping. It can also specify ancillary information made available to the Mustache
-template associated with the request path and template.
+Unlike Pandoc web server, `+"`"+`{app_name}`+"`"+` expects a YAML configuration file.
+The format is described below. That file specifies the runtime configuration. It specifies
+the request path to template mapping. It can also specify ancillary information made
+available to the template associated with the request path and template.
 
-The `+"`"+`{app_name}`+"`"+` template engine listens for a POST requests of JSON encoded data.
-It  checks requested path to see if that matches the request path described in the Newt YAML
-file. If there is a match it processes the request returning the template results matched with
- any data found in the POST. `+"`"+`{app_name}`+"`"+` doesn't respond to any other HTTP methods.
+The `+"`"+`{app_name}`+"`"+` template engine listens for a POST requests with JSON encoded data.
+It  checks requested path to see if that matches the request path described in the YAML
+file. If there is a match it processes the request returning the rendered results matched with
+ any data found in the POST. `+"`"+`{app_name}`+"`"+`.
 
 The content of the POST is passed to the template as `+"`"+`.body`+"`"+`, applications options
-are passed to the template as `+"`"+`.options`+"`"+`, any vocabulary content read in at startup
-is passed to the template as `+"`"+`.vocabulary`+"`"+`. Finally if you've defined a variable
-in your request path those will be available to your template as `+"`"+`.vars`+"`"+`.
+are merged into a `+"`"+`.document`+"`"+` object along with any specified vocabularies.
+Finally if you've defined a variables in the path to the tempalte those are provided via
+the `+"`"+`.vars`+"`"+` property.
 
-Like Pandoc web service `+"`"+`{app_name}`+"`"+` does not normally log requests. It's a quick
-transaction. If you want to debug your templates use the verbose command line option to turn on
-debug output.
+If you use a GET request then the unprocessed referenced template is returned (minus partials,
+layouts, etc).
 
 # OPTIONS
 
@@ -65,6 +64,9 @@ The following options are supported by **{app_name}**.
 `+"`"+`-port NUMBER`+"`"+`
 : (default is port is 3032) Set the port number to listen on
 
+`+"`"+`-base-dir PATH`+"`"+`
+: set the base directory path (where you have your templates).
+
 `+"`"+`-timeout SECONDS`+"`"+`
 : Timeout in seconds, after which a template rendering is aborted.  Default: 3.
 
@@ -73,18 +75,20 @@ The following options are supported by **{app_name}**.
 
 # The templates
 
-Mustache templates are documented at <https://mustache.github.io>. The template engine
-used is based on Go package <https://github.com/cbroglie/mustache>.
+The template engine supports the [Handlebars](https://handlebarsjs.com) template langauge
+which is largely a superset of Mustache templates documented at <https://mustache.github.io>.
+The template engine used is based on Go package <github.com/aymerick/raymond>.
 
 ## Features
 
-- Newt template engine only runs on localhost at the designated port (default is 8011).
+- Newt template engine only runs on localhost at a designated port (default is 8011).
 - Templates are read in at startup and are retained in memory bound to the request path.
-- Vocabulary files are read in at startup and bound to the request path.
-- Options are set at startup and mapped into the request path.
-- No addition reads are performed once the web service starts listening.
+- JSON data is provided to the template in a `+"`"+`.body`+"`"+` object.
+- Vocabulary files are read in at startup and bound to the request path and propogated
+  to the template via the `+"+"+`.document`+"`"+` object.
 - Variables found expressed in the request path are available in the `+"`"+`.vars`+"`"+`
-passed to the template.
+  passed to the template.
+- Except for variables no addition reads are performed once the web service starts listening.
 
 # YAML_CONFIG_FILE
 
@@ -95,38 +99,49 @@ This is a list of the Newt YAML syntax relevant to **{app_name}**.
 These are the top level properties in YAML files.
 
 applications
-: (optional) holds the run time configuration used by the Newt applications.
+: (required) holds the run time configuration used by the Newt applications.
 
 templates
-: (required by newtmustache)
+: (required) holds a list of template objects
 
 ## The applications property
 
-The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
-
 template_engine
-: this contains configuration for Newt template engine, e.g. port, base_dir, ext_name.
+: (requred) this contains configuration for Newt template engine, e.g. port, base_dir, ext_name.
 
-options
-: holds key value pairs of which can be referenced in the values of models, routes and templates.
-
-### newtmustache settings
+### template engine properties
 
 port
-: (all) Port number to used for Newt web service running on localhost
+: (required) port number to used for to ued for Newt Template Engine
 
-### the "routes" property
+base_dir
+: (required) base directory holding the primary templates
 
-Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.
+partial_dir
+: (optional) the sub directory holding the partial templates
+
+layout_Dir
+: (optional) the sub directory holding the layouts
+
+default_layout
+: (optional) the default layout
+
+`+"`"+`vocabularies`+"`"+`
+: (optional) this holds a map of vocabulary name to vocabulary filename. A
+vocabulary file is a YAML file that is made available in templates via the
+`+"`"+`.document`+"`"+` object. It can be used to provide common document
+attributes between a set of templates.
+
+helpers
+: (optional) this holds a map of handlebars helpers
+
 
 ## templates property
 
-This property is used by Newt template engine. It is ignore by Newt router and code generator.
+This property is used by Newt template engine. It provides a list of
+template objects.
 
-templates
-: (optional: newtmustache) this holds a list of template objects
-
-### template object model
+### template object
 
 The template objects are used by Newt template engine. If you're not using it you can skip these.
 
@@ -134,16 +149,13 @@ The template objects are used by Newt template engine. If you're not using it yo
 : (required) This holds the request URL's path. `+"`"+`{app_name}`+"`"+` only listens for POST method.
 
 `+"`"+`template`+"`"+`
-: (required: newtmustache only) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
+: (required) This is the name of the primary template (without file extnesion). The primary
+template may also include partials and those will be read from the partials sub directory
+defined in the template engine property.
 
-`+"`"+`partials`+"`"+`
-: (optional, newtmustache only) A list of paths to partial Mustache templates used by `+"`"+`.template`+"`"+`.
-
-`+"`"+`options`+"`"+`
-: (optional, newtmustache only) An object is passed to the template as `+"`"+`.options`+"`"+`.
-
-`+"`"+`vocabulary`+"`"+`
-: (optional, newtmustache only) This is the filename for a YAML file which is exposed inside the template as `+"`"+`.vocabulary`+"`"+`. You can think of this as options maintained outside the Newt YAML file.
+`+"`"+`document`+"`"+`
+: this will provide template specific data merged with the any vocaluaries
+defined in template_engine property.
 
 `+"`"+`debug`+"`"+`
 : (optional) this turns on debugging output for this template
@@ -157,12 +169,8 @@ The paths are used to provide template content.
 applications:
   template_engine:
     port: 8011
-	# where to find the templates
+	# this is the path to the primary templates
 	base_dir: testadata
-	# where, under base_dir, to find partial templates
-	partials: partials
-	# template extension to use
-	ext_name: .tmpl
 templates:
   - id: hello
     request: /hello/{name}
@@ -170,7 +178,7 @@ templates:
   - id: hello
     request: /hello
     template: simple
-    options:
+    document:
       name: Universe
   - id: hi
     request: /hi/{name}
@@ -179,9 +187,12 @@ templates:
   - id: hi
     request: /hi
     template: hithere
-    options:
+    document:
       name: Universe
 ~~~
+
+NOTE: the template name doesn't require the extension since that is set at the 
+template engine level.
 
 `
 

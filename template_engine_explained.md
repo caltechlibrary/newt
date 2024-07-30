@@ -3,9 +3,9 @@
 
 ## Overview
 
-Newt provides a simple stateless template engine as web service. It plays nice as a final stage in a data pipeline. The configuration file maps URL paths to template name. If the template engine recieves a GET request for a defined template then it'll return the un-rendered template associated with that path. If you submit a POST request to that path with JSON encoded content then the service will return a rendered results based on the template and content provided.
+Newt provides a simple stateless template engine as web service. It plays nice as a final stage in a data pipeline. The configuration file maps URL paths to template name. If the template engine recieves a GET request for a defined template then it'll return the un-rendered template associated with that path. If a POST request is recieved the the rendered version using the JSON data submitted is returned.
 
-The template engine currently supports the [HandlbarsJS](https://handlebarsjs.com) template language. 
+The original engine supported Mustache templates, the new engine is transistioning to Handlebars which is largely a superset of Mustache.
 
 ## Template objects
 

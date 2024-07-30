@@ -1,6 +1,6 @@
 ---
-title: newt(1) user manual | 0.0.9 efd5fe1
-pubDate: 2024-07-29
+title: newt(1) user manual | 0.0.9 ac665bc
+pubDate: 2024-07-30
 author: R. S. Doiel
 ---
 

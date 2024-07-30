@@ -273,7 +273,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			ast.Applications.TemplateEngine = NewApplication()
 		}
 		if ast.Applications.TemplateEngine.Port == 0 {
-			ast.Applications.TemplateEngine.Port = MUSTACHE_PORT
+			ast.Applications.TemplateEngine.Port = TEMPLATE_ENGINE_PORT
 		}
 		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
 		// When the model list changes then the related templates should change to.
@@ -301,7 +301,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			case "p":
 				if opt == "" {
 					fmt.Fprintf(out, "Enter port number: ")
-					opt = getAnswer(buf, strconv.Itoa(MUSTACHE_PORT), true)
+					opt = getAnswer(buf, strconv.Itoa(TEMPLATE_ENGINE_PORT), true)
 				}
 				port, err := strconv.Atoi(opt)
 				if err != nil {

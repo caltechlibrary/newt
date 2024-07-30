@@ -33,7 +33,7 @@ const (
 	MODELER_FAIL
 	GENERATOR_FAIL
 	ROUTER_FAIL
-	MUSTACHE_FAIL
+	TEMPLATE_ENGINE_FAIL
 	NEWT_FAIL
 	SWS_FAIL
 	POSTGREST_FAIL
@@ -49,13 +49,13 @@ const (
 	TEMPLATE_ERROR
 
 	// Default service settings
-	ROUTER_PORT      = 8010
-	MUSTACHE_PORT    = 8011
-	MUSTACHE_TIMEOUT = 3 * time.Second
-	SWS_PORT         = 8000
-	SWS_HTDOCS       = "."
-	POSTGREST_PORT   = 3000
-	POSTGRES_PORT    = 5432
+	ROUTER_PORT             = 8010
+	TEMPLATE_ENGINE_PORT    = 8011
+	TEMPLATE_ENGINE_TIMEOUT = 3 * time.Second
+	SWS_PORT                = 8000
+	SWS_HTDOCS              = "."
+	POSTGREST_PORT          = 3000
+	POSTGRES_PORT           = 5432
 )
 
 // backupFile takes a filename, copies it to filename plus ".bak"
@@ -203,9 +203,68 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 // RunTemplateEngine is a runner for a Newt's template engine.
 func RunTemplateEngine(in io.Reader, out io.Writer, eout io.Writer, args []string, port int, timeout int, verbose bool) int {
 	appName := "Newt Template Engine"
-	//FIXME: this needs to call out the the newthandler program. It is not a TypeScript program compiled by Deno.
-	fmt.Fprintf(eout, "RunTemplateEngine for %s is being replace, not implemented yet", appName)
-	return 1 // NOT implemented.
+	fName := getNewtYamlFName(args)
+	if fName == "" {
+		fmt.Fprintf(eout, "missing Newt YAML filename\n")
+		return CONFIG
+	}
+	// Load the Newt YAML syntax file holding the configuration
+	// and make sure it conforms.
+	ast, err := LoadAST(fName)
+	if err != nil {
+		fmt.Fprintf(eout, "%s\n", err)
+		return CONFIG
+	}
+	// Instantiate the specific application with the filename and AST object
+	mt, err := NewTemplateEngine(ast)
+	if err != nil {
+		fmt.Fprintf(eout, "%s\n", err)
+		return CONFIG
+	}
+	// If port is not set in the config, set it to the default port.
+	if mt.Port == 0 {
+		mt.Port = TEMPLATE_ENGINE_PORT
+	}
+	// See if we have a command line option for port to process.
+	if port != 0 {
+		mt.Port = port
+	}
+	if verbose {
+		fmt.Fprintf(out, "port set to %d\n", mt.Port)
+	}
+
+	if timeout != 0 {
+		mt.Timeout = time.Duration(timeout) * time.Second
+	}
+	if mt.Timeout == 0 {
+		mt.Timeout = TEMPLATE_ENGINE_TIMEOUT
+	}
+	if len(mt.Templates) == 0 {
+		fmt.Fprintf(eout, "no templates in configuration\n")
+		return CONFIG
+	}
+	// Create mux for http service
+	// Resolve partial templates and build handlers
+	for _, tmpl := range mt.Templates {
+		if verbose {
+			tmpl.Debug = true
+		}
+		if err := tmpl.ResolveTemplate(); err != nil {
+			fmt.Fprintf(eout, "%s failed to resolve, %s\n", tmpl.Template, err)
+			return RESOLVE
+		}
+		if err := tmpl.ResolvePath(); err != nil {
+			fmt.Fprintf(eout, "failed to build handler for %q, %s\n", tmpl.Pattern, err)
+			return HANDLER
+		}
+	}
+	// Launch web service
+	fmt.Printf("starting %s listening on port :%d (press Ctrl-c to exit)\n", appName, mt.Port)
+	if err := mt.ListenAndServe(); err != nil {
+		fmt.Fprintf(eout, "%s\n", err)
+		return TEMPLATE_ENGINE_FAIL
+	}
+	return OK
 }
 
 // RunRouter is a runner for Newt data router and static file service
@@ -351,7 +410,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		if ast.Applications.TemplateEngine != nil {
 			port := ast.Applications.TemplateEngine.Port
 			if port == 0 {
-				port = MUSTACHE_PORT
+				port = TEMPLATE_ENGINE_PORT
 			}
 			fmt.Fprintf(out, "Newt template engine configured, port set to :%d\n", port)
 			fmt.Fprintf(out, "%d templates are defined\n", len(ast.Templates))

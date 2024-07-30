@@ -16,8 +16,9 @@ import (
 	"time"
 
 	// 3rd Party
-	"github.com/hoisie/mustache"
-t	"gopkg.in/yaml.v3"
+	//"github.com/cbroglie/mustache"
+	"github.com/aymerick/raymond"
+	"gopkg.in/yaml.v3"
 )
 
 // AST holds a configuration for Newt for the data router and code generator.
@@ -497,16 +498,16 @@ type TemplateEngine struct {
 	// Port is the name of the localhost port Newt will listen on.
 	Port int `json:"port,omitempty" yaml:"port,omitempty"`
 
-	// BaseDir is used by Handlebars, usually holds the "views" directory.
+	// BaseDir is holds the "views" for that are formed from the templates.
 	BaseDir string `json:"base_dir,omitempty" yaml:"base_dir,omitempty"`
 
-	// ExtName is used by Handlebars to set the expected extension (e.g. ".hbs")
+	// ExtName is used to set the expected extension (e.g. ".hbs")
 	ExtName string `json:"ext_name,omitempty" yaml:"ext_name,omitempty"`
 
-	// PartialsDir is used by Handlebars to find partial templates, usually inside the views directory
+	// PartialsDir is used to find partial templates, usually inside the views directory
 	PartialsDir string `json:"partials_dir,omitempty" yaml:"partials_dir,omitempty"`
 
-	// LayoutsDir is used by Handlebars to find the layouts, usually inside the views directory
+	// LayoutsDir is used find the layouts, usually inside the views directory
 	LayoutsDir string `json:"layouts_dir,omitempty" yaml:"layouts_dir,omitempty"`
 
 	// CachePartials will cache the partials if set true
@@ -521,8 +522,11 @@ type TemplateEngine struct {
 	// CompilerOptions holds a map of compiler options.
 	CompilerOptions map[string]interface{} `json:"compiler_options,omitempty" yaml:"compiler_options,omitempty"`
 
+	// Timeout is a duration, it is used to set timeouts and the application.
+	Timeout time.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
+
 	// Templates defined for the service
-	Templates []*Template
+	Templates []*Template `json:"templates,omitempty" yaml:"templates,omitempty"`
 }
 
 // Template hold the request to template mapping for in the TemplateEngine
@@ -561,50 +565,102 @@ type Template struct {
     // Body holds a map of data to process with the template
 	Body map[string]interface{} `json:"-" yaml:"-"`
 
-	Tmpl *mustache.Template `json:"-" yaml:"-"`
+	// The follow are used to simplify individual template invocation.
+	// They are populated from the TemplateEngine object.
+
+
+	/*FIXME: I want to support both Mustache and Handlebars templates.
+
+			 I need to review both mustache and handlebars implementations so figure out an appropriate
+			 or wrapper then Tmpl should point to that interface. Gofiber does this with "template views"
+			 but I don't want to have to pull in Gofiber's template engine, it's big and provides too many
+			 choices to implement smoothly.
+
+	         I need to decide how to specify the template language and if that is per template or engine wide.
+			 One approach would be to pick the template engine based on the file extension. Another approoach would
+			 be to make it a property of the engine that inherits like the BaseDir, ExtName, etc.
+	*/
+
+	// Tmpl points to the compied template
+	Tmpl *raymond.Template `json:"-" yaml:"-"`
+
+	// BaseDir is used by holds the "views" directory.
+	BaseDir string `json:"-" yaml:"-"`
+
+	// ExtName is used by set the expected extension (e.g. ".hbs")
+	ExtName string `json:"-" yaml:"-"`
+
+	// Partials holds partials directory
+	PartialsDir string `json:"-" yaml:"-"`
+
+	// LayoutsDir holds the layouts directory
+	LayoutsDir string `json:"-" yaml:"-"`
+
+	// CachePartials will cache the partials if set true
+	CachePartials bool `json:"-" yaml:"-"`
+
+	// DefaultLayout holds the default layout if specified
+	DefaultLayout string `json:"-" yaml:"-"`
+
+	// Helpers holds the map to handlebars help function
+	Helpers map[string]string `json:"-" yaml:"-"`
+
+	// CompilerOptions holds a map of compiler options.
+	CompilerOptions map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // NewTemplateEngine create a new TemplateEngine struct. If a filename
 // is provided it reads the file and sets things up accordingly.
 func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
-	nm := &TemplateEngine{}
+	te := &TemplateEngine{}
 	if ast.Applications.TemplateEngine.Port != 0 {
-		nm.Port = ast.Applications.TemplateEngine.Port
+		te.Port = ast.Applications.TemplateEngine.Port
 	}
 	if ast.Applications.TemplateEngine.BaseDir != "" {
-		nm.BaseDir = ast.Applications.TemplateEngine.BaseDir
+		te.BaseDir = ast.Applications.TemplateEngine.BaseDir
 	}
 	if ast.Applications.TemplateEngine.ExtName != "" {
-		nm.ExtName = ast.Applications.TemplateEngine.ExtName
+		te.ExtName = ast.Applications.TemplateEngine.ExtName
 	}
 	if ast.Applications.TemplateEngine.PartialsDir != "" {
-		nm.PartialsDir = ast.Applications.TemplateEngine.PartialsDir
+		te.PartialsDir = ast.Applications.TemplateEngine.PartialsDir
 	}
 	if ast.Applications.TemplateEngine.LayoutsDir != "" {
-		nm.LayoutsDir = ast.Applications.TemplateEngine.LayoutsDir
+		te.LayoutsDir = ast.Applications.TemplateEngine.LayoutsDir
 	}
 	if ast.Applications.TemplateEngine.CachePartials {
-		nm.CachePartials = true
+		te.CachePartials = true
 	}
 	if ast.Applications.TemplateEngine.DefaultLayout != "" {
-		nm.DefaultLayout = ast.Applications.TemplateEngine.DefaultLayout
+		te.DefaultLayout = ast.Applications.TemplateEngine.DefaultLayout
 	}
 	if ast.Applications.TemplateEngine.Helpers != nil && len(ast.Applications.TemplateEngine.Helpers) > 0 {
-		nm.Helpers = map[string]string{}
+		te.Helpers = map[string]string{}
 		for k, v := range ast.Applications.TemplateEngine.Helpers {
-			nm.Helpers[k] = v
+			te.Helpers[k] = v
 		}
 	}
 	if ast.Applications.TemplateEngine.CompilerOptions != nil && len(ast.Applications.TemplateEngine.CompilerOptions) > 0 {
-		nm.CompilerOptions = map[string]interface{}{}
+		te.CompilerOptions = map[string]interface{}{}
 		for k, v := range ast.Applications.TemplateEngine.CompilerOptions {
-			nm.CompilerOptions[k] = v
+			te.CompilerOptions[k] = v
 		}
 	}
 	if ast.Templates != nil && len(ast.Templates) > 0 {
-		nm.Templates = append([]*Template{}, ast.Templates ...)
+		// Map in the BaseDir, PartialsDir, LayoutDirs and ExtName for the templates.
+		for _, t := range ast.Templates {
+			t.ExtName = ast.Applications.TemplateEngine.ExtName
+			t.BaseDir = ast.Applications.TemplateEngine.BaseDir
+			t.PartialsDir = ast.Applications.TemplateEngine.PartialsDir
+			t.LayoutsDir = ast.Applications.TemplateEngine.LayoutsDir
+			t.CachePartials = ast.Applications.TemplateEngine.CachePartials
+			t.DefaultLayout = ast.Applications.TemplateEngine.DefaultLayout
+			t.Helpers = ast.Applications.TemplateEngine.Helpers
+		}
+		// Add the resulting templates into struct.
+		te.Templates = append([]*Template{}, ast.Templates ...)
 	}
-	return nm, nil
+	return te, nil
 }
 
 // Check makes sure the TemplateEngine struct is populated
