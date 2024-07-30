@@ -17,13 +17,13 @@
 </thead>
 <tbody>
 <p>
-$for(data)$
+{{#with data}}
 <tr>
-<td>$it.name$</td>
-<td>$it.place$</td>
-<td>$it.sighted$</td>
+<td>{{data.name}}</td>
+<td>{{data.place}}</td>
+<td>{{data.sighted}}</td>
 </tr>
-$endfor$
+{{/with}}
 </tbody>
 </table>
 	<p>
