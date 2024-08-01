@@ -75,7 +75,7 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 - Removed some Go cli (e.g. ws, mustache, newtmustache)
 - Renamed newtrouter -> ndr (Newt Data Router)
-- Added nte (Newt Template Engine)
+- Added nte (Newt Template Engine) supporting Handlbars templates
 - Generating collection and YAML for dataset+datasetd
 - Generating Handlebars templates
 - Generating TypeScript validator as middleware run via Deno
@@ -86,7 +86,7 @@ Short answer is **yes**. Longer answer is more nuanced.
   - [Dataset + datasetd](https://caltechlibrary.github.io/datasetd)
   - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - newt, ndr, and nte
-- Deno to run TypeScript middleware
+- Deno to run generated TypeScript middleware
 
 # Assemble app from YAML (less coding)
 
@@ -121,9 +121,8 @@ Short answer is **yes**. Longer answer is more nuanced.
 ~~~
 
 > Create a dataset collection and datasetd YAML file
-> Render Handlebars templates
-> Wires up routes
-> Adds tasks to deno.json
+> Generate Handlebars templates
+> Wires up routes and template mappings
 
 # Step four, setup primary JSON data source
 
@@ -155,9 +154,9 @@ Not yet, hopefully in early December 2024.
 - [X] Newt developer tool
 - [X] Router is implemented and working
 - [X] ~~Mustache template engine is working~~ (removed)
-- [ ] Generator development (design stage)
+- [X] Newt template engine (supporting Handlebars templates)
 - [ ] Modeler (design stage)
-- [ ] template engine (design stage)
+- [ ] Generator development (refactor, design stage)
 
 # Insights from prototypes 1 & 2
 

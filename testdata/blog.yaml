@@ -6,7 +6,7 @@ applications:
     port: 8011
     base_dir: .
     partials: partials
-    ext_name: .tmpl
+    ext_name: .hbs
   postgres:
     namespace: blog
     port: 5432
@@ -98,7 +98,7 @@ routes:
 templates:
   - id: post
     request: /post
-    template: post.tmpl
+    template: post
   - id: list
     request: /list
-    template: list.tmpl
+    template: list

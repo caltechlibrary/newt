@@ -3,15 +3,27 @@
 
 // FIXME: Needs to be rewritten given code changes and evolution of AST.
 
-Newt comes with a code generator as part of the `newt` command. It uses the Newt YAML file to render Postgres SQL, PostgREST configuration and Mustache templates suitable to bootstrap your Newt based project.  How does it do this? What are the assumptions?
+Newt comes with a code generator. It is part of the `newt` command. It uses the Newt YAML file to render Postgres SQL, PostgREST configuration and Handlebar templates suitable to bootstrap your Newt based project.  How does it do this? What are the assumptions?
 
 The Newt code generator works primarily with the "models" property in your Newt YAML file.
 
-Our minimal useful application should be able to do five things - Create, Read, Update, Delete and List (abbr: CRUD-L) the objects you are modeling. It needs to offer these actions for each model defined in our project. The second Newt prototype assumes each model is independent but multiple objects may be needed in your application. If you need to combine models (not unusual) then you will need to enhance the generated SQL or templates to support integration. For now let us focus on the basics.
+Our minimal useful application should be able to do five things - Create, Read, Update, Delete and List (abbr: CRUD-L) for objects you are modeling. It needs to offer these actions for each model defined in our project. The Newt assumes each model is independent but multiple objects may be defined in your application. If you need to combine models (not unusual) then you will need to enhance the generated SQL, routes and templates to better support that type of integration. For now let us focus on the basics.
 
-In the Newt philosophy we model our data and manage our data in the database. For us this means Postgres. By combining Postgres and PostgREST we create a JSON API based on what we've modeled and managed in our database. Our middleware, the stages in our pipelines, do not need to know anything about SQL. They don't ever touch it. This gives us a clean break from SQL and the rest of our system. It avoids the burden of doing the cognitive shifts when implementing middleware. This is a result of Postgres plus PostgREST automatically giving a JSON API. PostgREST is really clever. Once we have a JSON API or JSON data source to interactive the middle can focus on using that in conjunction with a rendering engine. In Newt's case the rendering engine supports the Mustache template language. The Newt development tool, `newt`, knows how PostgREST and Postgres need to be setup. It knows what is the minimum SQL that needs to be generated to support our CRUD-L operations. It can update the routes in the Newt YAML file to support simple data pipelines that talk to PostgREST and run the results through the Mustache template engine. The generator in `newt` is responsibly for generating a PostgREST configuration file called "postgrest.conf", a SQL file called "setup.sql" and a SQL file called "models.sql" that you can run in Postgres to configure and manage your model's data. The generator also generates a half dozen or so Mustache templates for rendering the HTML of your web application that match the routes for performing the CRUD-L operations.
+The Newt philosophy is to model data in YAML and then mangage the data via data management system. It presumes the data management system provides a JSON API for interacting with it. In Newt this is referred to as a "JSON data source".  What is a data management system?  Typical this will be a JSON friendly database combined with a JSON API.  Newt provides code generation for Postgres (the database) plus PostgREST (the JSON API). The code generation includes setting up a simple configuration file, generating SQL to define tables, schema as well as SQL functions. The result can be used to bring up an instance of Postgres+PostgREST for your project.
 
-## Bringing up Postgres+PostgREST and Newt Mustache
+Newt also supports using Dataset+datasetd as a primary JSON data source.  Dataset can store JSON documents in a pairtree, in MySQL, Postgres or SQLite3 database.
+Newt's Dataset+datasetd support assumes you're using SQLite3 as your storage format.
+
+
+Newt code generation can accomplish the following tasks
+
+1. generate the basic configuration files needed for your JSON data source
+2. Provide any additioan SQL or data langauge files needed to implement CRUD-L opperations for your models
+3. Configure (wire up) the routes and templates mapping in your Newt YAML file
+4. Generate Handlebar templates for the created routes in your Newt YAML file
+5. Generate TypeScript middleware suitable for Deno to validate you pipeline inputs
+
+## Bringing up Postgres+PostgREST and the Newt Template Engine
 
 Postgres and PostgREST provide us with a JSON API that can be used in a Newt router pipeline. Following the Newt philosophy data modeling and management happen in the database. That is done via the SQL language which the Newt generator can produce. After the database is setup in Postgres with the scheme, tables, functions and views needed for basic CRUD-L operations you can generate a compatible PostgREST configuration file. Here's the steps what the generated code does based on the models defined in a Newt YAML file.
 
@@ -39,14 +51,14 @@ NOTE: The Newt generator will alter (add or update) routes associated with the g
 
 When we ran `newt generate app.yaml` Mustache templates were also created in the current directory along side the "setup.sql", "models.sql" and "postgrest.conf" files.  The Mustache templates are named according to a model name and their role. When we create, update or delete objects we've modeled there are two round trips needed in the request and response cycle with our browser.  That also means there needs to be two templates, one presenting the web form and the other showing the processed result.  The model name and role are concatenated with an underscore, "\_", form the base of the filename followed by the ".tmpl" extension. The read and list operations only require a single template each. If I have a model with the id of "bird" then the resulting template files would be as follows.
 
-- `bird_create_form.tmpl` (contains the web form)
-- `bird_create_response.tmpl` (response for the submitted form)
-- `bird_read.tmpl` (display a single object we've modeled)
-- `bird_update_form.tmpl` (contains the web form)
-- `bird_update_response.tmpl` (response for the submitted form)
-- `bird_delete_form.tmpl` (contains the web form)
-- `bird_delete_response.tmpl` (response for the submitted form)
-- `bird_list.tmpl` (list objects we've modeled)
+- `views/bird_create_form.hbs` (contains the web form)
+- `views/bird_create_response.hbs` (response for the submitted form)
+- `views/bird_read.hbs` (display a single object we've modeled)
+- `views/bird_update_form.hbs` (contains the web form)
+- `views/bird_update_response.hbs` (response for the submitted form)
+- `views/bird_delete_form.hbs` (contains the web form)
+- `views/bird_delete_response.hbs` (response for the submitted form)
+- `views/bird_list.hbs` (list objects we've modeled)
 
 When we generated the Mustache templates the `templates` properties were updated to include these templates for the Newt Mustache template engine. Also
 the related routes were updated with a pipeline that interactive with the Postgres+PostgREST JSON API sending that response through the Mustache Template engine.
@@ -74,6 +86,5 @@ There are three "places" to customize a Newt application. The first would be to 
 If you can integrate supports for other services by adding additional "routes" to your Newt YAML file. You can also add steps to your pipeline.  Let's say you have an object modeled in Postgres but you also want to include additional information from another service (e.g. ORCID). You can write a simple web service that takes the object as generated by the PostgREST request and processes it further before handing the result back to Mustache for rendering.
 
 Finally the third options is to enhance your templates with CSS, JavaScript and other static web assets.  Newt's router functions both as a data request router but also as a static file server.  If you wanted to integrate external content with a web form (e.g. ORCID or ROR information) you could do this via JavaScript and have their web browser connect to the external service retrieving additional metadata before the form is submitted.
-
 
 

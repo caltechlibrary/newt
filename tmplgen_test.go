@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestMTmplGen(t *testing.T) {
+func TestTmplGen(t *testing.T) {
 	src := []byte(`applications:
   newtgenerator:
   namespace: people # E.g. "people" Namespace to use generating Postgres SQL
@@ -64,7 +64,7 @@ models:
 		t.Error(err)
 		t.FailNow()
 	}
-	// out is our output buffer that'll be passed to MTmplGen function
+	// out is our output buffer that'll be passed to TmplGen function
 	out := bytes.NewBuffer([]byte{})
 	modelId := "people"
 	model, ok := ast.GetModelById(modelId)
@@ -109,16 +109,16 @@ models:
 	}
 
 	// Test generating partial template
-	if err := MTmplGen(out, model, "search"); err == nil {
+	if err := TmplGen(out, model, "search"); err == nil {
 		t.Errorf("should have gotten an error for \"search\" as an unsupported action")
 	}
 	for _, action := range []string{"create_form", "create_response", "read", "update_form", "update_response", "delete_form", "delete_response", "list"} {
 		out = bytes.NewBuffer([]byte{})
-		if err := MTmplGen(out, model, action); err != nil {
+		if err := TmplGen(out, model, action); err != nil {
 			t.Error(err)
 		}
 		// FIXME: Need to add checks to test output of MInputGen()
-		//t.Errorf("test of output to MTmplGen(out, model %q) not implemented", action)
+		//t.Errorf("test of output to TmplGen(out, model %q) not implemented", action)
 	}
 }
 
@@ -130,6 +130,6 @@ func testMInputGen(elem *Element) error {
 	return fmt.Errorf("testMInputGen(%+v) not implemented", elem)
 }
 
-func testMTmplGen(model *Model, action string) error {
-	return fmt.Errorf("testMTmplGen(%+v, %q) not implemented", model, action)
+func testTmplGen(model *Model, action string) error {
+	return fmt.Errorf("testTmplGen(%+v, %q) not implemented", model, action)
 }

@@ -49,9 +49,9 @@ func genElementAttrString(attributes map[string]string, excludeList []string) st
 	return strings.Join(parts, " ")
 }
 
-// MDisplayElemGen generates a specific Mustache template for displaying
+// displayElemGen generates a specific Mustache template for displaying
 // and element.
-func MDisplayElemGen(elem *Element) string {
+func displayElemGen(elem *Element) string {
 	// Apply a class value based on element id.
 	if class, ok := elem.Attributes["class"]; ok {
 		if class != "" {
@@ -78,8 +78,8 @@ func MDisplayElemGen(elem *Element) string {
 	}
 }
 
-// MInputElemGen generates a specific Mustache template for input of an element
-func MInputElemGen(elem *Element) string {
+// inputElemGen generates a specific Mustache template for input of an element
+func inputElemGen(elem *Element) string {
 	var (
 		input string
 	)
@@ -96,14 +96,14 @@ func MInputElemGen(elem *Element) string {
 	return input
 }
 
-// mTmplGenCreateForm generations a Mustache partial for a create object web form
-func mTmplGenCreateForm(out io.Writer, model *Model) error {
+// tmplGenCreateForm generations a Mustache partial for a create object web form
+func tmplGenCreateForm(out io.Writer, model *Model) error {
 	formURL := fmt.Sprintf("/create_%s", model.Id)
 	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	// Build a webform partial
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
-			if s := MInputElemGen(elem); s != "" {
+			if s := inputElemGen(elem); s != "" {
 				fmt.Fprintf(out, "\t%s\n", s)
 			}
 		}
@@ -113,18 +113,18 @@ func mTmplGenCreateForm(out io.Writer, model *Model) error {
 	return nil
 }
 
-// mTmplGenCreateResponse generations a Mustache partial for a create object web form
-func mTmplGenCreateResponse(out io.Writer, model *Model) error {
+// tmplGenCreateResponse generations a Mustache partial for a create object web form
+func tmplGenCreateResponse(out io.Writer, model *Model) error {
 	// Build a response partial
-	return mTmplGenRead(out, model)
+	return tmplGenRead(out, model)
 }
 
-// mTmplGenRead generations a Mustache partial for a read object display element
-func mTmplGenRead(out io.Writer, model *Model) error {
+// tmplGenRead generations a Mustache partial for a read object display element
+func tmplGenRead(out io.Writer, model *Model) error {
 	// Build a display partial
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
-			if s := MDisplayElemGen(elem); s != "" {
+			if s := displayElemGen(elem); s != "" {
 				fmt.Fprintf(out, "\t%s\n", s)
 			}
 		}
@@ -132,14 +132,14 @@ func mTmplGenRead(out io.Writer, model *Model) error {
 	return nil
 }
 
-// mTmplGenUpdateForm generations a Mustache partial for a update object web form
-func mTmplGenUpdateForm(out io.Writer, model *Model) error {
+// tmplGenUpdateForm generations a Mustache partial for a update object web form
+func tmplGenUpdateForm(out io.Writer, model *Model) error {
 	// Build a webform partial
 	formURL := fmt.Sprintf("/%s_update", model.Id)
 	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
-			if s := MInputElemGen(elem); s != "" {
+			if s := inputElemGen(elem); s != "" {
 				fmt.Fprintf(out, "\t%s\n", s)
 			}
 		}
@@ -149,14 +149,14 @@ func mTmplGenUpdateForm(out io.Writer, model *Model) error {
 	return nil
 }
 
-// mTmplGenUpdateResponse generations a Mustache partial for a update object web form
-func mTmplGenUpdateResponse(out io.Writer, model *Model) error {
+// tmplGenUpdateResponse generations a Mustache partial for a update object web form
+func tmplGenUpdateResponse(out io.Writer, model *Model) error {
 	// Build a response partial
-	return mTmplGenRead(out, model)
+	return tmplGenRead(out, model)
 }
 
-// mTmplGenDeleteForm generations a Mustache partial for a delete object web form
-func mTmplGenDeleteForm(out io.Writer, model *Model) error {
+// tmplGenDeleteForm generations a Mustache partial for a delete object web form
+func tmplGenDeleteForm(out io.Writer, model *Model) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
 	// Build a webform partial
 	formURL := fmt.Sprintf("/%s_delete", model.Id)
@@ -164,7 +164,7 @@ func mTmplGenDeleteForm(out io.Writer, model *Model) error {
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
 			elem.Attributes["disabled"] = "true"
-			if s := MInputElemGen(elem); s != "" {
+			if s := inputElemGen(elem); s != "" {
 				fmt.Fprintf(out, "\t%s\n", s)
 			}
 		}
@@ -174,22 +174,22 @@ func mTmplGenDeleteForm(out io.Writer, model *Model) error {
 	return nil
 }
 
-// mTmplGenDeleteResponse generations a Mustache partial for a delete object web form
-func mTmplGenDeleteResponse(out io.Writer, model *Model) error {
+// tmplGenDeleteResponse generations a Mustache partial for a delete object web form
+func tmplGenDeleteResponse(out io.Writer, model *Model) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
 	// Build a webform partial
 	fmt.Fprintf(out, "<b>object deleted goes here ...</b>\n")
 	return nil
 }
 
-// mTmplGenList generations a Mustache partial to lists objects
-func mTmplGenList(out io.Writer, model *Model) error {
+// tmplGenList generations a Mustache partial to lists objects
+func tmplGenList(out io.Writer, model *Model) error {
 	fmt.Fprintf(out, "<ul>\n")
 	fmt.Fprintf(out, "{{#%s}}\n", model.Id)
 	fmt.Fprintf(out, "\t<li>")
 	for i, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
-			if s := MDisplayElemGen(elem); s != "" {
+			if s := displayElemGen(elem); s != "" {
 				if i > 0 {
 					fmt.Fprintf(out, " ")
 				}
@@ -205,10 +205,10 @@ func mTmplGenList(out io.Writer, model *Model) error {
 
 type PartialGen func(io.Writer, *Model) error
 
-// mTmplPage takes an output buffer and a PartialGen with a function
+// tmplPage takes an output buffer and a PartialGen with a function
 // signature `func(io.Writer,*Model) error` and renders a webpage
 // using the passed in func.
-func mTmplPage(out io.Writer, model *Model, fn PartialGen) error {
+func tmplPage(out io.Writer, model *Model, fn PartialGen) error {
 	fmt.Fprintf(out, `<!DOCTYPE html>
 <html lang="en-us">
 {{>head}}
@@ -226,10 +226,11 @@ func mTmplPage(out io.Writer, model *Model, fn PartialGen) error {
 	return err
 }
 
-// MTmplGen takes an io.Writer, model and an action string rendering
-// the contents of the model as a Newt Mustache template for the provided
-// action. It returns an error value when something goes wrong.
-func MTmplGen(out io.Writer, model *Model, action string) error {
+// TmplGen takes an io.Writer, model and an action string rendering
+// the contents of the model as a Newt handlebars template for the
+// provided action. It returns an error value when something
+// goes wrong.
+func TmplGen(out io.Writer, model *Model, action string) error {
 	if model == nil || model.Id == "" {
 		return fmt.Errorf("model appears incomplete, aborting")
 	}
@@ -238,21 +239,21 @@ func MTmplGen(out io.Writer, model *Model, action string) error {
 	)
 	switch action {
 	case "create_form":
-		err = mTmplPage(out, model, mTmplGenCreateForm)
+		err = tmplPage(out, model, tmplGenCreateForm)
 	case "create_response":
-		err = mTmplPage(out, model, mTmplGenCreateResponse)
+		err = tmplPage(out, model, tmplGenCreateResponse)
 	case "read":
-		err = mTmplPage(out, model, mTmplGenRead)
+		err = tmplPage(out, model, tmplGenRead)
 	case "update_form":
-		err = mTmplPage(out, model, mTmplGenUpdateForm)
+		err = tmplPage(out, model, tmplGenUpdateForm)
 	case "update_response":
-		err = mTmplPage(out, model, mTmplGenUpdateResponse)
+		err = tmplPage(out, model, tmplGenUpdateResponse)
 	case "delete_form":
-		err = mTmplPage(out, model, mTmplGenDeleteForm)
+		err = tmplPage(out, model, tmplGenDeleteForm)
 	case "delete_response":
-		err = mTmplPage(out, model, mTmplGenDeleteResponse)
+		err = tmplPage(out, model, tmplGenDeleteResponse)
 	case "list":
-		err = mTmplPage(out, model, mTmplGenList)
+		err = tmplPage(out, model, tmplGenList)
 	default:
 		return fmt.Errorf("%q generation is not supported", action)
 	}

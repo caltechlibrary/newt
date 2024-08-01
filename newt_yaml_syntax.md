@@ -8,16 +8,16 @@ The Newt programs are configured in a YAML file. Each Newt program may focus on 
 These are the top level properties in YAML files.
 
 `applications`
-: (optional) holds the run time configuration used by the Newt applications.
+: (required) holds the run time configuration used by the Newt applications.
 
 `models`
-: (required by newtgenerator) This holds the description of the data models in your application. Each model describes a series of HTML 5 elements that make up the model. 
+: (required by newt) This holds the description of the data models in your application. Each model describes a series of HTML 5 elements that make up the model. 
 
 `routes`
-: (required by newtrouter) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
+: (required by ndr) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
 `templates`
-: (required by newtmustache)
+: (required by nte)
 
 ## The applications property
 
@@ -26,8 +26,8 @@ The applications properties are optional. Some maybe set via command line. See N
 `router`
 : this contains configuration for the Newt Router, i.e. port and htdocs
 
-`mustache`
-: this contains configuration for Newt Mustache, i.e. port
+`template_egnine`
+: this contains configuration for Newt's template engine, e.g. port, base_dir, ext_name, etc.
 
 `postgres`
 : this contains configuration information for the running Postgres database
@@ -56,7 +56,7 @@ The applications properties are optional. Some maybe set via command line. See N
 : (all) Port number to used for Newt web service running on localhost
 
 `htdocs`
-: (newt, newtrouter) Directory that holds your application's static content
+: (newt, ndr) Directory that holds your application's static content
 
 
 ## the "routes" property
@@ -85,7 +85,7 @@ Routes hosts a list of request descriptions and their data pipelines. This prope
 A pipeline is a list of web services containing a type, URL, method and content types
 
 `service [METHOD ][URL]`
-: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Mustache template representing the target service URL. 
+: (required) The HTTP method is included in the URL The URL to be used to contact the web service, may contain embedded variable references drawn from the request path as well as those passed in through `.application.environment`.  All the elements extracted from the elements derived from the request path are passed through strings. These are then used to construct a simple key-value object of variable names and objects which are then passed through the Handlebars template representing the target service URL. 
 
 `description`
 : (optional, encouraged) This is a description of what this stage of the pipe does. It is used when debug is true in the log output and in program documentation.
@@ -296,16 +296,16 @@ templates:
 
 ## templates property
 
-This property is used by Newt Mustache. It allows Newt Mustache to map a POST to a specific template or
+This property is used by Newt's template engine. It allows Newt's template engine to map a POST to a specific template or
 template and set of partials.
 
 templates
-: (optional: newtmustache) this holds a list of template objects.
+: (optional: nte) this holds a list of template objects.
 
 ### template object model
 
-The template objects are used by Newt Mustache template engine. If you're not using it you can skip these.
-Newt Mustache only responds to POST methods which have a defined path in the templates section of the 
+The template objects are used by Newt's template engine. If you're not using it you can skip these.
+Newt template engine only responds to POST methods which have a defined path in the templates section of the 
 Newt YAML template file.
 
 `id`
@@ -315,21 +315,15 @@ Newt YAML template file.
 : (required) This holds the request HTTP method and path. If the HTTP method is missing a POST is assumed. Requests in templates like with request in routes can contain inline string variables. Example would be `{name}` used in the YAML below.
 
 `template`
-: (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
+: (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Handlebars does support partial templates
 
-`partials`
-: (optional) A list of paths to partial Mustache templates used by `.template`.
-
-`vocabularies`
-: (optional) This is a YAML file containing "vocabulary" items that can be incorporated into the output of your Mustache template. Example would be auto complete form elements. It is read at Newt Mustache startup along with the template.
-
-`options`
-: (optional) An object that can be merged in with JSON received for processing by your Mustache template. Options can be set per template but are also inherited from the resolved names and values in the applications' attribute of the Newt YAML file.
+`document`
+: (optional) An object that can be merged in with JSON received for processing by your Handlebars template. Options can be set per template but are also inherited from the resolved names and values in the applications' attribute of the Newt YAML file.
 
 `debug`
 : (optional) this turns on debugging output for this template.
 
-Example of newtmustache YAML:
+Example of nte YAML:
 
 ~~~yaml
 applications:

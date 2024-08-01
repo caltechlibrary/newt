@@ -14,7 +14,7 @@ With data pipelines we can accept a request and feed that request to one service
 Why is this important? Much of the "back end" of a web application is already available as off the shelf software. Here is a short list of examples used by Caltech Library.
 
 - [Postgres](https://postgres.org) and [PostgREST](https://postgrest.org) provides a JSON API for data management
-- [Dataset](https://caltechlibrary.github.io/dataset), a simple JSON document store that has a out of the box JSON API via datasetd.
+- [Dataset](https://caltechlibrary.github.io/dataset), a simple JSON document store that has an out of the box JSON API provided by [datasetd](https://caltechlibrary.github.io/dataset/datasetd.1.html).
 - [Solr](https://solr.apache.org) and Elasticsearch, OpenSearch can provide full text search as a JSON web service
 - [ArchivesSpace](https://archivesspace.org) provides a JSON API web service
 - [Invenio RDM](https://inveniordm.docs.cern.ch/) provides a JSON API web service
@@ -105,8 +105,9 @@ With the above list we can build capable applications relying on the sophisticat
 
 [^17]: See <https://infrequently.org/2024/01/performance-inequality-gap-2024/> for a nice discussion of the problem.
 
-What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt's router provides static file service and a means of pipelining our JSON data source through a template engine. Newt provides a Mustache template engine for that purpose. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
+What we should do is use Newt to tie those JSON services together and send rendered HTML back to the web browser. Newt's router provides static file service and a means of pipelining our JSON data source through a template engine. Newt provides a Handlebars[^18] template engine for that purpose. Newt provides the missing bits from my original list so we don't need to send JavaScript down the wire to the web browser. The Newt approach uses less bandwidth, fewer network accesses and less computations cycles on your viewing device. The Newt approach takes advantage of what the web browser is really good at without turning your web pages into a web service. Newt YAML describes the system you want. You get the Newt capabilities without writing much code. Maybe without writing any code if Newt's code generator does a sufficient job for your needs.
 
+[^18]: Handlebars is largely a superset of the Handlbars Template Language, see <https://handlebarsjs.com> and <https://mustache.github.io> for details.
 ### A "newt" baseline
 
 Web services talk to other web services all the time. This isn't new. It isn't exotic. Newt scales down this approach to the single application.
@@ -124,10 +125,10 @@ In Spring 2024 for metadata curation apps I think the answer is "yes we can".
 The primary tools are.
 
 - [newt](newt.1.md) a developer tool for building a Newt based application which includes modeling, code generation support, and runtime support
-- [ndr](ndr.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a router and as a static file server. It does this by routing your request through a YAML defined pipeline and returning the results. Typically this will be a JSON data source and running that output through a template engine like Newt's Mustache.64
-- [nte](nte.1.md) provides a Handlebars JS template engine for Windows on x86, macOS on x86 and M processors (aarch64) and Linux 64 bit
+- [ndr](ndr.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a router and as a static file server. It does this by routing your request through a YAML defined pipeline and returning the results. Typically this will be a JSON data source and running that output through a template engine like Newt's **nte**.
+- [nte](nte.1.md) provides a Handlebars template engine for transforming JSON data into a more human friendly format.
 
-Some additional tools are also provided. See the [user manual](user_manual.md) for details.
+See the [user manual](user_manual.md) for details.
 
 ## About the Newt source repository
 

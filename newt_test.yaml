@@ -13,7 +13,7 @@ applications:
     port: 8001
   tempalte_engine:
     port: 8002
-    templates: ./views
+    base_dir: testdata/views
   postgres:
     namespace: ornithology
 routes:
@@ -35,5 +35,5 @@ routes:
     debug: true
 templates:
   - id: newt_test
-    request: POST /newt_test.mustache
-    template: newt_test.mustache
+    request: POST /newt_test
+    template: newt_test

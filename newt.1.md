@@ -1,5 +1,5 @@
 ---
-title: newt(1) user manual | 0.0.9 f466728
+title: newt(1) user manual | 0.0.9 4204386
 pubDate: 2024-08-01
 author: R. S. Doiel
 ---
@@ -19,6 +19,8 @@ during development.  **newt** supports the "config", "check", "model", "generate
 and "run" actions. The "config" command is used when you are starting a
 Newt Project. It is an interactive command prompting for various choices regarding
 the application you want to create.
+
+The "init" action will interactively construct or update a Newt YAML file.
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.
@@ -106,7 +108,7 @@ router
 : this contains configuration for the Newt's router, i.e. port and htdocs
 
 template_engine
-: this contains configuration for Newt's template engine, i.e. port setting
+: this contains configuration for Newt's template engine, e.g. port setting, base directory
 
 options
 : holds key value pairs of which can be referenced in the values of models, routes and templates.
@@ -126,7 +128,7 @@ htdocs
 : (router) Directory that holds your application's static content
 
 timeout
-: (router, handlebars) The time in seconds to timeout a HTTP transaction
+: (router, nte) The time in seconds to timeout a HTTP transaction
 
 dsn
 : (postgres) The data source name (URI for database connection string). Using to connect to Postgres
@@ -136,6 +138,16 @@ app_path
 
 conf_app
 : (postgres) Configuration path for the application.
+
+base_dir
+: (nte) the base directory holding the templates (a.k.a in Handlbars' views)
+
+ext_name
+: (nte) the file extension used to identifiy templates, e.g. ".hbs" for handlebars
+
+partials
+: the sub directory holding partial templates.
+
 
 ## the "routes" property
 
@@ -243,6 +255,9 @@ applications:
     htdocs: htdocs
   template_engine:
     port: 8011
+	base_dir: views
+	partials: partials
+	ext_name: .hbs
   postgres:
     namespace: app
     port: 5432
@@ -339,35 +354,35 @@ routes:
 templates:
   - id: app_create
     request: /app_create
-    template: app_create_form.tmpl
+    template: app_create_form
     description: Display a app for create
   - id: app_create
     request: /app_create_response
-    template: app_create_response.tmpl
+    template: app_create_response
     description: This is an result template for app create
   - id: app_update
     request: /app_update
-    template: app_update_form.tmpl
+    template: app_update_form
     description: Display a app for update
   - id: app_update
     request: /app_update_response
-    template: app_update_response.tmpl
+    template: app_update_response
     description: This is an result template for app update
   - id: app_delete
     request: /app_delete
-    template: app_delete_form.tmpl
+    template: app_delete_form
     description: Display a app for delete
   - id: app_delete
     request: /app_delete_response
-    template: app_delete_response.tmpl
+    template: app_delete_response
     description: This is an result template for app delete
   - id: app_read
     request: /app_read
-    template: app_read.tmpl
+    template: app_read
     description: This template handles app read
   - id: app_list
     request: /app_list
-    template: app_list.tmpl
+    template: app_list
     description: This template handles app list
 ~~~
 
@@ -395,14 +410,8 @@ submission result.
 `template`
 : (required) This is the path to the template associated with request. NOTE: Pandoc web service does not support partial templates. Mustache does support partial templates
 
-`partials`
-: (optional) A list of paths to partial Handlebars templates used by `.template`.
-
-`vocabulary`
-: (opitonal) A path to a "vocabulary" file which is read in when the Newt Handlebars is started and the contents are available to the template for processing.
-
-`options`
-: (optional) An object that can be merged in with JSON received for processing by your Handlbears template
+`document`
+: (optional) An object that that holds environment for the template. Becomes `.document` in the template markup.
 
 `debug`
 : (optional) this turns on debugging output for this template

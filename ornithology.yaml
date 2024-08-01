@@ -6,8 +6,11 @@ applications:
   router:
     htdocs: /Users/rsdoiel/Sites/rsdoiel.github.io/
     port: 8020
-  mustache:
+  template_engine:
     port: 8030
+    base_dir: testdata/views
+    partials: partials
+    ext_name: .hbs
   postgres:
     namespace: ornithology
   postgrest:
@@ -144,26 +147,26 @@ routes:
 #
 templates:
   - id: create_sighting
-    request: POST /create_sighting_form
-    template: create_sighting_form.tmpl
+    request: /create_sighting_form
+    template: create_sighting_form
   - id: create_sighting
-    request: POST /create_sighting_response
-    template: create_sighting_response.tmpl
+    request: /create_sighting_response
+    template: create_sighting_response
   - id: read_sighting
-    request: POST /read_sighting
-    template: read_sighting.tmpl
+    request: /read_sighting
+    template: read_sighting
   - id: update_sighting
-    request: POST /update_sighting_form
-    template: update_sighting_form.tmpl
+    request: /update_sighting_form
+    template: update_sighting_form
   - id: update_sighting
-    request: POST /update_sighting_response
-    template: update_sighting_response.tmpl
+    request: /update_sighting_response
+    template: update_sighting_response
   - id: delete_sighting
-    request: POST /delete_sighting_form
-    template: delete_sighting_form.tmpl
+    request: /delete_sighting_form
+    template: delete_sighting_form
   - id: delete_sighting
-    request: POST /delete_sighting_response
-    template: deltee_sighting_response.tmpl
-  - id:list_sighting
-    request: POST /list_sighting
-    template: list_sighting.yaml
+    request: /delete_sighting_response
+    template: deltee_sighting_response
+  - id: list_sighting
+    request: /list_sighting
+    template: list_sighting

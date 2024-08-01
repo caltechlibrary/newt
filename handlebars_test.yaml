@@ -4,10 +4,7 @@ applications:
     base_dir: testdata
     # partials is a under base_dir
     partials_dir: partials
-    # layout_dir is a under base_dir
-    layout_dir: layouts
     ext_name: .hbs
-    cache_partials: false
 templates:
   - id: hello
     request: /hello/{name}

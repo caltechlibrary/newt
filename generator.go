@@ -72,8 +72,6 @@ func (g *Generator) renderPostgreSQL(action string) error {
 		return pgSetup(g.out, g.Namespace)
 	case "models":
 		return pgModels(g.out, g.Namespace, g.Models)
-	case "models_test":
-		return pgModelsTest(g.out, g.Namespace, g.Models)
 	default:
 		return fmt.Errorf("%q not supported at this time", action)
 	}
@@ -94,7 +92,7 @@ func (g *Generator) renderPostgREST() error {
 func (g *Generator) renderTemplateEngine(modelId string, action string) error {
 	for _, model := range g.Models {
 		if modelId == model.Id {
-			return MTmplGen(g.out, model, action)
+			return TmplGen(g.out, model, action)
 		}
 	}
 	return fmt.Errorf("failed to find model id %q", modelId)

@@ -3,9 +3,8 @@
 
 ## Questions and Explorations
 
-- Generated middleware using TypeScript running in Deno (e.g. validation, data enhancement. template engine)
-  - Should the template engine be generated or generic?
-- Can I compile useful Python libraries to WASM and run via WASI in Deno+TypeScript?
+- Generated middleware using TypeScript running in Deno (e.g. validation, data enhancement)
+- Explore Dataset/datasetd as a simpler JSON data source to Postgres+PostgREST
 
 ## Desirable Features
 
@@ -34,8 +33,8 @@
 
 - Simple data models only
 - No file upload support
-- Modeler targets Dataset+Datasetd, allows for Postgres+PostgREST as option
-- Newt services required to restricted to localhost
+- Modeler targets Dataset+Datasetd or Postgres+PostgREST as option
+- Newt services are restricted to localhost
 - Access control defered to front end web service
   - Apache 2 or NginX plus Shibboleth and acls for URL paths
 
@@ -57,7 +56,7 @@ in the browser.
 - Targeted use cases (at Caltech Library)
   - [cold](https://github.com/caltechlibrary/cold)
   - [tms](https://github.com/caltechlibrary/tms)
-- Demonstration to DLD group
-- Demonstration to Caltech Library staff
-- Demonstration for SoCal Code4Lib Meetup
-- Promote via recorded presentation
+- TBD Demonstration to DLD group
+- TBD Demonstration to Caltech Library staff
+- TBD Demonstration for SoCal Code4Lib Meetup
+- TBD Promote via recorded presentation

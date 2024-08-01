@@ -1,0 +1,22 @@
+#
+# Test nte to make sure it can read the YAML and set things up correctly.
+#
+applications:
+  template_engine:
+    port: 8002
+    base_dir: testdata/views
+    partials: partials
+    ext_name: .hbs
+templates:
+  - id: hello
+    request: /hello
+    template: hello
+    document:
+      default_name: there,
+      place: Earth
+  - id: hello_from_someplace
+    request: /hello/{from_someplace}
+    template: hello
+    document:
+      default_name: there,
+      place: Saturn 

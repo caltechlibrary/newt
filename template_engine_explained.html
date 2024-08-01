@@ -26,14 +26,15 @@
 <h1 id="the-newt-template-engine">the Newt Template Engine</h1>
 <h2 id="overview">Overview</h2>
 <p>Newt provides a simple stateless template engine as web service. It
-plays nice as a final stage in a data pipeline. The configuration file
-maps URL paths to template name. If the template engine recieves a GET
-request for a defined template then it’ll return the un-rendered
-template associated with that path. If a POST request is recieved the
+plays nice as a final stage in a data pipeline. The Newt configuration
+file maps URL paths to template names. The service only recognizes POST
+which contain optional JSON payloads. If a POST request is recieved the
 the rendered version using the JSON data submitted is returned.</p>
-<p>The original engine supported Mustache templates, the new engine is
-transistioning to Handlebars which is largely a superset of
-Mustache.</p>
+<p>The template engine is based on the <a
+href="https://github.com/aymerick/raymond">raymond</a> Go package.
+Raymond implemented Handlerbars 3 support. The template engine does not
+support Raymond’s Handlebar functions since the engine doesn’t compile
+Go code.</p>
 <h2 id="template-objects">Template objects</h2>
 <p>The following three objects are available in the templates.</p>
 <dl>
@@ -44,14 +45,13 @@ encoded as content type <code>application/json</code>.
 </dd>
 <dt><code>vars</code></dt>
 <dd>
-(optional) Holds any path variables found into the request URL path
+(optional) Holds any path variables found into the request URL path and
+specified in the request path in the Newt configuration file.
 </dd>
 <dt><code>document</code></dt>
 <dd>
-(optional) Holds any values set via the template configuration document
-propertyy or mapped into document from one or more external “vocabulary”
-YAML files. Vocabularies let you use common properties across templates
-without relying on a global namespace.
+(optional) Holds any values set via the template configuration document,
+passed from the environment via the Newt configuration file.
 </dd>
 </dl>
 <h2 id="two-ways-to-run-the-template-engine">Two ways to run the
@@ -82,19 +82,17 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">base_dir</span><span class="kw">:</span><span class="at"> views</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ext_name</span><span class="kw">:</span><span class="at"> .hbs</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span><span class="at"> partials</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">layouts</span><span class="kw">:</span><span class="at"> layouts</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">cache_partials</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hello</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">document</span><span class="kw">:</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">default_name</span><span class="kw">:</span><span class="at"> There</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">place</span><span class="kw">:</span><span class="at"> Planet Earth!</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;/hello/{someplace_else}&quot;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hello</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">document</span><span class="kw">:</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">default_name</span><span class="kw">:</span><span class="at"> There</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">place</span><span class="kw">:</span><span class="at"> Planetoid Pluto!</span></span></code></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">document</span><span class="kw">:</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">default_name</span><span class="kw">:</span><span class="at"> There</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">place</span><span class="kw">:</span><span class="at"> Planet Earth!</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">request</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;/hello/{someplace_else}&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">document</span><span class="kw">:</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">default_name</span><span class="kw">:</span><span class="at"> There</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">place</span><span class="kw">:</span><span class="at"> Planetoid Pluto!</span></span></code></pre></div>
 <p>This simple YAML file describes how to run Newt’s template engine.
 The web service listens on port 8011. When the web service receives a
 POST to the path “/hello” it will envoke the “views/hello.hbs”

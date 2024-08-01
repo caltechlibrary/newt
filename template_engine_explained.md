@@ -3,9 +3,9 @@
 
 ## Overview
 
-Newt provides a simple stateless template engine as web service. It plays nice as a final stage in a data pipeline. The configuration file maps URL paths to template name. If the template engine recieves a GET request for a defined template then it'll return the un-rendered template associated with that path. If a POST request is recieved the the rendered version using the JSON data submitted is returned.
+Newt provides a simple stateless template engine as web service. It plays nice as a final stage in a data pipeline. The Newt configuration file maps URL paths to template names. The service only recognizes POST which contain optional JSON payloads. If a POST request is recieved the the rendered version using the JSON data submitted is returned.
 
-The original engine supported Mustache templates, the new engine is transistioning to Handlebars which is largely a superset of Mustache.
+The template engine is based on the [raymond](https://github.com/aymerick/raymond) Go package. Raymond implemented Handlerbars 3 support.  The template engine does not support Raymond's Handlebar functions since the engine doesn't compile Go code.
 
 ## Template objects
 
@@ -15,10 +15,10 @@ The following three objects are available in the templates.
 : (required) Holds the JSON described object received from the POST and encoded as content type `application/json`.
 
 `vars`
-: (optional) Holds any path variables found into the request URL path
+: (optional) Holds any path variables found into the request URL path and specified in the request path in the Newt configuration file.
 
 `document`
-: (optional) Holds any values set via the template configuration document propertyy or mapped into document from one or more external "vocabulary" YAML files. Vocabularies let you use common properties across templates without relying on a global namespace.
+: (optional) Holds any values set via the template configuration document, passed from the environment via the Newt configuration file.
 
 ## Two ways to run the template engine
 
@@ -39,8 +39,6 @@ applications:
     base_dir: views
     ext_name: .hbs
     partials: partials
-    layouts: layouts
-    cache_partials: false
 templates:
   - request: /hello
     template: hello

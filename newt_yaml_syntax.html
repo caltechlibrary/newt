@@ -33,23 +33,23 @@ Newt programs.</p>
 <dl>
 <dt><code>applications</code></dt>
 <dd>
-(optional) holds the run time configuration used by the Newt
+(required) holds the run time configuration used by the Newt
 applications.
 </dd>
 <dt><code>models</code></dt>
 <dd>
-(required by newtgenerator) This holds the description of the data
-models in your application. Each model describes a series of HTML 5
-elements that make up the model.
+(required by newt) This holds the description of the data models in your
+application. Each model describes a series of HTML 5 elements that make
+up the model.
 </dd>
 <dt><code>routes</code></dt>
 <dd>
-(required by newtrouter) This holds the routes for the data pipeline
-(e.g. JSON API and template engine sequence)
+(required by ndr) This holds the routes for the data pipeline (e.g. JSON
+API and template engine sequence)
 </dd>
 <dt><code>templates</code></dt>
 <dd>
-(required by newtmustache)
+(required by nte)
 </dd>
 </dl>
 <h2 id="the-applications-property">The applications property</h2>
@@ -61,9 +61,10 @@ properties lets you override the default settings of Newt programs.</p>
 <dd>
 this contains configuration for the Newt Router, i.e. port and htdocs
 </dd>
-<dt><code>mustache</code></dt>
+<dt><code>template_egnine</code></dt>
 <dd>
-this contains configuration for Newt Mustache, i.e. port
+this contains configuration for Newt’s template engine, e.g. port,
+base_dir, ext_name, etc.
 </dd>
 <dt><code>postgres</code></dt>
 <dd>
@@ -110,8 +111,7 @@ Postgres+PostgREST
 </dd>
 <dt><code>htdocs</code></dt>
 <dd>
-(newt, newtrouter) Directory that holds your application’s static
-content
+(newt, ndr) Directory that holds your application’s static content
 </dd>
 </dl>
 <h2 id="the-routes-property">the “routes” property</h2>
@@ -176,7 +176,7 @@ from the request path as well as those passed in through
 <code>.application.environment</code>. All the elements extracted from
 the elements derived from the request path are passed through strings.
 These are then used to construct a simple key-value object of variable
-names and objects which are then passed through the Mustache template
+names and objects which are then passed through the Handlebars template
 representing the target service URL.
 </dd>
 <dt><code>description</code></dt>
@@ -429,17 +429,18 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="
 <span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> people_list.tmpl</span></span>
 <span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> This template handles people list</span></span></code></pre></div>
 <h2 id="templates-property">templates property</h2>
-<p>This property is used by Newt Mustache. It allows Newt Mustache to
-map a POST to a specific template or template and set of partials.</p>
+<p>This property is used by Newt’s template engine. It allows Newt’s
+template engine to map a POST to a specific template or template and set
+of partials.</p>
 <dl>
 <dt>templates</dt>
 <dd>
-(optional: newtmustache) this holds a list of template objects.
+(optional: nte) this holds a list of template objects.
 </dd>
 </dl>
 <h3 id="template-object-model">template object model</h3>
-<p>The template objects are used by Newt Mustache template engine. If
-you’re not using it you can skip these. Newt Mustache only responds to
+<p>The template objects are used by Newt’s template engine. If you’re
+not using it you can skip these. Newt template engine only responds to
 POST methods which have a defined path in the templates section of the
 Newt YAML template file.</p>
 <dl>
@@ -459,25 +460,13 @@ request in routes can contain inline string variables. Example would be
 <dt><code>template</code></dt>
 <dd>
 (required) This is the path to the template associated with request.
-NOTE: Pandoc web service does not support partial templates. Mustache
+NOTE: Pandoc web service does not support partial templates. Handlebars
 does support partial templates
 </dd>
-<dt><code>partials</code></dt>
-<dd>
-(optional) A list of paths to partial Mustache templates used by
-<code>.template</code>.
-</dd>
-<dt><code>vocabularies</code></dt>
-<dd>
-(optional) This is a YAML file containing “vocabulary” items that can be
-incorporated into the output of your Mustache template. Example would be
-auto complete form elements. It is read at Newt Mustache startup along
-with the template.
-</dd>
-<dt><code>options</code></dt>
+<dt><code>document</code></dt>
 <dd>
 (optional) An object that can be merged in with JSON received for
-processing by your Mustache template. Options can be set per template
+processing by your Handlebars template. Options can be set per template
 but are also inherited from the resolved names and values in the
 applications’ attribute of the Newt YAML file.
 </dd>
@@ -486,7 +475,7 @@ applications’ attribute of the Newt YAML file.
 (optional) this turns on debugging output for this template.
 </dd>
 </dl>
-<p>Example of newtmustache YAML:</p>
+<p>Example of nte YAML:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template_engine</span><span class="kw">:</span></span>

@@ -135,7 +135,7 @@ HTML?</li>
 <ul>
 <li>Removed some Go cli (e.g. ws, mustache, newtmustache)</li>
 <li>Renamed newtrouter -&gt; ndr (Newt Data Router)</li>
-<li>Added nte (Newt Template Engine)</li>
+<li>Added nte (Newt Template Engine) supporting Handlbars templates</li>
 <li>Generating collection and YAML for dataset+datasetd</li>
 <li>Generating Handlebars templates</li>
 <li>Generating TypeScript validator as middleware run via Deno</li>
@@ -152,7 +152,7 @@ datasetd</a></li>
 href="https://postgrest.org">PostgREST</a></li>
 </ul></li>
 <li>newt, ndr, and nte</li>
-<li>Deno to run TypeScript middleware</li>
+<li>Deno to run generated TypeScript middleware</li>
 </ul>
 </div>
 <div id="assemble-app-from-yaml-less-coding"
@@ -191,8 +191,8 @@ class="slide section level1">
 <h1>Step three, generate our code</h1>
 <pre class="shell"><code>  newt generate app.yaml</code></pre>
 <blockquote>
-<p>Create a dataset collection and datasetd YAML file Render Handlebars
-templates Wires up routes Adds tasks to deno.json</p>
+<p>Create a dataset collection and datasetd YAML file Generate
+Handlebars templates Wires up routes and template mappings</p>
 </blockquote>
 </div>
 <div id="step-four-setup-primary-json-data-source"
@@ -234,11 +234,11 @@ tool</label></li>
 working</label></li>
 <li><label><input type="checkbox" checked="" /><del>Mustache template
 engine is working</del> (removed)</label></li>
-<li><label><input type="checkbox" />Generator development (design
-stage)</label></li>
+<li><label><input type="checkbox" checked="" />Newt template engine
+(supporting Handlebars templates)</label></li>
 <li><label><input type="checkbox" />Modeler (design stage)</label></li>
-<li><label><input type="checkbox" />template engine (design
-stage)</label></li>
+<li><label><input type="checkbox" />Generator development (refactor,
+design stage)</label></li>
 </ul>
 </div>
 <div id="insights-from-prototypes-1-2" class="slide section level1">

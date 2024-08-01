@@ -459,6 +459,8 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	}
 
 	switch action {
+	case "init":
+		return RunNewtConfig(in, out, eout, args, verbose)
 	case "config":
 		return RunNewtConfig(in, out, eout, args, verbose)
 	case "check":

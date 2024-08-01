@@ -52,7 +52,7 @@ type Applications struct {
 	TemplateEngine *Application `json:"template_engine,omitempty" yaml:"template_engine,omitempty"`
 
 	// Dataset runtime config
-	Datasetd *Application `json:"datasetd,omitempty" yaml:"datasetd,omitempty"`
+	Datasetd *Application `json:"dataset,omitempty" yaml:"dataset,omitempty"`
 
 	// Postgres runtime config, e.g. port number to use for connecting.
 	Postgres *Application `json:"postgres,omitempty" yaml:"postgres,omitempty"`
@@ -81,6 +81,9 @@ type Application struct {
 	// Namespace holds the Postgres Schema name It is used to generate
 	// a setup.sql file using the -pg-setup option in newt cli.
 	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`
+
+	// CName is the name of the dataset collection you wish to use/generate.
+	CName string `json:"c_name,omitempty" yaml:"c_name,omitempty"`
 
 	// Port is the name of the localhost port Newt will listen on.
 	Port int `json:"port,omitempty" yaml:"port,omitempty"`
@@ -459,7 +462,7 @@ func (ast *AST) Check(buf io.Writer) bool {
 			}
 		}
 	}
-	
+
 	if ast.Applications.TemplateEngine != nil {
 		if ast.Templates == nil || len(ast.Templates) == 0 {
 			fmt.Fprintf(buf, "template engine is defined but not templates are configured\n")
@@ -469,7 +472,7 @@ func (ast *AST) Check(buf io.Writer) bool {
 			if err != nil {
 				fmt.Fprintf(buf, fmt.Sprintf("application.template_engine not configured, %s\n", err))
 				ok = false
-			} else if ! t.Check(buf) {
+			} else if !t.Check(buf) {
 				ok = false
 			}
 		}
@@ -504,6 +507,9 @@ type Template struct {
 	// Id ties a set of one or more template together, e.g. a web form and its response
 	Id string `json:"id,required" yaml:"id,omitempty"`
 
+	// Description describes the purpose of the tempalte mapping. It is used to debug Newt YAML files.
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+
 	// Pattern holds a request path, e.g. `/blog_post`. NOTE: the method is ignored. A POST
 	// is presumed to hold data that will be processed by the template engine. A GET retrieves the
 	// unresolved template.
@@ -513,14 +519,8 @@ type Template struct {
 	// to the current working directory.
 	Template string `json:"template,required" yaml:"template,omitempty"`
 
-	// Description describes the purpose of the tempalte mapping. It is used to debug Newt YAML files.
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-
 	// Debug logs more verbosely if true
 	Debug bool `json:"debug,omitempty" yaml:"debug,omitempty"`
-
-	// Vocabularies holds the a map of voc name to file path for external YAML files.
-	Vocabularies map[string]string `json:"vocabularies,omitempty" yaml:"vocabularies,omitempty"`
 
 	// Document hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
@@ -531,12 +531,11 @@ type Template struct {
 	// the output object.
 	Vars []string `json:"-" yaml:"-"`
 
-    // Body holds a map of data to process with the template
+	// Body holds a map of data to process with the template
 	Body map[string]interface{} `json:"-" yaml:"-"`
 
 	// The follow are used to simplify individual template invocation.
 	// They are populated from the TemplateEngine object.
-
 
 	/*FIXME: I want to support both Mustache and Handlebars templates.
 
@@ -579,9 +578,9 @@ func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
 		}
 	}
 	te := &TemplateEngine{
-		Port: TEMPLATE_ENGINE_PORT,
-		ExtName: TEMPLATE_ENGINE_EXT_NAME,
-		BaseDir: TEMPLATE_ENGINE_BASE_DIR,
+		Port:        TEMPLATE_ENGINE_PORT,
+		ExtName:     TEMPLATE_ENGINE_EXT_NAME,
+		BaseDir:     TEMPLATE_ENGINE_BASE_DIR,
 		PartialsDir: TEMPLATE_ENGINE_PARTIALS_DIR,
 	}
 	if ast.Applications.TemplateEngine.Port != 0 {
@@ -613,25 +612,9 @@ func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
 					t.Document[k] = v
 				}
 			}
-			// Copy in vocabularies to .document
-			if len(t.Vocabularies) > 0 {
-				for name, fName := range t.Vocabularies {
-					src, err := os.ReadFile(fName)
-					if err != nil {
-						errMsgs = append(errMsgs, fmt.Sprintf("failed to read vocabulary %s from %s, %s", name, fName, err))
-					} else if len(src) > 0 {
-						o := map[string]interface{}{}
-						if err := yaml.Unmarshal(src, &o); err != nil {
-							errMsgs = append(errMsgs, fmt.Sprintf("failed to parse %s from %s, %s", name, fName, err))
-						} else {
-							t.Document[name] = o
-						}
-					}
-				}
-			}
 		}
 		// Add the resulting templates into struct.
-		te.Templates = append([]*Template{}, ast.Templates ...)
+		te.Templates = append([]*Template{}, ast.Templates...)
 	}
 	if len(errMsgs) > 0 {
 		return te, fmt.Errorf("%s", strings.Join(errMsgs, "\n"))
@@ -679,7 +662,7 @@ func (tEng *TemplateEngine) Check(buf io.Writer) bool {
 			if !t.Check(tBuf) {
 				errMsgs = append(errMsgs, fmt.Sprintf("template (#%d) failed check, %s\n", i, tBuf.Bytes()))
 				ok = false
-			} 
+			}
 		}
 	}
 	fmt.Fprintf(buf, "%s\n", strings.Join(errMsgs, "\n"))

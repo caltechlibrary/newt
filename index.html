@@ -65,8 +65,9 @@ examples used by Caltech Library.</p>
 href="https://postgrest.org">PostgREST</a> provides a JSON API for data
 management</li>
 <li><a href="https://caltechlibrary.github.io/dataset">Dataset</a>, a
-simple JSON document store that has a out of the box JSON API via
-datasetd.</li>
+simple JSON document store that has an out of the box JSON API provided
+by <a
+href="https://caltechlibrary.github.io/dataset/datasetd.1.html">datasetd</a>.</li>
 <li><a href="https://solr.apache.org">Solr</a> and Elasticsearch,
 OpenSearch can provide full text search as a JSON web service</li>
 <li><a href="https://archivesspace.org">ArchivesSpace</a> provides a
@@ -234,17 +235,17 @@ role="doc-noteref"><sup>3</sup></a>.</p>
 <p>What we should do is use Newt to tie those JSON services together and
 send rendered HTML back to the web browser. Newt’s router provides
 static file service and a means of pipelining our JSON data source
-through a template engine. Newt provides a Mustache template engine for
-that purpose. Newt provides the missing bits from my original list so we
-don’t need to send JavaScript down the wire to the web browser. The Newt
-approach uses less bandwidth, fewer network accesses and less
-computations cycles on your viewing device. The Newt approach takes
-advantage of what the web browser is really good at without turning your
-web pages into a web service. Newt YAML describes the system you want.
-You get the Newt capabilities without writing much code. Maybe without
-writing any code if Newt’s code generator does a sufficient job for your
-needs.</p>
-<h3 id="a-newt-baseline">A “newt” baseline</h3>
+through a template engine. Newt provides a Handlebars<a href="#fn4"
+class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>
+template engine for that purpose. Newt provides the missing bits from my
+original list so we don’t need to send JavaScript down the wire to the
+web browser. The Newt approach uses less bandwidth, fewer network
+accesses and less computations cycles on your viewing device. The Newt
+approach takes advantage of what the web browser is really good at
+without turning your web pages into a web service. Newt YAML describes
+the system you want. You get the Newt capabilities without writing much
+code. Maybe without writing any code if Newt’s code generator does a
+sufficient job for your needs.</p>
 <p>Web services talk to other web services all the time. This isn’t new.
 It isn’t exotic. Newt scales down this approach to the single
 application.</p>
@@ -272,13 +273,11 @@ designed for working with other “off the shelf” web services. It
 functions both as a router and as a static file server. It does this by
 routing your request through a YAML defined pipeline and returning the
 results. Typically this will be a JSON data source and running that
-output through a template engine like Newt’s Mustache.64</li>
-<li><a href="nte.1.html">nte</a> provides a Handlebars JS template
-engine for Windows on x86, macOS on x86 and M processors (aarch64) and
-Linux 64 bit</li>
+output through a template engine like Newt’s <strong>nte</strong>.</li>
+<li><a href="nte.1.html">nte</a> provides a Handlebars template engine
+for transforming JSON data into a more human friendly format.</li>
 </ul>
-<p>Some additional tools are also provided. See the <a
-href="user_manual.html">user manual</a> for details.</p>
+<p>See the <a href="user_manual.html">user manual</a> for details.</p>
 <h2 id="about-the-newt-source-repository">About the Newt source
 repository</h2>
 <p>Newt is a project of Caltech Library’s Digital Library Development
@@ -344,6 +343,13 @@ href="https://infrequently.org/2024/01/performance-inequality-gap-2024/"
 class="uri">https://infrequently.org/2024/01/performance-inequality-gap-2024/</a>
 for a nice discussion of the problem.<a href="#fnref3"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Handlebars is largely a superset of the Handlbars
+Template Language, see <a href="https://handlebarsjs.com"
+class="uri">https://handlebarsjs.com</a> and <a
+href="https://mustache.github.io"
+class="uri">https://mustache.github.io</a> for details. ### A “newt”
+baseline<a href="#fnref4" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 </section>
