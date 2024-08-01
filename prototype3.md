@@ -20,7 +20,7 @@
     - file type elements integrating an OCFL S3 service
   - generate (generate code for Postgres+PostgREST Stack or Python+Flask stack)
   - run (target stack based on AST and data models)
-- newt router
+- data router 
   - validator integration via generated code (e.g. TypeScript run by Deno)
   - data pipelines
   - static file service
@@ -28,7 +28,7 @@
 - Generator application code for two stacks
   - (default) Dataset collection with Dataset YAML for datasetd
   - (optional) Postgres+PostgREST
-
+- a template engine to easily turn a JSON object into HTML or other formats
 
 ## Constraints
 

@@ -36,7 +36,7 @@ oriented architecture</a>.</p>
 responses. Traditionally a web browser contacts your web site or
 application one of two things will happen. Your app knows the answer and
 hands back the result or tells you it can’t do so (e.g. 404 HTTP STATUS
-CODE). With a service oriented architecture your application has another
+CODE). With service oriented architecture your application has another
 option. Your application can contact another service and use that result
 to answer the request from the web browser. Newt’s implements a service
 oriented architecture by orchestrating data processing pipelines<a
@@ -156,11 +156,11 @@ provides a few tools to fill in the gaps.</p>
 <li><code>newt</code> is a development tool for data modeling,
 generating code, running Newt router, template engine and PostgREST or
 dataset collections</li>
-<li><code>newtrouter</code> is a stateless web service (a.k.a. micro
-service) that routes a web requests through a data pipelines built from
-other web services</li>
-<li><code>newtte</code> is a stateless template engine inspired by
-Pandoc server that supports the <a
+<li><code>ndr</code> is a stateless web service (a.k.a. micro service)
+that routes a web requests through a data pipelines built from other web
+services</li>
+<li><code>nte</code> is a stateless template engine inspired by Pandoc
+server that supports the <a
 href="https://handlebarsjs.com">Handlebarsjs</a> template language and
 is designed to process data from a JSON data source</li>
 </ul>
@@ -266,16 +266,16 @@ Project?</h2>
 <li><a href="newt.1.html">newt</a> a developer tool for building a Newt
 based application which includes modeling, code generation support, and
 runtime support</li>
-<li><a href="newtrouter.1.html">newtrouter</a> a <a
+<li><a href="ndr.1.html">ndr</a> a <a
 href="https://en.wikipedia.org/wiki/microservices">web service</a>
 designed for working with other “off the shelf” web services. It
 functions both as a router and as a static file server. It does this by
 routing your request through a YAML defined pipeline and returning the
 results. Typically this will be a JSON data source and running that
 output through a template engine like Newt’s Mustache.64</li>
-<li><a href="newthandlebars.1.html">newthandlebars</a> provides a
-Handlebars JS template engine for Windows on x86, macOS on x86 and M
-processors (aarch64) and Linux 64 bit</li>
+<li><a href="nte.1.html">nte</a> provides a Handlebars JS template
+engine for Windows on x86, macOS on x86 and M processors (aarch64) and
+Linux 64 bit</li>
 </ul>
 <p>Some additional tools are also provided. See the <a
 href="user_manual.html">user manual</a> for details.</p>

@@ -52,6 +52,9 @@ const (
 	ROUTER_PORT             = 8010
 	TEMPLATE_ENGINE_PORT    = 8011
 	TEMPLATE_ENGINE_TIMEOUT = 3 * time.Second
+	TEMPLATE_ENGINE_BASE_DIR   = "views"
+	TEMPLATE_ENGINE_PARTIALS_DIR   = "partials"
+	TEMPLATE_ENGINE_EXT_NAME   = ".hbs"
 	SWS_PORT                = 8000
 	SWS_HTDOCS              = "."
 	POSTGREST_PORT          = 3000
@@ -215,12 +218,25 @@ func RunTemplateEngine(in io.Reader, out io.Writer, eout io.Writer, args []strin
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
+	if ast.Applications == nil {
+		fmt.Fprintf(eout, "%s not configed in %s\n", appName, fName)
+		return CONFIG
+	}
+	if ast.Templates == nil {
+		fmt.Fprintf(eout, "now templates found in %s\n", fName)
+		return CONFIG
+	}
+	if ast.Applications.TemplateEngine == nil {
+		fmt.Fprintf(eout, "missing template engine configuration in %q", fName)
+		return CONFIG
+	}
 	// Instantiate the specific application with the filename and AST object
 	mt, err := NewTemplateEngine(ast)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
+
 	// If port is not set in the config, set it to the default port.
 	if mt.Port == 0 {
 		mt.Port = TEMPLATE_ENGINE_PORT
@@ -478,8 +494,12 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		fmt.Fprintf(eout, "%s failed to load %q, %s", appName, fName, err)
 		return CONFIG
 	}
+	if ast.Applications == nil {
+		fmt.Fprintf(eout, "no applications configured in %s", fName)
+		return CONFIG
+	}
 	// Startup PostgREST if configured in the Newt YAML file.
-	if ast.Applications != nil && ast.Applications.PostgREST != nil &&
+	if ast.Applications.PostgREST != nil &&
 		ast.Applications.PostgREST.ConfPath != "" && ast.Applications.PostgREST.AppPath != "" {
 		postgREST := ast.Applications.PostgREST
 		cwd, err := os.Getwd()
@@ -502,14 +522,14 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		cmd.Process.Release()
 	}
 	// Setup and start Newt template engine first
-	if ast.Applications != nil && ast.Applications.TemplateEngine != nil {
+	if ast.Applications.TemplateEngine != nil {
 		go func() {
 			RunTemplateEngine(in, out, eout, args, 0, 0, verbose)
 		}()
 	}
 
 	// The router starts up second and is what prevents service from falling through.
-	if ast.Applications != nil && ast.Applications.Router != nil {
+	if ast.Applications.Router != nil {
 		go func() {
 			RunRouter(in, out, eout, args, false, 0, "", verbose)
 		}()

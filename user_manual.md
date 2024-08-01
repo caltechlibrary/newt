@@ -4,8 +4,8 @@
 ## What is in the Newt toolbox?
 
 - [Newt](newt.1.md), is a development tool. It's primary task is as a code generator and secondary task is a app runner. As an app runner it is capabile of running Newt's router and template engine and selected JSON data sources such as datasetd or PostgREST.
-- [Newt's router](ndr.1.md) is a web service that manages your requests and data pipelines as well as static file hosting
-- [Newt's template engine](nte.1.md) is a simple template engine as web service
+- [Newt's router](ndr.1.md) (i.e. ndr) is a web service that manages your requests and data pipelines as well as static file hosting
+- [Newt's template engine](nte.1.md) (i.e. nte) is a simple template engine as web service
 
 ## Newt YAML syntax (draft)
 

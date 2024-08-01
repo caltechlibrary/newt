@@ -3,7 +3,6 @@ package newt
 import (
 	"fmt"
 	"io"
-	"os"
 	"regexp"
 	"strings"
 )
@@ -273,7 +272,6 @@ func (model *Model) InsertElement(pos int, element *Element) error {
 		model.isChanged = true
 		return nil
 	}
-	fmt.Fprintf(os.Stderr, "DEBUG pos of insert is %d, len is %d\n", pos, len(model.Elements))
 	if pos < len(model.Elements) {
 		elements := append(model.Elements[:pos], element)
 		model.Elements = append(elements, model.Elements[(pos+1):]...)

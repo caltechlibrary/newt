@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-US">
   <body>
-    {{#if body.name}}Hi {{body.name}}{{else}}Hi {{options.default_name}}{{/if}}
-    {{#if vars.someplace_else}}from {{vars.someplace_else}}!{{else}} from {{document.place}}!{{/if}}
+    {{#if body.name}}Hi {{body.name}}{{else}}Hi {{document.default_name}}{{/if}}
+    {{#if vars.from_someplace}}from {{vars.from_someplace}}!{{else}} from {{document.place}}!{{/if}}
   </body>
 </html>

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	//"time"
 
@@ -44,35 +45,44 @@ func (t *Template) ResolveTemplate() error {
 		if t.Debug {
 			log.Printf("attempting to parse single template %q", t.Template)
 		}
-		//FIXME: Need to use MustParse and also handle regestering partials, etc.
-		src, err := os.ReadFile(path.Join(t.BaseDir, t.Template + t.ExtName))
+		// NOTE: Need use MustParse and also handle regestering partials, etc.
+		// This is done at startup and should fail if unsuccesful.
+		tName := path.Join(t.BaseDir, t.Template + t.ExtName)
+		src, err := os.ReadFile(tName)
 		if err != nil {
 			return err
 		}
 		tmpl := raymond.MustParse(fmt.Sprintf("%s", src))
-		//FIXME: Need to attach the resulting template to the template object
-		//NOTE: Load partials from `{base_dir}/{partials_dir}`
+		partials := map[string]string{}
+		// FIXME: Need to attach the resulting template to the template object
+		// NOTE: Load partials from `{base_dir}/{partials_dir}`
 		if t.PartialsDir != ""{
 			if t.Debug {
 				log.Printf("handling primary and partial templates")
 			}
-			//FIXME: Read in the directory of partial templates and register them.
-			//partialsDir := path.Join(t.BaseDir, t.PartialsDir)
-			//FIXME: read the partial files found in the partial dir and Register them ...
-			log.Printf("DEBUG reading and registering partials not implemented yet")
+			pattern := path.Join(t.BaseDir, t.PartialsDir, "*" + t.ExtName)
+			names, err := filepath.Glob(pattern)
+			if err != nil {
+				log.Printf("failed to read %q, %s", pattern, err)
+				return err
+			}
+			for _, fName := range names {
+				// Get the basename without path and file extension, then register it as a partial template.
+				name := path.Base(fName)
+				if strings.HasSuffix(name, t.ExtName) {
+					name = strings.TrimSuffix(name, t.ExtName)
+				}
+				if _, hasName := partials[name]; ! hasName {
+					src, err := os.ReadFile(fName)
+					if err != nil {
+						return err
+					}
+					partials[name] = fmt.Sprintf("%s", src)
+				}
+			}
 		}
-		//FIXME: Handle Layouts for the template
-		if t.LayoutsDir != "" {
-			log.Printf("DEBUG reading and handling layouts not implemented yet")
-		}
-		if t.DefaultLayout != "" {
-			log.Printf("DEBUG reading and handling default layouts not implemented yet")
-		}
-		if t.Helpers != nil && len(t.Helpers) > 0 {
-			log.Printf("DEBUG reading and handling helpers not implemented yet")
-		}
-		if t.CompilerOptions != nil && len(t.CompilerOptions) > 0 {
-			log.Printf("DEBUG reading and handling compiler options not implemented yet")
+		if len(partials) > 0 {
+			tmpl.RegisterPartials(partials)
 		}
 
 		// Now that we've read in all the template parts we can assign the Handlebars template
@@ -125,10 +135,11 @@ func (t *Template) Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	document := map[string]string{}
+	document := make(map[string]interface{})
 	vars := map[string]string{}
 	// Copy in the options into page objcet's options.
-	if t.Document != nil {
+	log.Printf("Debug Document -> %+v\n", t.Document)
+	if t.Document != nil && len(t.Document) > 0 {
 		if t.Debug {
 			log.Printf("Document -> %+v\n", t.Document)
 		}
@@ -140,12 +151,16 @@ func (t *Template) Handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	// Merge in path values into .vars
+	log.Printf("Debug Vars -> %+v\n", t.Vars)
 	if len(t.Vars) > 0 {
 		if t.Debug {
 			log.Printf("varnames -> %+v\n", t.Vars)
 		}
 		for _, varname := range t.Vars {
 			val := r.PathValue(varname)
+			if t.Debug {
+				log.Printf("varname: %q -> %+v", varname, val)
+			}
 			if val != "" {
 				// val presidence over t.Options
 				vars[varname] = val
@@ -155,6 +170,7 @@ func (t *Template) Handler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("obj after processing varnames -> %+v", vars)
 		}
 	}
+	log.Printf("Debug vars -> %+v\n", vars)
 	obj := map[string]interface{}{
 		"body":       body,
 		"document":   document,
@@ -197,17 +213,7 @@ func (te *TemplateEngine) ListenAndServe() error {
 	// Setup our handlers, POST for process data with the template and GET to retreive the template
 	// ast.
 	for _, t := range te.Templates {
-		//FIXME: Need to map in the vocabularies into .Document 
-		//FIXME: Need to map in app options into Document object passed to template
-		/*
-		if len(te.Options) > 0 {
-			t.Options = map[string]string{}
-			for k, v := range te.Options {
-				t.Options[k] = v
-			}
-		}
-		*/
-		// FIXME: Process the data displaying template if a GET is used.
+		// FIXME: Add the process to handle the GET request to display template source.
 		// Process the data with template if a POST.
 		mux.HandleFunc("POST "+t.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			if t.Debug {

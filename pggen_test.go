@@ -81,6 +81,4 @@ grant birds_anonymous to birds_authenticator;
 		t.Errorf("expected src\n%s\ngot\n%s\n", expectedBytes, data)
 		t.Errorf("expected len %d, got len %d", len(expectedBytes), len(data))
 	}
-
-	//fmt.Printf("DEBUG buf -> %s\n", buf)
 }

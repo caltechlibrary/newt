@@ -29,11 +29,11 @@
 plays nice as a final stage in a data pipeline. The configuration file
 maps URL paths to template name. If the template engine recieves a GET
 request for a defined template then it’ll return the un-rendered
-template associated with that path. If you submit a POST request to that
-path with JSON encoded content then the service will return a rendered
-results based on the template and content provided.</p>
-<p>The template engine currently supports the <a
-href="https://handlebarsjs.com">HandlbarsJS</a> template language.</p>
+template associated with that path. If a POST request is recieved the
+the rendered version using the JSON data submitted is returned.</p>
+<p>The original engine supported Mustache templates, the new engine is
+transistioning to Handlebars which is largely a superset of
+Mustache.</p>
 <h2 id="template-objects">Template objects</h2>
 <p>The following three objects are available in the templates.</p>
 <dl>
@@ -104,11 +104,11 @@ entered the Newt YAML correctly. Here’s an example of the running the
 command and it’s output.</p>
 <pre class="shell"><code>newt check hello.yaml</code></pre>
 <p>The output should look something like</p>
-<pre class="text"><code>WARNING: hello.yaml has no models defined
-Newt Handlebars configured, port set to 8011
-2 Handlebars Templates are defined
-http://localhost8011/hello points at hello.tmpl
-http://localhost8011/hello/{someplace_else} points at hello.tmpl</code></pre>
+<pre class="text"><code>template engine will listen on port 8011
+templates are located in &quot;views&quot;
+template extension is set to &quot;.hbs&quot;
+2 template(s) paths mapped</code></pre>
+<p>Notice that we’re using one template in multiple paths.</p>
 <h3 id="step-2-create-our-hello.tmpl-template-file">Step 2, create our
 “hello.tmpl” template file</h3>
 <p>Let’s look at a simple hello world template in Handlebars configured

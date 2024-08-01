@@ -5,7 +5,7 @@ Newt is an experimental set of tools for rapid application development. Specific
 
 How does Newt do that? Newt generates applications implementing a [service oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture).
 
-You can think of a web application as a sequence of requests and responses. Traditionally a web browser contacts your web site or application one of two things will happen. Your app knows the answer and hands back the result or tells you it can't do so (e.g. 404 HTTP STATUS CODE). With a service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
+You can think of a web application as a sequence of requests and responses. Traditionally a web browser contacts your web site or application one of two things will happen. Your app knows the answer and hands back the result or tells you it can't do so (e.g. 404 HTTP STATUS CODE). With service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
 
 With data pipelines we can accept a request and feed that request to one service then take its output and send it to the next service. Newt does this by providing a data router. Newt can manage the request sequence through a simple YAML described pipeline. While it is possible to create pipelines using Apache and NginX proxy features in practice that approach quickly becomes an unmanageable configuration problem. You could encapsulate clusters of processes in containers but this too becomes complex to manage. Newt's router can cut through the hairball of configurations and define pipelines per request route. With Newt's pipelines the last service completed hands its result back to Newt's router which returns the result to the web browser.
 
@@ -66,8 +66,8 @@ A Newt application encourages the following.
 In 2024 there is allot of off the self software to build on. Newt provides a few tools to fill in the gaps.
 
 - `newt` is a development tool for data modeling, generating code, running Newt router, template engine and PostgREST or dataset collections
-- `newtrouter` is a stateless web service (a.k.a. micro service) that routes a web requests through a data pipelines built from other web services
-- `newtte` is a stateless template engine inspired by Pandoc server that supports the [Handlebarsjs](https://handlebarsjs.com) template language and is designed to process data from a JSON data source
+- `ndr` is a stateless web service (a.k.a. micro service) that routes a web requests through a data pipelines built from other web services
+- `nte` is a stateless template engine inspired by Pandoc server that supports the [Handlebarsjs](https://handlebarsjs.com) template language and is designed to process data from a JSON data source
 
 The Newt YAML configuration ties these together expressing
 
@@ -124,8 +124,8 @@ In Spring 2024 for metadata curation apps I think the answer is "yes we can".
 The primary tools are.
 
 - [newt](newt.1.md) a developer tool for building a Newt based application which includes modeling, code generation support, and runtime support
-- [newtrouter](newtrouter.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a router and as a static file server. It does this by routing your request through a YAML defined pipeline and returning the results. Typically this will be a JSON data source and running that output through a template engine like Newt's Mustache.64
-- [newthandlebars](newthandlebars.1.md) provides a Handlebars JS template engine for Windows on x86, macOS on x86 and M processors (aarch64) and Linux 64 bit
+- [ndr](ndr.1.md) a [web service](https://en.wikipedia.org/wiki/microservices) designed for working with other "off the shelf" web services. It functions both as a router and as a static file server. It does this by routing your request through a YAML defined pipeline and returning the results. Typically this will be a JSON data source and running that output through a template engine like Newt's Mustache.64
+- [nte](nte.1.md) provides a Handlebars JS template engine for Windows on x86, macOS on x86 and M processors (aarch64) and Linux 64 bit
 
 Some additional tools are also provided. See the [user manual](user_manual.md) for details.
 
@@ -165,3 +165,4 @@ make
 make test
 make install
 ~~~
+

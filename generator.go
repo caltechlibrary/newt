@@ -14,7 +14,7 @@ type Generator struct {
 	Models []*Model
 
 	// Options holds the result environment variables and options that can be used in generator code
-	Options map[string]string
+	Options map[string]interface{}
 
 	// internal this is the output for code generation, usually resolves to stdout
 	out io.Writer
@@ -37,7 +37,7 @@ func NewGenerator(ast *AST) (*Generator, error) {
 	generator := &Generator{}
 	generator.Namespace = ast.Applications.Postgres.Namespace
 	generator.Models = ast.Models
-	generator.Options = map[string]string{}
+	generator.Options = make(map[string]interface{})
 	if ast.Applications.Postgres != nil {
 		generator.Postgres = ast.Applications.Postgres
 	}

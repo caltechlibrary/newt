@@ -65,8 +65,8 @@ type Applications struct {
 	Environment []string `json:"environment,omitempty" yaml:"enviroment,omitempty"`
 
 	// Options is a map of name to string values, it is where the
-	// environment variables values are stored.
-	Options map[string]string `json:"options,omitempty" yaml:"options,omitempty"`
+	// the environment variable valuess are stored.
+	Options map[string]interface{} `json:"options,omitempty" yaml:"options,omitempty"`
 }
 
 // Application implements runtime config for Newt programs
@@ -101,21 +101,6 @@ type Application struct {
 	// PartialsDir is used by Handlebars to find partial templates, usually inside the views directory
 	PartialsDir string `json:"partials_dir,omitempty" yaml:"partials_dir,omitempty"`
 
-	// LayoutsDir is used by Handlebars to find the layouts, usually inside the views directory
-	LayoutsDir string `json:"layouts_dir,omitempty" yaml:"layouts_dir,omitempty"`
-
-	// CachePartials will cache the partials if set true
-	CachePartials bool `json:"cache_partials,omitempty" yaml:"cache_partials,omitempty"`
-
-	// DefaultLayout holds the default layout if specified
-	DefaultLayout string `json:"default_layout,omitempty" yaml:"default_layout,omitempty"`
-
-	// Helpers holds the map to handlebars help function
-	Helpers map[string]string `json:"helpers,omitempty" yaml:"helpers,omitempty"`
-
-	// CompilerOptions holds a map of compiler options.
-	CompilerOptions map[string]interface{} `json:"compiler_options,omitempty" yaml:"compiler_options,omitempty"`
-
 	// DSN, data ast name is a URI connection string
 	DSN string `json:"dsn,omitemity" yaml:"dsn,omitempty"`
 }
@@ -133,7 +118,7 @@ func NewApplications() *Applications {
 		Postgres:       NewApplication(),
 		PostgREST:      NewApplication(),
 		Datasetd:       NewApplication(),
-		Options:        map[string]string{},
+		Options:        map[string]interface{}{},
 		Environment:    []string{},
 	}
 }
@@ -507,21 +492,6 @@ type TemplateEngine struct {
 	// PartialsDir is used to find partial templates, usually inside the views directory
 	PartialsDir string `json:"partials_dir,omitempty" yaml:"partials_dir,omitempty"`
 
-	// LayoutsDir is used find the layouts, usually inside the views directory
-	LayoutsDir string `json:"layouts_dir,omitempty" yaml:"layouts_dir,omitempty"`
-
-	// CachePartials will cache the partials if set true
-	CachePartials bool `json:"cache_partials,omitempty" yaml:"cache_partials,omitempty"`
-
-	// DefaultLayout holds the default layout if specified
-	DefaultLayout string `json:"default_layout,omitempty" yaml:"default_layout,omitempty"`
-
-	// Helpers holds the map to handlebars help function
-	Helpers map[string]string `json:"helpers,omitempty" yaml:"helpers,omitempty"`
-
-	// CompilerOptions holds a map of compiler options.
-	CompilerOptions map[string]interface{} `json:"compiler_options,omitempty" yaml:"compiler_options,omitempty"`
-
 	// Timeout is a duration, it is used to set timeouts and the application.
 	Timeout time.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
 
@@ -549,14 +519,13 @@ type Template struct {
 	// Debug logs more verbosely if true
 	Debug bool `json:"debug,omitempty" yaml:"debug,omitempty"`
 
-	// Vocabularies holds the a list of paths to an external YAML files that map proterty names to YAML values.
-	// These are merged into Options at startup.
-	Vocabularies []string `json:"vocabularies,omitempty" yaml:"vocabularies,omitempty"`
+	// Vocabularies holds the a map of voc name to file path for external YAML files.
+	Vocabularies map[string]string `json:"vocabularies,omitempty" yaml:"vocabularies,omitempty"`
 
 	// Document hold the a map of values passed into it from the Newt YAML file in the applications
 	// property. These are a way to map in environment or application wide values. These are exposed in
 	// the Newt template engine `options`.
-	Document map[string]string `json:"-" yaml:"-"`
+	Document map[string]interface{} `json:"document,omitempty" yaml:"document,omitempty"`
 
 	// Vars holds the names of any variables expressed in the pattern, these an be used to replace elements of
 	// the output object.
@@ -592,27 +561,29 @@ type Template struct {
 
 	// Partials holds partials directory
 	PartialsDir string `json:"-" yaml:"-"`
-
-	// LayoutsDir holds the layouts directory
-	LayoutsDir string `json:"-" yaml:"-"`
-
-	// CachePartials will cache the partials if set true
-	CachePartials bool `json:"-" yaml:"-"`
-
-	// DefaultLayout holds the default layout if specified
-	DefaultLayout string `json:"-" yaml:"-"`
-
-	// Helpers holds the map to handlebars help function
-	Helpers map[string]string `json:"-" yaml:"-"`
-
-	// CompilerOptions holds a map of compiler options.
-	CompilerOptions map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // NewTemplateEngine create a new TemplateEngine struct. If a filename
 // is provided it reads the file and sets things up accordingly.
 func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
-	te := &TemplateEngine{}
+	if ast.Applications.TemplateEngine == nil {
+		return nil, fmt.Errorf("template engine is nil")
+	}
+
+	// Copy our options so we can expose them in the template's .document
+	docvars := map[string]interface{}{}
+	// Copy in options to envars
+	if ast.Applications.Options != nil && len(ast.Applications.Options) > 0 {
+		for k, v := range ast.Applications.Options {
+			docvars[k] = v
+		}
+	}
+	te := &TemplateEngine{
+		Port: TEMPLATE_ENGINE_PORT,
+		ExtName: TEMPLATE_ENGINE_EXT_NAME,
+		BaseDir: TEMPLATE_ENGINE_BASE_DIR,
+		PartialsDir: TEMPLATE_ENGINE_PARTIALS_DIR,
+	}
 	if ast.Applications.TemplateEngine.Port != 0 {
 		te.Port = ast.Applications.TemplateEngine.Port
 	}
@@ -625,40 +596,45 @@ func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
 	if ast.Applications.TemplateEngine.PartialsDir != "" {
 		te.PartialsDir = ast.Applications.TemplateEngine.PartialsDir
 	}
-	if ast.Applications.TemplateEngine.LayoutsDir != "" {
-		te.LayoutsDir = ast.Applications.TemplateEngine.LayoutsDir
-	}
-	if ast.Applications.TemplateEngine.CachePartials {
-		te.CachePartials = true
-	}
-	if ast.Applications.TemplateEngine.DefaultLayout != "" {
-		te.DefaultLayout = ast.Applications.TemplateEngine.DefaultLayout
-	}
-	if ast.Applications.TemplateEngine.Helpers != nil && len(ast.Applications.TemplateEngine.Helpers) > 0 {
-		te.Helpers = map[string]string{}
-		for k, v := range ast.Applications.TemplateEngine.Helpers {
-			te.Helpers[k] = v
-		}
-	}
-	if ast.Applications.TemplateEngine.CompilerOptions != nil && len(ast.Applications.TemplateEngine.CompilerOptions) > 0 {
-		te.CompilerOptions = map[string]interface{}{}
-		for k, v := range ast.Applications.TemplateEngine.CompilerOptions {
-			te.CompilerOptions[k] = v
-		}
-	}
+	// FIXME: Need to copy in environment variables from ast.Options and set t.Document content.
+	errMsgs := []string{}
 	if ast.Templates != nil && len(ast.Templates) > 0 {
-		// Map in the BaseDir, PartialsDir, LayoutDirs and ExtName for the templates.
+		// Map in the BaseDir, PartialsDir, and ExtName for the templates.
 		for _, t := range ast.Templates {
-			t.ExtName = ast.Applications.TemplateEngine.ExtName
-			t.BaseDir = ast.Applications.TemplateEngine.BaseDir
-			t.PartialsDir = ast.Applications.TemplateEngine.PartialsDir
-			t.LayoutsDir = ast.Applications.TemplateEngine.LayoutsDir
-			t.CachePartials = ast.Applications.TemplateEngine.CachePartials
-			t.DefaultLayout = ast.Applications.TemplateEngine.DefaultLayout
-			t.Helpers = ast.Applications.TemplateEngine.Helpers
+			t.ExtName = te.ExtName
+			t.BaseDir = te.BaseDir
+			t.PartialsDir = te.PartialsDir
+			if t.Document == nil {
+				t.Document = map[string]interface{}{}
+			}
+			// Copy in options to .document
+			if len(docvars) > 0 {
+				for k, v := range docvars {
+					t.Document[k] = v
+				}
+			}
+			// Copy in vocabularies to .document
+			if len(t.Vocabularies) > 0 {
+				for name, fName := range t.Vocabularies {
+					src, err := os.ReadFile(fName)
+					if err != nil {
+						errMsgs = append(errMsgs, fmt.Sprintf("failed to read vocabulary %s from %s, %s", name, fName, err))
+					} else if len(src) > 0 {
+						o := map[string]interface{}{}
+						if err := yaml.Unmarshal(src, &o); err != nil {
+							errMsgs = append(errMsgs, fmt.Sprintf("failed to parse %s from %s, %s", name, fName, err))
+						} else {
+							t.Document[name] = o
+						}
+					}
+				}
+			}
 		}
 		// Add the resulting templates into struct.
 		te.Templates = append([]*Template{}, ast.Templates ...)
+	}
+	if len(errMsgs) > 0 {
+		return te, fmt.Errorf("%s", strings.Join(errMsgs, "\n"))
 	}
 	return te, nil
 }
@@ -693,12 +669,10 @@ func (tEng *TemplateEngine) Check(buf io.Writer) bool {
 		if tEng.PartialsDir != "" {
 			errMsgs = append(errMsgs, fmt.Sprintf("partials are located in %q", path.Join(tEng.BaseDir, tEng.PartialsDir)))
 		}
-		if tEng.LayoutsDir != "" {
-			errMsgs = append(errMsgs, fmt.Sprintf("layouts are located in %q", path.Join(tEng.BaseDir, tEng.LayoutsDir)))
-		}
 		if tEng.ExtName != "" {
 			errMsgs = append(errMsgs, fmt.Sprintf("template extension is set to %q", tEng.ExtName))
 		}
+		//FIXME: add check for helpers
 		errMsgs = append(errMsgs, fmt.Sprintf("%d template path(s) mapped", len(tEng.Templates)))
 		for i, t := range tEng.Templates {
 			tBuf := bytes.NewBuffer([]byte{})

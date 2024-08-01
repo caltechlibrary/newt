@@ -614,7 +614,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 	}
 	if answer == "y" {
 		if ast.Applications.Options == nil {
-			ast.Applications.Options = map[string]string{}
+			ast.Applications.Options = make(map[string]interface{})
 		}
 		for quit := false; !quit; {
 			optionsList := []string{}

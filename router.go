@@ -42,7 +42,7 @@ type Route struct {
 	Debug bool `json:"debug,omitempty" yaml:"debug,omitempty"`
 
 	// Env holds a map of defaults that are available from the environment and from path values in the url
-	Options map[string]string `json:"options,omitempty" yaml:"options,omitempty"`
+	Options map[string]interface{} `json:"options,omitempty" yaml:"options,omitempty"`
 
 	// Vars holds the variables defined in the route
 	Vars []string `json:"-" yaml:"-"`
@@ -102,7 +102,7 @@ func (nr *Route) ResolveRoute() error {
 
 // Request a service, sending any import if provided.
 // Returns a byte splice of results and an error value
-func (s *Service) MakeRequest(env map[string]string, input []byte, contentType string, debug bool) ([]byte, int, string, error) {
+func (s *Service) MakeRequest(env map[string]interface{}, input []byte, contentType string, debug bool) ([]byte, int, string, error) {
 	// The default method for a service is POST, it can be overwritten by what is supplied in the .Service's pattern.
 	method := http.MethodPost
 	uri := s.Service
@@ -112,9 +112,16 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, contentType s
 	}
 	if len(env) > 0 && strings.Contains(uri, "{") && strings.Contains(uri, "}") {
 		for k, v := range env {
+			var val string
+			switch v.(type) {
+				case string:
+					val = v.(string)
+				default:
+					val = ""
+			}
 			varhandle := fmt.Sprintf("{%s}", k)
 			if strings.Contains(uri, varhandle) {
-				uri = strings.ReplaceAll(uri, varhandle, v)
+				uri = strings.ReplaceAll(uri, varhandle, val)
 			}
 		}
 	}
@@ -170,7 +177,7 @@ func (s *Service) MakeRequest(env map[string]string, input []byte, contentType s
 	return data, response.StatusCode, contentType, nil
 }
 
-func (nr *Route) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]string) ([]byte, int, string, error) {
+func (nr *Route) RunPipeline(w http.ResponseWriter, r *http.Request, env map[string]interface{}) ([]byte, int, string, error) {
 	var (
 		input  []byte
 		output []byte
@@ -207,15 +214,14 @@ func (nr *Route) RunPipeline(w http.ResponseWriter, r *http.Request, env map[str
 		}
 		input = output
 	}
-	log.Printf("DEBUG content is ? %q", contentType)
 	return output, statusCode, contentType, nil
 }
 
 // ResolvePattern takes the request Pattern and pulls out the values from the actual request.
 // returns values in map[string]string and an error value.
-func (nr *Route) ResolvePattern(r *http.Request) map[string]string {
+func (nr *Route) ResolvePattern(r *http.Request) map[string]interface{} {
 	// Copy in our options, then overwrite with any  vars
-	m := map[string]string{}
+	m := make(map[string]interface{})
 	for k, v := range nr.Options {
 		m[k] = v
 	}
@@ -280,7 +286,7 @@ func NewRouter(ast *AST) (*Router, error) {
 		// defined options.  NOTE: Application options have already been resolved
 		// with the environment by ast.LoadAST()
 		if route.Options == nil && len(ast.Applications.Options) > 0 {
-			route.Options = map[string]string{}
+			route.Options = make(map[string]interface{})
 		}
 		for k, v := range ast.Applications.Options {
 			if _, conflict := route.Options[k]; !conflict {
