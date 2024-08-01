@@ -33,7 +33,7 @@ and "run" actions. The "config" command is used when you are starting a
 Newt Project. It is an interactive command prompting for various choices regarding
 the application you want to create.
 
-The "init" action will interactively construct or update a Newt YAML file.
+The "config" action will interactively construct or update the Newt YAML file.
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.

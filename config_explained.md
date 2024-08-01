@@ -94,5 +94,5 @@ When I accepted using Postgres the config action knows that the connection strin
 
 NOTE: The config option can be used to update an existing Newt YAML file, e.g. "app.yaml". If you change the configuration then you'll be prompted to save the changes as the last question. If you save the changes the prior file will be saved to a ".bak" version before writing the changes to disk. If you want to abort your changes completely then you can press "control C" to quit at any time before the final save prompt.
 
-Next up [Newt Model](newt_model_explained.md)
+Next up [Newt Model](model_explained.md)
 

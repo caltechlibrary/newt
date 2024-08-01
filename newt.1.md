@@ -1,5 +1,5 @@
 ---
-title: newt(1) user manual | 0.0.9 4204386
+title: newt(1) user manual | 0.0.9 e8d2aa3
 pubDate: 2024-08-01
 author: R. S. Doiel
 ---
@@ -20,7 +20,7 @@ and "run" actions. The "config" command is used when you are starting a
 Newt Project. It is an interactive command prompting for various choices regarding
 the application you want to create.
 
-The "init" action will interactively construct or update a Newt YAML file.
+The "config" action will interactively construct or update the Newt YAML file.
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.

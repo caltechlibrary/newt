@@ -134,6 +134,7 @@ HTML?</li>
 <h1>Changes from last prototype</h1>
 <ul>
 <li>Removed some Go cli (e.g. ws, mustache, newtmustache)</li>
+<li>The action “init” was renamed “config”</li>
 <li>Renamed newtrouter -&gt; ndr (Newt Data Router)</li>
 <li>Added nte (Newt Template Engine) supporting Handlbars templates</li>
 <li>Generating collection and YAML for dataset+datasetd</li>
@@ -159,7 +160,7 @@ href="https://postgrest.org">PostgREST</a></li>
 class="slide section level1">
 <h1>Assemble app from YAML (less coding)</h1>
 <ul>
-<li>Create the initial Newt YAML through a conversational TUI</li>
+<li>Create the Newt YAML through a conversational TUI</li>
 <li>Data modeling via a conversational TUI</li>
 </ul>
 </div>
@@ -184,7 +185,7 @@ class="slide section level1">
 <div id="steps-one-and-two-are-interactive"
 class="slide section level1">
 <h1>Steps one and two are interactive</h1>
-<pre class="shell"><code>  newt init app.yaml
+<pre class="shell"><code>  newt config app.yaml
   newt model app.yaml</code></pre>
 </div>
 <div id="step-three-generate-our-code" class="slide section level1">

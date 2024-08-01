@@ -1,5 +1,5 @@
 
-# Newt Modeler explained (concept draft)
+# Newt Model explained (concept draft)
 
 ## Overview
 

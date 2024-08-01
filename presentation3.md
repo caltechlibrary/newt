@@ -74,6 +74,7 @@ Short answer is **yes**. Longer answer is more nuanced.
 # Changes from last prototype
 
 - Removed some Go cli (e.g. ws, mustache, newtmustache)
+- The action "init" was renamed "config"
 - Renamed newtrouter -> ndr (Newt Data Router)
 - Added nte (Newt Template Engine) supporting Handlbars templates
 - Generating collection and YAML for dataset+datasetd
@@ -90,7 +91,7 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 # Assemble app from YAML (less coding)
 
-- Create the initial Newt YAML through a conversational TUI
+- Create the Newt YAML through a conversational TUI
 - Data modeling via a conversational TUI
 
 # How are data models described?
@@ -110,7 +111,7 @@ Short answer is **yes**. Longer answer is more nuanced.
 # Steps one and two are interactive
 
 ~~~shell
-  newt init app.yaml
+  newt config app.yaml
   newt model app.yaml
 ~~~
 
