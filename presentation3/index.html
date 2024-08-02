@@ -122,10 +122,19 @@ class="slide section level1">
 class="slide section level1">
 <h1>Goal of Prototype 3: Questions to explore</h1>
 <ol style="list-style-type: decimal">
-<li>What should the default JSON data source be? (dataset+datasetd
-vs. Postgres+PostgREST)</li>
-<li>Is generated TypeScript middleware the right fit? (e.g. validation
-service)</li>
+<li>What should the default JSON data source be?</li>
+</ol>
+<ul>
+<li>continue with Postgres+PostgREST or simplify with
+Dataset+datasetd?</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Is generated TypeScript middleware the right fit?</li>
+</ol>
+<ul>
+<li>E.g. as a validation service, is Deno a reasonable dependency?</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
 <li>Is Handlebars a good fit for managing data views and rendering
 HTML?</li>
 </ol>
@@ -135,9 +144,8 @@ HTML?</li>
 <ul>
 <li>Removed some Go cli (e.g. ws, mustache, newtmustache)</li>
 <li>The action “init” was renamed “config”</li>
-<li>Renamed newtrouter -&gt; ndr (Newt Data Router)</li>
+<li>Renamed newtrouter to ndr (Newt Data Router)</li>
 <li>Added nte (Newt Template Engine) supporting Handlbars templates</li>
-<li>Generating collection and YAML for dataset+datasetd</li>
 <li>Generating Handlebars templates</li>
 <li>Generating TypeScript validator as middleware run via Deno</li>
 </ul>
@@ -147,10 +155,10 @@ HTML?</li>
 <ul>
 <li>JSON Data Source
 <ul>
-<li><a href="https://caltechlibrary.github.io/datasetd">Dataset +
-datasetd</a></li>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://caltechlibrary.github.io/datasetd">Dataset +
+datasetd</a></li>
 </ul></li>
 <li>newt, ndr, and nte</li>
 <li>Deno to run generated TypeScript middleware</li>

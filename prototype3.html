@@ -52,7 +52,7 @@ application)
 stack)</li>
 <li>run (target stack based on AST and data models)</li>
 </ul></li>
-<li>data router
+<li>data router (ndr)
 <ul>
 <li>validator integration via generated code (e.g. TypeScript run by
 Deno)</li>
@@ -60,13 +60,16 @@ Deno)</li>
 <li>static file service</li>
 <li>related routes linked by an id</li>
 </ul></li>
-<li>Generator application code for two stacks
+<li>Generator application code for two stacks (newt)
 <ul>
 <li>(default) Dataset collection with Dataset YAML for datasetd</li>
 <li>(optional) Postgres+PostgREST</li>
 </ul></li>
-<li>a template engine to easily turn a JSON object into HTML or other
-formats</li>
+<li>Newt Template engine (nte)
+<ul>
+<li>A template engine that works as the last stage of a JSON data
+pipeline</li>
+</ul></li>
 </ul>
 <h2 id="constraints">Constraints</h2>
 <ul>

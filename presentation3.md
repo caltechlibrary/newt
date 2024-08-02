@@ -67,25 +67,26 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 # Goal of Prototype 3: Questions to explore
 
-1. What should the default JSON data source be? (dataset+datasetd vs. Postgres+PostgREST)
-2. Is generated TypeScript middleware the right fit? (e.g. validation service)
+1. What should the default JSON data source be?
+  - continue with Postgres+PostgREST or simplify with Dataset+datasetd?
+2. Is generated TypeScript middleware the right fit?
+  - E.g. as a validation service, is Deno a reasonable dependency?
 3. Is Handlebars a good fit for managing data views and rendering HTML?
 
 # Changes from last prototype
 
 - Removed some Go cli (e.g. ws, mustache, newtmustache)
 - The action "init" was renamed "config"
-- Renamed newtrouter -> ndr (Newt Data Router)
+- Renamed newtrouter to ndr (Newt Data Router)
 - Added nte (Newt Template Engine) supporting Handlbars templates
-- Generating collection and YAML for dataset+datasetd
 - Generating Handlebars templates
 - Generating TypeScript validator as middleware run via Deno
 
 # Off the shelf (no coding)
 
 - JSON Data Source
-  - [Dataset + datasetd](https://caltechlibrary.github.io/datasetd)
   - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
+  - [Dataset + datasetd](https://caltechlibrary.github.io/datasetd)
 - newt, ndr, and nte
 - Deno to run generated TypeScript middleware
 

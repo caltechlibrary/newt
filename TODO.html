@@ -26,7 +26,6 @@
 <h1 id="action-items">Action Items</h1>
 <h2 id="bugs">Bugs</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Newt Run bugs</label></li>
 <li><label><input type="checkbox" />Newt Router bugs</label>
 <ul class="task-list">
 <li><label><input type="checkbox" />Newt Router should restrict POST
@@ -35,6 +34,11 @@ file uploads</label></li>
 </ul></li>
 <li><label><input type="checkbox" />Newt Generator</label>
 <ul class="task-list">
+<li><label><input type="checkbox" />Newt generate isn’t create the model
+schema in models.sql or the functions for use with
+PostgREST</label></li>
+<li><label><input type="checkbox" checked="" />Template generation needs
+to respect the base directory</label></li>
 <li><label><input type="checkbox" />Newt Generator needs to generate the
 SQL to validate inputs based on their element types. If this is too
 complex then the router needs to do the validation before sending
@@ -42,10 +46,6 @@ through the pipeline (that will require a change to the AST
 (e.g. <code>validate_with:&lt;MODEL_NAME&gt;</code>
 attribute)</label></li>
 </ul></li>
-<li><label><input type="checkbox" />Newt Template Engine
-bugs</label></li>
-<li><label><input type="checkbox" checked="" />Template generation needs
-to respect the base directory</label></li>
 </ul>
 <h2 id="next-for-the-second-prototype">Next for the second
 prototype</h2>
