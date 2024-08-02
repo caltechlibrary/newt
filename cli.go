@@ -146,7 +146,8 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 	}
 	//NOTE: I need to generate each of the files needed for Postgres and PostgREST
 	for _, fName := range []string{"setup.sql", "models.sql"} {
-		if err := renderTemplate(generator, "postgres", "", "setup", fName); err != nil {
+	    action := strings.TrimSuffix(fName, ".sql")	
+		if err := renderTemplate(generator, "postgres", "", action, fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
