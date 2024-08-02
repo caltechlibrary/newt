@@ -203,12 +203,65 @@ func tmplGenList(out io.Writer, model *Model) error {
 	return nil
 }
 
-type PartialGen func(io.Writer, *Model) error
+func TmplHeadPartial(out io.Writer, defaultTitle string, cssPath string) error {
+	fmt.Fprintf(out, `<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    {{#if page_title}}<title>{{page_title}}</title>{{else}}<title>%s</title>{{/if}}
+    <link rel="stylesheet" href="%s">
+</head>
+`, defaultTitle, cssPath)
+	return nil
+}
+
+func TmplHeaderPartial(out io.Writer, defaultHeaderLink string, defaultHeaderLinkTitle string, defaultLogoLink string, defaultLogoTitle string) error {
+	fmt.Fprintf(out, `<header>
+<a href="%s" title="%s"><img src="%s" alt="%s"></a>
+</header>
+`, defaultHeaderLink, defaultHeaderLinkTitle, defaultLogoLink, defaultLogoTitle)
+	return nil
+}
+
+func TmplNavPartial(out io.Writer, navElement string) error {
+	if navElement != "" {
+		fmt.Fprintln(out, navElement)
+	} else {
+		fmt.Fprintln(out, `<!-- NAV ELEMENT GOES HERE -->`)
+	}
+	return nil
+}
+
+func TmplFooterPartial(out io.Writer, copyrightYear string, copyrightLink string, copyrightText string, licenseLink string, licenseText string, contactAddress string, contactEMail string, contactPhone string) error {
+	fmt.Fprintf(out, `<footer>
+<span id="copyright">&copy; %s <a href="%s">%s</a></span>
+`, copyrightYear, copyrightLink, copyrightText)
+	if licenseText != "" {
+		fmt.Fprintf(out, `<span id="license"><a href="%s">%s</a></span>
+`, licenseLink, licenseText)
+	}
+	if contactAddress != "" {
+		fmt.Fprintf(out, `
+<address>%s</address>
+`, contactAddress)
+	}
+	if contactEMail != "" {
+		fmt.Fprintf(out, `<span><a href="mailto:%s">Email Us</a></span>
+`, contactEMail)
+	}
+	if contactPhone != "" {
+		fmt.Fprintf(out, `<span>Phone: <a href="tel:%s">%s</a></span>
+`, contactPhone, contactPhone)
+	}
+	fmt.Fprintf(out, `</footer>
+`)
+	return nil
+}
+
+type BodyGen func(io.Writer, *Model) error
 
 // tmplPage takes an output buffer and a PartialGen with a function
 // signature `func(io.Writer,*Model) error` and renders a webpage
 // using the passed in func.
-func tmplPage(out io.Writer, model *Model, fn PartialGen) error {
+func tmplPage(out io.Writer, model *Model, fn BodyGen) error {
 	fmt.Fprintf(out, `<!DOCTYPE html>
 <html lang="en-us">
 {{>head}}

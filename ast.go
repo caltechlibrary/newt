@@ -23,7 +23,10 @@ import (
 
 // AST holds a configuration for Newt for the data router and code generator.
 type AST struct {
-	// Application holds the application specific settings and metadata
+	// Metadata holds project metadata about your Newt Application.
+	ProjectMetadata *ProjectMetadata `json:"project_metadata,omitempty" yaml:"project_metadata,omitempty"`
+
+	// Application holds the application specific settings and metadata needed to compose your Newt Application.
 	Applications *Applications `json:"applications,omitempty" yaml:"applications,omitempty"`
 
 	// Models holds a list of data models. It is used by
@@ -40,6 +43,26 @@ type AST struct {
 
 	// isChanged is a convience variable for tracking if the data structure has changed.
 	isChanged bool `json:"-" yaml:"-"`
+}
+
+// ProjectMetadata holds metadata about your Newt Application
+// This is primarily used in generated Handlbars partials
+type ProjectMetadata struct {
+	AppName string `json:"app_name,omitempty" yaml:"app_name,omitempty"`
+	AppTitle string `json:"app_title,omitempty" yaml:"app_title,omitempty"`
+	CopyrightYear string `json:copyright_year,omitempty" yaml:"copyright_year,omitempty"`
+	CopyrightLink string `json:"copyright_link,omitempty" yaml:"copyright_link,omitempty"`
+	CopyrightText string `json:"copyright_text,omitempty" yaml:"copyright_text,omitempty"`
+	LogoLink string `json:"logo_link,omitempty" yaml:"logo_link,omitempty"`
+	LogoText string `json:"logo_text,omitempty" yaml:"logo_text,omitempty"`
+	LicenseLink string `json:"license_link,omitempty" yaml:"license_link,omitempty"`
+	LicenseText string `json:"license_text,omitempty" yaml:"license_text,omitempty"`
+	CSSPath string `json:"css_path,omitempty" yaml:"css_path,omitempty"`
+	HeaderLink string `json:"header_link,omitempty" yaml:"header_link,omitempty"`
+	HeaderText string `json:"header_text,omitempty" yaml:"header_text,omitempty"`
+	ContactAddress string `json:"contact_address,omitempty" yaml:"contact_address,omitempty"`
+	ContactPhone string `json:"contact_phone,omitempty" yaml:"contact_phone,omitempty"`
+	ContactEMail string `json:"contact_email,omitempty" yaml:"contact_email,omitempty"`
 }
 
 // Applications holds the runtime information for newt router, generator,

@@ -21,6 +21,9 @@ type Generator struct {
 	// internal this is the error output for code generation, usually resolves to stderr
 	eout io.Writer
 
+	// ProjectMetadata holds the metadata for the application being generated
+	ProjectMetadata *ProjectMetadata
+
 	// Postgres configuration information
 	Postgres *Application
 
@@ -41,6 +44,9 @@ func NewGenerator(ast *AST) (*Generator, error) {
 	generator.Namespace = ast.Applications.Postgres.Namespace
 	generator.Models = ast.Models
 	generator.Options = make(map[string]interface{})
+	if ast.ProjectMetadata != nil {
+		generator.ProjectMetadata = ast.ProjectMetadata
+	}
 	if ast.Applications.Postgres != nil {
 		generator.Postgres = ast.Applications.Postgres
 	}
@@ -93,15 +99,39 @@ func (g *Generator) renderPostgREST() error {
 	return postgRESTConf(g.out, g.Namespace, port)
 }
 
-// renderTemplateEngine will render a handlebars template for a given model id. The action corresponds
+// renderModelActionTemplate will render a template for a given model id. The action corresponds
 // to the model id.
-func (g *Generator) renderTemplateEngine(modelId string, action string) error {
+func (g *Generator) renderModelActionTemplate(modelId string, action string) error {
 	for _, model := range g.Models {
 		if modelId == model.Id {
 			return TmplGen(g.out, model, action)
 		}
 	}
 	return fmt.Errorf("failed to find model id %q", modelId)
+}
+
+// renderPartialTemplate renders the head, header, nav (stub), footer partial templates
+func (g *Generator) renderPartialTemplate(partial string) error {
+	switch partial {
+	case "head":
+		return TmplHeadPartial(g.out, g.ProjectMetadata.AppTitle, g.ProjectMetadata.CSSPath)
+	case "header":
+		return TmplHeaderPartial(g.out, g.ProjectMetadata.HeaderLink, g.ProjectMetadata.HeaderText, g.ProjectMetadata.LogoLink, g.ProjectMetadata.LogoText)
+	case "nav":
+		return TmplNavPartial(g.out, "<!-- navigation goes here -->")
+	case "footer":
+		return TmplFooterPartial(g.out,
+			g.ProjectMetadata.CopyrightYear,
+			g.ProjectMetadata.CopyrightLink,
+			g.ProjectMetadata.CopyrightText,
+			g.ProjectMetadata.LicenseLink,
+			g.ProjectMetadata.LicenseText,
+			g.ProjectMetadata.ContactAddress,
+			g.ProjectMetadata.ContactPhone,
+			g.ProjectMetadata.ContactEMail)
+	default:
+		return fmt.Errorf("failed, partial %q not supported", partial)
+	}
 }
 
 // renderHtml will render HTML forms for given action and model id.
@@ -140,7 +170,6 @@ func validateModelId(modelId string, models []*Model) error {
 // - modelId references the `.id` attribute of the model needing code generation
 func (g *Generator) Generate(generatorName string, modelId string, action string) error {
 	pgActions := []string{"setup", "models", "models_test"}
-	//modelActions := []string{ "create", "read", "update", "delete", "list", "page" }
 	templateActions := []string{
 		"create_form", "create_response",
 		"update_form", "update_response",
@@ -155,14 +184,19 @@ func (g *Generator) Generate(generatorName string, modelId string, action string
 		return g.renderPostgreSQL(action)
 	case "postgrest":
 		return g.renderPostgREST()
-	case "handlebars":
+	case "template":
 		if err := validateAction(action, templateActions); err != nil {
 			return err
 		}
 		if err := validateModelId(modelId, g.Models); err != nil {
 			return err
 		}
-		return g.renderTemplateEngine(modelId, action)
+		if err := g.renderModelActionTemplate(modelId, action); err != nil {
+			return err
+		}
+		return nil
+	case "partial_template":
+		return g.renderPartialTemplate(action)
 	default:
 		return fmt.Errorf("%q is not supported at this time", generatorName)
 	}

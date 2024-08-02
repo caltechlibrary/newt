@@ -1,19 +1,74 @@
 
 # Newt's `newt generate` Explained
 
-// FIXME: Needs to be rewritten given code changes and evolution of AST.
+// FIXME: REWRITE NEEEDED based on direction of current prototype
 
-Newt comes with a code generator. It is part of the `newt` command. It uses the Newt YAML file to render Postgres SQL, PostgREST configuration and Handlebar templates suitable to bootstrap your Newt based project.  How does it do this? What are the assumptions?
+Newt comes with a code generator. It does the heavy lift of knitting your application together from off the shelf parts. The code generator is used to create a new Newt YAML file as well as SQL, TypeScript, Handlebar templates and other miscelanios code bits. You run the code generator via the Newt development tools, `newt` (or `newt.exe` on Windows). The tool is truction around the concept of an actions on an object.
 
-The Newt code generator works primarily with the "models" property in your Newt YAML file.
+The basic worflow of code generation is as follows
 
-Our minimal useful application should be able to do five things - Create, Read, Update, Delete and List (abbr: CRUD-L) for objects you are modeling. It needs to offer these actions for each model defined in our project. The Newt assumes each model is independent but multiple objects may be defined in your application. If you need to combine models (not unusual) then you will need to enhance the generated SQL, routes and templates to better support that type of integration. For now let us focus on the basics.
+1. create/update your application's Newt YAML file 
+2. create/update your data models
+3. generate the application
+4. run, test and repeat
+
+Your application at this stage should be able to create modeled objects, retrieve modeled objects, update modeled objects, delete modeled objects and list modeled objects. When youare happy with the base functionality you can then turn to refining the application by customizing the generated code, adding custom routes and templates as well as browser side functionality delivered via Newt's data router static file service.
+
+## Generated files for Postgres+PostgREST based projects
+
+The Newt code generator delivers the following code assets for your Postgres+PostgREST based Newt Application
+
+`postgrest.conf`
+: A basic PostgREST configuration file for your project
+
+`setup.sql`
+: This file is used to configure Postgres to work with PostgREST. This is code you can execute via the psql shell.
+Usually you don't check this file into your code (e.g. GitHub) repository as it will need to contain DB credentials for the application's DB account.
+
+`models.sql`
+: This file setups the database schema as well as creates Pg/SQL functions for use with PostgREST in your CRUD-L application operations
+
+Depending on what the setting of the base directory and model name it'll create the follow templates.
+In this example `<base_dir>` would be replaced by the "base directory" setting your your Newt YAML file and `<model>` would be replaced by the model name.
+
+`<base_dir>/<model>_create_form.hbs`
+: This implements the HTML data entry form create a new object based on `<model>`.
+
+`<base_dir>/<model>_create_response.hbs`
+: This implements the HTML response from the create object data entry form.
+
+`<base_dir>/<model>_read.hbs`
+: This implements the HTML read only view a object previously created or updated.
+
+`<base_dir>/<model>_update_form.hbs`
+: This implements the HTML data entry form to update an objected previouly created.
+
+`<base_dir>/<model>_update_response.hbs`
+: This implements the HTML response from the update data entry form.
+
+`<base_dir>/<model>_delete_form.hbs`
+: This implemented the HTML form to delete an object previously created.
+
+`<base_dir>/<model>_delete_response.hbs`
+: This implemented the HTML response from deleting an object.
+
+`<base_dir>/<model>_list.hbs`
+: This lists objects previously created or updated.
+
+Once your code is generated you'll first need to setup the Postgres database to work with PostgREST. That is done by using the Postgres `psql` shell to run the SQL code. You first run `setup.sql` and then run `models.sql`.
+
+After that you're ready to test your basic application. The `newt` (or `newt.exe` on Windows) tool can also "run" your generated code. You would use the "run" action and the name of your Newt Project file.
+
+## Minimal functionality
+
+The generated code, after settting up Postgres+PostgREST has a minimum level of functionality. It implements the five basic operations to manage metadata - Create, Read, Update, Delete and List (abbr: CRUD-L) for each object type modeled in your Newt YAML file. Newt assumes each model is independent but multiple objects may be defined in your application. If you need to combine models (not unusual) then you will need to enhance the generated SQL, routes and/or templates to better support that type of integration. For now let us focus on the basics.
+
+## Newt's Approach
 
 The Newt philosophy is to model data in YAML and then mangage the data via data management system. It presumes the data management system provides a JSON API for interacting with it. In Newt this is referred to as a "JSON data source".  What is a data management system?  Typical this will be a JSON friendly database combined with a JSON API.  Newt provides code generation for Postgres (the database) plus PostgREST (the JSON API). The code generation includes setting up a simple configuration file, generating SQL to define tables, schema as well as SQL functions. The result can be used to bring up an instance of Postgres+PostgREST for your project.
 
 Newt also supports using Dataset+datasetd as a primary JSON data source.  Dataset can store JSON documents in a pairtree, in MySQL, Postgres or SQLite3 database.
 Newt's Dataset+datasetd support assumes you're using SQLite3 as your storage format.
-
 
 Newt code generation can accomplish the following tasks
 

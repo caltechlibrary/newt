@@ -7,9 +7,214 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 	"strings"
+	"time"
 )
+
+// setupProjectMetadata to configure the project's metadata. Project metadata is used in
+// generating the template partials.
+func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+	var answer string
+	if skipPrompts {
+		answer = "y"
+	} else {
+		fmt.Fprintf(out, "Update project metadata for %s (Y/n)? ", appFName)
+		answer = getAnswer(buf, "y", true)
+	}
+	if answer != "y" {
+		return
+	}
+	appName := strings.TrimSuffix(path.Base(appFName), ".yaml")
+	year := time.Now().Format("2006")
+	if ast.ProjectMetadata == nil {
+		ast.ProjectMetadata = new(ProjectMetadata)
+	}
+	if ast.ProjectMetadata.AppName == "" {
+		ast.ProjectMetadata.AppName = appName
+	}
+	if ast.ProjectMetadata.AppTitle == "" {
+		ast.ProjectMetadata.AppTitle = appName
+	}
+	if ast.ProjectMetadata.CopyrightYear == "" {
+		ast.ProjectMetadata.CopyrightYear = year
+	}
+	if ast.ProjectMetadata.CSSPath == "" {
+		ast.ProjectMetadata.CSSPath = "/css/site.css"
+	}
+	fmt.Fprint(out, "Set the project metadata for %s\n", appFName)
+	for quit := false; !quit; {
+		menuList := []string{
+			fmt.Sprintf("Set [an] App Name: %s", ast.ProjectMetadata.AppName),
+			fmt.Sprintf("Set [at] App Title: %s", ast.ProjectMetadata.AppTitle),
+			fmt.Sprintf("Set [cy] Copyright Year: %s", ast.ProjectMetadata.CopyrightYear),
+			fmt.Sprintf("Set [cl] Copyright Link: %s", ast.ProjectMetadata.CopyrightLink),
+			fmt.Sprintf("Set [ct] Copyright Text: %s", ast.ProjectMetadata.CopyrightText),
+			fmt.Sprintf("Set [ll] License Link: %s", ast.ProjectMetadata.LicenseLink),
+			fmt.Sprintf("Set [lt] License Text: %s", ast.ProjectMetadata.LicenseText),
+			fmt.Sprintf("Set [hl] Header Link: %s", ast.ProjectMetadata.HeaderLink),
+			fmt.Sprintf("Set [ht] Header Text: %s", ast.ProjectMetadata.HeaderText),
+			fmt.Sprintf("SEt [gl] Logo Link: %s", ast.ProjectMetadata.LogoLink),
+			fmt.Sprintf("SEt [gt] Logo Link: %s", ast.ProjectMetadata.LogoText),
+			fmt.Sprintf("Set [ca] Contact Address: %s", ast.ProjectMetadata.ContactAddress),
+			fmt.Sprintf("Set [cp] Contact Phone: %s", ast.ProjectMetadata.ContactPhone),
+			fmt.Sprintf("Set [ce] Contact EMail: %s", ast.ProjectMetadata.ContactEMail),
+			fmt.Sprintf("Set [c]  CSS path/url: %s", ast.ProjectMetadata.CSSPath),
+		}
+		menu, opt := selectMenuItem(buf, out,
+			"Manage Project Metadata",
+			"Type menu letter(s) and press enter to modify or press enter when done",
+			menuList, false, "", "", true)
+		if len(menu) > 0 {
+			menu = strings.TrimSpace(menu)
+		}
+		switch menu {
+			case "an":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter App Name: ")
+					opt = getAnswer(buf, appName, true)
+				}
+				if opt != ast.ProjectMetadata.AppName {
+					ast.ProjectMetadata.AppName = opt
+					ast.isChanged = true
+				}
+			case "at":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter App Title: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.AppTitle {
+					ast.ProjectMetadata.AppTitle = opt
+					ast.isChanged = true
+				}
+			case "cy":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Copyright Year: ")
+					opt = getAnswer(buf, year, true)
+				}
+				if opt != ast.ProjectMetadata.CopyrightYear {
+					ast.ProjectMetadata.CopyrightYear = opt
+					ast.isChanged = true
+				}
+			case "cl":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Copyright Link: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.CopyrightLink {
+					ast.ProjectMetadata.CopyrightLink = opt
+					ast.isChanged = true
+				}
+			case "ct":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Copyright Text: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.CopyrightText {
+					ast.ProjectMetadata.CopyrightText = opt
+					ast.isChanged = true
+				}
+			case "ll":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter License Link: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.LicenseLink {
+					ast.ProjectMetadata.LicenseLink = opt
+					ast.isChanged = true
+				}
+			case "lt":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter License Text: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.LicenseText {
+					ast.ProjectMetadata.LicenseText = opt
+					ast.isChanged = true
+				}
+			case "gl":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Logo Link: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.LogoLink {
+					ast.ProjectMetadata.LogoLink = opt
+					ast.isChanged = true
+				}
+			case "gt":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Logo Text: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.LogoText {
+					ast.ProjectMetadata.LogoText = opt
+					ast.isChanged = true
+				}
+			case "hl":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Header Link: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.HeaderLink {
+					ast.ProjectMetadata.HeaderLink = opt
+					ast.isChanged = true
+				}
+			case "ht":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Header Text: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.HeaderText {
+					ast.ProjectMetadata.HeaderText = opt
+					ast.isChanged = true
+				}
+			case "ca":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Contact Address: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.ContactAddress {
+					ast.ProjectMetadata.ContactAddress = opt
+					ast.isChanged = true
+				}
+			case "cp":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Contact Phone: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.ContactPhone {
+					ast.ProjectMetadata.ContactPhone = opt
+					ast.isChanged = true
+				}
+			case "ce":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter Contact EMail: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.ContactEMail {
+					ast.ProjectMetadata.ContactEMail = opt
+					ast.isChanged = true
+				}
+			case "c":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter CSS path or url: ")
+					opt = getAnswer(buf, "", true)
+				}
+				if opt != ast.ProjectMetadata.CSSPath {
+					ast.ProjectMetadata.CSSPath = opt
+					ast.isChanged = true
+				}
+			case "q":
+				quit = true
+			case "":
+				quit = true
+			default:
+				fmt.Fprintf(out, "failed to understand %q\n", menu)
+		}
+
+	}
+}
 
 // setupRouter prompt to configure the Router
 func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
@@ -286,7 +491,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			menuList := []string{
 				fmt.Sprintf("Set [p]ort: %d", ast.Applications.TemplateEngine.Port),
 				fmt.Sprintf("Set [b]ase directory: %s", ast.Applications.TemplateEngine.BaseDir),
-				fmt.Sprintf("Set file [e]xtention: %s", ast.Applications.TemplateEngine.ExtName),
+				fmt.Sprintf("Set [f]ile extention: %s", ast.Applications.TemplateEngine.ExtName),
 				fmt.Sprintf("Set [P]artials sub-directory: %s", ast.Applications.TemplateEngine.PartialsDir),
 			}
 			// FIXME: You show the current template list here..
@@ -319,7 +524,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 					ast.Applications.TemplateEngine.BaseDir = opt
 					ast.isChanged = true
 				}
-			case "e":
+			case "f":
 				if opt == "" {
 					fmt.Fprintf(out, "Enter file extention: ")
 					opt = getAnswer(buf, TEMPLATE_ENGINE_EXT_NAME, true)

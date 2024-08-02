@@ -3,18 +3,18 @@
 
 ## Bugs
 
-- [ ] Newt Run bugs
 - [ ] Newt Router bugs
   - [ ] Newt Router should restrict POST that expect support for multipart encoding since Newt does not support file uploads
 - [ ] Newt Generator
+  - [ ] Newt generate isn't create the model schema in models.sql or the functions for use with PostgREST
+  - [X] Template generation needs to respect the base directory
   - [ ] Newt Generator needs to generate the SQL to validate inputs based on their element types. If this is too complex then the router needs to do the validation before sending through the pipeline (that will require a change to the AST (e.g. `validate_with:<MODEL_NAME>` attribute)
-- [ ] Newt Template Engine bugs
-- [X] Template generation needs to respect the base directory
 
 ## Next for the second prototype 
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
+- [ ] Need to generate a codemeta or CITATION.cff file to have the data to create partials for project.
 - [X] Change docs and actions to rename "init" to "config" since that better describes both intiialization and re-configuration
 - [X] Update `newt config` to fully setup nte
 - [ ] Update `newt config` to support Dataset+datasetd
