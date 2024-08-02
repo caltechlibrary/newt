@@ -9,14 +9,15 @@
 - [ ] Newt Generator
   - [ ] Newt Generator needs to generate the SQL to validate inputs based on their element types. If this is too complex then the router needs to do the validation before sending through the pipeline (that will require a change to the AST (e.g. `validate_with:<MODEL_NAME>` attribute)
 - [ ] Newt Template Engine bugs
-- [ ] Change docs and actions to rename "init" to "config" since that better describes both intiialization and re-configuration
+- [X] Template generation needs to respect the base directory
 
 ## Next for the second prototype 
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
-- [ ] Update `newt init` to fully setup nte
-- [ ] Update `newt init` to support Dataset+datasetd
+- [X] Change docs and actions to rename "init" to "config" since that better describes both intiialization and re-configuration
+- [X] Update `newt config` to fully setup nte
+- [ ] Update `newt config` to support Dataset+datasetd
 - [ ] Merge setup of Postgres and PostgREST so they are configured or updated in one go
 
 - [ ] Review [go-webui](https://github.com/webui-dev/go-webui) for implementing a GUI for newt

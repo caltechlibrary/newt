@@ -90,91 +90,79 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 
 // setupPostgREST prompt to configure PostgREST
 func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
-	var answer string
-	if skipPrompts {
-		answer = "y"
-	} else {
-		fmt.Fprintf(out, "Will %s use PostgREST (Y/n)? ", appFName)
-		answer = getAnswer(buf, "y", true)
+	fmt.Fprintf(out, "Configuring PostgREST\n")
+	if ast.Applications == nil {
+		ast.Applications = NewApplications()
 	}
-	if answer == "y" {
-		if ast.Applications == nil {
-			ast.Applications = NewApplications()
+	if ast.Applications.PostgREST == nil {
+		ast.Applications.PostgREST = NewApplication()
+	}
+	if ast.Applications.PostgREST.Port == 0 {
+		ast.Applications.PostgREST.Port = POSTGREST_PORT
+		ast.Applications.PostgREST.AppPath = "postgrest"
+		ast.Applications.PostgREST.ConfPath = "postgrest.conf"
+	}
+	for quit := false; !quit; {
+		menuList := []string{
+			fmt.Sprintf("Set [p]ort: %d", ast.Applications.PostgREST.Port),
+			fmt.Sprintf("Set [a]pp path: %q", ast.Applications.PostgREST.AppPath),
+			fmt.Sprintf("Set [c]onf path: %q", ast.Applications.PostgREST.ConfPath),
 		}
-		if ast.Applications.PostgREST == nil {
-			ast.Applications.PostgREST = NewApplication()
+		menu, opt := selectMenuItem(buf, out,
+			"Manage PostgREST Settings",
+			"Type menu letter and press enter to modify or press enter when done",
+			menuList, false, "", "", true)
+		if len(menu) > 0 {
+			menu = menu[0:1]
 		}
-		if ast.Applications.PostgREST.Port == 0 {
-			ast.Applications.PostgREST.Port = POSTGREST_PORT
-			ast.Applications.PostgREST.AppPath = "postgrest"
-			ast.Applications.PostgREST.ConfPath = "postgrest.conf"
-		}
-		for quit := false; !quit; {
-			menuList := []string{
-				fmt.Sprintf("Set [p]ort: %d", ast.Applications.PostgREST.Port),
-				fmt.Sprintf("Set [a]pp path: %q", ast.Applications.PostgREST.AppPath),
-				fmt.Sprintf("Set [c]onf path: %q", ast.Applications.PostgREST.ConfPath),
+		switch menu {
+		case "p":
+			if opt == "" {
+				fmt.Fprintf(out, "Enter Postgres port number: ")
+				opt = getAnswer(buf, strconv.Itoa(POSTGREST_PORT), true)
 			}
-			menu, opt := selectMenuItem(buf, out,
-				"Manage PostgREST Settings",
-				"Type menu letter and press enter to modify or press enter when done",
-				menuList, false, "", "", true)
-			if len(menu) > 0 {
-				menu = menu[0:1]
+			port, err := strconv.Atoi(opt)
+			if err != nil {
+				fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
+			} else {
+				ast.Applications.PostgREST.Port = port
+				ast.isChanged = true
 			}
-			switch menu {
-			case "p":
-				if opt == "" {
-					fmt.Fprintf(out, "Enter Postgres port number: ")
-					opt = getAnswer(buf, strconv.Itoa(POSTGREST_PORT), true)
-				}
-				port, err := strconv.Atoi(opt)
-				if err != nil {
-					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
-				} else {
-					ast.Applications.PostgREST.Port = port
-					ast.isChanged = true
-				}
-			case "a":
-				if opt == "" {
-					fmt.Fprintf(out, "Enter the path to PostgREST application (an empty path is OK): ")
-					opt = getAnswer(buf, "", false)
-				}
-				if ast.Applications.PostgREST.AppPath != opt {
-					ast.Applications.PostgREST.AppPath = strings.TrimSpace(opt)
-					ast.isChanged = true
-				}
-			case "c":
-				if opt == "" {
-					fmt.Fprintf(out, "Enter the path to PostgREST configuration (an empty path is OK): ")
-					opt = getAnswer(buf, "", false)
-				}
-				if ast.Applications.PostgREST.ConfPath != opt {
-					ast.Applications.PostgREST.ConfPath = strings.TrimSpace(opt)
-					ast.isChanged = true
-				}
-			case "q":
-				quit = true
-			case "":
-				quit = true
-			default:
-				fmt.Fprintf(out, "failed to understand request, %q\n", menu)
+		case "a":
+			if opt == "" {
+				fmt.Fprintf(out, "Enter the path to PostgREST application (an empty path is OK): ")
+				opt = getAnswer(buf, "", false)
 			}
-		}
-	} else {
-		if ast.Applications != nil {
-			ast.Applications.PostgREST = nil
+			if ast.Applications.PostgREST.AppPath != opt {
+				ast.Applications.PostgREST.AppPath = strings.TrimSpace(opt)
+				ast.isChanged = true
+			}
+		case "c":
+			if opt == "" {
+				fmt.Fprintf(out, "Enter the path to PostgREST configuration (an empty path is OK): ")
+				opt = getAnswer(buf, "", false)
+			}
+			if ast.Applications.PostgREST.ConfPath != opt {
+				ast.Applications.PostgREST.ConfPath = strings.TrimSpace(opt)
+				ast.isChanged = true
+			}
+		case "q":
+			quit = true
+		case "":
+			quit = true
+		default:
+			fmt.Fprintf(out, "failed to understand request, %q\n", menu)
 		}
 	}
 }
 
-// setupPostgres prompt to configure Postgres
-func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+// setupPostgresAndPostgREST prompt to configure Postgres
+func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
 	var answer string
 	if skipPrompts {
 		answer = "y"
 	} else {
-		fmt.Fprintf(out, "Will %s use Postgres (Y/n)? ", appFName)
+		fmt.Fprintf(out, "Will %s use Postgres and PostgREST (Y/n)? ", appFName)
 		answer = getAnswer(buf, "y", true)
 	}
 	if answer == "y" {
@@ -250,6 +238,7 @@ func setupPostgres(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, 
 				fmt.Fprintf(out, "failed to understand request, %q\n", menu)
 			}
 		}
+		setupPostgREST(ast, buf, out, appFName, skipPrompts)
 	} else {
 		if ast.Applications != nil {
 			ast.Applications.Postgres = nil
@@ -275,6 +264,15 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 		if ast.Applications.TemplateEngine.Port == 0 {
 			ast.Applications.TemplateEngine.Port = TEMPLATE_ENGINE_PORT
 		}
+		if ast.Applications.TemplateEngine.BaseDir == "" {
+			ast.Applications.TemplateEngine.BaseDir = TEMPLATE_ENGINE_BASE_DIR
+		}
+		if ast.Applications.TemplateEngine.ExtName == "" {
+			ast.Applications.TemplateEngine.ExtName = TEMPLATE_ENGINE_EXT_NAME
+		}
+		if ast.Applications.TemplateEngine.PartialsDir == "" {
+			ast.Applications.TemplateEngine.PartialsDir = TEMPLATE_ENGINE_PARTIALS_DIR
+		}
 		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
 		// When the model list changes then the related templates should change to.
 		// A scan of the template routes for removed models needs to happen when the model is "removed" by the modeler.
@@ -285,9 +283,11 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			}
 		}
 		for quit := false; !quit; {
-			menuList := []string{}
-			if ast.Applications.TemplateEngine != nil {
-				menuList = append(menuList, fmt.Sprintf("Set [p]ort: %d", ast.Applications.TemplateEngine.Port))
+			menuList := []string{
+				fmt.Sprintf("Set [p]ort: %d", ast.Applications.TemplateEngine.Port),
+				fmt.Sprintf("Set [b]ase directory: %s", ast.Applications.TemplateEngine.BaseDir),
+				fmt.Sprintf("Set file [e]xtention: %s", ast.Applications.TemplateEngine.ExtName),
+				fmt.Sprintf("Set [P]artials sub-directory: %s", ast.Applications.TemplateEngine.PartialsDir),
 			}
 			// FIXME: You show the current template list here..
 			menu, opt := selectMenuItem(buf, out,
@@ -308,6 +308,33 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 				} else {
 					ast.Applications.TemplateEngine.Port = port
+					ast.isChanged = true
+				}
+			case "b":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter base directory: ")
+					opt = getAnswer(buf, TEMPLATE_ENGINE_BASE_DIR, true)
+				}
+				if opt != "" {
+					ast.Applications.TemplateEngine.BaseDir = opt
+					ast.isChanged = true
+				}
+			case "e":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter file extention: ")
+					opt = getAnswer(buf, TEMPLATE_ENGINE_EXT_NAME, true)
+				}
+				if opt != "" {
+					ast.Applications.TemplateEngine.ExtName = opt
+					ast.isChanged = true
+				}
+			case "P":
+				if opt == "" {
+					fmt.Fprintf(out, "Enter partials sub directory: ")
+					opt = getAnswer(buf, TEMPLATE_ENGINE_PARTIALS_DIR, true)
+				}
+				if opt != "" {
+					ast.Applications.TemplateEngine.PartialsDir = opt
 					ast.isChanged = true
 				}
 			case "q":

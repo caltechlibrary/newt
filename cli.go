@@ -103,6 +103,14 @@ func hasArg(option string, args []string) bool {
 
 func renderTemplate(generator *Generator, tType string, modelID string, action string, fName string) error {
 	var err error
+	dName := path.Dir(fName)
+	if dName != "" && dName != "." {
+		log.Printf("DEBUG dName: %q", dName)
+		if _, err = os.Stat(fName); os.IsNotExist(err) {
+			log.Printf("DEBUG mkdir %s", dName)
+			os.MkdirAll(dName, 0775)
+		}
+	}
 	if _, err = os.Stat(fName); err == nil {
 		if err = backupFile(fName); err != nil {
 			return err
@@ -154,47 +162,47 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 	//NOTE: For each model generate a set of templates
 	for _, modelID := range ast.GetModelIds() {
 		// backup and generate {model}_create_form.hbs, {model}_create_response.hbs
-		fName = fmt.Sprintf("%s_create_form.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_create_form%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "create_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_create_response.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_create_response%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "create_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
 
 		// backup and generate {model}_read.hbs
-		fName = fmt.Sprintf("%s_read.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_read%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "read", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
 		// backup and generate {model}_update_form.hbs, {model}_update_response.hbs
-		fName = fmt.Sprintf("%s_update_form.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_update_form%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "update_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_update_response.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_update_response%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "update_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
 		// backup and generate {model}_delete_form.hbs, {model}_delete_response.hbs
-		fName = fmt.Sprintf("%s_delete_form.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_delete_form%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "delete_form", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
-		fName = fmt.Sprintf("%s_delete_response.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_delete_response%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "delete_response", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
 		}
 		// backup and generate {model}_list.hbs
-		fName = fmt.Sprintf("%s_list.hbs", modelID)
+		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_list%s", modelID, ast.Applications.TemplateEngine.ExtName))
 		if err := renderTemplate(generator, "handlebars", modelID, "list", fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
@@ -581,8 +589,7 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 	for {
 		//FIXME: Each of these should reflect the current model list in ast.
 		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
-		setupPostgres(ast, readBuffer, out, appFName, skipPrompts)
-		setupPostgREST(ast, readBuffer, out, appFName, skipPrompts)
+		setupPostgresAndPostgREST(ast, readBuffer, out, appFName, skipPrompts)
 		setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)
 		setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
 		setupOptions(ast, readBuffer, out, appFName, skipPrompts)

@@ -26,6 +26,9 @@ type Generator struct {
 
 	// PostgREST configuration information
 	PostgREST *Application
+
+	// TemplateEngine configuration information
+	TemplateEngine *Application
 }
 
 // NewGenerator instaitates a new Generator object form a filename and AST object
@@ -43,6 +46,9 @@ func NewGenerator(ast *AST) (*Generator, error) {
 	}
 	if ast.Applications.PostgREST != nil {
 		generator.PostgREST = ast.Applications.PostgREST
+	}
+	if ast.Applications.TemplateEngine != nil {
+		generator.TemplateEngine = ast.Applications.TemplateEngine
 	}
 	// NOTE: LoadCondfig handles loading the environment into options. We just need to
 	// copy into the Generator struct.
