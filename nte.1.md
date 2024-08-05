@@ -1,5 +1,5 @@
 ---
-title: nte(1) user manual | 0.0.9 861d34b
+title: nte(1) user manual | 0.0.9 c02a784
 pubDate: 2024-08-05
 author: R. S. Doiel
 ---

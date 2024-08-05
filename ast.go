@@ -50,7 +50,7 @@ type AST struct {
 type AppMetadata struct {
 	AppName string `json:"name,omitempty" yaml:"app_name,omitempty"`
 	AppTitle string `json:"title,omitempty" yaml:"app_title,omitempty"`
-	CopyrightYear string `json:copyright_year,omitempty" yaml:"copyright_year,omitempty"`
+	CopyrightYear string `json:"copyright_year,omitempty" yaml:"copyright_year,omitempty"`
 	CopyrightLink string `json:"copyright_link,omitempty" yaml:"copyright_link,omitempty"`
 	CopyrightText string `json:"copyright_text,omitempty" yaml:"copyright_text,omitempty"`
 	LogoLink string `json:"logo_link,omitempty" yaml:"logo_link,omitempty"`
