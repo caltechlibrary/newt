@@ -22,15 +22,15 @@ The following three objects are available in the templates.
 
 ## Two ways to run the template engine
 
-Newt provides two options for running the template engine.  Newt comes the `nte` web service (`nte.exe` on Windows). This is a standalone web service suitable suitable for running from the command line or via your POSIX systems' init or systemd service manager. A second more convenient way is to run the template engine is with the `newt` command (`newt.exe` on Windows). The `newt` command is provided to support a fluid development experience. This one command can perform several actions, e.g. "init", "generate" and "run".  In the following documentation I'll be using the `newt` command to run our Newt Handlebars service.
+Newt provides two options for running the template engine.  Newt comes the `nte` web service (`nte.exe` on Windows). This is a standalone web service suitable suitable for running from the command line or via your POSIX systems' init or systemd service manager. A second more convenient way is to run the template engine is with the `newt` command (`newt.exe` on Windows). The `newt` command is provided to support a fluid development experience. This one command can perform several actions, e.g. "config", "model", "generate" and "run".  In the following documentation I'll be using the `newt` command to run our template service.
 
-## Getting started with Newt Handlebars
+## Getting started with Newt Template Engine
 
-In this short tutorial we are going to create a web application that says hello. Only Newt Handlebars will be used to implement this service.
+In this short tutorial we are going to create a web application that says hello. Only Newt's template engine is required.
 
 ### Step 1, create a Newt YAML file
 
-Since I am just focusing on Newt Handlebars I recommend typing in the YAML content below and saving it to a file called "hello.yaml".
+Since I am just focusing on Newt the template engine only I recommend typing in the YAML content below and saving it to a file called "hello.yaml".
 
 ~~~yaml
 applications:
@@ -104,7 +104,7 @@ I use [cURL](https://curl.se) to test my templates. Let's see what happens when 
 curl -X POST -H 'content-type: application/json' --data '{}' 'http://localhost:8011/hello'
 ~~~
 
-The curl command above sends a POST (implied by the `--data` option) using a content type of "application/json". Newt Handlebars only knows how to work with JSON data. curl takes care of setting that content type using the `--data`. Normally a POST from a web form is included using urlencoding. But the web has evolved since the 1990s and most API now produce output encoded as JSON (or have the option to do so). Newt Handlebars is designed to support this behavior when it processes requests.
+The curl command above sends a POST (implied by the `--data` option) using a content type of "application/json". Newt Handlebars only knows how to work with JSON data. curl takes care of setting that content type using the `--data`. Normally a POST from a web form is included using urlencoding. But the web has evolved since the 1990s and most API now produce output encoded as JSON (or have the option to do so). Newt template engine is designed to support content which is encoded as "application/json". This aligns well with the whole Newt pipeline implementation.
 
 When you run the curl command you above should get back the HTML markup from the template and in the body element see the message "Hi There from Planet Earth!".
 
@@ -140,14 +140,18 @@ curl -X POST -H 'content-type: application/json' --data '{"name":"Maxine"}' 'htt
 
 Now you should see "Hi Maxine from Mars!".
 
-That's the basic idea of Newt Handlebars. Let me cover some other situations you might encounter when developing your Newt Handlebars templates.
+That's the basic idea of Newt's template engine.
 
-If you use an HTTP method beside POST you will get back an HTTP error message. If you use a URL path not defined in your templates you will get back an HTTP error message. These should be 404 type HTTP error message.
+### Somethings to keep in mind
+
+If you use an HTTP method beside POST you will get back an HTTP error message. The Newt template engine only supports the POST HTTP method. If you use a URL path not defined in your templates you will get back an HTTP error message. These should be 404 type HTTP error message.
 
 If you're POSTing to a defined URL and still running into a problem (say a template or data issue). You will get back an HTTP error. The easiest way to get insight into what is happening is to run the `newt` command using the `--verbose` option. This will output a allot of debug information which hopefully will help you find the problem in your template or in your data.
+
+Finally but importantly if you forget to set the content type header and send data it'll probably get sent as URL encoded and the Newt template engine doesn't support that so you'll get an error response.
 
 ### Why Handlebars templates?
 
 - Handlebars is a widely support template language with implementations in many languages including JavaScript and Python.
 - It is available browser side (it's written in JavaScript) and server side in environments like [Deno](https://deno.land) and [NodeJS](https://nodejs.org/en)
-
+- Like mustache it is a simple template language that discorages embedding business logic but it also has some more familar help functionss like an "if".

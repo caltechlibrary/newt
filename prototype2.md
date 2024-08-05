@@ -3,23 +3,24 @@
 
 ## Features
 
-- newt developer tool
-  - config (configure the stack used with your Newt application)
-  - model (model your data)
-  - generate (generate configuration file, SQL and templates)
-  - run (Newt Router, Newt Mustache and PostgREST)
-- newt router (a data router web service)
-  - validator (a service that read the models and tests the submissions for valid data)
-  - data pipelines
-  - static file service
-  - related routes linked by an id
-- newt mustache (a Mustache template engine inspired by Pandoc's server mode)
-  - stateless template engine
-  - loads templates at startup
-  - support partial templates
-  - templates referenced through unique path
-  - related templates linked by an id
-- Extensible to support for other JSON data sources through editing Newt YAML
+- [X] newt developer tool
+  - [X] config (configure the stack used with your Newt application), without conversational input
+  - [X] model (model your data)
+  - [X] generate (generate configuration file, SQL and templates)
+  - [X] run (Newt Router, Newt Mustache and PostgREST)
+- [ ] newt router (a data router web service)
+  - [ ] validator implemented in SQL (a service that read the models and tests the submissions for valid data)
+    - this proved too messy and hard to make easily customizable, not using the approach
+  - [X] data pipelines
+  - [X] static file service
+  - [X] related routes linked by an id
+- newt mustache (a Mustache template engine, replaced Pandoc's server, will get replaced again)
+  - [X] stateless template engine (currently used in feeds v1.6)
+  - [X] loads templates at startup
+  - [X] support partial templates
+  - [X] templates referenced through unique path
+  - [X] related templates linked by an id
+- [X] Extensible to support for other JSON data sources through editing Newt YAML
 
 ## Constraints
 
@@ -48,6 +49,4 @@ in the browser.
 - Demonstration to DLD group
 - Demonstration to Caltech Library staff
 - Demonstration for SoCal Code4Lib Meetup
-- Promote via 
-
-
+- Promote via

@@ -108,8 +108,11 @@ Update the album_reviews.yaml to look like this.
 applications:
   newtrouter:
     port: 8010
-  newtmustache:
+  template_engine:
     port: 8011
+    base_dir: views
+    partials_dir: partials
+    ext_name: .hbs
   postgrest:
     app_path: postgrest
     conf_path: postgrest.conf
@@ -134,10 +137,12 @@ routes:
       - service: POST http://localhost:8011/review_list
         description: Convert the JSON into HTML, show the list and web form
 templates:
-  - request: /review_list
-    template: review_list.tmpl
-  - request: /review_submitted
-    template: review_submitted.tmpl
+  - id: review_list
+    request: /review_list
+    template: review_list
+  - id: review_submitted
+    request: /review_submitted
+    template: review_submitted
 ~~~
 
 This is allot of YAML. Check your updated Newt YAML file with the following command.

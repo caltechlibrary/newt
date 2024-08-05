@@ -23,8 +23,8 @@ import (
 
 // AST holds a configuration for Newt for the data router and code generator.
 type AST struct {
-	// Metadata holds project metadata about your Newt Application.
-	ProjectMetadata *ProjectMetadata `json:"project_metadata,omitempty" yaml:"project_metadata,omitempty"`
+	// AppMetadata holds you app's metadata such as needed to render an "about" page in your final app.
+	AppMetadata *AppMetadata `json:"app_metadata,omitempty" yaml:"app_metadata,omitempty"`
 
 	// Application holds the application specific settings and metadata needed to compose your Newt Application.
 	Applications *Applications `json:"applications,omitempty" yaml:"applications,omitempty"`
@@ -45,11 +45,11 @@ type AST struct {
 	isChanged bool `json:"-" yaml:"-"`
 }
 
-// ProjectMetadata holds metadata about your Newt Application
+// AppMetadata holds metadata about your Newt Application
 // This is primarily used in generated Handlbars partials
-type ProjectMetadata struct {
-	AppName string `json:"app_name,omitempty" yaml:"app_name,omitempty"`
-	AppTitle string `json:"app_title,omitempty" yaml:"app_title,omitempty"`
+type AppMetadata struct {
+	AppName string `json:"name,omitempty" yaml:"app_name,omitempty"`
+	AppTitle string `json:"title,omitempty" yaml:"app_title,omitempty"`
 	CopyrightYear string `json:copyright_year,omitempty" yaml:"copyright_year,omitempty"`
 	CopyrightLink string `json:"copyright_link,omitempty" yaml:"copyright_link,omitempty"`
 	CopyrightText string `json:"copyright_text,omitempty" yaml:"copyright_text,omitempty"`

@@ -3,9 +3,9 @@
 
 Newt is an experimental set of tools for rapid application development. Specifically Newt is focused on web based metadata curation tools. These types of applications are commonly needed in galleries, libraries, archives and museums (abbr: GLAM). Newt makes creating these type of applications easier.
 
-How does Newt do that? Newt generates applications implementing a [service oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture).
+How does Newt do that? Newt generates an application by implementing a [service oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture) using a combination of off the shelf software and generated code.
 
-You can think of a web application as a sequence of requests and responses. Traditionally a web browser contacts your web site or application one of two things will happen. Your app knows the answer and hands back the result or tells you it can't do so (e.g. 404 HTTP STATUS CODE). With service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
+You can think of a web application as a sequence of requests and responses. Traditionally a web browser contacts your web site or application then one of two things will happen. Your app knows the answer and hands back the result. Alternatively if it doesn't know the answer it tells you it can't do so (e.g. 404 HTTP STATUS CODE). With service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
 
 With data pipelines we can accept a request and feed that request to one service then take its output and send it to the next service. Newt does this by providing a data router. Newt can manage the request sequence through a simple YAML described pipeline. While it is possible to create pipelines using Apache and NginX proxy features in practice that approach quickly becomes an unmanageable configuration problem. You could encapsulate clusters of processes in containers but this too becomes complex to manage. Newt's router can cut through the hairball of configurations and define pipelines per request route. With Newt's pipelines the last service completed hands its result back to Newt's router which returns the result to the web browser.
 
@@ -166,4 +166,3 @@ make
 make test
 make install
 ~~~
-

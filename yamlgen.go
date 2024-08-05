@@ -13,9 +13,9 @@ import (
 	"time"
 )
 
-// setupProjectMetadata to configure the project's metadata. Project metadata is used in
+// setupAppMetadata to configure the project's metadata. Project metadata is used in
 // generating the template partials.
-func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+func setupAppMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
 	var answer string
 	if skipPrompts {
 		answer = "y"
@@ -28,39 +28,39 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 	}
 	appName := strings.TrimSuffix(path.Base(appFName), ".yaml")
 	year := time.Now().Format("2006")
-	if ast.ProjectMetadata == nil {
-		ast.ProjectMetadata = new(ProjectMetadata)
+	if ast.AppMetadata == nil {
+		ast.AppMetadata = new(AppMetadata)
 	}
-	if ast.ProjectMetadata.AppName == "" {
-		ast.ProjectMetadata.AppName = appName
+	if ast.AppMetadata.AppName == "" {
+		ast.AppMetadata.AppName = appName
 	}
-	if ast.ProjectMetadata.AppTitle == "" {
-		ast.ProjectMetadata.AppTitle = appName
+	if ast.AppMetadata.AppTitle == "" {
+		ast.AppMetadata.AppTitle = appName
 	}
-	if ast.ProjectMetadata.CopyrightYear == "" {
-		ast.ProjectMetadata.CopyrightYear = year
+	if ast.AppMetadata.CopyrightYear == "" {
+		ast.AppMetadata.CopyrightYear = year
 	}
-	if ast.ProjectMetadata.CSSPath == "" {
-		ast.ProjectMetadata.CSSPath = "/css/site.css"
+	if ast.AppMetadata.CSSPath == "" {
+		ast.AppMetadata.CSSPath = "/css/site.css"
 	}
 	fmt.Fprint(out, "Set the project metadata for %s\n", appFName)
 	for quit := false; !quit; {
 		menuList := []string{
-			fmt.Sprintf("Set [an] App Name: %s", ast.ProjectMetadata.AppName),
-			fmt.Sprintf("Set [at] App Title: %s", ast.ProjectMetadata.AppTitle),
-			fmt.Sprintf("Set [cy] Copyright Year: %s", ast.ProjectMetadata.CopyrightYear),
-			fmt.Sprintf("Set [cl] Copyright Link: %s", ast.ProjectMetadata.CopyrightLink),
-			fmt.Sprintf("Set [ct] Copyright Text: %s", ast.ProjectMetadata.CopyrightText),
-			fmt.Sprintf("Set [ll] License Link: %s", ast.ProjectMetadata.LicenseLink),
-			fmt.Sprintf("Set [lt] License Text: %s", ast.ProjectMetadata.LicenseText),
-			fmt.Sprintf("Set [hl] Header Link: %s", ast.ProjectMetadata.HeaderLink),
-			fmt.Sprintf("Set [ht] Header Text: %s", ast.ProjectMetadata.HeaderText),
-			fmt.Sprintf("SEt [gl] Logo Link: %s", ast.ProjectMetadata.LogoLink),
-			fmt.Sprintf("SEt [gt] Logo Link: %s", ast.ProjectMetadata.LogoText),
-			fmt.Sprintf("Set [ca] Contact Address: %s", ast.ProjectMetadata.ContactAddress),
-			fmt.Sprintf("Set [cp] Contact Phone: %s", ast.ProjectMetadata.ContactPhone),
-			fmt.Sprintf("Set [ce] Contact EMail: %s", ast.ProjectMetadata.ContactEMail),
-			fmt.Sprintf("Set [c]  CSS path/url: %s", ast.ProjectMetadata.CSSPath),
+			fmt.Sprintf("Set [an] App Name: %s", ast.AppMetadata.AppName),
+			fmt.Sprintf("Set [at] App Title: %s", ast.AppMetadata.AppTitle),
+			fmt.Sprintf("Set [cy] Copyright Year: %s", ast.AppMetadata.CopyrightYear),
+			fmt.Sprintf("Set [cl] Copyright Link: %s", ast.AppMetadata.CopyrightLink),
+			fmt.Sprintf("Set [ct] Copyright Text: %s", ast.AppMetadata.CopyrightText),
+			fmt.Sprintf("Set [ll] License Link: %s", ast.AppMetadata.LicenseLink),
+			fmt.Sprintf("Set [lt] License Text: %s", ast.AppMetadata.LicenseText),
+			fmt.Sprintf("Set [hl] Header Link: %s", ast.AppMetadata.HeaderLink),
+			fmt.Sprintf("Set [ht] Header Text: %s", ast.AppMetadata.HeaderText),
+			fmt.Sprintf("SEt [gl] Logo Link: %s", ast.AppMetadata.LogoLink),
+			fmt.Sprintf("SEt [gt] Logo Link: %s", ast.AppMetadata.LogoText),
+			fmt.Sprintf("Set [ca] Contact Address: %s", ast.AppMetadata.ContactAddress),
+			fmt.Sprintf("Set [cp] Contact Phone: %s", ast.AppMetadata.ContactPhone),
+			fmt.Sprintf("Set [ce] Contact EMail: %s", ast.AppMetadata.ContactEMail),
+			fmt.Sprintf("Set [c]  CSS path/url: %s", ast.AppMetadata.CSSPath),
 		}
 		menu, opt := selectMenuItem(buf, out,
 			"Manage Project Metadata",
@@ -75,8 +75,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter App Name: ")
 					opt = getAnswer(buf, appName, true)
 				}
-				if opt != ast.ProjectMetadata.AppName {
-					ast.ProjectMetadata.AppName = opt
+				if opt != ast.AppMetadata.AppName {
+					ast.AppMetadata.AppName = opt
 					ast.isChanged = true
 				}
 			case "at":
@@ -84,8 +84,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter App Title: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.AppTitle {
-					ast.ProjectMetadata.AppTitle = opt
+				if opt != ast.AppMetadata.AppTitle {
+					ast.AppMetadata.AppTitle = opt
 					ast.isChanged = true
 				}
 			case "cy":
@@ -93,8 +93,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Copyright Year: ")
 					opt = getAnswer(buf, year, true)
 				}
-				if opt != ast.ProjectMetadata.CopyrightYear {
-					ast.ProjectMetadata.CopyrightYear = opt
+				if opt != ast.AppMetadata.CopyrightYear {
+					ast.AppMetadata.CopyrightYear = opt
 					ast.isChanged = true
 				}
 			case "cl":
@@ -102,8 +102,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Copyright Link: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.CopyrightLink {
-					ast.ProjectMetadata.CopyrightLink = opt
+				if opt != ast.AppMetadata.CopyrightLink {
+					ast.AppMetadata.CopyrightLink = opt
 					ast.isChanged = true
 				}
 			case "ct":
@@ -111,8 +111,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Copyright Text: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.CopyrightText {
-					ast.ProjectMetadata.CopyrightText = opt
+				if opt != ast.AppMetadata.CopyrightText {
+					ast.AppMetadata.CopyrightText = opt
 					ast.isChanged = true
 				}
 			case "ll":
@@ -120,8 +120,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter License Link: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.LicenseLink {
-					ast.ProjectMetadata.LicenseLink = opt
+				if opt != ast.AppMetadata.LicenseLink {
+					ast.AppMetadata.LicenseLink = opt
 					ast.isChanged = true
 				}
 			case "lt":
@@ -129,8 +129,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter License Text: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.LicenseText {
-					ast.ProjectMetadata.LicenseText = opt
+				if opt != ast.AppMetadata.LicenseText {
+					ast.AppMetadata.LicenseText = opt
 					ast.isChanged = true
 				}
 			case "gl":
@@ -138,8 +138,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Logo Link: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.LogoLink {
-					ast.ProjectMetadata.LogoLink = opt
+				if opt != ast.AppMetadata.LogoLink {
+					ast.AppMetadata.LogoLink = opt
 					ast.isChanged = true
 				}
 			case "gt":
@@ -147,8 +147,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Logo Text: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.LogoText {
-					ast.ProjectMetadata.LogoText = opt
+				if opt != ast.AppMetadata.LogoText {
+					ast.AppMetadata.LogoText = opt
 					ast.isChanged = true
 				}
 			case "hl":
@@ -156,8 +156,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Header Link: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.HeaderLink {
-					ast.ProjectMetadata.HeaderLink = opt
+				if opt != ast.AppMetadata.HeaderLink {
+					ast.AppMetadata.HeaderLink = opt
 					ast.isChanged = true
 				}
 			case "ht":
@@ -165,8 +165,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Header Text: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.HeaderText {
-					ast.ProjectMetadata.HeaderText = opt
+				if opt != ast.AppMetadata.HeaderText {
+					ast.AppMetadata.HeaderText = opt
 					ast.isChanged = true
 				}
 			case "ca":
@@ -174,8 +174,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Contact Address: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.ContactAddress {
-					ast.ProjectMetadata.ContactAddress = opt
+				if opt != ast.AppMetadata.ContactAddress {
+					ast.AppMetadata.ContactAddress = opt
 					ast.isChanged = true
 				}
 			case "cp":
@@ -183,8 +183,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Contact Phone: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.ContactPhone {
-					ast.ProjectMetadata.ContactPhone = opt
+				if opt != ast.AppMetadata.ContactPhone {
+					ast.AppMetadata.ContactPhone = opt
 					ast.isChanged = true
 				}
 			case "ce":
@@ -192,8 +192,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter Contact EMail: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.ContactEMail {
-					ast.ProjectMetadata.ContactEMail = opt
+				if opt != ast.AppMetadata.ContactEMail {
+					ast.AppMetadata.ContactEMail = opt
 					ast.isChanged = true
 				}
 			case "c":
@@ -201,8 +201,8 @@ func setupProjectMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName s
 					fmt.Fprintf(out, "Enter CSS path or url: ")
 					opt = getAnswer(buf, "", true)
 				}
-				if opt != ast.ProjectMetadata.CSSPath {
-					ast.ProjectMetadata.CSSPath = opt
+				if opt != ast.AppMetadata.CSSPath {
+					ast.AppMetadata.CSSPath = opt
 					ast.isChanged = true
 				}
 			case "q":

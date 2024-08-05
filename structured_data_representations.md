@@ -19,7 +19,7 @@ Repository and catalog systems current (2024) rely on heavy weight frameworks to
 
 I think with a couple of heuristics can can skip the CSS and JavaScript frameworks. We can write less code. We can provide a better user experience.
 
-1. Design for the smallest screen used to access your web site or application (often that is a phone today)
+1. Design for the smallest screen used to access your web site or application (often that is a phone today but might be as small as a wristwatch)
 2. Use CSS to rearrange elements on the screen as the screen size expands (e.g. your screen might become a wall sized television in a meeting)
 3. Limit JavaScript to orchestrating behavior (e.g. defining web components or access interacting with data services)
 4. Only write the minimum of CSS and JavaScript to create an accessible page
@@ -30,17 +30,15 @@ When we work with complex data structures then a web component might make sense 
 
 ## A solution to creating an editable list of author data
 
-HTML5 is missing an editable list element. In 2024 it is reasonable to implement a web component to provide this feature. We don't need frameworks just JavaScript, CSS, HTML and the DOM. We can create a component the shows an complex person object, we can also create a component that handles lists of person objects. We can do the same for corporate objects or funders as well. The nice thing about this approach is the objects can conform to the expectations of our organization.
+HTML5 is missing an editable list element. In 2024 it is reasonable to implement a web component to provide this feature. We don't need frameworks just JavaScript, CSS, HTML and the DOM. We can create a component the shows a complex person object, we can also create a component that handles lists of person objects. We can do the same for collaborators, corporate objects or even funders. The nice thing about this approach is the objects can conform to the expectations of our organization.
 
 ## The trouble with web components, a fallback problem
 
-Web components were a big topic back in 2010. In 2010 the trouble with web components was browser support. In 2024 the big trouble with web components is JavaScript. JavaScript is used to define them and to run them[^3]. If the browser has JavaScript disabled, it is unavailable or it is not supported by the web browser then you're stuck[^4] with an unusable component.
+Web components were a big topic back in 2010. In 2010 the trouble with web components was browser support. In 2024 the big trouble with web components is JavaScript. JavaScript is used to define them and to run them[^3]. If the browser has JavaScript disabled or it is unavailable then you're stuck with an unusable component.
 
-[^3]: WASM loaded via JavaScript can also be used to create UI elements this is exotic in 2024
+[^3]: WASM loaded via JavaScript can also be used to create UI elements this is becoming less exotic in 2024
 
-[^4]: Lynx, Dillo and NetSurf are browsers that don't support JavaScript or WASM (Web Assembly). A network disruptions can also prevent JavaScript from reaching your favorite web browser. Filling out a web form in a subway can be a nice place to experience this phenomena.
-
-Are we out of luck creating an editable complex data structure like an editable list of authors? We can take a page from progressive enhancement. First decide how you would edit our lists if web components and JavaScript had never made it into the web? An old school trick for column oriented data for small tables was to use a simple textarea and instructions. This avoided the whole problem of managing a complex table arrangement in your web form.  Using a textarea meant each line represented a row and a comma is used to separate each cell (column). The comma is an easy punctuation to explain. Worst case the human can double quote the cell that needs an embedded comma. Not perfect but doable for a simple table.
+Are we out of luck creating an editable complex data structure like an editable list of authors? No. We can take a page from progressive enhancement. First decide how you would edit our lists if web components and JavaScript had never made it into the web? An old school trick for column oriented data for small tables was to use a simple textarea and instructions. This avoided the whole problem of managing a complex table arrangement in your web form.  Using a textarea meant each line represented a row and a comma is used to separate each cell (column). The comma is an easy punctuation to explain. Worst case the human can double quote the cell that needs an embedded comma. Not perfect but doable for a simple short table.
 
 Our list of authors could be edited in this way unless it includes multi dimensional data. Example a list of identifier types and their values. So maybe comma delimited lines are too simple a fallback.
 

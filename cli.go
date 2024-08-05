@@ -587,8 +587,8 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 		}
 	}
 	// Step 2. Decide about meta data of your app
-	if ast.ProjectMetadata == nil {
-		ast.ProjectMetadata = new(ProjectMetadata)
+	if ast.AppMetadata == nil {
+		ast.AppMetadata = new(AppMetadata)
 	}
 	// Step 3. Decide which services you're going to use (a .Applications will need to exist).
 	if ast.Applications == nil {
@@ -596,7 +596,7 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 	}
 	for {
 		//NOTE: Each of these should reflect the current model list in ast.
-		setupProjectMetadata(ast, readBuffer, out, appFName, skipPrompts)
+		setupAppMetadata(ast, readBuffer, out, appFName, skipPrompts)
 		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
 		setupPostgresAndPostgREST(ast, readBuffer, out, appFName, skipPrompts)
 		setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)

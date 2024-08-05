@@ -78,7 +78,7 @@ models</li>
 pipeline, ideally as a generated program and browser side</li>
 <li>Postgres+PostgREST is a powerful combination but it’d be nice to
 have something simpler</li>
-<li>Managing the YAML file can be done conversationally</li>
+<li>Managing the YAML file should be done conversationally</li>
 </ol>
 </div>
 <div id="questions-raised-by-prototype-2" class="slide section level1">
@@ -122,21 +122,11 @@ class="slide section level1">
 class="slide section level1">
 <h1>Goal of Prototype 3: Questions to explore</h1>
 <ol style="list-style-type: decimal">
-<li>What should the default JSON data source be?</li>
-</ol>
-<ul>
-<li>continue with Postgres+PostgREST or simplify with
-Dataset+datasetd?</li>
-</ul>
-<ol start="2" style="list-style-type: decimal">
-<li>Is generated TypeScript middleware the right fit?</li>
-</ol>
-<ul>
-<li>E.g. as a validation service, is Deno a reasonable dependency?</li>
-</ul>
-<ol start="3" style="list-style-type: decimal">
+<li>Is generated TypeScript middleware the right fit for a validation
+service?</li>
 <li>Is Handlebars a good fit for managing data views and rendering
 HTML?</li>
+<li>Is Postgres+PostgREST the right JSON data source to focus on?</li>
 </ol>
 </div>
 <div id="changes-from-last-prototype" class="slide section level1">
@@ -157,11 +147,9 @@ HTML?</li>
 <ul>
 <li><a href="https://postgresql.org">Postgres</a> + <a
 href="https://postgrest.org">PostgREST</a></li>
-<li><a href="https://caltechlibrary.github.io/datasetd">Dataset +
-datasetd</a></li>
 </ul></li>
 <li>newt, ndr, and nte</li>
-<li>Deno to run generated TypeScript middleware</li>
+<li>Deno to run generated TypeScript validation middleware</li>
 </ul>
 </div>
 <div id="assemble-app-from-yaml-less-coding"
@@ -172,21 +160,12 @@ class="slide section level1">
 <li>Data modeling via a conversational TUI</li>
 </ul>
 </div>
-<div id="how-are-data-models-described" class="slide section level1">
-<h1>How are data models described?</h1>
-<ul>
-<li>A model is a set of HTML form input types</li>
-<li>Expressed using GitHub YAML Issue Template Syntax</li>
-<li>Model describes HTML and implies SQL</li>
-</ul>
-</div>
 <div id="how-do-i-think-things-will-work" class="slide section level1">
 <h1>How do I think things will work?</h1>
 <ol style="list-style-type: decimal">
-<li>Interactively generate our application’s YAML file</li>
-<li>Interactively define data models</li>
-<li>Generate our application code</li>
-<li>Run <code>newt generate ...</code> for primary data source</li>
+<li>Interactively generate our application’s YAML file (config)</li>
+<li>Interactively define data models (model)</li>
+<li>Generate our application code (generate)</li>
 <li>Run <code>newt run ...</code> to run the application</li>
 </ol>
 </div>
@@ -200,18 +179,18 @@ class="slide section level1">
 <h1>Step three, generate our code</h1>
 <pre class="shell"><code>  newt generate app.yaml</code></pre>
 <blockquote>
-<p>Create a dataset collection and datasetd YAML file Generate
-Handlebars templates Wires up routes and template mappings</p>
+<p>Create Postgres+PostgREST setup and schema (e.g. SQL files) Generate
+Handlebars templates Creates a TypeScript model validation service Wires
+up routes and template mappings</p>
 </blockquote>
 </div>
 <div id="step-four-setup-primary-json-data-source"
 class="slide section level1">
 <h1>Step four, setup primary JSON data source</h1>
-<h2 id="dataset-collection">Dataset collection</h2>
+<h2 id="json-data-source">JSON data source</h2>
 <blockquote>
-<p>Collection generation is done “auto magically” by
-<code>newt generate app.yaml</code> datasetd YAML file gets generated so
-Newt can run the datasetd JSON API</p>
+<p>Load the SQL in to Postgres via <code>psql</code> Run PostgREST via
+<code>newt run</code> …</p>
 </blockquote>
 </div>
 <div id="step-five-run-your-application-and-test"
@@ -222,15 +201,17 @@ class="slide section level1">
 <p>Point your web browser at http://localhost:8010 to test</p>
 </blockquote>
 </div>
-<div id="can-i-run-a-demo" class="slide section level1">
-<h1>Can I run a demo?</h1>
-<p>Not yet, hopefully in early December 2024.</p>
+<div id="heres-an-ascii-type-demo-of-the-system"
+class="slide section level1">
+<h1>Here’s an ASCII type demo of the system</h1>
+<p>FIXME: to be created and linked to after validation service
+generation completed</p>
 </div>
 <div id="third-prototype-status" class="slide section level1">
 <h1>Third prototype Status</h1>
 <ul>
 <li>A work in progress (continuing through 2024)</li>
-<li>Working prototype target date June 2025</li>
+<li>A Working version 1.0 hopefully in 2025</li>
 <li>Using internal applications as test bed</li>
 </ul>
 </div>
@@ -245,20 +226,22 @@ working</label></li>
 engine is working</del> (removed)</label></li>
 <li><label><input type="checkbox" checked="" />Newt template engine
 (supporting Handlebars templates)</label></li>
-<li><label><input type="checkbox" />Modeler (design stage)</label></li>
+<li><label><input type="checkbox" checked="" />Modeler (testing and
+refinement)</label></li>
 <li><label><input type="checkbox" />Generator development (refactor,
-design stage)</label></li>
+testing and refinement)</label></li>
+</ul>
+</div>
+<div id="insights-from-prototypes-1-2-3" class="slide section level1">
+<h1>Insights from prototypes 1, 2 &amp; 3</h1>
+<ul>
+<li>“Off the shelf” is simpler</li>
+<li>A Validition service in TypeScript lets us leverage the same
+generated code in the browser</li>
+<li>A conversational UI looks promising (needs allot of refinement)</li>
 </ul>
 </div>
 <div id="insights-from-prototypes-1-2" class="slide section level1">
-<h1>Insights from prototypes 1 &amp; 2</h1>
-<ul>
-<li>“Off the shelf” is simpler</li>
-<li>Lots of typing discourages use</li>
-<li>Explore conversational coding</li>
-</ul>
-</div>
-<div id="insights-from-prototypes-1-2-1" class="slide section level1">
 <h1>Insights from prototypes 1 &amp; 2</h1>
 <ul>
 <li>SQL turns people off, use a code generator</li>
@@ -267,14 +250,14 @@ design stage)</label></li>
 <li>Automatic “wiring up” of routes and templates very helpful</li>
 </ul>
 </div>
-<div id="whats-next-to-wrap-up-prototype-3"
+<div id="whats-next-to-wrap-up-prototype-4"
 class="slide section level1">
-<h1>What’s next to wrap up prototype 3?</h1>
+<h1>What’s next to wrap up prototype 4?</h1>
 <ul>
-<li>Refine and simplify Newt YAML syntax</li>
+<li>Refine template engine</li>
+<li>Refine Newt YAML syntax</li>
 <li>Refine data router</li>
 <li>Retarget, debug and improve the code generator</li>
-<li>Design and replace template engine</li>
 </ul>
 </div>
 <div id="out-of-the-box" class="slide section level1">
@@ -290,6 +273,8 @@ class="slide section level1">
 <ul>
 <li>What is the minimum knowledge required to use Newt effectively?</li>
 <li>Who is in the target audience?</li>
+<li>Would a visual programming approach make more sense then a
+conversational UI?</li>
 </ul>
 </div>
 <div id="someday-maybe-ideas" class="slide section level1">
@@ -297,7 +282,8 @@ class="slide section level1">
 <ul>
 <li>A visual programming approach could be easier than editing YAML
 files</li>
-<li>Direct SQLite 3 database support and integration</li>
+<li>Direct SQLite 3 database support and integration could be much
+simpler than Postgres+PostgREST</li>
 <li>Web components for library, archive and museum metadata types</li>
 <li>A S3 protocol web service implementing object storage using
 OCFL</li>

@@ -3,21 +3,18 @@
 
 ## Bugs
 
-- [ ] Newt Router bugs
-  - [ ] Newt Router should restrict POST that expect support for multipart encoding since Newt does not support file uploads
-- [ ] Newt Generator
-  - [ ] Newt generate isn't create the model schema in models.sql or the functions for use with PostgREST
-  - [X] Template generation needs to respect the base directory
-  - [ ] Newt Generator needs to generate the SQL to validate inputs based on their element types. If this is too complex then the router needs to do the validation before sending through the pipeline (that will require a change to the AST (e.g. `validate_with:<MODEL_NAME>` attribute)
+- [ ] Newt command runner doesn't seem to be mapping ports based on the Newt YAML
 
-## Next for the second prototype 
+## Next for the third prototype
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
+- [ ] Newt Generator needs to generate the TypeScript for validation inputs browser and server side
 - [ ] Need to generate a codemeta or CITATION.cff file to have the data to create partials for project.
+- [ ] Need to generate the `.gitignore` file
+- [ ] Need to generate a `deno.json` file suitable for managing the project
 - [X] Change docs and actions to rename "init" to "config" since that better describes both intiialization and re-configuration
 - [X] Update `newt config` to fully setup nte
-- [ ] Update `newt config` to support Dataset+datasetd
 - [ ] Merge setup of Postgres and PostgREST so they are configured or updated in one go
 
 - [ ] Review [go-webui](https://github.com/webui-dev/go-webui) for implementing a GUI for newt
@@ -70,7 +67,7 @@ NOTE: X is completed, P is partial completion, D (dropped) from implementation p
     - [X] could do this by having two different types of menu, selectMenuItem, selectMenuById or some such (not happy with these names)
 - [X] Rename Newt verb "init" to "config" since that better describes what it does
 - [X] If you run Newt Generator from the `newt` command it should assign predictable filenames for SQL files, PostgREST configuration and Mustache templates. This could insure the turn key operation of a bare prototype. It needs to align with what `newt init` generators.
-  - SQL generated should organize files by function, e.g. `{{model_name}}_{{action_name}}.sql`, `*_setup.sql` would create database, schema, roles, tables, `*_access_control.sql` would be regenerated and map roles and permissions for any functions found created by `{{model_name}}_{{action_name}}.sql`. I need to figure out which tables to query to identify the functions that are available in the metadata schema so that the mapping can be complete. 
+  - SQL generated should organize files by function, e.g. `{{model_name}}_{{action_name}}.sql`, `*_setup.sql` would create database, schema, roles, tables, `*_access_control.sql` would be regenerated and map roles and permissions for any functions found created by `{{model_name}}_{{action_name}}.sql`. I need to figure out which tables to query to identify the functions that are available in the metadata schema so that the mapping can be complete.
 - [X] Verify we have a simple developer workflow
   - [X] `newt config` generate a default YAML for project
     - [X] `newt config` allow automatic generation of the project code base?
@@ -95,6 +92,7 @@ NOTE: X is completed, P is partial completion, D (dropped) from implementation p
 
 ## Someday, maybe
 
+- [ ] Update `newt config` to support Dataset+datasetd
 - [ ] If I am going to support numbered item selection then I should also allow the order of the number and action to be reverse, e.g. "1 modify" would indicate modify item 1. This would give the numbers more obvious meaning and useful ness, otherwise it's just noise in the display.
 - [ ] A "newt object manager" takes a model, validates it and if OK sends the result to the next stage in the pipeline for storage. It should deal with things like unpacking shortened UUID using a base encoding scheme
 - [ ] Generate Python code that can be compiled into WASM module that is run directly in Newt Router without need to an external network call. This might be useful for implementing custom validation for the models or if they want to write a proxy service to outside localhost.

@@ -21,8 +21,8 @@ type Generator struct {
 	// internal this is the error output for code generation, usually resolves to stderr
 	eout io.Writer
 
-	// ProjectMetadata holds the metadata for the application being generated
-	ProjectMetadata *ProjectMetadata
+	// AppMetadata holds the metadata for the application being generated
+	AppMetadata *AppMetadata
 
 	// Postgres configuration information
 	Postgres *Application
@@ -44,8 +44,8 @@ func NewGenerator(ast *AST) (*Generator, error) {
 	generator.Namespace = ast.Applications.Postgres.Namespace
 	generator.Models = ast.Models
 	generator.Options = make(map[string]interface{})
-	if ast.ProjectMetadata != nil {
-		generator.ProjectMetadata = ast.ProjectMetadata
+	if ast.AppMetadata != nil {
+		generator.AppMetadata = ast.AppMetadata
 	}
 	if ast.Applications.Postgres != nil {
 		generator.Postgres = ast.Applications.Postgres
@@ -114,21 +114,21 @@ func (g *Generator) renderModelActionTemplate(modelId string, action string) err
 func (g *Generator) renderPartialTemplate(partial string) error {
 	switch partial {
 	case "head":
-		return TmplHeadPartial(g.out, g.ProjectMetadata.AppTitle, g.ProjectMetadata.CSSPath)
+		return TmplHeadPartial(g.out, g.AppMetadata.AppTitle, g.AppMetadata.CSSPath)
 	case "header":
-		return TmplHeaderPartial(g.out, g.ProjectMetadata.HeaderLink, g.ProjectMetadata.HeaderText, g.ProjectMetadata.LogoLink, g.ProjectMetadata.LogoText)
+		return TmplHeaderPartial(g.out, g.AppMetadata.HeaderLink, g.AppMetadata.HeaderText, g.AppMetadata.LogoLink, g.AppMetadata.LogoText)
 	case "nav":
 		return TmplNavPartial(g.out, "<!-- navigation goes here -->")
 	case "footer":
 		return TmplFooterPartial(g.out,
-			g.ProjectMetadata.CopyrightYear,
-			g.ProjectMetadata.CopyrightLink,
-			g.ProjectMetadata.CopyrightText,
-			g.ProjectMetadata.LicenseLink,
-			g.ProjectMetadata.LicenseText,
-			g.ProjectMetadata.ContactAddress,
-			g.ProjectMetadata.ContactPhone,
-			g.ProjectMetadata.ContactEMail)
+			g.AppMetadata.CopyrightYear,
+			g.AppMetadata.CopyrightLink,
+			g.AppMetadata.CopyrightText,
+			g.AppMetadata.LicenseLink,
+			g.AppMetadata.LicenseText,
+			g.AppMetadata.ContactAddress,
+			g.AppMetadata.ContactPhone,
+			g.AppMetadata.ContactEMail)
 	default:
 		return fmt.Errorf("failed, partial %q not supported", partial)
 	}

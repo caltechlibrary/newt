@@ -3,38 +3,54 @@
 
 ## Questions and Explorations
 
-- Generated middleware using TypeScript running in Deno (e.g. validation, data enhancement)
+- Generated TypeScript middleware targetting Deno (e.g. validation, data enhancement)
 - Explore Dataset/datasetd as a simpler JSON data source to Postgres+PostgREST
 
 ## Desirable Features
 
-- newt (developer tool)
-  - implemeted with web UI
-  - configuration manager (e.g. target stack, services required by application)
-    - searchengine configurations and indexing models
-    - metadata storage (e.g. Postgres+PostgREST or SQLite3+PL/Lua)
-    - object storage (e.g. S3 protocol service integration)
-  - model (model your data)
-    - continue to support Prototype 2 modeling
-    - file type elements integrating an OCFL S3 service
-  - generate (generate code for Postgres+PostgREST Stack or Python+Flask stack)
-  - run (target stack based on AST and data models)
+- [ ] newt (developer tool)
+  - [X] implemeted a conversational UI
+  - [X] configuration manager (e.g. target stack, services required by application)
+  - [X] model (model your data)
+    - [X] Add app metadata to AST and update newt YAML syntax docs
+  - [ ] Workflow testing and verification
+    - [ ] Config (used be init)
+    - [ ] Model
+    - [ ] Generator
+    - [ ] Run
+- [ ] generate the following
+    - [ ] SQL for Postgres+PostgREST
+    - [ ] Handlebar template targetting Newt's template engine
+    - [ ] Automatic route management based on models and simple pipelines
+    - [ ] Automatic template mapping based on models and simple pipelines
+    - (time permitting) [ ] TypeScript for model validator service
+- run (target stack based on new implementation AST and data models)
+  - [ ] Test building a new model from scratch and run
+  - [ ] Test updating and existing model and run
+  - [ ] Document the run command more fully
 - data router  (ndr)
-  - validator integration via generated code (e.g. TypeScript run by Deno)
   - data pipelines
+    - [ ] validator integration via generated code (e.g. TypeScript run by Deno)
+    - [ ] Postgres+PostgREST integration via generated code and configuration
+    - [ ] Templates render data acurately (needs automated testing)
   - static file service
-  - related routes linked by an id
-- Generator application code for two stacks (newt)
-  - (default) Dataset collection with Dataset YAML for datasetd
-  - (optional) Postgres+PostgREST
-- Newt Template engine (nte)
-  - A template engine that works as the last stage of a JSON data pipeline
+    - [ ] Does it make sense to auto generate some static content like the about page and dashboard page?
+  - [ ] related routes linked by an id
+- [ ] Generator application code for two stacks (newt)
+  - [X] SQL and config Postgres+PostgREST
+  - [X] Handlebar Templates and partials for the Template Engine
+  - [ ] routes to enabled services using their port settings in the YAML file
+  - [ ] template mappings
+  - [ ] Generate a TypeScript web service for implementing serverside validation of submitted content for all models
+  - [ ] Generate JavaScript for use with web form validation in the browser
+- [X] Newt Template engine (nte)
+  - [X] A template engine that works as the last stage of a JSON data pipeline
 
 ## Constraints
 
 - Simple data models only
 - No file upload support
-- Modeler targets Dataset+Datasetd or Postgres+PostgREST as option
+- Models targets Postgres+PostgREST
 - Newt services are restricted to localhost
 - Access control defered to front end web service
   - Apache 2 or NginX plus Shibboleth and acls for URL paths

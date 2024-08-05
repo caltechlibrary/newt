@@ -11,7 +11,7 @@ On Thursday 2024-01-25 Caltech Library's digital library development staff meeti
 
 ## Problem
 
-Newt's niche is as a rapid web application development platform for libraries, archives and museums. In the Newt 2023 prototype I implemented a small DSL on top of YAML to describe data models that are rendered as SQL. The SQL can be used to provide a JSON API via Postgres and PostgREST. The problem is the prototype's DSL is too narrowly focused to also describe a web form. If Newt is to be a rapid web application development tool then generating the HTML and SQL implementing a PostgREST JSON API is highly desirable.
+Newt's niche is as a rapid web application development platform for libraries, archives and museums. In the Newt 2023 prototype I implemented a small DSL on top of YAML to describe data models that are rendered as SQL. The SQL can be used to provide a JSON API via Postgres and PostgREST. The problem is the prototype's DSL is too narrowly focused to also describe a web form. If Newt is to be a rapid web application development tool then generating the HTML and SQL implementing a PostgREST JSON API is highly desirable. Newt continues to be prototyped and refined in 2024.
 
 ## Proposed Solution
 
@@ -41,4 +41,3 @@ GitHub's YAML syntax promises the following advantages
 [^53]: See GitHub [Syntax for GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#about-githubs-form-schema)
 
 [^54]: See Newt prototype version [v0.0.9](https://github.com/caltechlibrary/newt/releases/tag/v0.0.9)
-

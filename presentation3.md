@@ -38,7 +38,7 @@ Short answer is **yes**. Longer answer is more nuanced.
 1. Newt's YAML file can grow very large for applications with many data models
 2. Model vetting and validation should happen early in the data pipeline, ideally as a generated program and browser side
 3. Postgres+PostgREST is a powerful combination but it'd be nice to have something simpler
-4. Managing the YAML file can be done conversationally
+4. Managing the YAML file should be done conversationally
 
 # Questions raised by Prototype 2:
 
@@ -67,11 +67,9 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 # Goal of Prototype 3: Questions to explore
 
-1. What should the default JSON data source be?
-  - continue with Postgres+PostgREST or simplify with Dataset+datasetd?
-2. Is generated TypeScript middleware the right fit?
-  - E.g. as a validation service, is Deno a reasonable dependency?
-3. Is Handlebars a good fit for managing data views and rendering HTML?
+1. Is generated TypeScript middleware the right fit for a validation service?
+2. Is Handlebars a good fit for managing data views and rendering HTML?
+3. Is Postgres+PostgREST the right JSON data source to focus on?
 
 # Changes from last prototype
 
@@ -86,28 +84,20 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 - JSON Data Source
   - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
-  - [Dataset + datasetd](https://caltechlibrary.github.io/datasetd)
 - newt, ndr, and nte
-- Deno to run generated TypeScript middleware
+- Deno to run generated TypeScript validation middleware
 
 # Assemble app from YAML (less coding)
 
 - Create the Newt YAML through a conversational TUI
 - Data modeling via a conversational TUI
 
-# How are data models described?
-
-- A model is a set of HTML form input types
-- Expressed using GitHub YAML Issue Template Syntax
-- Model describes HTML and implies SQL
-
 # How do I think things will work?
 
-1. Interactively generate our application's YAML file
-2. Interactively define data models
-3. Generate our application code
-4. Run `newt generate ...` for primary data source
-5. Run `newt run ...`  to run the application
+1. Interactively generate our application's YAML file (config)
+2. Interactively define data models (model)
+3. Generate our application code (generate)
+4. Run `newt run ...`  to run the application
 
 # Steps one and two are interactive
 
@@ -122,16 +112,17 @@ Short answer is **yes**. Longer answer is more nuanced.
   newt generate app.yaml
 ~~~
 
-> Create a dataset collection and datasetd YAML file
+> Create Postgres+PostgREST setup and schema (e.g. SQL files)
 > Generate Handlebars templates
+> Creates a TypeScript model validation service
 > Wires up routes and template mappings
 
 # Step four, setup primary JSON data source
 
-## Dataset collection
+## JSON data source
 
-> Collection generation is done "auto magically" by `newt generate app.yaml`
-> datasetd YAML file gets generated so Newt can run the datasetd JSON API
+> Load the SQL in to Postgres via `psql`
+> Run PostgREST via `newt run` ...
 
 # Step five, run your application and test
 
@@ -141,14 +132,14 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 > Point your web browser at http://localhost:8010 to test
 
-# Can I run a demo?
+# Here's an ASCII type demo of the system
 
-Not yet, hopefully in early December 2024.
+FIXME: to be created and linked to after validation service generation completed
 
 # Third prototype Status
 
 - A work in progress (continuing through 2024)
-- Working prototype target date June 2025
+- A Working version 1.0 hopefully in 2025
 - Using internal applications as test bed
 
 # How much is built?
@@ -157,14 +148,14 @@ Not yet, hopefully in early December 2024.
 - [X] Router is implemented and working
 - [X] ~~Mustache template engine is working~~ (removed)
 - [X] Newt template engine (supporting Handlebars templates)
-- [ ] Modeler (design stage)
-- [ ] Generator development (refactor, design stage)
+- [X] Modeler (testing and refinement)
+- [ ] Generator development (refactor, testing and refinement)
 
-# Insights from prototypes 1 & 2
+# Insights from prototypes 1, 2 & 3
 
 - "Off the shelf" is simpler
-- Lots of typing discourages use
-- Explore conversational coding
+- A Validition service in TypeScript lets us leverage the same generated code in the browser
+- A conversational UI looks promising (needs allot of refinement)
 
 # Insights from prototypes 1 & 2
 
@@ -173,12 +164,12 @@ Not yet, hopefully in early December 2024.
 - Large YAML structures benefit from code generation
 - Automatic "wiring up" of routes and templates very helpful
 
-# What's next to wrap up prototype 3?
+# What's next to wrap up prototype 4?
 
-- Refine and simplify Newt YAML syntax
+- Refine template engine
+- Refine Newt YAML syntax
 - Refine data router
 - Retarget, debug and improve the code generator
-- Design and replace template engine
 
 # Out of the box
 
@@ -190,11 +181,12 @@ Not yet, hopefully in early December 2024.
 
 - What is the minimum knowledge required to use Newt effectively?
 - Who is in the target audience?
+- Would a visual programming approach make more sense then a conversational UI?
 
 # Someday, maybe ideas
 
 - A visual programming approach could be easier than editing YAML files
-- Direct SQLite 3 database support and integration
+- Direct SQLite 3 database support and integration could be much simpler than Postgres+PostgREST
 - Web components for library, archive and museum metadata types
 - A S3 protocol web service implementing object storage using OCFL
 - Generate code which can compile stack into a single binary application
