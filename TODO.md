@@ -4,6 +4,7 @@
 ## Bugs
 
 - [ ] Newt command runner doesn't seem to be mapping ports based on the Newt YAML
+- [ ] Newt command running isn't generating models.sql consistently
 
 ## Next for the third prototype
 
