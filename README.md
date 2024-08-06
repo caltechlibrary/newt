@@ -1,7 +1,7 @@
 
 # Newt Project
 
-Newt is an experimental set of tools for rapid application development. Specifically Newt is focused on web based metadata curation tools. These types of applications are commonly needed in galleries, libraries, archives and museums (abbr: GLAM). Newt makes creating these type of applications easier.
+Newt is an experimental rapid application development. Specifically Newt is focused on web based metadata curation tools. These types of applications are commonly needed in galleries, libraries, archives and museums (abbr: GLAM). Newt makes creating these type of applications easier.
 
 How does Newt do that? Newt generates an application by implementing a [service oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture) using a combination of off the shelf software and generated code.
 
