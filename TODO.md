@@ -22,7 +22,9 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
-- [ ] Need to generate a Bash and Powershell scripts for running the database setup and configuration or have this done "automagically" as a step done by `newt` tool
+- [ ] Need to implement Generate Systemd service files, sysdgen.go??
+- [ ] Need to Generate TypeScript validator service, tsgen.go??
+- [ ] Need to generate a Bash and Powershell scripts (bashgen.go???, pwshgen.go??) for running the database setup and configuration or have this done "automagically" as a step done by `newt` tool
 - [ ] Newt Generator needs to generate the TypeScript for validation inputs browser and server side
 - [ ] Need to generate a codemeta or CITATION.cff file to have the data to create partials for project.
 - [ ] Need to generate the `.gitignore` file
