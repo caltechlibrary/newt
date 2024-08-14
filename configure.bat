@@ -15,4 +15,6 @@ postgrest --version
 echo "Checking for jq >= 1.6"
 jq --version
 echo "Review version info for each software checked."
+echo "Checking for deno >= 1.44"
+deno --version
 @echo on

@@ -3,13 +3,26 @@
 
 ## Bugs
 
-- [ ] Newt command runner doesn't seem to be mapping ports based on the Newt YAML
-- [ ] Newt command running isn't generating models.sql consistently
+- [ ] Newt command running isn't generating the "model" section of models.sql consistently
+  - [ ] Check to make sure the namespace handling is correct
+- [X] Setting port for Postgres in conversation UI causes a panic (`.applications.postgres`)
+- [ ] Newt command runner doesn't seem to be mapping ports correctly generated code and Newt YAML
+  - [ ] postgres.conf generation needs to have password set/generated for the authenticator account generate in setup in setup.sql
+  - [ ] DSN string generated for access PostgREST in `.applications.postgres.dsn` needs to have port match the port Postgres is listening on
+  - [ ] The DSN used in the postgres.conf file needs to match port set in `.applications.postgres.port`
+- Conversation UI is not consistent, menus aren't obvious how to use
+  - [ ] Attribute mapping is inconsistent with the rest of the conversational UI, e.g. add attribute should accept the attribute name to add, it needs to prompt for the value
+  -  [ ] Conversational UI needs to be consistent in what enter without command means or become "q" everywhere
+  - [ ] "object key" and "primary key" should be one or the other, confusing when editing elements
+  - [X] The address becomes lower case in conversation UI (`.app_metadata`)
+- [ ] Check should summarize each service not just template engine or only show errors and report OK otherwise
+- [X] In generated Newt YAML file the bang line is incorrect (missing bang)
 
 ## Next for the third prototype
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
+- [ ] Need to generate a Bash and Powershell scripts for running the database setup and configuration or have this done "automagically" as a step done by `newt` tool
 - [ ] Newt Generator needs to generate the TypeScript for validation inputs browser and server side
 - [ ] Need to generate a codemeta or CITATION.cff file to have the data to create partials for project.
 - [ ] Need to generate the `.gitignore` file

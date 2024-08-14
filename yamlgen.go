@@ -423,7 +423,7 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 				if err != nil {
 					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 				} else {
-					ast.Applications.PostgREST.Port = port
+					ast.Applications.Postgres.Port = port
 					ast.isChanged = true
 				}
 			case "d":
@@ -431,8 +431,8 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 					fmt.Fprintf(out, "Enter DSN in uri form: ")
 					opt = getAnswer(buf, "", false)
 				}
-				if ast.Applications.PostgREST.DSN != opt {
-					ast.Applications.PostgREST.DSN = strings.TrimSpace(opt)
+				if ast.Applications.Postgres.DSN != opt {
+					ast.Applications.Postgres.DSN = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "q":
