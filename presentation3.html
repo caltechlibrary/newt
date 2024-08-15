@@ -84,13 +84,12 @@ Questions to explore</h1>
 <ol type="1">
 <li>Is Handlebars a good fit for managing data views and rendering
 HTML?</li>
-<li>Is generated TypeScript validation middleware the right fit for a
-validation?</li>
+<li>Is TypeScript validation middleware the right fit?</li>
 <li>Should Postgres+PostgREST remain the exclusive back end of
 Newt?</li>
-<li>Should the generate step subsume the external Postres commands?</li>
-<li>Should the generate step generate the validation middleware
-binary?</li>
+<li>What is the right solution for the messy setup of
+Postgres+PostgREST?</li>
+<li>Should the generated TypeScript be compiled?</li>
 </ol>
 <h1 id="changes-from-last-prototype">Changes from last prototype</h1>
 <ul>
@@ -135,8 +134,6 @@ work?</h1>
   newt build app.yaml
   newt run app.yaml
   firefox http://localhost:8010</code></pre>
-<h1 id="heres-a-demo-of-the-process">Here’s a demo of the process</h1>
-<p>FIXME: link to a record demonstration here</p>
 <h1 id="third-prototype-status">Third prototype status</h1>
 <ul>
 <li>A work in progress (continuing through 2024)</li>
@@ -191,7 +188,7 @@ development</h1>
 <li>A visual programming or conversational user interface</li>
 <li>Simplified backend (e.g. SQLite3)</li>
 <li>Web components for library, archive and museum metadata types</li>
-<li>A S3 protocol support for implementing file storage using OCFL</li>
+<li>S3 protocol support for implementing file storage using OCFL</li>
 <li>Render whole newt app as a standalone binary</li>
 </ul>
 <h1 id="related-resources">Related resources</h1>
