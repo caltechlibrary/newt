@@ -132,9 +132,9 @@ type Element struct {
 	// Options holds a list of values and their labels used for HTML select elements in rendering their option child elements
 	Options []map[string]string `json:"optoins,omitempty" yaml:"options,omitempty"`
 
-	// IsObjectId (i.e. primary key) used by for the modeled data.
+	// IsObjectId (i.e. is the identifier of the object) used by for the modeled data.
 	// It is used in calculating routes and templates where the object identifier is required.
-	IsObjectId bool `json:"primary_key,omitempty" yaml:"primary_key,omitempty"`
+	IsObjectId bool `json:"is_identifier,omitempty" yaml:"is_identifier,omitempty"`
 
 	// Label is used when rendering an HTML form as a label element tied to the input element via the set attribute and
 	// the element's id.
@@ -191,7 +191,7 @@ func NewElement(elementId string) (*Element, error) {
 	return element, nil
 }
 
-// NewModel, makes sure model id is valid, populates a Model with the oid element providing
+// NewModel, makes sure model id is valid, populates a Model with the identifier element providing
 // returns a *Model and error value.
 func NewModel(modelId string) (*Model, error) {
 	if !isValidVarname(modelId) {
@@ -203,7 +203,7 @@ func NewModel(modelId string) (*Model, error) {
 	model.Elements = []*Element{}
 	// Make the required element ...
 	element := new(Element)
-	element.Id = "oid"
+	element.Id = "identifier"
 	element.IsObjectId = true
 	element.Type = "text"
 	element.Attributes = map[string]string{"readonly": "true"}
@@ -214,7 +214,7 @@ func NewModel(modelId string) (*Model, error) {
 }
 
 // Check analyze the model and make sure at least one element exists and the
-// model has a single identifier (e.g. "oid")
+// model has a single identifier (e.g. "identifier")
 func (model *Model) Check(buf io.Writer) bool {
 	if model == nil {
 		fmt.Fprintf(buf, "model is nil\n")

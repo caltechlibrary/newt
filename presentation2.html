@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- presentation2</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="what-is-newt">What is Newt?</h1>
+<ul>
+<li>A rapid application develop tool
+<ul>
+<li>for applications that curate metadata</li>
+</ul></li>
+<li>Audience: Libraries, Archives and Museums</li>
+</ul>
+<h1 id="goal-of-prototype-2-answer-the-question.">Goal of Prototype 2:
+Answer the question.</h1>
+<p>Is Newt and “off the shelf” software enough to create metadata
+curation applications?</p>
+<h1 id="high-level-concepts">High level Concepts</h1>
+<ul>
+<li>describe the application you want</li>
+<li>generate the application you described</li>
+</ul>
+<h1 id="implementation-concepts">Implementation Concepts</h1>
+<ul>
+<li>data sources</li>
+<li>data models</li>
+<li>routing requests through data pipelines</li>
+<li>rendering JSON responses via template engine</li>
+</ul>
+<h1 id="themes">Themes</h1>
+<ul>
+<li>Pick Simple = (No coding) + (Less coding)</li>
+<li>Compose applications using data pipelines and templates</li>
+<li>Avoid inventing new things</li>
+</ul>
+<h1 id="off-the-shelf-no-coding">Off the shelf (no coding)</h1>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> and <a
+href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://solr.apache.org">Solr</a> or <a
+href="https://opensearch.org">OpenSearch</a></li>
+<li>Newt Mustache =&gt; Transform JSON into web pages</li>
+<li>Newt Router, ties it all together</li>
+</ul>
+<h1 id="office-the-shelf-other-data-sources">Office the shelf (other
+data sources)</h1>
+<ul>
+<li>ArchivesSpace, RDM -&gt; JSON API</li>
+<li>ORCID, ROR, CrossRef, DataCite -&gt; JSON API</li>
+</ul>
+<h1 id="assemble-app-from-yaml-less-coding">Assemble app from YAML (less
+coding)</h1>
+<ul>
+<li>The application you want is described in YAML</li>
+<li>Newt generates the code you need</li>
+<li>Customize by editing the generated code</li>
+</ul>
+<h1 id="how-are-data-models-described">How are data models
+described?</h1>
+<ul>
+<li>A model is a set of HTML form input types</li>
+<li>Expressed using GitHub YAML Issue Template Syntax</li>
+<li>Model describes HTML and implies SQL</li>
+</ul>
+<h1 id="how-do-i-think-things-will-work">How do I think things will
+work?</h1>
+<ol type="1">
+<li>Interactively generate our application’s YAML file</li>
+<li>Interactively define data models</li>
+<li>Generate our application code</li>
+<li>Setup Postgres and PostgREST</li>
+<li>Run our app with Newt</li>
+</ol>
+<h1 id="steps-one-and-two-are-interactive">Steps one and two are
+interactive</h1>
+<pre class="shell"><code>  newt init app.yaml
+  newt model app.yaml</code></pre>
+<h1 id="step-three-generate-our-code">Step three, generate our code</h1>
+<pre class="shell"><code>  newt generate app.yaml</code></pre>
+<blockquote>
+<p>Renders SQL, PostgREST conf, Mustache templates</p>
+</blockquote>
+<h1 id="step-four-setup-postgres-and-postgrest">Step four, setup
+Postgres and PostgREST</h1>
+<ol type="1">
+<li>Use the generated SQL and configuration</li>
+<li>Setup and check via <code>createdb</code> and <code>psql</code></li>
+</ol>
+<h1 id="step-four-setup-postgres-and-postgrest-1">Step four, setup
+Postgres and PostgREST</h1>
+<pre class="shell"><code>  createdb app
+  psql app -c &#39;\i setup.sql&#39;
+  psql app -c &#39;\i models.sql&#39;
+  psql app -c &#39;\dt&#39;</code></pre>
+<blockquote>
+<p>should this be automated too?</p>
+</blockquote>
+<h1 id="step-five-run-your-application-and-test">Step five, run your
+application and test</h1>
+<pre class="shell"><code>  newt run app.yaml</code></pre>
+<blockquote>
+<p>Point your web browser at http://localhost:8010 to test</p>
+</blockquote>
+<h1 id="can-i-run-a-demo">Can I run a demo?</h1>
+<p>Not yet, hopefully in late May 2024.</p>
+<h1 id="second-prototype-status">Second prototype Status</h1>
+<ul>
+<li>A work in progress (April 2024)</li>
+<li>Working prototype target date June 2024</li>
+<li>Using internal applications as test bed</li>
+</ul>
+<h1 id="how-much-is-built">How much is built?</h1>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Newt developer
+tool</label></li>
+<li><label><input type="checkbox" checked="" />Router is implemented and
+working</label></li>
+<li><label><input type="checkbox" checked="" />Mustache template engine
+is working</label></li>
+<li><label><input type="checkbox" />Generator development (in
+progress)</label></li>
+<li><label><input type="checkbox" />Modeler (design stage)</label></li>
+</ul>
+<h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp;
+2</h1>
+<ul>
+<li>“Off the shelf” is simpler</li>
+<li>Lots of typing discourages use</li>
+</ul>
+<h1 id="insights-from-prototypes-1-2-1">Insights from prototypes 1 &amp;
+2</h1>
+<ul>
+<li>SQL turns people off, use a code generator</li>
+<li>Hand typing templates is a turn off, use a code generator</li>
+<li>Large YAML structures benefit from code generation</li>
+<li>Automatic “wiring up” of routes and templates very helpful</li>
+</ul>
+<h1 id="whats-next-to-wrap-up-prototype-2">What’s next to wrap up
+prototype 2?</h1>
+<ul>
+<li>Debug and improve the code generator</li>
+<li>Implement a data modeler</li>
+</ul>
+<h1 id="unanswered-questions">Unanswered Questions</h1>
+<ul>
+<li>What should be the minimum knowledge needed to use Newt?</li>
+<li>What should come out of the box with Newt?
+<ul>
+<li>GUI tools?</li>
+<li>Web components?</li>
+<li>Ready made apps?</li>
+</ul></li>
+</ul>
+<h1 id="someday-maybe-ideas">Someday, maybe ideas</h1>
+<ul>
+<li>SQLite 3 database support</li>
+<li>A S3 protocol web service implementing object storage using
+OCFL</li>
+<li>Web components for library, archive and museum metadata types</li>
+<li>Visual programming would be easier than editing YAML files</li>
+</ul>
+<h1 id="related-resources">Related resources</h1>
+<ul>
+<li>Newt <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Postgres <a href="https://postgres.org"
+class="uri">https://postgres.org</a> + PostgREST <a
+href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
+<li><a href="https://mustache.github.io">Mustache</a> programming
+languages support</li>
+</ul>
+<h1 id="thank-you">Thank you!</h1>
+<ul>
+<li>This Presentation
+<ul>
+<li>pdf: <a
+href="https://caltechlibrary.github.io/newt/presentation2/newt-p2.pdf"
+class="uri">https://caltechlibrary.github.io/newt/presentation2/newt-p2.pdf</a></li>
+<li>pptx: <a
+href="https://caltechlibrary.github.io/newt/presentation2/newt-p2.pptx"
+class="uri">https://caltechlibrary.github.io/newt/presentation2/newt-p2.pptx</a></li>
+</ul></li>
+<li>Newt Documentation <a href="https://caltechlibrary.github.io/newt"
+class="uri">https://caltechlibrary.github.io/newt</a></li>
+<li>Source Code: <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Email: rsdoiel@caltech.edu</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

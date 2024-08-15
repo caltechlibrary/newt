@@ -78,7 +78,7 @@ It appears it may be desirable when generating SQL code and web forms to allow f
 
 ~~~json
 {
-    "oid": "xxxxxxxxx",
+    "identifier": "xxxxxxxxx",
     "created": "timestamp value for object creation",
     "updated": "timestamp, updates on change"
 }

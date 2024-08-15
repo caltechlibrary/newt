@@ -1,6 +1,6 @@
 ---
-title: ndr(1) user manual | 0.0.9 4ef8a9e
-pubDate: 2024-08-06
+title: ndr(1) user manual | 0.0.9 3662ba0
+pubDate: 2024-08-14
 author: R. S. Doiel
 ---
 

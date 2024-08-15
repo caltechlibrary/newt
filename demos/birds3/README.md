@@ -1,7 +1,7 @@
 
 # Birds 3 demo
 
-> Newt, Pandoc and Postgres+PostgREST
+> Newt and Postgres+PostgREST
 
 ## Setup Newt
 
@@ -38,6 +38,6 @@ In a seperate shell session start Pandoc server
 
 In a separate shell session start up Newt
 
-1. 'newt birds.yaml'
+1. 'newt run birds.yaml'
 
 

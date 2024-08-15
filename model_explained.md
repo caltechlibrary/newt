@@ -104,7 +104,7 @@ Enter menu letter to manage model
 
 	1: Model Id: garden
 	2: Descriptions: ... description of "garden" goes here ...
-	3: Elements: oid
+	3: Elements: identifier
 
 
 Menu: model [d]escription, [e]lements, [q]uit (making changes)
@@ -132,17 +132,17 @@ Enter menu letter to manage model
 
 	1: Model Id: garden
 	2: Descriptions: This is a model of my garden
-	3: Elements: oid
+	3: Elements: identifier
 
 
 Menu: model [d]escription, [e]lements, [q]uit (making changes)
 ~~~
 
-When a model is added one element is created as an example. That element is called "oid" which stands for object identifier. To manage objects we a specific unique key to access them. That is what an object identifier provides. At the SQL level this is analogous to a primary key.
+When a model is added one element is created as an example. That element is called "identifier" which stands for object identifier. To manage objects we a specific unique key to access them. That is what an object identifier provides. At the SQL level this is analogous to a primary key.
 
 Elements are the specific data held and managed by your model. You can think of them as the columns in a spreadsheet. We many have lots of objects just as you can have lots of rows in a spreadsheet.
 
-Let's modify our element list. The first thing we'll do is get rid of "oid" and create a new primary key called "garden_id".
+Let's modify our element list. The first thing we'll do is get rid of "identifier" and create a new primary key called "garden_id".
 
 Type the letter "e" and press enter.
 
@@ -151,15 +151,15 @@ You should see this new menu.
 ~~~shell
 Enter menu letter and id
 
-	1: oid
+	1: identifier
 
 Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)
 ~~~
 
-This is a list of our model's elements.  We can remove the "oid" by typing the following followed by pressing the enter key.
+This is a list of our model's elements.  We can remove the "identifier" by typing the following followed by pressing the enter key.
 
 ~~~shell
-r oid
+r identifier
 ~~~
 
 The list should now look like

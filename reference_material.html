@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- reference_material</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="reference-material">Reference Material</h1>
+<p>These are links to prior art, related efforts and resources for
+consideration in how Newt evolves as a prototype.</p>
+<h2 id="data-modeling">Data Modeling</h2>
+<ul>
+<li><a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema">Syntax
+for GitHub form schema</a></li>
+<li><a href="https://github.com/rjsf-team/react-jsonschema-form">A React
+component for building Web forms from JSON Schema</a></li>
+<li><a href="https://jsonforms.io/docs/">JSON Forms</a>
+<ul>
+<li>pretty heavy weight in the deployed results (i.e. renders to either
+React or Angular)</li>
+<li>Uses JSON rather than YAML or TOML to describe forms which can be
+construed as less human friendly</li>
+</ul></li>
+<li><a
+href="https://yaql.readthedocs.io/en/latest/getting_started.html">YAQL</a>,
+a YAML like query language that maps to SQL</li>
+<li><a href="https://github.com/pganalyze/pg_query">pg_query</a>, a Ruby
+library to parse SQL and normalize into a data structure</li>
+<li><a href="https://htmx.org/">htmx</a>, a Web Component like markup
+implementing the wrapping layer between JSON API and HTML structured
+markup</li>
+<li><a href="http://docs.yafowil.info/">Yafowil, yet another form widget
+library</a>
+<ul>
+<li><a
+href="https://yafowil.readthedocs.io/en/latest/yaml.html">Describe
+YAFOWIL forms with YAML</a></li>
+</ul></li>
+<li><a
+href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Components">MDN
+Web Components</a>, could be useful for making specialize input
+elements, like ORCID, DOI, ArXiv identifier entry</li>
+<li><a
+href="https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types">MDN
+HTML5 input types</a></li>
+<li><a href="https://github.com/cxong/pykwalify-webform">Generate web
+forms based on YAML schema with pykwalify</a></li>
+<li><a href="https://pypi.org/project/flask-openapi3/">Flask Open API
+3</a></li>
+</ul>
+<h2 id="web-form-generation">Web Form generation</h2>
+<ul>
+<li><a
+href="https://docs.pylonsproject.org/projects/deform/en/latest/">Deform</a></li>
+</ul>
+<h2 id="sql-db-to-rest-json-api">SQL DB to REST JSON API</h2>
+<ul>
+<li><a href="https://postgrest.org">PostgREST</a>, build a REST JSON API
+directly on top of Postgres. This is what started my think about Newt
+prototype</li>
+<li><a
+href="https://dev.mysql.com/doc/dev/mysql-rest-service/latest/">MRS</a>,
+MySQL REST Service</li>
+<li><a href="https://github.com/nside/sqlite2rest">sqlite2rest</a>,
+Automatically RESTful OpenAPI server from SQLite database</li>
+<li><a href="https://github.com/thevahidal/soul">Soul</a>, A SQLite REST
+and real time server built on NodeJS (wonder if it runs in Deno?)</li>
+</ul>
+<h2 id="sql-json-support">SQL JSON support</h2>
+<ul>
+<li>SQL dialects
+<ul>
+<li><a href="https://database.guide/">database guide</a>, documentation
+for various SQL dialects including Postgres and SQLite</li>
+</ul></li>
+<li>Postgres
+<ul>
+<li><a
+href="https://www.postgresql.org/docs/16/functions-json.html">Postgres
+JSON functions and operators</a></li>
+<li><a
+href="https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-json/">Postgres
+JSON tutorial</a></li>
+</ul></li>
+<li>SQLite 3
+<ul>
+<li>SQLite <a href="https://sqlite.org/json1.html">Overview JSON
+functions</a></li>
+<li><a
+href="https://tirkarthi.github.io/programming/2022/02/26/sqlite-json-improvements.html">JSON
+improvements in SQLite 3.38.0</a></li>
+<li>SQLite <a
+href="https://sqlite.org/src/doc/json-enhancements/doc/json-enhancements.html">JSON
+function enhancements (2022)</a></li>
+<li>SQLite cli <a href="https://sqlite.org/cli.html">docs</a>,
+e.g. “Changing output formats” in section 5 covers
+<code>.mode json</code></li>
+</ul></li>
+</ul>
+<h2 id="data-transformation-and-mashups">Data transformation and
+mashups</h2>
+<ul>
+<li><a href="https://www.pipes.digital/docs">Pipes</a> is a spiritual
+successor to <a href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo!
+Pipes</a></li>
+</ul>
+<h2 id="other-approaches-and-background">Other approaches and
+background</h2>
+<ul>
+<li><a href="https://www.amitlevy.com/papers/2023-nsdi-unum.pdf">Doing
+More with Less: Orchestrating Serverless Applications without an
+Orchestrator. with David Liu, Shadi Noghabi, and Sebastian Burckhardt.
+(to appear) In proceedings of the 20th USENIX Symposium on Networked
+Systems Design and Implementation (NSDI) 2023. Paper</a></li>
+<li><a
+href="https://github.com/pillarjs/path-to-regexp">path-to-regexp</a></li>
+<li><a
+href="https://developer.mozilla.org/en-US/docs/Web/API/URLPattern">URLPattern</a>
+at MDN</li>
+<li><a
+href="https://developer.chrome.com/articles/urlpattern/">URLPattern</a>
+at Chrome Developer site</li>
+<li><a href="https://pythonbasics.org/flask-tutorial-routes/">Flask
+Route tutorial</a></li>
+<li><a href="https://github.com/tildeio/router.js/">router.js</a></li>
+<li><a
+href="https://learn.microsoft.com/en-us/azure/application-gateway/url-route-overview#pathbasedrouting-rule">Azure
+application gateway routing</a></li>
+<li><a href="https://reactrouter.com/en/main/route/route">React
+Router</a></li>
+<li><a
+href="https://nextjs.org/docs/app/building-your-application/routing">Nextjs
+routing</a></li>
+<li><a
+href="https://www.django-rest-framework.org/api-guide/routers/">dJango
+routing</a></li>
+<li><a href="https://www.markus-lanthaler.com/hydra/">HYDRA</a>,
+Hypermedia-Driven Web API</li>
+<li><a href="https://stateless.group/hal_specification.html">HAL</a>,
+Hypertext Application Language
+<ul>
+<li><a
+href="https://datatracker.ietf.org/doc/html/draft-kelly-json-hal-00">JSON-HAL</a></li>
+</ul></li>
+<li><a href="https://en.wikipedia.org/wiki/JSON-LD">JSON-LD</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Richardson_Maturity_Model">Richardson
+Maturity Model</a>, used to evaluate RESTful-ness in JSON API</li>
+<li><a href="http://www.softwareishard.com/blog/har-12-spec">HAR</a>,
+HTTP Archive Request</li>
+<li><a href="https://github.com/dop251/goja">GoJa</a>, Pure Go
+JavaScript engine</li>
+<li><a href="https://github.com/nojima/httpie-go">HTTPie-go</a>, A go
+implementation of HTTPie, useful to debug API interactions
+<ul>
+<li>Fork with out stale package references, <a
+href="https://github.com/HexmosTech/httpie-go">HTTP-Pie-go</a></li>
+</ul></li>
+<li><a href="https://github.com/HexmosTech/Lama2">Lama2</a>, a plain
+text powered rest client (not to be confused with Meta’s LLM)</li>
+<li><a href="https://pkg.go.dev/golang.org/x/net/html">Go’s extended
+html docs</a>, HTML tokenizer and parser package</li>
+</ul>
+<h2 id="go-implementations-for-unique-identifiers">Go implementations
+for unique identifiers</h2>
+<p>It appears it may be desirable when generating SQL code and web forms
+to allow for the automatic creation of three object attributes as some
+sort of minimally viable object, unique object id with created and
+updated timestamps</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;identifier&quot;</span><span class="fu">:</span> <span class="st">&quot;xxxxxxxxx&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;created&quot;</span><span class="fu">:</span> <span class="st">&quot;timestamp value for object creation&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;updated&quot;</span><span class="fu">:</span> <span class="st">&quot;timestamp, updates on change&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>This could be implemented directory into the generated SQL or have an
+Identifier service that sits in front of the DB JSON API.</p>
+<ul>
+<li><a href="https://pkg.go.dev/github.com/google/UUID">UUID</a>, v4
+UUID, go storage in Postgres, long for URL</li>
+<li><a
+href="https://pkg.go.dev/github.com/teris-io/shortid">shortid</a></li>
+<li><a href="https://github.com/skorokithakis/shortuuid">shortuuid</a>,
+Python shortuuid package</li>
+<li><a href="https://github.com/lithammer/shortuuid">shortuuid</a>, a
+Port of the Python package to Go, algorithmically compatible with the
+Python implementation, currently at v4 and still actively developed
+(April 2024), see <a
+href="https://pkg.go.dev/github.com/lithammer/shortuuid/v4"
+class="uri">https://pkg.go.dev/github.com/lithammer/shortuuid/v4</a></li>
+<li><a href="https://github.com/oklog/ulid">ulid</a>, a logically
+sortable unique identifier package, ported from the JavaScript package
+implementing ulid</li>
+<li><a href="https://github.com/nrednav/cuid2">Cuid2</a>, a port of <a
+href="">Cuid2</a> JavaScript implementation</li>
+<li><a href="https://github.com/sony/sonyflake">Sonyflake</a>, a uid
+inspired by Twitter’s snowflake</li>
+<li><a
+href="https://pkg.go.dev/github.com/mongodb/mongo-go-driver/bson/objectid">Mongo
+BSON ObjectID</a>, Go implementation from Mongo’s go client library</li>
+<li><a href="https://github.com/rs/xid">xid</a></li>
+</ul>
+<p>Blog posts on identifiers</p>
+<ul>
+<li><a
+href="https://medium.com/javascript-scene/identity-crisis-how-modern-applications-generate-unique-ids-39562736f557">Identify
+Crisis, how modern applications generate unique identifiers</a></li>
+<li><a
+href="http://antoniomo.com/blog/2017/05/21/unique-ids-in-golang-part-1/">Unique
+identifiers in three parts</a></li>
+<li><a
+href="https://dev.to/nejos97/what-is-ulid-and-why-should-you-start-using-it-14j9">What
+is a ulid and why should you start using it?</a></li>
+</ul>
+<h2 id="web-components">Web Components</h2>
+<p>If Newt shipped with a set of LAM oriented web component that could
+allow for a more complex data model to be addressed by Newt. E.g. lists
+of authors are a web component would probably have not just the name
+fields but also identifiers like ORCID and ISNI attached to them.
+Something worth exploring.</p>
+<p>Internet Archives seems to be investing in the <a
+href="https://lit.dev">Lit</a> component library heavily.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

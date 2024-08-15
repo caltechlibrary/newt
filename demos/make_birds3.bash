@@ -4,6 +4,9 @@
 # This file sets up a "birds" project folder and generates some of
 # the documents needed to build our web application.
 #
+if [ -f ../bin/newt ]; then
+	export PATH="../bin:$PATH"
+fi
 if [ -d birds3 ]; then
 	rm -fR birds3
 fi
@@ -20,7 +23,7 @@ cat <<EOT >birds3/README.md
 
 # Birds 3 demo
 
-> Newt, Pandoc and Postgres+PostgREST
+> Newt and Postgres+PostgREST
 
 ## Setup Newt
 

@@ -68,7 +68,7 @@ func NewGenerator(ast *AST) (*Generator, error) {
 
 // renderPostgreSQL does what its name implies. It outputs an SQL
 // program in Postgres SQL dialect. It does so for a specific type
-// request. Possible values are "setup", "models" and "models_test".
+// request. Possible values are "setup" and "models". 
 //
 // The "setup" code type includes a placeholder for your DB credentials.
 // It should not be included in your GitHub repository.
@@ -76,8 +76,6 @@ func NewGenerator(ast *AST) (*Generator, error) {
 // The "models" contains all the table definitions, view definitions,
 // and functions implementing CRUD-L operations for each model.
 //
-// The "models_test" contains SQL to test your models and ensure they
-// were created successfully.
 func (g *Generator) renderPostgreSQL(action string) error {
 	switch action {
 	case "setup":
@@ -169,7 +167,7 @@ func validateModelId(modelId string, models []*Model) error {
 // - action is a parameter that the selected generator can use (e.g. PostgreSQL has setup as well as )
 // - modelId references the `.id` attribute of the model needing code generation
 func (g *Generator) Generate(generatorName string, modelId string, action string) error {
-	pgActions := []string{"setup", "models", "models_test"}
+	pgActions := []string{"setup", "models"}
 	templateActions := []string{
 		"create_form", "create_response",
 		"update_form", "update_response",

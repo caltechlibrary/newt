@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- INSTALL-PostgREST</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h2 id="getting-recent-versions-of-postgrest-on-m1m2-macs">Getting
+recent versions of PostgREST on M1/M2 Macs</h2>
+<p>Newt is intended to work along side Postgres and PostgREST. I usually
+install PostgREST from source. I’ve had the best results on both Linux
+and macOS using GHCup to provide my Haskell build environment. Below is
+a quick recipe for building PostgREST. It is not intended to replace the
+PostgREST project documentation or installation instructions. It is
+offered here for convenience. This recipe reflects what I did to get
+PostgREST current releases installed on a Mac Mini with a M1 processor
+running macOS Sonoma. Your mileage may vary considerably.</p>
+<p>The basic recipe is</p>
+<ol type="1">
+<li>Install Haskell with <a
+href="https://www.haskell.org/ghcup/">GHCup</a> (I accept the defaults
+and use the “recommended” versions set via <code>ghcup tui</code>)</li>
+<li>Make sure the GHCup environment is available,
+<code>source $HOME/.ghcup/env</code></li>
+<li>Make sure I am using the “recommended” of GHC, Cabal, Stack,
+etc.</li>
+<li>Clone the GitHub <a
+href="https://github.com/PostgREST/postgrest">PostgREST</a></li>
+<li>Change to the cloned repository directory</li>
+<li>Checkout the version you want to build</li>
+<li>Run the usual Haskell/Cabal build process</li>
+</ol>
+<p>Here is the steps I typed at the command line to install PostgREST on
+my M1 Mac Mini.</p>
+<pre><code>curl --proto &#39;=https&#39; --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+source $HOME/.ghcup/env
+ghcup tui
+git clone git@github.com:PostgREST/postgrest
+cd postgrest
+git checkout v11.1.0
+cabal clean
+cabal update
+cabal build
+cabal install
+cd ..</code></pre>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

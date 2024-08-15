@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- presentation3</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="what-is-newt">What is Newt?</h1>
+<ul>
+<li>A rapid application develop tool
+<ul>
+<li>for applications that curate metadata</li>
+</ul></li>
+<li>Audience: Libraries, Archives, Galleries and Museums</li>
+</ul>
+<h1 id="findings-from-prototype-2">Findings from Prototype 2:</h1>
+<blockquote>
+<p>Is Newt and “off the shelf” software enough to create metadata
+curation applications?</p>
+</blockquote>
+<p>Short answer is <strong>yes</strong>. Longer answer is more
+nuanced.</p>
+<h1 id="findings-from-prototype-2-1">Findings from Prototype 2:</h1>
+<blockquote>
+<p>Is Newt and “off the shelf” software enough to create metadata
+curation applications?</p>
+</blockquote>
+<ol type="1">
+<li>Newt’s YAML file can grow very large for applications with many data
+models</li>
+<li>Model vetting and validation should happen early in the data
+pipeline, ideally as a generated program and browser side too</li>
+<li>Postgres+PostgREST is a powerful combination but it’d be nice to
+have something simpler</li>
+<li>Managing the YAML file should be done interactively</li>
+</ol>
+<h1 id="questions-raised-by-prototype-2">Questions raised by Prototype
+2:</h1>
+<ul>
+<li>Where do I focus my simplification efforts?</li>
+<li>How do I ensure that large YAML files remaining human
+manageable?</li>
+<li>Mustache template language is a little too simple, what should
+replace it?</li>
+</ul>
+<h1 id="high-level-concepts-remain-the-same">High level Concepts (remain
+the same)</h1>
+<ul>
+<li>describe the application you want</li>
+<li>generate the application you described</li>
+<li>running the application using a service oriented architecture</li>
+</ul>
+<h1 id="implementation-concepts-remaining-the-same">Implementation
+Concepts (remaining the same)</h1>
+<ul>
+<li>JSON data sources</li>
+<li>data modeled in YAML</li>
+<li>routing requests through data pipelines</li>
+<li>simple template engine renders JSON as HTML</li>
+</ul>
+<h1 id="themes-remains-the-same">Themes (remains the same)</h1>
+<ul>
+<li>Pick Simple = (No coding) + (Less coding)</li>
+<li>Compose applications by combining models with data pipelines</li>
+<li>Avoid inventing new things</li>
+</ul>
+<h1 id="goal-of-prototype-3-questions-to-explore">Goal of Prototype 3:
+Questions to explore</h1>
+<ol type="1">
+<li>Is Handlebars a good fit for managing data views and rendering
+HTML?</li>
+<li>Is Postgres+PostgREST the right JSON data source to focus on?</li>
+<li>Is generated TypeScript middleware the right fit for a validation
+service?</li>
+</ol>
+<h1 id="changes-from-last-prototype">Changes from last prototype</h1>
+<ul>
+<li>Removed some Go cli (e.g. ws, mustache, newtmustache)</li>
+<li>The action “init” was renamed “config”, an optional action</li>
+<li>Renamed newtrouter to ndr (Newt Data Router)</li>
+<li>Added nte (Newt Template Engine) supporting Handlbars templates</li>
+<li>Generating Handlebars templates</li>
+<li>Generating TypeScript validator as middleware run via Deno</li>
+<li>oid was renamed “identifier” to clearity</li>
+</ul>
+<h1 id="off-the-shelf-no-coding">Off the shelf (no coding)</h1>
+<ul>
+<li>JSON Data Source
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> + <a
+href="https://postgrest.org">PostgREST</a></li>
+</ul></li>
+<li>newt, ndr, and nte</li>
+<li>Deno to run generated TypeScript validation middleware</li>
+</ul>
+<h1 id="assemble-app-from-yaml-less-coding">Assemble app from YAML (less
+coding)</h1>
+<ul>
+<li>Data modeling via a interactive user interface</li>
+<li>Results is expressed in YAML</li>
+</ul>
+<h1 id="how-do-i-think-things-will-work">How do I think things will
+work?</h1>
+<ol type="1">
+<li>Model your data interactively</li>
+<li>Generate our application code</li>
+<li>Run and tesst app</li>
+</ol>
+<h1 id="steps-one-is-interactive">Steps one is interactive</h1>
+<pre class="shell"><code>  newt model app.yaml</code></pre>
+<h1 id="step-two-generate-our-code">Step two, generate our code</h1>
+<pre class="shell"><code>  newt generate app.yaml</code></pre>
+<blockquote>
+<p>Create Postgres+PostgREST setup and schema (e.g. SQL files) Generate
+Handlebars templates Creates a TypeScript model validation service Wires
+up routes and template mappings</p>
+</blockquote>
+<h1 id="step-three-run-and-tet">Step three run and tet</h1>
+<pre class="shell"><code>  newt run app.yaml</code></pre>
+<blockquote>
+<p>Point your web browser at http://localhost:8010 to test</p>
+</blockquote>
+<h1 id="heres-a-demo-of-the-process">Here’s a demo of the process</h1>
+<p>FIXME: link to a record demonstration here</p>
+<h1 id="third-prototype-status">Third prototype Status</h1>
+<ul>
+<li>A work in progress (continuing through 2024)</li>
+<li>A Working version 1.0 hopefully in 2025</li>
+<li>Using internal applications as test bed</li>
+</ul>
+<h1 id="how-much-is-built">How much is built?</h1>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Newt developer
+tool</label></li>
+<li><label><input type="checkbox" checked="" />Router is implemented and
+working</label></li>
+<li><label><input type="checkbox" checked="" /><del>Mustache template
+engine is working</del> (removed)</label></li>
+<li><label><input type="checkbox" checked="" />Newt template engine
+(supporting Handlebars templates)</label></li>
+<li><label><input type="checkbox" checked="" />Modeler (testing and
+refinement)</label></li>
+<li><label><input type="checkbox" />Generator development (refactor,
+testing and refinement)</label></li>
+</ul>
+<h1 id="insights-from-prototypes-1-2-3">Insights from prototypes 1, 2
+&amp; 3</h1>
+<ul>
+<li>“Off the shelf” is simpler</li>
+<li>A validition service in TypeScript lets us leverage the same
+generated code in the browser</li>
+<li>An interactive UI for managing YAML is helpful</li>
+</ul>
+<h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp;
+2</h1>
+<ul>
+<li>SQL turns people off, use a code generator</li>
+<li>Hand typing templates is a turn off, use a code generator</li>
+<li>Large YAML structures benefit from code generation</li>
+<li>Automatic “wiring up” of routes and templates very helpful</li>
+</ul>
+<h1 id="whats-next">What’s next?</h1>
+<ul>
+<li>Build some real applications using Newt</li>
+<li>Get feedback for refinement</li>
+<li>Fix bugs</li>
+</ul>
+<h1 id="out-of-the-box">Out of the box</h1>
+<ul>
+<li><code>newt</code> the Newt development tool</li>
+<li><code>ndr</code> the Newt data router</li>
+<li><code>nte</code> the Newt Template Engine</li>
+</ul>
+<h1 id="unanswered-questions">Unanswered Questions</h1>
+<ul>
+<li>What is the minimum knowledge required to use Newt effectively?</li>
+<li>Who is in the target audience?</li>
+<li>Would a visual programming approach or conversation user interface
+make sense?</li>
+</ul>
+<h1 id="someday-maybe-ideas">Someday, maybe ideas</h1>
+<ul>
+<li>A visual programming or conversational approach could be easier for
+managing the YAML file</li>
+<li>Direct SQLite 3 database support and integration could be much
+simpler than Postgres+PostgREST</li>
+<li>Web components for library, archive and museum metadata types</li>
+<li>A S3 protocol web service implementing object storage using
+OCFL</li>
+<li>Generate code which can compile stack into a single binary
+application</li>
+</ul>
+<h1 id="related-resources">Related resources</h1>
+<ul>
+<li>Newt <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Dataset + datasetd <a
+href="https://github.com/caltechlibrary/dataset"
+class="uri">https://github.com/caltechlibrary/dataset</a></li>
+<li><a href="https://handlebarsjs.com">Handlebars</a> programming
+languages support</li>
+</ul>
+<h1 id="thank-you">Thank you!</h1>
+<ul>
+<li>This Presentation
+<ul>
+<li>pdf: <a
+href="https://caltechlibrary.github.io/newt/presentation3/newt-p3.pdf"
+class="uri">https://caltechlibrary.github.io/newt/presentation3/newt-p3.pdf</a></li>
+<li>pptx: <a
+href="https://caltechlibrary.github.io/newt/presentation3/newt-p3.pptx"
+class="uri">https://caltechlibrary.github.io/newt/presentation3/newt-p3.pptx</a></li>
+</ul></li>
+<li>Newt Documentation <a href="https://caltechlibrary.github.io/newt"
+class="uri">https://caltechlibrary.github.io/newt</a></li>
+<li>Source Code: <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Email: rsdoiel@caltech.edu</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

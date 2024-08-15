@@ -23,7 +23,7 @@ models:
     description: |
       This model captures the data for a bird sighting.
     elements:
-      - id: oid
+      - id: identifier
         type: input
         attributes:
           "x-sql": uuid primary key
@@ -86,10 +86,10 @@ routes:
       - service: POST http://localhost:8030/create_sighting
         description: Display the results of creating the sighthing
   - id: read_sighting
-    request: GET /sighting/{oid}
+    request: GET /sighting/{identifier}
     discription: Retrieve the sighting record
     pipeline:
-      - service: GET http://localhost:3000/rpc/ornithology/read_sighting/{oid}
+      - service: GET http://localhost:3000/rpc/ornithology/read_sighting/{identifier}
         description: Retrieve the sighting record from PostgREST
       - service: POST http://localhost:8030/read_sighting
         description: format the record in HTML
@@ -98,16 +98,16 @@ routes:
     request: GET /update_sighting
     description: Retrieve the record from PostgREST and populate the update web form
     pipeline:
-      - service: GET http://localhost:3000/rpc/ornithology/read_sighting/{oid}
+      - service: GET http://localhost:3000/rpc/ornithology/read_sighting/{identifier}
         description: Retrieve the record so we can populate the web form
       - service: POST http://localhost:8030/update_sighting
         description : Present the update sighthing web form
 # Update submission
   - id: update_sighting
-    request: POST /update_sighting/{oid}
+    request: POST /update_sighting/{identifier}
     description: Process the web form submissio to update the record
     pipeline:
-      - service: PUT http://localhost:3000/rpc/ornithology/update_sighting/{oid}
+      - service: PUT http://localhost:3000/rpc/ornithology/update_sighting/{identifier}
         description: Post the data to PostgREST API
       - service: POST http://localhost:8030/update_sighting
         description: Show the results of the updated record
@@ -120,10 +120,10 @@ routes:
         description: Get the empty template to delete a record.
 # Delete submission, process the deletion request
   - id: delete_sighting
-    request: DELETE /delete_sighting/{oid}
+    request: DELETE /delete_sighting/{identifier}
     description: Process the deletion request
     pipeline:
-      - service: DELETE http://localhost/rpc/ornithology/delete_sighting/{oid}
+      - service: DELETE http://localhost/rpc/ornithology/delete_sighting/{identifier}
         description: Delete the record via PostgREST API
       - service: POST http://localhost:8030/delete_sighting
         description: Show the deletion result page

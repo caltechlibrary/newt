@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- improving_the_type_dsl</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="improving-newts-model-and-type-dsl">Improving Newt’s model and
+type DSL</h1>
+<p>GitHub has defined a YAML issue template DSL<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+that they use to generate issues with a specific structure<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.
+The GitHub DSL includes a type attribute used to describe the user input
+expected for the issue. The types map to HTML5 form elements. This
+inspired a new take and a basis for a similar DSL could also be used to
+support generating SQL data models.</p>
+<p>The GitHub YAML issue syntax can be simplified and better support
+data types specific to the application domains needed by libraries,
+archives and museums.</p>
+<h2 id="background">Background</h2>
+<p>On Thursday 2024-01-25 Caltech Library’s digital library development
+staff meeting included a discussion of using GitHub YAML issue templates
+as a means of quickly creating forms that could trigger a GitHub
+actions. The advantage of this approach is it saves developers time from
+coding up a bunch of HTML forms and then writing a yet another service
+to trigger the GitHub actions. The downside of using this SAAS is vendor
+lock in.</p>
+<h2 id="problem">Problem</h2>
+<p>Newt’s niche is as a rapid web application development platform for
+libraries, archives and museums. In the Newt 2023 prototype I
+implemented a small DSL on top of YAML to describe data models that are
+rendered as SQL. The SQL can be used to provide a JSON API via Postgres
+and PostgREST. The problem is the prototype’s DSL is too narrowly
+focused to also describe a web form. If Newt is to be a rapid web
+application development tool then generating the HTML and SQL
+implementing a PostgREST JSON API is highly desirable. Newt continues to
+be prototyped and refined in 2024.</p>
+<h2 id="proposed-solution">Proposed Solution</h2>
+<p>If the data model DSL was inspired by GitHub YAML issue template
+syntax<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a> (abbr: GHYITS). Most of that syntax
+describes the HTML5 web form elements needed to generate and process a
+issue request. I’ve simplified that model further focusing on the HTML5
+form element itself. Both approaches have the advantage of describing
+HTML5 input elements and can easily infer a SQL data type. It was
+through experimentation that I realized directly support GHYITS was
+unnecessary and significantly increased Newt’s implementation complexity
+for little benefit. If compatibly is needed it would be straight forward
+to create a program that cross walked the more complex GHYITS to the
+simpler Newt data model.</p>
+<h3 id="advantages-of-adopting-a-common-syntax">Advantages of adopting a
+common syntax</h3>
+<p>GitHub’s YAML syntax promises the following advantages</p>
+<ul>
+<li>Standardize syntax for library staff who implement web forms</li>
+<li>Leverage GitHub documentation approach with the Newt YAML DSL for
+modeling</li>
+<li>Supports a prototyping a process in GitHub issue templates and
+GitHub action while leaving the door open to easily self host those
+processes in our machines</li>
+</ul>
+<h3 id="disadvantages-to-adopting-a-common-syntax">Disadvantages to
+adopting a common syntax</h3>
+<ul>
+<li>GitHub’s YAML issue syntax is in beta and is subject to change</li>
+<li>Most of the GitHub YAML issue syntax is unrelated to Newt’s data
+modeling needs.</li>
+<li>Newt project would need to track changes to remain compatible</li>
+<li>one for one compatibility between Newt data model and GHYITS brings
+little advantage as Newt comes with an interactive modeler which removes
+the challenge of typing and maintaining complex YAML<a href="#fn4"
+class="footnote-ref" id="fnref4"
+role="doc-noteref"><sup>4</sup></a>.</li>
+</ul>
+<h2 id="footnotes">Footnotes</h2>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>DSL, Domain-specific language, See <a
+href="https://en.wikipedia.org/wiki/Domain-specific_language">Wikipedia
+definition for details</a>.<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>See GitHub <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms">Syntax
+for issue forms</a><a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>See GitHub <a
+href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#about-githubs-form-schema">Syntax
+for GitHub’s form schema</a><a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>See Newt prototype version <a
+href="https://github.com/caltechlibrary/newt/releases/tag/v0.0.9">v0.0.9</a><a
+href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

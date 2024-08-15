@@ -1,11 +1,13 @@
 
 # Newt Project
 
-Newt is an experimental rapid application development. Specifically Newt is focused on web based metadata curation tools. These types of applications are commonly needed in galleries, libraries, archives and museums (abbr: GLAM). Newt makes creating these type of applications easier.
+Newt is an experimental rapid application development. Specifically Newt is focused on creating web based metadata curation tools. These types of applications are commonly needed in galleries, libraries, archives and museums (abbr: GLAM). Newt makes creating these type of applications easier.
 
 How does Newt do that? Newt generates an application by implementing a [service oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture) using a combination of off the shelf software and generated code.
 
 You can think of a web application as a sequence of requests and responses. Traditionally a web browser contacts your web site or application then one of two things will happen. Your app knows the answer and hands back the result. Alternatively if it doesn't know the answer it tells you it can't do so (e.g. 404 HTTP STATUS CODE). With service oriented architecture your application has another option. Your application can contact another service and use that result to answer the request from the web browser.  Newt's implements a service oriented architecture by orchestrating data processing pipelines[^11].
+
+[^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
 
 With data pipelines we can accept a request and feed that request to one service then take its output and send it to the next service. Newt does this by providing a data router. Newt can manage the request sequence through a simple YAML described pipeline. While it is possible to create pipelines using Apache and NginX proxy features in practice that approach quickly becomes an unmanageable configuration problem. You could encapsulate clusters of processes in containers but this too becomes complex to manage. Newt's router can cut through the hairball of configurations and define pipelines per request route. With Newt's pipelines the last service completed hands its result back to Newt's router which returns the result to the web browser.
 
@@ -24,15 +26,19 @@ __This is not an exhaustive list__. These types of applications can all be integ
 
 > Wait, what about my custom metadata needs?
 
-Metadata oriented applications tend to all need CRUD-L[^12] features. Customization tend towards data models.  Newt's configuration file includes simple YAML description of your data models. It uses the data model to render configuration, middleware and templates. Newt's data router ties them all together into an application using service oriented architecture.
+Metadata oriented applications share the following operations -- create, retrieve, update, delete and list. These are called CRUD-L[^12] features. Customization tend towards data models.  Newt's configuration file includes simple YAML description of your data models. It uses the data model to render configuration, middleware and templates. Newt's data router ties them all together into an application using service oriented architecture.
 
 Newt provides:
 
+- a simple data modeler
 - code generation
 - template engine
 - data routing
 
-Extending your basic CRUD-L application can be done through integrating additional data routes and services or through customizing the generated code.
+You can extend your application through browser side enhancements, adding additional data routes and pipelines or through customizing the generated code.
+
+[^12]: CRUD-L, acronym meaning, "Create, Read, Update, Delete and List" or alternately "Create, Retrieve, Update, Delete and List". These are the basic actions used to manage metadata.
+
 
 ## Does Newt clean my house or make cocktails?
 
@@ -46,19 +52,15 @@ Services not available on localhost must be proxied to integrate with your Newt 
 
 External web services integrate through a proxy setup (e.g ORCID, ROR, CrossRef or DataCite). This can be done via the front end web server or by writing a dedicated proxy service.  Today writing proxy services us easily accomplished in most popular programming languages due to good support for web protocols. This is true of Python, PHP, JavaScript, Go, Rust and many others.
 
-[^11]: A data pipeline is formed by taking the results from one web service and using it as the input to another web service. It is the web equivalent of Unix pipes. Prior art: [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes)
-
-[^12]: CRUD-L, acronym meaning, "Create, Read, Update, Delete and List". These are the basic actions used to manage metadata.
-
 ## How does Newt impact web application development?
 
 A Newt application encourages the following.
 
+- modeling your data simply the result is expressed in YAML
 - preference for "off the shelf" over writing new code
-- modeling your data simply, expressed in YAML
-- use a database management system for managing your data and SQL functions to enforce data validation
+- use a database management system for managing your data and SQL functions
 - prefer software that can function as a JSON data source
-- transforming data representations (if needed) by using a light weight template engine
+- transforming data representations by using a light weight template engine
 - code generation where appropriate
 
 ## If Newt doesn't make cocktails, what is it bringing to the party?
@@ -71,8 +73,8 @@ In 2024 there is allot of off the self software to build on. Newt provides a few
 
 The Newt YAML configuration ties these together expressing
 
-- application run time configuration
-- data models (descriptions of data as you would provided in a web form)
+- data modeling (descriptions of data as you would provided in a web form)
+- code generation
 - data routes (web requests differentiated by a HTTP method and URL path that trigger processing in a data pipeline)
 - template maps (path/template pairs used that can recieve JSON and render a results)
 
@@ -97,9 +99,9 @@ I think our web services should be doing less, much less. Our web services shoul
 Take the following as a "for instance".
 
 - (data management) Postgres combined with PostgREST gives you an out of the box JSON API for managing data
-- (full text search) Solr gives you a powerful, friendly, JSON API for search and discovery
 - (access control) Apache 2 or NGINX combined with Shibboleth for access control and communicating with the web browser
 - (rich client) Web browsers now provide a rich software platform in their own right
+- (optionally you can full text search) Solr gives you a powerful, friendly, JSON API for search and discovery
 
 With the above list we can build capable applications relying on the sophisticated features of our web browsers. This is true even without using Newt. There is a problem though.  If we only use the above software to build our application we must rely on JavaScript (or WASM module) running in the web browser to interact with the server. This sounds simple. In practice this is a terrible idea[^17].
 

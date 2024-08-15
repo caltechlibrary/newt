@@ -75,10 +75,10 @@ curation applications?</p>
 <li>Newt’s YAML file can grow very large for applications with many data
 models</li>
 <li>Model vetting and validation should happen early in the data
-pipeline, ideally as a generated program and browser side</li>
+pipeline, ideally as a generated program and browser side too</li>
 <li>Postgres+PostgREST is a powerful combination but it’d be nice to
 have something simpler</li>
-<li>Managing the YAML file should be done conversationally</li>
+<li>Managing the YAML file should be done interactively</li>
 </ol>
 </div>
 <div id="questions-raised-by-prototype-2" class="slide section level1">
@@ -107,14 +107,14 @@ class="slide section level1">
 <li>JSON data sources</li>
 <li>data modeled in YAML</li>
 <li>routing requests through data pipelines</li>
-<li>simple template engine renders JSON to HTML</li>
+<li>simple template engine renders JSON as HTML</li>
 </ul>
 </div>
 <div id="themes-remains-the-same" class="slide section level1">
 <h1>Themes (remains the same)</h1>
 <ul>
 <li>Pick Simple = (No coding) + (Less coding)</li>
-<li>Compose applications using data pipelines</li>
+<li>Compose applications by combining models with data pipelines</li>
 <li>Avoid inventing new things</li>
 </ul>
 </div>
@@ -122,22 +122,23 @@ class="slide section level1">
 class="slide section level1">
 <h1>Goal of Prototype 3: Questions to explore</h1>
 <ol style="list-style-type: decimal">
-<li>Is generated TypeScript middleware the right fit for a validation
-service?</li>
 <li>Is Handlebars a good fit for managing data views and rendering
 HTML?</li>
 <li>Is Postgres+PostgREST the right JSON data source to focus on?</li>
+<li>Is generated TypeScript middleware the right fit for a validation
+service?</li>
 </ol>
 </div>
 <div id="changes-from-last-prototype" class="slide section level1">
 <h1>Changes from last prototype</h1>
 <ul>
 <li>Removed some Go cli (e.g. ws, mustache, newtmustache)</li>
-<li>The action “init” was renamed “config”</li>
+<li>The action “init” was renamed “config”, an optional action</li>
 <li>Renamed newtrouter to ndr (Newt Data Router)</li>
 <li>Added nte (Newt Template Engine) supporting Handlbars templates</li>
 <li>Generating Handlebars templates</li>
 <li>Generating TypeScript validator as middleware run via Deno</li>
+<li>oid was renamed “identifier” to clearity</li>
 </ul>
 </div>
 <div id="off-the-shelf-no-coding" class="slide section level1">
@@ -156,27 +157,24 @@ href="https://postgrest.org">PostgREST</a></li>
 class="slide section level1">
 <h1>Assemble app from YAML (less coding)</h1>
 <ul>
-<li>Create the Newt YAML through a conversational TUI</li>
-<li>Data modeling via a conversational TUI</li>
+<li>Data modeling via a interactive user interface</li>
+<li>Results is expressed in YAML</li>
 </ul>
 </div>
 <div id="how-do-i-think-things-will-work" class="slide section level1">
 <h1>How do I think things will work?</h1>
 <ol style="list-style-type: decimal">
-<li>Interactively generate our application’s YAML file (config)</li>
-<li>Interactively define data models (model)</li>
-<li>Generate our application code (generate)</li>
-<li>Run <code>newt run ...</code> to run the application</li>
+<li>Model your data interactively</li>
+<li>Generate our application code</li>
+<li>Run and tesst app</li>
 </ol>
 </div>
-<div id="steps-one-and-two-are-interactive"
-class="slide section level1">
-<h1>Steps one and two are interactive</h1>
-<pre class="shell"><code>  newt config app.yaml
-  newt model app.yaml</code></pre>
+<div id="steps-one-is-interactive" class="slide section level1">
+<h1>Steps one is interactive</h1>
+<pre class="shell"><code>  newt model app.yaml</code></pre>
 </div>
-<div id="step-three-generate-our-code" class="slide section level1">
-<h1>Step three, generate our code</h1>
+<div id="step-two-generate-our-code" class="slide section level1">
+<h1>Step two, generate our code</h1>
 <pre class="shell"><code>  newt generate app.yaml</code></pre>
 <blockquote>
 <p>Create Postgres+PostgREST setup and schema (e.g. SQL files) Generate
@@ -184,28 +182,16 @@ Handlebars templates Creates a TypeScript model validation service Wires
 up routes and template mappings</p>
 </blockquote>
 </div>
-<div id="step-four-setup-primary-json-data-source"
-class="slide section level1">
-<h1>Step four, setup primary JSON data source</h1>
-<h2 id="json-data-source">JSON data source</h2>
-<blockquote>
-<p>Load the SQL in to Postgres via <code>psql</code> Run PostgREST via
-<code>newt run</code> …</p>
-</blockquote>
-</div>
-<div id="step-five-run-your-application-and-test"
-class="slide section level1">
-<h1>Step five, run your application and test</h1>
+<div id="step-three-run-and-tet" class="slide section level1">
+<h1>Step three run and tet</h1>
 <pre class="shell"><code>  newt run app.yaml</code></pre>
 <blockquote>
 <p>Point your web browser at http://localhost:8010 to test</p>
 </blockquote>
 </div>
-<div id="heres-an-ascii-type-demo-of-the-system"
-class="slide section level1">
-<h1>Here’s an ASCII type demo of the system</h1>
-<p>FIXME: to be created and linked to after validation service
-generation completed</p>
+<div id="heres-a-demo-of-the-process" class="slide section level1">
+<h1>Here’s a demo of the process</h1>
+<p>FIXME: link to a record demonstration here</p>
 </div>
 <div id="third-prototype-status" class="slide section level1">
 <h1>Third prototype Status</h1>
@@ -236,9 +222,9 @@ testing and refinement)</label></li>
 <h1>Insights from prototypes 1, 2 &amp; 3</h1>
 <ul>
 <li>“Off the shelf” is simpler</li>
-<li>A Validition service in TypeScript lets us leverage the same
+<li>A validition service in TypeScript lets us leverage the same
 generated code in the browser</li>
-<li>A conversational UI looks promising (needs allot of refinement)</li>
+<li>An interactive UI for managing YAML is helpful</li>
 </ul>
 </div>
 <div id="insights-from-prototypes-1-2" class="slide section level1">
@@ -250,14 +236,12 @@ generated code in the browser</li>
 <li>Automatic “wiring up” of routes and templates very helpful</li>
 </ul>
 </div>
-<div id="whats-next-to-wrap-up-prototype-4"
-class="slide section level1">
-<h1>What’s next to wrap up prototype 4?</h1>
+<div id="whats-next" class="slide section level1">
+<h1>What’s next?</h1>
 <ul>
-<li>Refine template engine</li>
-<li>Refine Newt YAML syntax</li>
-<li>Refine data router</li>
-<li>Retarget, debug and improve the code generator</li>
+<li>Build some real applications using Newt</li>
+<li>Get feedback for refinement</li>
+<li>Fix bugs</li>
 </ul>
 </div>
 <div id="out-of-the-box" class="slide section level1">
@@ -273,15 +257,15 @@ class="slide section level1">
 <ul>
 <li>What is the minimum knowledge required to use Newt effectively?</li>
 <li>Who is in the target audience?</li>
-<li>Would a visual programming approach make more sense then a
-conversational UI?</li>
+<li>Would a visual programming approach or conversation user interface
+make sense?</li>
 </ul>
 </div>
 <div id="someday-maybe-ideas" class="slide section level1">
 <h1>Someday, maybe ideas</h1>
 <ul>
-<li>A visual programming approach could be easier than editing YAML
-files</li>
+<li>A visual programming or conversational approach could be easier for
+managing the YAML file</li>
 <li>Direct SQLite 3 database support and integration could be much
 simpler than Postgres+PostgREST</li>
 <li>Web components for library, archive and museum metadata types</li>

@@ -274,10 +274,10 @@ routes:
       - service: POST http://localhost:8011/people_create_response
         description: This is an result template for people create
   - id: people_update
-    request: GET /people_update/{oid}
+    request: GET /people_update/{identifier}
     description: Handle retrieving the webform for people update
     pipeline:
-      - service: GET http://localhost:3000/rpc/people_read/{oid}
+      - service: GET http://localhost:3000/rpc/people_read/{identifier}
         description: Retrieve people from PostgREST API before update
       - service: POST http://localhost:8011/people_update
         description: Display a people for update
@@ -285,15 +285,15 @@ routes:
     request: POST /people_update
     description: Handle form submission for people update
     pipeline:
-      - service: PUT http://localhost:3000/rpc/people_update/{oid}
+      - service: PUT http://localhost:3000/rpc/people_update/{identifier}
         description: Access PostgREST API for people update
       - service: POST http://localhost:8011/people_update_response
         description: This is an result template for people update
   - id: people_delete
-    request: GET /people_delete/{oid}
+    request: GET /people_delete/{identifier}
     description: Handle retrieving the webform for people delete
     pipeline:
-      - service: GET http://localhost:3000/rpc/people_read/{oid}
+      - service: GET http://localhost:3000/rpc/people_read/{identifier}
         description: Retrieve people from PostgREST API before delete
       - service: POST http://localhost:8011/people_delete
         description: Display a people for delete
@@ -301,7 +301,7 @@ routes:
     request: POST /people_delete
     description: Handle form submission for people delete
     pipeline:
-      - service: DELETE http://localhost:3000/rpc/people_delete/{oid}
+      - service: DELETE http://localhost:3000/rpc/people_delete/{identifier}
         description: Access PostgREST API for people delete
       - service: POST http://localhost:8011/people_delete_response
         description: This is an result template for people delete
@@ -309,7 +309,7 @@ routes:
     request: POST /people_read
     description: Retrieve object(s) for people read
     pipeline:
-      - service: GET http://localhost:3000/rpc/people_read/{oid}
+      - service: GET http://localhost:3000/rpc/people_read/{identifier}
         description: Access PostgREST API for people read
       - service: POST http://localhost:8011/people_read
         description: This template handles people read

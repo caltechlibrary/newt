@@ -30,18 +30,26 @@ func setupAppMetadata(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 	year := time.Now().Format("2006")
 	if ast.AppMetadata == nil {
 		ast.AppMetadata = new(AppMetadata)
+		ast.isChanged = true
 	}
 	if ast.AppMetadata.AppName == "" {
 		ast.AppMetadata.AppName = appName
+		ast.isChanged = true
 	}
 	if ast.AppMetadata.AppTitle == "" {
 		ast.AppMetadata.AppTitle = appName
+		ast.isChanged = true
 	}
 	if ast.AppMetadata.CopyrightYear == "" {
 		ast.AppMetadata.CopyrightYear = year
+		ast.isChanged = true
 	}
 	if ast.AppMetadata.CSSPath == "" {
 		ast.AppMetadata.CSSPath = "/css/site.css"
+		ast.isChanged = true
+	}
+	if skipPrompts {
+		return
 	}
 	fmt.Fprint(out, "Set the project metadata for %s\n", appFName)
 	for quit := false; !quit; {
@@ -228,18 +236,25 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = NewApplications()
+			ast.isChanged = true
 		}
 		if ast.Applications.Router == nil {
 			ast.Applications.Router = NewApplication()
+			ast.isChanged = true
 		}
 		// NOTE: If port is zero, we haven't configure the router.
 		if ast.Applications.Router.Port == 0 {
 			ast.Applications.Router.Port = ROUTER_PORT
 			if info, err := os.Stat("htdocs"); err == nil && info.IsDir() {
 				ast.Applications.Router.Htdocs = "htdocs"
+				ast.isChanged = true
 			} else {
 				ast.Applications.Router.Htdocs = ""
+				fmt.Fprintf(out, "WARNING: Skipping the htdocs directory for router")
 			}
+		}
+		if skipPrompts {
+			return
 		}
 		for quit := false; !quit; {
 			menuList := []string{
@@ -298,14 +313,20 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 	fmt.Fprintf(out, "Configuring PostgREST\n")
 	if ast.Applications == nil {
 		ast.Applications = NewApplications()
+		ast.isChanged = true
 	}
 	if ast.Applications.PostgREST == nil {
 		ast.Applications.PostgREST = NewApplication()
+		ast.isChanged = true
 	}
 	if ast.Applications.PostgREST.Port == 0 {
 		ast.Applications.PostgREST.Port = POSTGREST_PORT
 		ast.Applications.PostgREST.AppPath = "postgrest"
 		ast.Applications.PostgREST.ConfPath = "postgrest.conf"
+		ast.isChanged = true
+	}
+	if skipPrompts {
+		return
 	}
 	for quit := false; !quit; {
 		menuList := []string{
@@ -373,15 +394,19 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = NewApplications()
+			ast.isChanged = true
 		}
 		if ast.Applications.Postgres == nil {
 			ast.Applications.Postgres = NewApplication()
+			ast.isChanged = true
 		}
 		if ast.Applications.Postgres.Port == 0 {
 			ast.Applications.Postgres.Port = POSTGRES_PORT
+			ast.isChanged = true
 		}
 		if ast.Applications.Postgres.Namespace == "" {
 			ast.Applications.Postgres.Namespace = fNameToNamespace(appFName)
+			ast.isChanged = true
 		}
 		if ast.Applications.Postgres.DSN == "" {
 			ast.Applications.Postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", ast.Applications.Postgres.Port, appFName)
@@ -390,6 +415,10 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 				ast.Applications.Environment = []string{}
 			}
 			ast.Applications.Environment = append(ast.Applications.Environment, "PGUSER", "PGPASSWORD")
+			ast.isChanged = true
+		}
+		if skipPrompts {
+			return
 		}
 		for quit := false; !quit; {
 			menuList := []string{
@@ -462,21 +491,27 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 	if answer == "y" {
 		if ast.Applications == nil {
 			ast.Applications = NewApplications()
+			ast.isChanged = true
 		}
 		if ast.Applications.TemplateEngine == nil {
 			ast.Applications.TemplateEngine = NewApplication()
+			ast.isChanged = true
 		}
 		if ast.Applications.TemplateEngine.Port == 0 {
 			ast.Applications.TemplateEngine.Port = TEMPLATE_ENGINE_PORT
+			ast.isChanged = true
 		}
 		if ast.Applications.TemplateEngine.BaseDir == "" {
 			ast.Applications.TemplateEngine.BaseDir = TEMPLATE_ENGINE_BASE_DIR
+			ast.isChanged = true
 		}
 		if ast.Applications.TemplateEngine.ExtName == "" {
 			ast.Applications.TemplateEngine.ExtName = TEMPLATE_ENGINE_EXT_NAME
+			ast.isChanged = true
 		}
 		if ast.Applications.TemplateEngine.PartialsDir == "" {
 			ast.Applications.TemplateEngine.PartialsDir = TEMPLATE_ENGINE_PARTIALS_DIR
+			ast.isChanged = true
 		}
 		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
 		// When the model list changes then the related templates should change to.
@@ -486,6 +521,10 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			if err := setupTemplateHandlers(ast); err != nil {
 				fmt.Fprintf(out, "WARNINGS: %s\n", err)
 			}
+			ast.isChanged = true
+		}
+		if skipPrompts {
+			return
 		}
 		for quit := false; !quit; {
 			menuList := []string{
@@ -586,8 +625,8 @@ func setupTemplateHandlers(ast *AST) error {
 // setupPostgRESTService creates a Service object for interacting with PostgREST
 func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 	var (
-		oid         string
-		oidSuffix   string
+		identifier         string
+		identifierSuffix   string
 		description string
 		method      string
 		port        int
@@ -595,9 +634,9 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 	objName := model.Id
 	element, ok := model.GetModelIdentifier()
 	if ok {
-		oid = fmt.Sprintf("{%s}", element.Id)
+		identifier = fmt.Sprintf("{%s}", element.Id)
 	} else {
-		oid = "{oid}"
+		identifier = "{identifier}"
 	}
 	description = fmt.Sprintf("Access PostgREST API for %s %s", objName, action)
 	if ast.Applications != nil && ast.Applications.PostgREST != nil {
@@ -607,23 +646,23 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 	}
 	switch action {
 	case "create":
-		// create action doesn't take an oid
+		// create action doesn't take an identifier
 		method = http.MethodPost
 	case "read":
 		method = http.MethodGet
-		oidSuffix = "/" + oid
+		identifierSuffix = "/" + identifier
 	case "update":
 		method = http.MethodPut
-		oidSuffix = "/" + oid
+		identifierSuffix = "/" + identifier
 	case "delete":
 		method = http.MethodDelete
-		oidSuffix = "/" + oid
+		identifierSuffix = "/" + identifier
 	default:
-		// list action doesn't take an oid
+		// list action doesn't take an identifier
 		method = http.MethodGet
 	}
 	return &Service{
-		Service:     fmt.Sprintf("%s http://localhost:%d/rpc/%s_%s%s", method, port, objName, action, oidSuffix),
+		Service:     fmt.Sprintf("%s http://localhost:%d/rpc/%s_%s%s", method, port, objName, action, identifierSuffix),
 		Description: description,
 	}
 }
@@ -647,19 +686,19 @@ func setupTmplService(ast *AST, tmplPattern string, description string) *Service
 // webforms for "create", "update" or "delete".
 func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	var (
-		oid        string
+		identifier        string
 		pathSuffix string
 		service    *Service
 	)
 	objName := model.Id
 	element, ok := model.GetModelIdentifier()
 	if ok {
-		oid = fmt.Sprintf("{%s}", element.Id)
+		identifier = fmt.Sprintf("{%s}", element.Id)
 	} else {
-		oid = "{oid}"
+		identifier = "{identifier}"
 	}
 	if action == "update" || action == "delete" {
-		pathSuffix = "/" + oid
+		pathSuffix = "/" + identifier
 	}
 	// Setup templates and webforms. Names are formed by objName combined with action.
 	templateList := ast.GetTemplateIds()
@@ -706,6 +745,8 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	service = setupTmplService(ast, tmplPattern, tmplDescription)
 	route.Pipeline = append(route.Pipeline, service)
 	ast.Routes = append(ast.Routes, route)
+
+	//FIXME: somewhere here the update route isn't getting the {indentifier} set for it's path
 
 	// Setup template submit result
 	tmplName = mkName(objName, action, "_response.hbs")
@@ -795,7 +836,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 		for quit := false; !quit; {
 			menu, opt := selectMenuItem(buf, out,
 				fmt.Sprintf("Manage Environment availability in %s", appFName),
-				"Menu [a]dd, [r]emove, [q]uit (making changes)",
+				"Menu [a]dd, [r]emove or press enter when done",
 				ast.Applications.Environment, true, "", "", true)
 			if val, ok := getIdFromList(ast.Applications.Environment, opt); ok {
 				opt = val
@@ -855,7 +896,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 			}
 			menu, opt := selectMenuItem(buf, out,
 				"Enter menu command and option name",
-				"Menu [a]dd, [r]emove, [q]uit (making changes)",
+				"Menu [a]dd, [r]emove or press enter when done",
 				optionsList, false, "", "", true)
 			if val, ok := getIdFromList(optionsList, opt); ok {
 				opt = val

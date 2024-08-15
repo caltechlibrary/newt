@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- TODO</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="action-items">Action Items</h1>
+<h2 id="bugs">Bugs</h2>
+<ul>
+<li><label><input type="checkbox" />Newt command runner doesn’t seem to
+be mapping ports correctly generated code and Newt YAML</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />postgres.conf generation needs to
+have password set/generated for the authenticator account generate in
+setup in setup.sql</label></li>
+<li><label><input type="checkbox" />DSN string generated for access
+PostgREST in <code>.applications.postgres.dsn</code> needs to have port
+match the port Postgres is listening on</label></li>
+<li><label><input type="checkbox" />The DSN used in the postgres.conf
+file needs to match port set in
+<code>.applications.postgres.port</code></label></li>
+</ul></li>
+<li>Conversation UI is not consistent, menus aren’t obvious how to use
+<ul class="task-list">
+<li><label><input type="checkbox" />Attribute mapping is inconsistent
+with the rest of the conversational UI, e.g. add attribute should accept
+the attribute name to add, it needs to prompt for the value</label></li>
+<li><label><input type="checkbox" />Conversational UI needs to be
+consistent in what enter without command means or become “q”
+everywhere</label></li>
+<li><label><input type="checkbox" />“object key” and “primary key”
+should be one or the other, confusing when editing elements</label>
+<ul>
+<li>“identifier” seems like the best choice, I think it is something
+that the something library community understands</li>
+</ul></li>
+<li><label><input type="checkbox" checked="" />The address becomes lower
+case in conversation UI (<code>.app_metadata</code>)</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Check should summarize each service
+not just template engine or only show errors and report OK
+otherwise</label></li>
+<li><label><input type="checkbox" checked="" />In generated Newt YAML
+file the bang line is incorrect (missing bang)</label></li>
+</ul>
+<h2 id="next-for-the-third-prototype">Next for the third prototype</h2>
+<p>NOTE: X is completed, P is partial completion, D (dropped) from
+implementation plans - [ ] The “*_response.hbs” templates are
+unnecessary, they’d just the “read” template - [ ] First step in process
+should be modeling the data - [ ] Drop “config” verb, this should be
+automatic if the ports need to be changed then that is a whole other
+level of knowledge needed - [ ] Presume the stack is Postgres +
+PostgREST - [ ] Presume Deno is available and the ports are free for the
+validator service - [ ] You can have a single validator service
+generated so it takes only a single port, models would be included via
+imports - [ ] Presume nte is used - [ ] Generate systemd service file(s)
+with Bash wrappers - [ ] Rename “generate” to “build” since that is
+actually what is happening - [ ] Need to Generate TypeScript validator
+service, tsgen.go?? - [ ] Need to generate a Bash (bashgen.go???) for
+running the database setup and configuration or have this done
+“automagically” as a step done by <code>newt</code> tool - [ ] Need to
+generate a <code>deno.json</code> file suitable for managing the project
+and for running via Newt command</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Review <a
+href="https://github.com/webui-dev/go-webui">go-webui</a> for
+implementing a GUI for newt</label></li>
+<li><label><input type="checkbox" />Adding modeler.go shows I need to
+cleanup code and normalize an API info working with models, updating
+routes and templates based on updated models list.</label></li>
+<li><label><input type="checkbox" />Postgres configuration in yamlgen.go
+needs to include a DSN to make the connection for loading our SQL [ ] I
+need to implement the third prototype code generator once I’ve debugged
+the Newt YAML syntax</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />setup.sql</label></li>
+<li><label><input type="checkbox" />models.sql</label></li>
+<li><label><input type="checkbox" />postgrest.conf</label></li>
+<li><label><input type="checkbox" />create related
+templates</label></li>
+<li><label><input type="checkbox" />read template</label></li>
+<li><label><input type="checkbox" />update related
+templates</label></li>
+<li><label><input type="checkbox" />delete realted template</label></li>
+<li><label><input type="checkbox" />list template</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><code>newt generate</code> needs to
+be brought into line with changes made in the modeler
+development</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />I need to have tests for all the
+generating functions to avoid regressions</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Create a useful set of demos</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Create birds demo for 2nd Prototype
+(using Postgres+PostgREST, Newt Router and Newt Mustache)</label></li>
+<li><label><input type="checkbox" />Garden management app</label></li>
+<li><label><input type="checkbox" />A text only blog</label></li>
+<li><label><input type="checkbox" />Create postcards demo, armchair
+archive example</label></li>
+<li><label><input type="checkbox" />Implement Thesis Management System
+core in Newt (not email features)</label></li>
+<li><label><input type="checkbox" />Implement COLD core</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Present to DLD and interested
+staff</label></li>
+<li><label><input type="checkbox" />Present/announce via SoCal Code4Lib
+(recorded or in person presentation)</label></li>
+</ul>
+<h2 id="someday-maybe">Someday, maybe</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Update <code>newt config</code> to
+support Dataset+datasetd</label></li>
+<li><label><input type="checkbox" />If I am going to support numbered
+item selection then I should also allow the order of the number and
+action to be reverse, e.g. “1 modify” would indicate modify item 1. This
+would give the numbers more obvious meaning and useful ness, otherwise
+it’s just noise in the display.</label></li>
+<li><label><input type="checkbox" />A “newt object manager” takes a
+model, validates it and if OK sends the result to the next stage in the
+pipeline for storage. It should deal with things like unpacking
+shortened UUID using a base encoding scheme</label></li>
+<li><label><input type="checkbox" />Generate Python code that can be
+compiled into WASM module that is run directly in Newt Router without
+need to an external network call. This might be useful for implementing
+custom validation for the models or if they want to write a proxy
+service to outside localhost.</label></li>
+<li><label><input type="checkbox" />Explore the idea of “complex
+models”, these would be composed by either combining or aggregating
+lists of other models. This would let me mimic RDM/ArchivesSpace rich
+data models from Newt</label></li>
+<li><label><input type="checkbox" />If the Newt Router is going to proxy
+file uploads it will need to specify the route as multipart encoded, if
+Newt Router can generate object ids when creating new objects along with
+the file upload then you could auto magically map the object into an S3
+protocol path for file storage and further processing</label></li>
+<li><label><input type="checkbox" />The generate could generating an
+Apache include conf file or an NGINX configuration file</label></li>
+<li><label><input type="checkbox" />Solr could be specified like
+PostgREST in the <code>.applications</code> property, this could easy
+integrating Solr</label></li>
+<li><label><input type="checkbox" />If Newt Router supported multipart
+encoding it could proxy to a web service that provided file upload
+management</label></li>
+<li><label><input type="checkbox" /><code>newt build</code> would
+generate a stand alone Go based program for the application described by
+the Newt YAML file (think OBNC/Ofront/Ofront+ generating C then
+compiling the C to rendering an executable or library).</label></li>
+<li><label><input type="checkbox" />Explore alternatives to a UUID for
+object identifiers, some sort of short id like RDM would be very
+nice.</label></li>
+<li><label><input type="checkbox" />seeing the data past thru a pipeline
+will be an important part in debugging problems. Newt Inspector could
+address that as a pass thru web service that output debugging info to
+the log output.</label></li>
+<li><label><input type="checkbox" />An OCFL service would allow Newt to
+support building repository like applications. U. C. Santa Barbara has
+some Go packages related to this.</label></li>
+<li><label><input type="checkbox" />Newt should support development with
+SQLite 3 databases</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Look at sqlite2rest (a Python
+project, automatic REST API for SQLite databases), work up a demo using
+it with Newt server</label></li>
+<li><label><input type="checkbox" />Should Newt supply a newtsqlite
+service?</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Can I extend Newt to support file
+uploads?</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Should this be a separate service, a
+stage in the pipeline?</label></li>
+<li><label><input type="checkbox" />Should I integrate S3 protocol
+support to allow file upload handling?</label></li>
+</ul></li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

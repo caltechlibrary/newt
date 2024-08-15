@@ -75,7 +75,7 @@ func pgModels(out io.Writer, namespace string, models []*Model) error {
 -- support in Postgres.  There are four fields inspired by a simplification
 -- of RDM records.
 --
--- oid: This is a short unique identifier for the object
+-- identifier: This is a short unique identifier for the object
 -- created: This is the date the object was created (timestamp format)
 -- updated: This is a timestamp of when an object changed
 -- object: This is a jsonb column holding our object
@@ -113,7 +113,7 @@ set search_path to {{namespace}}, public;
 drop table if exists {{namespace}}.{{model}};
 create table {{namespace}}.{{model}}
 (
-	oid uuid primary key default gen_random_uuid(), 
+	identifier uuid primary key default gen_random_uuid(), 
 	created timestamp with time zone default now(),
 	updated timestamp with time zone default now(), 
 	object jsonb
@@ -124,7 +124,7 @@ create table {{namespace}}.{{model}}
 --
 
 -- {{namespace}}.{{model}}_create is a stored function to create a new object
--- It takes the new object without oid, created, updated. It will return the
+-- It takes the new object without identifier, created, updated. It will return the
 -- assigned uuid.
 --
 -- This becomes the end point '/rpc/{{model}}_create' in PostgREST
@@ -144,18 +144,18 @@ begin
 	ts := now();
 	-- create record
     insert into {{namespace}}.{{model}}
-        (oid, created, updated, object)
+        (identifier, created, updated, object)
     values
         (id, ts, ts, new_object);
 	-- return created record
   	select (jsonb_build_object(
-    	'oid', oid,
+    	'identifier', identifier,
     	'created', created,
     	'updated', updated
     	) || object) 
   	into updated_object
   	from {{namespace}}.{{model}}
-  	where oid = id;
+  	where identifier = id;
   	return updated_object;
 end;
 $$
@@ -185,16 +185,16 @@ begin
 	-- update record
 	update {{namespace}}.{{model}}
 	set updated = now(), object = new_object
-	where oid = id;
+	where identifier = id;
 	-- return updated record
 	select (jsonb_build_object(
-    	'oid', oid,
+    	'identifier', identifier,
     	'created', created,
     	'updated', updated
     	) || object) 
 	into updated_object
 	from {{namespace}}.{{model}}
-	where oid = id;
+	where identifier = id;
 	return updated_object;
 end;
 $$
@@ -202,7 +202,7 @@ $$
 
 --
 -- {{namespace}}.{{model}}_read will retrieve the object stored flattening it to include
--- the fields modelled but also include the attributes oid, created, updated enforce by these procedures.
+-- the fields modelled but also include the attributes identifier, created, updated enforce by these procedures.
 --
 -- It become an end point in PostgREST, '/rpc/{{model}}_read'
 --
@@ -214,20 +214,20 @@ create or replace function {{namespace}}.{{model}}_read (
 language sql
 as $$
   select (jsonb_build_object(
-    'oid', oid,
+    'identifier', identifier,
     'created', created,
     'updated', updated
     ) || object) as obj
   from {{namespace}}.{{model}}
-  where oid = id
+  where identifier = id
   limit 1;
 $$
 ;
 
 --
 -- {{namespace}}.{{model}}_delete is a stored function to delete an object.
--- It takes the object UUID (oid) as a parameter. If successful it returns the
--- oid deleted.
+-- It takes the object UUID (identifier) as a parameter. If successful it returns the
+-- identifier deleted.
 --
 -- It becomes the end point '/rpc/{{model}}_delete'
 --
@@ -239,7 +239,7 @@ language plpgsql
 as $$
 begin
     delete from {{namespace}}.{{model}}
-    where oid = id;
+    where identifier = id;
     return id;
 end;
 $$
@@ -259,7 +259,7 @@ returns table (
 language sql
 as $$
   select (jsonb_build_object(
-    'oid', oid,
+    'identifier', identifier,
     'created', created,
     'updated', updated
     ) || object)::jsonb as obj
@@ -359,11 +359,11 @@ select 'Testing {{namespace}}.{{model}}_read' as msg limit 1;
 -- Test if {{namespace}}.{{model}}_read can execute.
 --
 with t as (
-  select oid
+  select identifier
   from {{namespace}}.{{model}}
   order by created desc
   limit 1
-) select {{namespace}}.{{model}}_read(t.oid) from t limit 1;
+) select {{namespace}}.{{model}}_read(t.identifier) from t limit 1;
 
 
 select 'Testing {{namespace}}.{{model}}_update' as msg limit 1;
@@ -371,11 +371,11 @@ select 'Testing {{namespace}}.{{model}}_update' as msg limit 1;
 -- Test if {{namespace}}.{{model}}_update can execute.
 -- 
 with t as (
-  select oid
+  select identifier
   from {{namespace}}.{{model}}
   order by created desc
   limit 1
-) select {{namespace}}.{{model}}_update(t.oid, jsonb_build_object(
+) select {{namespace}}.{{model}}_update(t.identifier, jsonb_build_object(
    'test_number', {{test_no}},
    'test_notes', 'Updated Object Action'
 )) from t limit 1;
@@ -394,11 +394,11 @@ select 'Testing {{namespace}}.{{model}}_delete' as msg limit 1;
 -- Test if {{namespace}}.{{model}}_delete can execute.
 -- 
 with t as (
-  select oid
+  select identifier
   from {{namespace}}.{{model}}
   order by updated desc
   limit 1
-) select {{namespace}}.{{model}}_delete(t.oid) from t;
+) select {{namespace}}.{{model}}_delete(t.identifier) from t;
 
 --
 -- Test listing all records after delete.

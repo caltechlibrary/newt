@@ -172,11 +172,11 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 		//attributeList := model.GetAttributeIds()
 		menu, opt := selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s model", modelId),
-			"Menu: model [d]escription, [e]lements, [q]uit making changes",
+			"Menu: model [d]escription, [e]lements or press enter when done",
 			[]string{
-				fmt.Sprintf("Model Id: %s", model.Id),
-				fmt.Sprintf("Description: %s", model.Description),
-				fmt.Sprintf("Element(s): %s\n", strings.Join(elementList, ",\n\t\t")),
+				fmt.Sprintf("Model Id:\n\t\t%s\n", model.Id),
+				fmt.Sprintf("Description:\n\t\t%s\n", model.Description),
+				fmt.Sprintf("Element(s):\n\t\t%s\n", strings.Join(elementList, ",\n\t\t")),
 			}, false, "", "", true)
 		if len(menu) > 0 {
 			menu = menu[0:1]
@@ -197,6 +197,8 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 			}
 		case "q":
 			quit = true
+		case "":
+		    quit = true
 		default:
 			fmt.Fprintf(eout, "failed to underand %q\n", opt)
 		}
@@ -263,6 +265,8 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 			}
 		case "q":
 			quit = true
+		case "":
+		    quit = true
 		default:
 			fmt.Fprintf(eout, "failed to underand %q\n", opt)
 		}
@@ -328,6 +332,8 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 			}
 		case "q":
 			quit = true
+		case "":
+		    quit = true
 		default:
 			fmt.Fprintf(eout, "failed to underand %q\n", opt)
 		}
@@ -344,7 +350,7 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 	    optionsList := getValueLabelList(elem.Options)
 		menu, opt := selectMenuItem(in, out, 
 		    fmt.Sprintf("Manage %s.%s options", modelId, elem.Id),
-			"Menu [a]dd, [m]odify option no., [r]emove option no., [q]uit making changes",
+			"Menu [a]dd, [m]odify option no., [r]emove option no. or press enter when done",
 			optionsList,
 			true, "", "", true)
 		if len(menu) > 0 {
@@ -429,7 +435,7 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 			case "q":
 				quit = true
 			case "":
-				// do nothing
+		    	quit = true
 			default:
 				fmt.Fprintf(eout, "did not understand, %s %s\n", menu, opt)
 		}
@@ -454,7 +460,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 			optionsList := getValueLabelList(elem.Options)
 			menu, opt = selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s element", model.Id, elementId),
-			"Menu [t]ype, [l]abel, [a]ttributes, [o]ptions, [q]uit making changes",
+			"Menu [t]ype, [l]abel, [a]ttributes, [o]ptions or press enter when done",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
@@ -466,7 +472,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		case "textarea":
 			menu, opt = selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s element", model.Id, elementId),
-			"Menu [t]ype, [l]abel, [a]ttributes, [q]uit making changes",
+			"Menu [t]ype, [l]abel, [a]ttributes or press enter when done",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
@@ -477,14 +483,14 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		default:
 			menu, opt = selectMenuItem(in, out,
 			fmt.Sprintf("Manage %s.%s element", model.Id, elementId),
-			"Menu [t]ype, [l]abel, [o]bject key, [p]attern, [a]ttributes, [q]uit making changes",
+			"Menu [t]ype, [l]abel, [o]bject identifier, [p]attern, [a]ttributes, or press enter when done",
 			[]string{
 				fmt.Sprintf("id %s", elementId),
 				fmt.Sprintf("type %s", elem.Type),
 				fmt.Sprintf("label %s", elem.Label),
 				fmt.Sprintf("pattern %s", elem.Pattern),
 				fmt.Sprintf("attributes %s", strings.Join(attributeList, ",\n\t\t")),
-				fmt.Sprintf("primary key %t", elem.IsObjectId),
+				fmt.Sprintf("object identifier? %t", elem.IsObjectId),
 			},
 			false, "", "", true)
 		}
@@ -555,7 +561,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 		case "q":
 			quit = true
 		case "":
-			// do nothing
+			quit = true
 		default:
 			fmt.Fprintf(eout, "did not understand %q\n", menu)
 		}
@@ -627,7 +633,7 @@ func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model
 		case "q":
 			quit = true
 		case "":
-			// do nothing, redisplay list
+			quit = true
 		default:
 			fmt.Fprintf(eout, "\n\nERROR: Did not understand %q\n\n", answer)
 		}
@@ -700,7 +706,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 		case "q":
 			quit = true
 		case "":
-			// do nothing, display list
+			quit = true
 		default:
 			fmt.Fprintf(eout, "\n\nERROR: Did not understand %q\n\n", answer)
 		}

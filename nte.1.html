@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- nte.1</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="name">NAME</h1>
+<p>nte</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p>nte <a href="#options">OPTIONS</a> YAML_CONFIG_FILE</p>
+<h1 id="description">DESCRIPTION</h1>
+<p><strong>nte</strong> is a web service that provides a template
+rendering engine inspired by Pandoc server.</p>
+<p>Unlike Pandoc web server, <code>nte</code> expects a YAML
+configuration file. The format is described below. That file specifies
+the runtime configuration. It specifies the request path to template
+mapping. It can also specify ancillary information made available to the
+template associated with the request path and template.</p>
+<p>The <code>nte</code> template engine listens for a POST requests with
+JSON encoded data. It checks requested path to see if that matches the
+request path described in the YAML file. If there is a match it
+processes the request returning the rendered results matched with any
+data found in the POST. <code>nte</code>.</p>
+<p>The content of the POST is passed to the template as
+<code>.body</code>, applications options are merged into a
+<code>.document</code> object along with any addition mappings specified
+for a given template. Finally if you’ve defined a variables in the path
+to the template those are provided via the <code>.vars</code>
+property.</p>
+<p><strong>nte</strong> only supports POST requests with content type
+“application/json”.</p>
+<h1 id="options">OPTIONS</h1>
+<p>The following options are supported by <strong>nte</strong>.</p>
+<dl>
+<dt><code>-h</code></dt>
+<dd>
+display this help message
+</dd>
+<dt><code>-license</code></dt>
+<dd>
+display the software license
+</dd>
+<dt><code>-version</code></dt>
+<dd>
+display version information
+</dd>
+<dt><code>-port NUMBER</code></dt>
+<dd>
+(default is port is 3032) Set the port number to listen on
+</dd>
+<dt><code>-base-dir PATH</code></dt>
+<dd>
+set the base directory path (where you have your templates).
+</dd>
+<dt><code>-timeout SECONDS</code></dt>
+<dd>
+Timeout in seconds, after which a template rendering is aborted.
+Default: 3.
+</dd>
+<dt><code>-verbose</code></dt>
+<dd>
+If set provide verbose debugging output for requests
+</dd>
+</dl>
+<h1 id="the-templates">The templates</h1>
+<p>The template engine supports the <a
+href="https://handlebarsjs.com">Handlebars</a> template language which
+is largely a superset of Mustache templates documented at <a
+href="https://mustache.github.io"
+class="uri">https://mustache.github.io</a>. The template engine used is
+based on Go package &lt;github.com/aymerick/raymond&gt;.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Newt template engine only runs on localhost at a designated port
+(default is 8011).</li>
+<li>Templates are read in at startup and are retained in memory bound to
+the request path.</li>
+<li>JSON data is provided to the template in a <code>.body</code>
+object.</li>
+<li>Variables found expressed in the request path are available in the
+<code>.vars</code> passed to the template.</li>
+<li>Except for path variables no addition reads are performed once the
+web service starts listening.</li>
+</ul>
+<h1 id="yaml_config_file">YAML_CONFIG_FILE</h1>
+<p>This is a list of the Newt YAML syntax relevant to
+<strong>nte</strong>.</p>
+<h2 id="top-level-properties">Top level properties</h2>
+<p>These are the top level properties in YAML files.</p>
+<dl>
+<dt>applications</dt>
+<dd>
+(required) holds the run time configuration used by the Newt
+applications.
+</dd>
+<dt>templates</dt>
+<dd>
+(required) holds a list of template objects
+</dd>
+</dl>
+<h2 id="the-applications-property">The <strong>applications</strong>
+property</h2>
+<dl>
+<dt>template_engine</dt>
+<dd>
+(required) this contains configuration for Newt template engine,
+e.g. port, base_dir, ext_name.
+</dd>
+</dl>
+<h3 id="the-template-engine-properties">The <strong>template
+engine</strong> properties</h3>
+<dl>
+<dt>port</dt>
+<dd>
+(required) port number to used for to used for Newt Template Engine
+</dd>
+<dt>base_dir</dt>
+<dd>
+(required) base directory holding the primary templates
+</dd>
+<dt>partial_dir</dt>
+<dd>
+(optional) the sub directory holding the partial templates
+</dd>
+<dt>ext_name</dt>
+<dd>
+(optional) the extension used to identify your templates on disk.
+e.g. “.hbs” for handlebar templates.
+</dd>
+</dl>
+<h2 id="the-templates-property">The <strong>templates</strong>
+property</h2>
+<p>This property is used by Newt template engine. It provides a list of
+template objects.</p>
+<h3 id="the-template-property">The <strong>template</strong>
+property</h3>
+<p>The template object is used by Newt template engine to describe an
+individual template mapping and it’s properties.</p>
+<dl>
+<dt><code>id</code></dt>
+<dd>
+(required) Unique template identifier. It is used by other parts of
+Newt.
+</dd>
+<dt><code>description</code></dt>
+<dd>
+(suggested) A description of template’s purpose. Used by other parts of
+Newt.
+</dd>
+<dt><code>request PATH</code></dt>
+<dd>
+(required) This holds the request URL’s path. <code>nte</code> only
+listens for POST method. It may include path variables. The request path
+must be unique.
+</dd>
+<dt><code>template</code></dt>
+<dd>
+(required) This is the name of the primary template (without file
+extension). The primary template may also include partials and those
+will be read from the partials sub directory defined in the template
+engine property.
+</dd>
+<dt><code>document</code></dt>
+<dd>
+this will provide template specific data include content verged from the
+provided environment (e.g. template engine’s options and environment).
+</dd>
+<dt><code>debug</code></dt>
+<dd>
+(optional) this turns on debugging output for this template
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<p>Example of Newt YAML that only runs the template engine by itself.
+The paths are used to provide template content.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">applications</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template_engine</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">8011</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">base_dir</span><span class="kw">:</span><span class="at"> testdata/views</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ext_name</span><span class="kw">:</span><span class="at"> .hbs</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">partials</span><span class="kw">:</span><span class="at"> partials</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello/{name}</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> simple</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hello</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hello</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> simple</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">document</span><span class="kw">:</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hi</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hi/{name}</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hithere</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">debug</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">id</span><span class="kw">:</span><span class="at"> hi</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">request</span><span class="kw">:</span><span class="at"> /hi</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">template</span><span class="kw">:</span><span class="at"> hithere</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">document</span><span class="kw">:</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Universe</span></span></code></pre></div>
+<p>NOTE: the template name doesn’t require the extension since that is
+set at the template engine level.</p>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

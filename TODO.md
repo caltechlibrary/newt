@@ -3,58 +3,45 @@
 
 ## Bugs
 
-- [ ] Newt command running isn't generating the "model" section of models.sql consistently
-  - [ ] Check to make sure the namespace handling is correct
-- [X] Setting port for Postgres in conversation UI causes a panic (`.applications.postgres`)
+- [ ] In the YAML route generation the identifier isn't getting passed for updates
 - [ ] Newt command runner doesn't seem to be mapping ports correctly generated code and Newt YAML
   - [ ] postgres.conf generation needs to have password set/generated for the authenticator account generate in setup in setup.sql
   - [ ] DSN string generated for access PostgREST in `.applications.postgres.dsn` needs to have port match the port Postgres is listening on
   - [ ] The DSN used in the postgres.conf file needs to match port set in `.applications.postgres.port`
-- Conversation UI is not consistent, menus aren't obvious how to use
-  - [ ] Attribute mapping is inconsistent with the rest of the conversational UI, e.g. add attribute should accept the attribute name to add, it needs to prompt for the value
-  -  [ ] Conversational UI needs to be consistent in what enter without command means or become "q" everywhere
+- Interactive UI is not consistent, menus aren't obvious how to use
+  - [ ] Attribute mapping is inconsistent with the rest of the interactive UI, e.g. add attribute should accept the attribute name to add, it needs to prompt for the value
+  -  [ ] Interactive UI needs to be consistent in what enter without command means or become "q" everywhere
   - [ ] "object key" and "primary key" should be one or the other, confusing when editing elements
+    - "identifier" seems like the best choice, I think it is something that the something library community understands
   - [X] The address becomes lower case in conversation UI (`.app_metadata`)
 - [ ] Check should summarize each service not just template engine or only show errors and report OK otherwise
+    - [ ] Missing information about router, should indicate port as well as if htdocs is set
 - [X] In generated Newt YAML file the bang line is incorrect (missing bang)
+- [ ] When creating a new object, the resulting JSON should return the identifier then a template can trigger a redirect in the browser to a read end point using the identifier
 
 ## Next for the third prototype
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
-
-- [ ] Need to implement Generate Systemd service files, sysdgen.go??
+- [ ] The `*_response.hbs` templates seem unnecessary, the "read" template given the data can is the same thing
+    - [ ] The "response" pages could be implemented as a redirect to the read end point
+    - [ ] It can be done as a template using that generates a page redirect via head, meta elements
+    - [ ] It'd be nice to be able to have the pipeline handle the redirect as a psuedo service
+- [ ] First step in process should be modeling the data
+- [ ] Drop "config" verb, this should be automatic if the ports need to be changed then that is a whole other level of knowledge needed
+  - [ ] Presume the stack is Postgres + PostgREST
+  - [ ] Presume Deno is available and the ports are free for the validator service
+    - [ ] You can have a single validator service generated so it takes only a single port, models would be included via imports
+  - [ ] Presume nte is used
+  - [ ] Generate systemd service file(s) with Bash wrappers
+- [ ] Rename "generate" to "build" since that is actually what is happening
 - [ ] Need to Generate TypeScript validator service, tsgen.go??
-- [ ] Need to generate a Bash and Powershell scripts (bashgen.go???, pwshgen.go??) for running the database setup and configuration or have this done "automagically" as a step done by `newt` tool
-- [ ] Newt Generator needs to generate the TypeScript for validation inputs browser and server side
-- [ ] Need to generate a codemeta or CITATION.cff file to have the data to create partials for project.
-- [ ] Need to generate the `.gitignore` file
-- [ ] Need to generate a `deno.json` file suitable for managing the project
-- [X] Change docs and actions to rename "init" to "config" since that better describes both intiialization and re-configuration
-- [X] Update `newt config` to fully setup nte
-- [ ] Merge setup of Postgres and PostgREST so they are configured or updated in one go
+- [ ] Need to generate a Bash (bashgen.go???) for running the database setup and configuration or have this done "automagically" as a step done by `newt` tool
+- [ ] Need to generate a `deno.json` file suitable for managing the project and for running via Newt command
 
 - [ ] Review [go-webui](https://github.com/webui-dev/go-webui) for implementing a GUI for newt
-- [ ] Review [deno](https://deno.land) and [Typescript](https://www.typescriptlang.org/) as a target for generating a validation service for our models
-    - deno can compile typescript/javascript into an executable
-    - these could be installed in a bin directory next to the newt YAML project file
-    - the typescript can can run as a a validation service in the pipeline for the form processing
-    - I would need to map the service name sainly
-    - Investigate using embedding WASM code into Newt pipeline for validation, I could then generate TypeScript validation code compile to WASM using javy and transpile to JavaScript for browser (review how fresh doing this)
-- [ ] The configuration Newt YAML needs to specify PostgreSQL+PostgREST as one target and Deno+datasetd as another back end with/without Newt router
-- [ ] The generator for Newt needs to generate TypeScript apps for validation and could also be used to generate standalone Deno+datasetd based webapps
-- [ ] See if I can turn handlebarjs into a WASM module, then implement a NewtHandlebars service, mutch easier working with Handlebars then Mustache fo r the types of templates we do.
-- [ ] Newt should support dataset based applications since datasetd exists, newt wouldn't model apps in SQL in this case but would use the models to create the templates, validation, adata pipelines and routing
 - [ ] Adding modeler.go shows I need to cleanup code and normalize an API info working with models, updating routes and templates based on updated models list.
 - [ ] Postgres configuration in yamlgen.go needs to include a DSN to make the connection for loading our SQL
-- [ ] Newt Router needs to validate it's inputs for POST, PUT, PATCH against a specific data model
-    - [ ] Need to decide on how to vet submitted web forms, does vetting code get generate in the RDBMS, do I include a model in the route definition or should this be done as an independent part of the pipeline? Or all of they above?
-- [ ] Newt needs a web hook service that can be placed in the pipeline to trigger a non-pipeline action, sorta of like the Unix tee command
-  - use cases
-    - the web hook would receive the JSON data from the previous service in the pipeline
-    - it could trigger another URL pipeline
-    - it could trigger running a program on the local system (e.g. trigger search engine indexing run after record change)
-    - it could insert an action into an event/job queue
-- [ ] I need to implement the second prototype code generator once I've debugged the Newt YAML syntax
+[ ] I need to implement the third prototype code generator once I've debugged the Newt YAML syntax
   - [ ] setup.sql
   - [ ] models.sql
   - [ ] postgrest.conf
@@ -74,37 +61,6 @@ NOTE: X is completed, P is partial completion, D (dropped) from implementation p
     - [ ] Implement COLD core
 - [ ] Present to DLD and interested staff
 - [ ] Present/announce via SoCal Code4Lib (recorded or in person presentation)
-- [X] `newt config`, an interactive Newt YAML file generator, need to decide on approach
-  - [X] could be done as a cli interactive tool
-  - [D] could be done as a GUI form based application
-- [X] `newt` runner should be able to manage a postgrest instance. This will simplify using Newt in the development setting
-  - [X] `newt` need to track the pid of the external process, then folder that into the signal handlers (using a go routine to start it don't think I need to track this, though it would be nice to log it.
-- [X] In selectMenuItem there should be a way to turn off numbered items when they don't make sense (e.g. at the modify model menu or modify element menu)
-    - [X] could do this by having two different types of menu, selectMenuItem, selectMenuById or some such (not happy with these names)
-- [X] Rename Newt verb "init" to "config" since that better describes what it does
-- [X] If you run Newt Generator from the `newt` command it should assign predictable filenames for SQL files, PostgREST configuration and Mustache templates. This could insure the turn key operation of a bare prototype. It needs to align with what `newt init` generators.
-  - SQL generated should organize files by function, e.g. `{{model_name}}_{{action_name}}.sql`, `*_setup.sql` would create database, schema, roles, tables, `*_access_control.sql` would be regenerated and map roles and permissions for any functions found created by `{{model_name}}_{{action_name}}.sql`. I need to figure out which tables to query to identify the functions that are available in the metadata schema so that the mapping can be complete.
-- [X] Verify we have a simple developer workflow
-  - [X] `newt config` generate a default YAML for project
-    - [X] `newt config` allow automatic generation of the project code base?
-  - [X] `newt generator` generated the code for the project
-  - [X] `newt run PROJECT_YAML` should be able to run the rendered project.
-- [X] Nail down the second prototype YAML syntax
-- [X] Port attributes in the struct need to all be either string or int (probably int), it'll make the code read better to be consistent
-- [X] There should be a "newt" command that wraps the router, generator and mustache engine in the way the go command wraps govet, gofmt, etc. This will be convenient for development
-- [X] (rethought the application concept in favor of a single YAML file) Should Application metadata really be it's own top level attribute? Wouldn't having a service that reads a codemeta.json or CITATION.cff make more sense in a service oriented architecture?
-- [X] (one configuration used by all Newt tools) Should Newt Router, Newt Mustache and Newt Generator use separate YAML files? or a combined file?
-  - [X] (future prototype can do OS level suggested conf files) Using a combined file would make it easy to generate startup scripts or systemd configurations
-- [X] Decide what is logged by default for Newt Mustache and Newt Router
-- [X] Decide what is logged in "debug" or "verbose" model by Newt Mustache and Newt Router
-- [X] Generate SQL confirming to the style suggestion in "The Art of Postgres" (link as a reference in Newt documentation)
-- [X] (options and environment can solve this) Writing the URL for a localhost service can be tedious and obscure what is happening, create an example where you use a environment variable or application option to express the service name to a variable that can then be reference in the URL pattern
-- [X] Adopt GitHub's YAML Issue Syntax for describing models
-  - [X] evaluate the DSL that Newt's existing has to see if it still makes sense (probably doesn't)
-  - [X] Can the model/type DSL be made compatible with [GitHub YAML issue template schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)? Or should it be replaced by it?
-- [X] Present at Code4Lib SoCal meetup, July 14, 2023
-- [X] Present at Code4Lib SoCal meetup, April 19, 2024
-- [X] Cleanup data models, abandon strict following of GHYITS, I don't need that level of complexity and simplifying data model and AST will be easier to document leaving out the GHYITS connection
 
 ## Someday, maybe
 

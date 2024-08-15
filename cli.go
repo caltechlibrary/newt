@@ -672,19 +672,33 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 			return MODELER_FAIL
 		}
 	}
-	// Step 2. build our lists of models and manage them
-	if err := modelerTUI(ast, in, out, eout, appFName, args); err != nil {
-		fmt.Fprintf(eout, "%s\n", err)
-		return MODELER_FAIL
-	}
+	// Step 2. If "applications" not configured, generate default configuration.
 	if ast.Applications == nil ||
 		ast.Applications.Router == nil ||
 		ast.Applications.Postgres == nil ||
 		ast.Applications.PostgREST == nil ||
 		ast.Applications.TemplateEngine == nil {
-		fmt.Fprintf(out, "Applications are not configured for %q, try\n\n", appFName)
-		appName := path.Base(os.Args[0])
-		fmt.Fprintf(out, "\t%s config %q\n\n", appName, appFName)
+        ast.Applications = new(Applications)
+        skipPrompts := true
+        setupAppMetadata(ast, readBuffer, out, appFName, skipPrompts)
+        setupRouter(ast, readBuffer, out, appFName, skipPrompts)
+        setupPostgresAndPostgREST(ast, readBuffer, out, appFName, skipPrompts)
+        setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)
+        setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
+        setupOptions(ast, readBuffer, out, appFName, skipPrompts)
+        bName := path.Base(appFName)
+        ext := path.Ext(appFName)
+        mName := strings.TrimSuffix(bName, ext)
+        if len(args) == 0 {
+        	args = append(args, mName)
+        } else if len(args) == 1 {
+            args[0] = mName
+        }
+	}
+	// Step 3. build our lists of models and manage them
+	if err := modelerTUI(ast, in, out, eout, appFName, args); err != nil {
+		fmt.Fprintf(eout, "%s\n", err)
+		return MODELER_FAIL
 	}
 	return OK
 }

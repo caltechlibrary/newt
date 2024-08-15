@@ -1,6 +1,6 @@
 ---
-title: newt(1) user manual | 0.0.9 4ef8a9e
-pubDate: 2024-08-06
+title: newt(1) user manual | 0.0.9 3662ba0
+pubDate: 2024-08-14
 author: R. S. Doiel
 ---
 
@@ -15,32 +15,24 @@ newt [OPTIONS] ACTION [YAML_FILE]
 # DESCRIPTION
 
 **newt** is a developer tool. It can set up and run your Newt application
-during development.  **newt** supports the "config", "check", "model", "generate",
-and "run" actions. The "config" command is used when you are starting a
-Newt Project. It is an interactive command prompting for various choices regarding
-the application you want to create.
+during development.  **newt** provides three main actions or verbs.
+They are "model", "generate" and "run. There are additional verbs suppported
+such as "config" and "check".  The "model" action is interactive. It is the
+first step in generating your application.  It provides an interactive menu
+system for building your data model(s) for your application.
 
-The "config" action will interactively construct or update the Newt YAML file.
+The "generate" action will create Handlebar templates, SQL files and a TypeScript
+validation service.
+
+The "run" action will launch your services for testing and refining your application.
+
+The "config" action can be run if you need to adjust the ports used by your services.
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.
 
-The "model" is used to manage your data models. It is interactive like "config".
-
-The "generate" will run the Newt Generator to create the SQL, PostgREST configuration
-and Handlebars templates. It'll also update the Newt YAML file's routes and templates
-properties as needed for the generated content.
-
-The "run" action will run Newt's router, template engine and PostgREST
-for testing and development.  This allows you to quick run and stop the services
-from one command.
-
-If a Newt YAML filename isn't supplied when you invoke **newt** the application
-will look in the current directory for a file with the directory's name and ".yaml"
-extension and if that is not found it'll look for "app.yaml".
-
-If you are working in the root of a Git repository when you run "config" you will
-get a warning about which files should be added to your `.gitignore`.
+A Newt YAML filename is requires by the actions. If the file doesn't exist one will
+be created.
 
 # OPTIONS
 
@@ -60,15 +52,8 @@ The following options are supported by **newt**.
 
 # ACTION
 
-config [YAML_FILE]
-: this will create or refresh your Newt YAML file based on a set of interactive
-questions. It will suggest updates to your `.gitignore`.
-
 model [YAML_FILE]
 : this will read the current Newt YAML file and run the interactive modeler updating the Newt YAML file.
-
-check [YAML_FILE]
-: analyze the Newt YAML file and report problems if found.
 
 generate [YAML_FILE]
 : this is used to generate your SQL, PostgREST configuration and Handlebars templates
@@ -78,6 +63,13 @@ run [YAML_FILE]
 : this will run the defined services in the application attribute of the Newt YAML file.
 This is intended for use in development. In a production setting you'd setup the individual
 services to run from systemd or config as services.
+
+config [YAML_FILE]
+: this will create or refresh your Newt YAML file based on a set of interactive
+questions. It will suggest updates to your `.gitignore`.
+
+check [YAML_FILE]
+: analyze the Newt YAML file and report problems if found.
 
 # YAML_FILE
 

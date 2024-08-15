@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- README</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="newt-project">Newt Project</h1>
+<p>Newt is an experimental rapid application development. Specifically
+Newt is focused on creating web based metadata curation tools. These
+types of applications are commonly needed in galleries, libraries,
+archives and museums (abbr: GLAM). Newt makes creating these type of
+applications easier.</p>
+<p>How does Newt do that? Newt generates an application by implementing
+a <a
+href="https://en.wikipedia.org/wiki/Service-oriented_architecture">service
+oriented architecture</a> using a combination of off the shelf software
+and generated code.</p>
+<p>You can think of a web application as a sequence of requests and
+responses. Traditionally a web browser contacts your web site or
+application then one of two things will happen. Your app knows the
+answer and hands back the result. Alternatively if it doesn’t know the
+answer it tells you it can’t do so (e.g. 404 HTTP STATUS CODE). With
+service oriented architecture your application has another option. Your
+application can contact another service and use that result to answer
+the request from the web browser. Newt’s implements a service oriented
+architecture by orchestrating data processing pipelines<a href="#fn1"
+class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>.</p>
+<p>With data pipelines we can accept a request and feed that request to
+one service then take its output and send it to the next service. Newt
+does this by providing a data router. Newt can manage the request
+sequence through a simple YAML described pipeline. While it is possible
+to create pipelines using Apache and NginX proxy features in practice
+that approach quickly becomes an unmanageable configuration problem. You
+could encapsulate clusters of processes in containers but this too
+becomes complex to manage. Newt’s router can cut through the hairball of
+configurations and define pipelines per request route. With Newt’s
+pipelines the last service completed hands its result back to Newt’s
+router which returns the result to the web browser.</p>
+<blockquote>
+<p>The data pipelines are defined in Newt’ YAML configuration file. The
+pipelines are managed by Newt’s data router.</p>
+</blockquote>
+<p>Why is this important? Much of the “back end” of a web application is
+already available as off the shelf software. Here is a short list of
+examples used by Caltech Library.</p>
+<ul>
+<li><a href="https://postgres.org">Postgres</a> and <a
+href="https://postgrest.org">PostgREST</a> provides a JSON API for data
+management</li>
+<li><a href="https://caltechlibrary.github.io/dataset">Dataset</a>, a
+simple JSON document store that has an out of the box JSON API provided
+by <a
+href="https://caltechlibrary.github.io/dataset/datasetd.1.html">datasetd</a>.</li>
+<li><a href="https://solr.apache.org">Solr</a> and Elasticsearch,
+OpenSearch can provide full text search as a JSON web service</li>
+<li><a href="https://archivesspace.org">ArchivesSpace</a> provides a
+JSON API web service</li>
+<li><a href="https://inveniordm.docs.cern.ch/">Invenio RDM</a> provides
+a JSON API web service</li>
+<li><a href="https://cantaloupe-project.github.io/">Cantaloupe IIIF
+Image server</a> an IIIF <a
+href="https://iiif.io/api/image/3.0/">API</a></li>
+</ul>
+<p><strong>This is not an exhaustive list</strong>. These types of
+applications can all be integrated into your application through
+configuring the connection in Newt’s YAML file. Newt’s router runs the
+data pipelines and can host static content.</p>
+<blockquote>
+<p>Wait, what about my custom metadata needs?</p>
+</blockquote>
+<p>Metadata oriented applications tend to all need CRUD-L<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>
+features. Customization tend towards data models. Newt’s configuration
+file includes simple YAML description of your data models. It uses the
+data model to render configuration, middleware and templates. Newt’s
+data router ties them all together into an application using service
+oriented architecture.</p>
+<p>Newt provides:</p>
+<ul>
+<li>a simple data modeler</li>
+<li>code generation</li>
+<li>template engine</li>
+<li>data routing</li>
+</ul>
+<p>Extending your basic create, retrieve, update, delete and list
+application (abbr: CRUD-L) can be done through integrating additional
+data routes and services or through customizing the generated code.</p>
+<h2 id="does-newt-clean-my-house-or-make-cocktails">Does Newt clean my
+house or make cocktails?</h2>
+<p>Newt is a narrowly focused rapid application development toolbox.
+Newt will not clean your house or make a cocktail. Additionally it does
+not support the class of web applications that handle file uploads. That
+means it is not a replacement for Drupal, WordPress, Islandora, etc.
+Newt is for building applications more in line with ArchivesSpace but
+with simpler data models. If you need file upload support Newt is not
+the right solution at this time.</p>
+<p>Newt applications are well suited to interacting with other
+applications that provide a JSON API. A service with a JSON API can be
+treated as a JSON data source. A JSON data source can easily be run
+through a pipeline. Many GLAM applications like ArchivesSpace and
+Invenio RDM provide JSON API. It is possible to extended those systems
+by creating simpler services that can talk to those JSON data sources.
+Newt is well suited to this “development at the edges” approach.</p>
+<blockquote>
+<p>What if those systems aren’t available on localhost?</p>
+</blockquote>
+<p>Services not available on localhost must be proxied to integrate with
+your Newt application. Why is this necessary? Short answer, security.
+Newt seeks to reduce the attack surface of your web application as much
+as possible. It does that by only trusting services offered directly on
+localhost. Newt’s application models presumes you’re running behind a
+“front end web server” like Apache 2, NginX or Lighttd. These systems
+can be configured to provide access control as well as perform proxy
+services. The front end web server is your first line of defense against
+a cracker.</p>
+<p>External web services integrate through a proxy setup (e.g ORCID,
+ROR, CrossRef or DataCite). This can be done via the front end web
+server or by writing a dedicated proxy service. Today writing proxy
+services us easily accomplished in most popular programming languages
+due to good support for web protocols. This is true of Python, PHP,
+JavaScript, Go, Rust and many others.</p>
+<h2 id="how-does-newt-impact-web-application-development">How does Newt
+impact web application development?</h2>
+<p>A Newt application encourages the following.</p>
+<ul>
+<li>modeling your data simply the result is expressed in YAML</li>
+<li>preference for “off the shelf” over writing new code</li>
+<li>use a database management system for managing your data and SQL
+functions</li>
+<li>prefer software that can function as a JSON data source</li>
+<li>transforming data representations by using a light weight template
+engine</li>
+<li>code generation where appropriate</li>
+</ul>
+<h2
+id="if-newt-doesnt-make-cocktails-what-is-it-bringing-to-the-party">If
+Newt doesn’t make cocktails, what is it bringing to the party?</h2>
+<p>In 2024 there is allot of off the self software to build on. Newt
+provides a few tools to fill in the gaps.</p>
+<ul>
+<li><code>newt</code> is a development tool for data modeling,
+generating code, running Newt router, template engine and PostgREST or
+dataset collections</li>
+<li><code>ndr</code> is a stateless web service (a.k.a. micro service)
+that routes a web requests through a data pipelines built from other web
+services</li>
+<li><code>nte</code> is a stateless template engine inspired by Pandoc
+server that supports the <a
+href="https://handlebarsjs.com">Handlebarsjs</a> template language and
+is designed to process data from a JSON data source</li>
+</ul>
+<p>The Newt YAML configuration ties these together expressing</p>
+<ul>
+<li>data modeling (descriptions of data as you would provided in a web
+form)</li>
+<li>code generation</li>
+<li>data routes (web requests differentiated by a HTTP method and URL
+path that trigger processing in a data pipeline)</li>
+<li>template maps (path/template pairs used that can recieve JSON and
+render a results)</li>
+</ul>
+<h2 id="what-type-of-applications-are-supported-by-newt">What type of
+applications are supported by Newt?</h2>
+<p>Most GLAM applications are focused on managing and curating some sort
+of metadata records. Sometimes these metadata records are quite complex
+(e.g. ArchivesSpace, RDM records) but often they are simple (e.g. a list
+of authors, a list of citations). Newt’s primary target is generating
+applications to manage simple data models. Simple data models are those
+which can be expressed in web forms via HTML5 native input elements.</p>
+<h2 id="motivation">Motivation</h2>
+<p>Over the last several decades web applications became very complex.
+This complexity is expensive in terms of reliability, enhancement, bug
+fixes and software sustainability. Newt is an attempt to address this by
+reducing the code you write and focusing your efforts on declaring what
+you want.</p>
+<p>In 2024 the back end of web applications can largely be assemble from
+off the shelf software. Middleware however remains complex. I believe
+this to be a by product of inertia in software development practices and
+the assumption that what is good for “Google Scale” is good for
+everyone.</p>
+<p>I think a radical simplification is due. <strong>Newt is intended to
+spark that conversation</strong>. My observation is most software
+doesn’t need to scale large. In the research and GLAM communities we
+don’t routinely write software that scales as large as <a
+href="https://zenodo.org/">Zenodo</a>. We don’t typically support tens
+of thousands of simultaneous users. I think we can focus our efforts
+around orchestrating off the shelf components and put our remaining
+development time into improving the human experience using our software.
+A better human experience is an intended side effect of Newt.</p>
+<p>A big key to simplification is narrowing the focus of our middleware.
+When our middleware has to implement everything it becomes very complex.
+Look at Drupal and WordPress. They implement data modeling, data
+management, user accounts, access management, data transformation.</p>
+<p>I think our web services should be doing less, much less. Our web
+services should be narrowly focused. Conceptually simpler. Do one or two
+things really well. Newt enables using simpler discrete services to
+build our applications.</p>
+<h2 id="working-with-off-the-shelf-deliverables">Working with off the
+shelf deliverables</h2>
+<p>Take the following as a “for instance”.</p>
+<ul>
+<li>(data management) Postgres combined with PostgREST gives you an out
+of the box JSON API for managing data</li>
+<li>(access control) Apache 2 or NGINX combined with Shibboleth for
+access control and communicating with the web browser</li>
+<li>(rich client) Web browsers now provide a rich software platform in
+their own right</li>
+<li>(optionally you can full text search) Solr gives you a powerful,
+friendly, JSON API for search and discovery</li>
+</ul>
+<p>With the above list we can build capable applications relying on the
+sophisticated features of our web browsers. This is true even without
+using Newt. There is a problem though. If we only use the above software
+to build our application we must rely on JavaScript (or WASM module)
+running in the web browser to interact with the server. This sounds
+simple. In practice this is a terrible idea<a href="#fn3"
+class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>.</p>
+<p>What we should do is use Newt to tie those JSON services together and
+send rendered HTML back to the web browser. Newt’s router provides
+static file service and a means of pipelining our JSON data source
+through a template engine. Newt provides a Handlebars<a href="#fn4"
+class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>
+template engine for that purpose. Newt provides the missing bits from my
+original list so we don’t need to send JavaScript down the wire to the
+web browser. The Newt approach uses less bandwidth, fewer network
+accesses and less computations cycles on your viewing device. The Newt
+approach takes advantage of what the web browser is really good at
+without turning your web pages into a web service. Newt YAML describes
+the system you want. You get the Newt capabilities without writing much
+code. Maybe without writing any code if Newt’s code generator does a
+sufficient job for your needs.</p>
+<p>Web services talk to other web services all the time. This isn’t new.
+It isn’t exotic. Newt scales down this approach to the single
+application.</p>
+<ul>
+<li>Can we align access control with our front end web server?</li>
+<li>Can we insist on our database management system providing a JSON
+API?</li>
+<li>Can we treat the output of one web service as the input for the
+next?</li>
+<li>Can we aggregate these into data pipelines?</li>
+<li>Will that be enough to define our web application?</li>
+</ul>
+<p>In Spring 2024 for metadata curation apps I think the answer is “yes
+we can”.</p>
+<h2 id="what-comes-with-the-newt-project">What comes with the Newt
+Project?</h2>
+<p>The primary tools are.</p>
+<ul>
+<li><a href="newt.1.html">newt</a> a developer tool for building a Newt
+based application which includes modeling, code generation support, and
+runtime support</li>
+<li><a href="ndr.1.html">ndr</a> a <a
+href="https://en.wikipedia.org/wiki/microservices">web service</a>
+designed for working with other “off the shelf” web services. It
+functions both as a router and as a static file server. It does this by
+routing your request through a YAML defined pipeline and returning the
+results. Typically this will be a JSON data source and running that
+output through a template engine like Newt’s <strong>nte</strong>.</li>
+<li><a href="nte.1.html">nte</a> provides a Handlebars template engine
+for transforming JSON data into a more human friendly format.</li>
+</ul>
+<p>See the <a href="user_manual.html">user manual</a> for details.</p>
+<h2 id="about-the-newt-source-repository">About the Newt source
+repository</h2>
+<p>Newt is a project of Caltech Library’s Digital Library Development
+group. It is hosted on GitHub at <a
+href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a>. If you have
+questions, problems or concerns regarding Newt you can use GitHub issue
+tracker to communicate with the development team. It is located at <a
+href="https://github.com/caltechlibrary/newt/issues"
+class="uri">https://github.com/caltechlibrary/newt/issues</a>. The name
+comes from wanting a “[New t]ake” on web application development.</p>
+<h2 id="getting-help">Getting help</h2>
+<p><strong>The Newt Project is an experiment!!</strong>. The source code
+for the project is supplied “as is”. Newt is a partially implemented
+prototype (May 2024). However if you’d like to ask a question or have
+something you’d like to contribute please feel free to file a GitHub
+issue, see <a href="https://github.com/caltechlibrary/newt/issues"
+class="uri">https://github.com/caltechlibrary/newt/issues</a>.</p>
+<p>Currently Newt is targeted at Windows on X86, macOS on x86 and ARM
+(e.g. M1, M2) and Linux on aarch64 (ARM 64) and x86.</p>
+<h2 id="building-from-source">Building from source</h2>
+<p>Newt is experimental so doesn’t have installers yet. If you are
+compiling from source the following software is required.</p>
+<ol type="1">
+<li>Git to retrieve the Newt repository</li>
+<li>Golang &gt;= 1.22 (used to compile command line programs and
+services except newthandlebars)</li>
+<li>Deno &gt;= 1.44 (used to build newthandlebars, note not available on
+Windows ARM or 32bit Linux)</li>
+<li>Pandoc &gt;= 3.1 (used to build version.go, version.ts and
+documentation)</li>
+<li>GNU Make and Bash shell (you can cross compile for Windows and macOS
+from Linux)</li>
+</ol>
+<p>Steps to compile</p>
+<ol type="1">
+<li>From your home directory clone the repository</li>
+<li>change into the repository directory</li>
+<li>Run Make</li>
+<li>Run make test</li>
+<li>Run make install</li>
+</ol>
+<pre class="shell"><code>cd $HOME
+git clone git@github.com:caltechlibrary/newt src/github.com/caltechlibrary/newt
+cd  src/github.com/caltechlibrary/newt
+make
+make test
+make install</code></pre>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>A data pipeline is formed by taking the results from one
+web service and using it as the input to another web service. It is the
+web equivalent of Unix pipes. Prior art: <a
+href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo! Pipes</a><a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>CRUD-L, acronym meaning, “Create, Retrieve, Update,
+Delete and List”. These are the basic actions used to manage metadata.<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>See <a
+href="https://infrequently.org/2024/01/performance-inequality-gap-2024/"
+class="uri">https://infrequently.org/2024/01/performance-inequality-gap-2024/</a>
+for a nice discussion of the problem.<a href="#fnref3"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Handlebars is largely a superset of the Handlbars
+Template Language, see <a href="https://handlebarsjs.com"
+class="uri">https://handlebarsjs.com</a> and <a
+href="https://mustache.github.io"
+class="uri">https://mustache.github.io</a> for details. ### A “newt”
+baseline<a href="#fnref4" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

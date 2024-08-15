@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Newt -- prototype3</title>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+    <base href="./">
+</head>
+<body>
+<header>
+<a href="https://library.caltech.edu"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+	<li><a href="/">Home</a></li>
+	<li><a href="./">README</a></li>
+	<li><a href="user_manual.html">User Manual</a></li>
+	<li><a href="LICENSE">LICENSE</a></li>
+	<li><a href="INSTALL.html">INSTALL</a></li>
+	<li><a href="about.html">About</a></li>
+	<li><a href="search.html">Search</a></li>
+	<li><a href="https://github.com/caltechlibrary/newt">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="prototype-3">Prototype 3</h1>
+<h2 id="questions-and-explorations">Questions and Explorations</h2>
+<ul>
+<li>Generated TypeScript middleware targetting Deno (e.g. validation,
+data enhancement)</li>
+<li>Explore Dataset/datasetd as a simpler JSON data source to
+Postgres+PostgREST</li>
+</ul>
+<h2 id="desirable-features">Desirable Features</h2>
+<ul>
+<li><label><input type="checkbox" />newt (developer tool)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />implemeted a
+conversational UI</label></li>
+<li><label><input type="checkbox" checked="" />configuration manager
+(e.g. target stack, services required by application)</label></li>
+<li><label><input type="checkbox" checked="" />model (model your
+data)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Add app metadata to AST
+and update newt YAML syntax docs</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Workflow testing and
+verification</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Config (used be init)</label></li>
+<li><label><input type="checkbox" />Model</label></li>
+<li><label><input type="checkbox" />Generator</label></li>
+<li><label><input type="checkbox" />Run</label></li>
+</ul></li>
+</ul></li>
+<li><label><input type="checkbox" />generate the following</label>
+<ul>
+<li><label><input type="checkbox" />SQL for
+Postgres+PostgREST</label></li>
+<li><label><input type="checkbox" />Handlebar template targetting Newt’s
+template engine</label></li>
+<li><label><input type="checkbox" />Automatic route management based on
+models and simple pipelines</label></li>
+<li><label><input type="checkbox" />Automatic template mapping based on
+models and simple pipelines</label></li>
+<li>(time permitting) [ ] TypeScript for model validator service</li>
+</ul></li>
+<li>run (target stack based on new implementation AST and data models)
+<ul class="task-list">
+<li><label><input type="checkbox" />Test building a new model from
+scratch and run</label></li>
+<li><label><input type="checkbox" />Test updating and existing model and
+run</label></li>
+<li><label><input type="checkbox" />Document the run command more
+fully</label></li>
+</ul></li>
+<li>data router (ndr)
+<ul>
+<li>data pipelines
+<ul class="task-list">
+<li><label><input type="checkbox" />validator integration via generated
+code (e.g. TypeScript run by Deno)</label></li>
+<li><label><input type="checkbox" />Postgres+PostgREST integration via
+generated code and configuration</label></li>
+<li><label><input type="checkbox" />Templates render data acurately
+(needs automated testing)</label></li>
+</ul></li>
+<li>static file service
+<ul class="task-list">
+<li><label><input type="checkbox" />Does it make sense to auto generate
+some static content like the about page and dashboard page?</label></li>
+</ul></li>
+<li><label><input type="checkbox" />related routes linked by an
+id</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Generator application code for two
+stacks (newt)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />SQL and config
+Postgres+PostgREST</label></li>
+<li><label><input type="checkbox" checked="" />Handlebar Templates and
+partials for the Template Engine</label></li>
+<li><label><input type="checkbox" />routes to enabled services using
+their port settings in the YAML file</label></li>
+<li><label><input type="checkbox" />template mappings</label></li>
+<li><label><input type="checkbox" />Generate a TypeScript web service
+for implementing serverside validation of submitted content for all
+models</label></li>
+<li><label><input type="checkbox" />Generate JavaScript for use with web
+form validation in the browser</label></li>
+</ul></li>
+<li><label><input type="checkbox" checked="" />Newt Template engine
+(nte)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />A template engine that
+works as the last stage of a JSON data pipeline</label></li>
+</ul></li>
+</ul>
+<h2 id="constraints">Constraints</h2>
+<ul>
+<li>Simple data models only</li>
+<li>No file upload support</li>
+<li>Models targets Postgres+PostgREST</li>
+<li>Newt services are restricted to localhost</li>
+<li>Access control defered to front end web service
+<ul>
+<li>Apache 2 or NginX plus Shibboleth and acls for URL paths</li>
+</ul></li>
+</ul>
+<h2 id="data-types">Data Types</h2>
+<p>Newt presents HTML 5 form elements as the native (base) set of data
+types. These imply predictable SQL column types when persisting the data
+in Postgres.</p>
+<p>Additional data types implemented via HTML 5 input element’s pattern
+attribute (e.g. similar to validation found in Python’s idutils
+package).</p>
+<p>Complex data types implented as textarea containing YAML (for
+fallback) and using web components to provide more intitive user
+experience if JavaScript is available in the browser.</p>
+<h2 id="proposed-roadmap-for-prototype-3">Proposed Roadmap for Prototype
+3</h2>
+<ul>
+<li>Targeted use cases (at Caltech Library)
+<ul>
+<li><a href="https://github.com/caltechlibrary/cold">cold</a></li>
+<li><a href="https://github.com/caltechlibrary/tms">tms</a></li>
+</ul></li>
+<li>TBD Demonstration to DLD group</li>
+<li>TBD Demonstration to Caltech Library staff</li>
+<li>TBD Demonstration for SoCal Code4Lib Meetup</li>
+<li>TBD Promote via recorded presentation</li>
+</ul>
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2024 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

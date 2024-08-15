@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="R. S. Doiel, rsdoiel@caltech.edu" />
+  <meta name="date" content="2024-04-19" />
+  <meta name="keywords" content="web service, micro
+service, Postgres, PostgREST, Mustache" />
+  <title>Newt, the second prototype</title>
+  <style type="text/css">
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="https://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="https://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Newt, the second prototype</h1>
+  <p class="author">
+R. S. Doiel, <a href="mailto:rsdoiel@caltech.edu"
+class="email">rsdoiel@caltech.edu</a>
+  </p>
+  <p class="institute">
+<p>Caltech Library, Digital Library Development</p>
+  </p>
+  <p class="date">2024-04-19</p>
+</div>
+<div class="slide" id="TOC">
+
+</div>
+<div id="what-is-newt" class="slide section level1">
+<h1>What is Newt?</h1>
+<ul>
+<li>A rapid application develop tool
+<ul>
+<li>for applications that curate metadata</li>
+</ul></li>
+<li>Audience: Libraries, Archives and Museums</li>
+</ul>
+</div>
+<div id="goal-of-prototype-2-answer-the-question."
+class="slide section level1">
+<h1>Goal of Prototype 2: Answer the question.</h1>
+<p>Is Newt and “off the shelf” software enough to create metadata
+curation applications?</p>
+</div>
+<div id="high-level-concepts" class="slide section level1">
+<h1>High level Concepts</h1>
+<ul>
+<li>describe the application you want</li>
+<li>generate the application you described</li>
+</ul>
+</div>
+<div id="implementation-concepts" class="slide section level1">
+<h1>Implementation Concepts</h1>
+<ul>
+<li>data sources</li>
+<li>data models</li>
+<li>routing requests through data pipelines</li>
+<li>rendering JSON responses via template engine</li>
+</ul>
+</div>
+<div id="themes" class="slide section level1">
+<h1>Themes</h1>
+<ul>
+<li>Pick Simple = (No coding) + (Less coding)</li>
+<li>Compose applications using data pipelines and templates</li>
+<li>Avoid inventing new things</li>
+</ul>
+</div>
+<div id="off-the-shelf-no-coding" class="slide section level1">
+<h1>Off the shelf (no coding)</h1>
+<ul>
+<li><a href="https://postgresql.org">Postgres</a> and <a
+href="https://postgrest.org">PostgREST</a></li>
+<li><a href="https://solr.apache.org">Solr</a> or <a
+href="https://opensearch.org">OpenSearch</a></li>
+<li>Newt Mustache =&gt; Transform JSON into web pages</li>
+<li>Newt Router, ties it all together</li>
+</ul>
+</div>
+<div id="office-the-shelf-other-data-sources"
+class="slide section level1">
+<h1>Office the shelf (other data sources)</h1>
+<ul>
+<li>ArchivesSpace, RDM -&gt; JSON API</li>
+<li>ORCID, ROR, CrossRef, DataCite -&gt; JSON API</li>
+</ul>
+</div>
+<div id="assemble-app-from-yaml-less-coding"
+class="slide section level1">
+<h1>Assemble app from YAML (less coding)</h1>
+<ul>
+<li>The application you want is described in YAML</li>
+<li>Newt generates the code you need</li>
+<li>Customize by editing the generated code</li>
+</ul>
+</div>
+<div id="how-are-data-models-described" class="slide section level1">
+<h1>How are data models described?</h1>
+<ul>
+<li>A model is a set of HTML form input types</li>
+<li>Expressed using GitHub YAML Issue Template Syntax</li>
+<li>Model describes HTML and implies SQL</li>
+</ul>
+</div>
+<div id="how-do-i-think-things-will-work" class="slide section level1">
+<h1>How do I think things will work?</h1>
+<ol style="list-style-type: decimal">
+<li>Interactively generate our application’s YAML file</li>
+<li>Interactively define data models</li>
+<li>Generate our application code</li>
+<li>Setup Postgres and PostgREST</li>
+<li>Run our app with Newt</li>
+</ol>
+</div>
+<div id="steps-one-and-two-are-interactive"
+class="slide section level1">
+<h1>Steps one and two are interactive</h1>
+<pre class="shell"><code>  newt init app.yaml
+  newt model app.yaml</code></pre>
+</div>
+<div id="step-three-generate-our-code" class="slide section level1">
+<h1>Step three, generate our code</h1>
+<pre class="shell"><code>  newt generate app.yaml</code></pre>
+<blockquote>
+<p>Renders SQL, PostgREST conf, Mustache templates</p>
+</blockquote>
+</div>
+<div id="step-four-setup-postgres-and-postgrest"
+class="slide section level1">
+<h1>Step four, setup Postgres and PostgREST</h1>
+<ol style="list-style-type: decimal">
+<li>Use the generated SQL and configuration</li>
+<li>Setup and check via <code>createdb</code> and <code>psql</code></li>
+</ol>
+</div>
+<div id="step-four-setup-postgres-and-postgrest-1"
+class="slide section level1">
+<h1>Step four, setup Postgres and PostgREST</h1>
+<pre class="shell"><code>  createdb app
+  psql app -c &#39;\i setup.sql&#39;
+  psql app -c &#39;\i models.sql&#39;
+  psql app -c &#39;\dt&#39;</code></pre>
+<blockquote>
+<p>should this be automated too?</p>
+</blockquote>
+</div>
+<div id="step-five-run-your-application-and-test"
+class="slide section level1">
+<h1>Step five, run your application and test</h1>
+<pre class="shell"><code>  newt run app.yaml</code></pre>
+<blockquote>
+<p>Point your web browser at http://localhost:8010 to test</p>
+</blockquote>
+</div>
+<div id="can-i-run-a-demo" class="slide section level1">
+<h1>Can I run a demo?</h1>
+<p>Not yet, hopefully in late May 2024.</p>
+</div>
+<div id="second-prototype-status" class="slide section level1">
+<h1>Second prototype Status</h1>
+<ul>
+<li>A work in progress (April 2024)</li>
+<li>Working prototype target date June 2024</li>
+<li>Using internal applications as test bed</li>
+</ul>
+</div>
+<div id="how-much-is-built" class="slide section level1">
+<h1>How much is built?</h1>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Newt developer
+tool</label></li>
+<li><label><input type="checkbox" checked="" />Router is implemented and
+working</label></li>
+<li><label><input type="checkbox" checked="" />Mustache template engine
+is working</label></li>
+<li><label><input type="checkbox" />Generator development (in
+progress)</label></li>
+<li><label><input type="checkbox" />Modeler (design stage)</label></li>
+</ul>
+</div>
+<div id="insights-from-prototypes-1-2" class="slide section level1">
+<h1>Insights from prototypes 1 &amp; 2</h1>
+<ul>
+<li>“Off the shelf” is simpler</li>
+<li>Lots of typing discourages use</li>
+</ul>
+</div>
+<div id="insights-from-prototypes-1-2-1" class="slide section level1">
+<h1>Insights from prototypes 1 &amp; 2</h1>
+<ul>
+<li>SQL turns people off, use a code generator</li>
+<li>Hand typing templates is a turn off, use a code generator</li>
+<li>Large YAML structures benefit from code generation</li>
+<li>Automatic “wiring up” of routes and templates very helpful</li>
+</ul>
+</div>
+<div id="whats-next-to-wrap-up-prototype-2"
+class="slide section level1">
+<h1>What’s next to wrap up prototype 2?</h1>
+<ul>
+<li>Debug and improve the code generator</li>
+<li>Implement a data modeler</li>
+</ul>
+</div>
+<div id="unanswered-questions" class="slide section level1">
+<h1>Unanswered Questions</h1>
+<ul>
+<li>What should be the minimum knowledge needed to use Newt?</li>
+<li>What should come out of the box with Newt?
+<ul>
+<li>GUI tools?</li>
+<li>Web components?</li>
+<li>Ready made apps?</li>
+</ul></li>
+</ul>
+</div>
+<div id="someday-maybe-ideas" class="slide section level1">
+<h1>Someday, maybe ideas</h1>
+<ul>
+<li>SQLite 3 database support</li>
+<li>A S3 protocol web service implementing object storage using
+OCFL</li>
+<li>Web components for library, archive and museum metadata types</li>
+<li>Visual programming would be easier than editing YAML files</li>
+</ul>
+</div>
+<div id="related-resources" class="slide section level1">
+<h1>Related resources</h1>
+<ul>
+<li>Newt <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Postgres <a href="https://postgres.org"
+class="uri">https://postgres.org</a> + PostgREST <a
+href="https://postgrest.org" class="uri">https://postgrest.org</a></li>
+<li><a href="https://mustache.github.io">Mustache</a> programming
+languages support</li>
+</ul>
+</div>
+<div id="thank-you" class="slide section level1">
+<h1>Thank you!</h1>
+<ul>
+<li>This Presentation
+<ul>
+<li>pdf: <a
+href="https://caltechlibrary.github.io/newt/presentation2/newt-p2.pdf"
+class="uri">https://caltechlibrary.github.io/newt/presentation2/newt-p2.pdf</a></li>
+<li>pptx: <a
+href="https://caltechlibrary.github.io/newt/presentation2/newt-p2.pptx"
+class="uri">https://caltechlibrary.github.io/newt/presentation2/newt-p2.pptx</a></li>
+</ul></li>
+<li>Newt Documentation <a href="https://caltechlibrary.github.io/newt"
+class="uri">https://caltechlibrary.github.io/newt</a></li>
+<li>Source Code: <a href="https://github.com/caltechlibrary/newt"
+class="uri">https://github.com/caltechlibrary/newt</a></li>
+<li>Email: rsdoiel@caltech.edu</li>
+</ul>
+</div>
+</body>
+</html>

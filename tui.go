@@ -10,7 +10,7 @@ import (
 
 const (
 	TuiStandardMenuHelp = `Enter menu letter and id`
-	TuiStandardMenu     = `Menu [a]dd, [m]odify, [r]emove, [q]uit (making changes)`
+	TuiStandardMenu     = `Menu [a]dd, [m]odify, [r]emove or press enter when done`
 )
 
 // getDigit get a numeric answer for a string input that is

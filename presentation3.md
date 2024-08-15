@@ -9,7 +9,7 @@ urlcolor: blue
 linkstyle: bold
 aspectratio: 169
 createDate: 2024-07-24
-updateDate: 2024-07-26
+updateDate: 2024-08-14
 #pubDate: TBD
 #place: TBD
 #date: TBD
@@ -36,9 +36,9 @@ Short answer is **yes**. Longer answer is more nuanced.
 > Is Newt and "off the shelf" software enough to create metadata curation applications?
 
 1. Newt's YAML file can grow very large for applications with many data models
-2. Model vetting and validation should happen early in the data pipeline, ideally as a generated program and browser side
+2. Model vetting and validation should happen early in the data pipeline, ideally as a generated program and browser side too
 3. Postgres+PostgREST is a powerful combination but it'd be nice to have something simpler
-4. Managing the YAML file should be done conversationally
+4. Managing the YAML file should be done interactively
 
 # Questions raised by Prototype 2:
 
@@ -57,28 +57,29 @@ Short answer is **yes**. Longer answer is more nuanced.
 - JSON data sources
 - data modeled in YAML
 - routing requests through data pipelines
-- simple template engine renders JSON to HTML
+- simple template engine renders JSON as HTML
 
 # Themes (remains the same)
 
 - Pick Simple = (No coding) + (Less coding)
-- Compose applications using data pipelines
+- Compose applications by combining models with data pipelines
 - Avoid inventing new things
 
 # Goal of Prototype 3: Questions to explore
 
-1. Is generated TypeScript middleware the right fit for a validation service?
-2. Is Handlebars a good fit for managing data views and rendering HTML?
-3. Is Postgres+PostgREST the right JSON data source to focus on?
+1. Is Handlebars a good fit for managing data views and rendering HTML?
+2. Is Postgres+PostgREST the right JSON data source to focus on?
+3. Is generated TypeScript middleware the right fit for a validation service?
 
 # Changes from last prototype
 
 - Removed some Go cli (e.g. ws, mustache, newtmustache)
-- The action "init" was renamed "config"
+- The action "init" was renamed "config", an optional action
 - Renamed newtrouter to ndr (Newt Data Router)
 - Added nte (Newt Template Engine) supporting Handlbars templates
 - Generating Handlebars templates
 - Generating TypeScript validator as middleware run via Deno
+- oid was renamed "identifier" to clearity
 
 # Off the shelf (no coding)
 
@@ -89,24 +90,22 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 # Assemble app from YAML (less coding)
 
-- Create the Newt YAML through a conversational TUI
-- Data modeling via a conversational TUI
+- Data modeling via a interactive user interface
+- Results is expressed in YAML
 
 # How do I think things will work?
 
-1. Interactively generate our application's YAML file (config)
-2. Interactively define data models (model)
-3. Generate our application code (generate)
-4. Run `newt run ...`  to run the application
+1. Model your data interactively
+2. Generate our application code
+3. Run and tesst app
 
-# Steps one and two are interactive
+# Steps one is interactive
 
 ~~~shell
-  newt config app.yaml
   newt model app.yaml
 ~~~
 
-# Step three, generate our code
+# Step two, generate our code
 
 ~~~shell
   newt generate app.yaml
@@ -117,14 +116,7 @@ Short answer is **yes**. Longer answer is more nuanced.
 > Creates a TypeScript model validation service
 > Wires up routes and template mappings
 
-# Step four, setup primary JSON data source
-
-## JSON data source
-
-> Load the SQL in to Postgres via `psql`
-> Run PostgREST via `newt run` ...
-
-# Step five, run your application and test
+# Step three run and tet
 
 ~~~shell
   newt run app.yaml
@@ -132,9 +124,9 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 > Point your web browser at http://localhost:8010 to test
 
-# Here's an ASCII type demo of the system
+# Here's a demo of the process
 
-FIXME: to be created and linked to after validation service generation completed
+FIXME: link to a record demonstration here
 
 # Third prototype Status
 
@@ -154,8 +146,8 @@ FIXME: to be created and linked to after validation service generation completed
 # Insights from prototypes 1, 2 & 3
 
 - "Off the shelf" is simpler
-- A Validition service in TypeScript lets us leverage the same generated code in the browser
-- A conversational UI looks promising (needs allot of refinement)
+- A validition service in TypeScript lets us leverage the same generated code in the browser
+- An interactive UI for managing YAML is helpful
 
 # Insights from prototypes 1 & 2
 
@@ -164,12 +156,11 @@ FIXME: to be created and linked to after validation service generation completed
 - Large YAML structures benefit from code generation
 - Automatic "wiring up" of routes and templates very helpful
 
-# What's next to wrap up prototype 4?
+# What's next?
 
-- Refine template engine
-- Refine Newt YAML syntax
-- Refine data router
-- Retarget, debug and improve the code generator
+- Build some real applications using Newt
+- Get feedback for refinement
+- Fix bugs
 
 # Out of the box
 
@@ -181,11 +172,11 @@ FIXME: to be created and linked to after validation service generation completed
 
 - What is the minimum knowledge required to use Newt effectively?
 - Who is in the target audience?
-- Would a visual programming approach make more sense then a conversational UI?
+- Would a visual programming approach or conversation user interface make sense?
 
 # Someday, maybe ideas
 
-- A visual programming approach could be easier than editing YAML files
+- A visual programming or conversational approach could be easier for managing the YAML file
 - Direct SQLite 3 database support and integration could be much simpler than Postgres+PostgREST
 - Web components for library, archive and museum metadata types
 - A S3 protocol web service implementing object storage using OCFL
