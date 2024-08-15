@@ -35,16 +35,16 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 > Is Newt and "off the shelf" software enough to create metadata curation applications?
 
-1. Newt's YAML file can grow very large for applications with many data models
-2. Model vetting and validation should happen early in the data pipeline, ideally as a generated program and browser side too
-3. Postgres+PostgREST is a powerful combination but it'd be nice to have something simpler
-4. Managing the YAML file should be done interactively
+1. Newt's YAML file can grow very large
+2. Managing the YAML file can be done interactively
+3. Model vetting and validation should happen early in the data pipeline
+4. Postgres+PostgREST is a complex back end
 
 # Questions raised by Prototype 2:
 
 - Where do I focus my simplification efforts?
-- How do I ensure that large YAML files remaining human manageable?
-- Mustache template language is a little too simple, what should replace it?
+- What is a "good enough" interface for managing the YAML file?
+- Mustache templates language are too simple, what should replace it?
 
 # High level Concepts (remain the same)
 
@@ -68,25 +68,31 @@ Short answer is **yes**. Longer answer is more nuanced.
 # Goal of Prototype 3: Questions to explore
 
 1. Is Handlebars a good fit for managing data views and rendering HTML?
-2. Is Postgres+PostgREST the right JSON data source to focus on?
-3. Is generated TypeScript middleware the right fit for a validation service?
+2. Is generated TypeScript validation middleware the right fit for a validation?
+3. Should Postgres+PostgREST remain the exclusive back end of Newt?
+4. Should the generate step subsume the external Postres commands?
+5. Should the generate step generate the validation middleware binary?
 
 # Changes from last prototype
 
 - Removed some Go cli (e.g. ws, mustache, newtmustache)
-- The action "init" was renamed "config", an optional action
+- The action "init" was renamed "config", now an optional action
+- The action "generate" was subsumed by "build"
 - Renamed newtrouter to ndr (Newt Data Router)
-- Added nte (Newt Template Engine) supporting Handlbars templates
-- Generating Handlebars templates
-- Generating TypeScript validator as middleware run via Deno
-- oid was renamed "identifier" to clearity
+- Added nte (Newt Template Engine), a Handlebars template engine
+
+# Changes from last prototype
+
+- "oid" was renamed "identifier"
+- Interactive modeler and configuration simplified
+- Experimenting with Deno+TypeScript validation middleware
 
 # Off the shelf (no coding)
 
 - JSON Data Source
   - [Postgres](https://postgresql.org) + [PostgREST](https://postgrest.org)
 - newt, ndr, and nte
-- Deno to run generated TypeScript validation middleware
+- Deno compiles TypeScript validation middleware
 
 # Assemble app from YAML (less coding)
 
@@ -97,32 +103,19 @@ Short answer is **yes**. Longer answer is more nuanced.
 
 1. Model your data interactively
 2. Generate our application code
-3. Run and tesst app
+3. (Re)create database, run setup.sql and models.sql
+4. Run and test using Newt command
 
-# Steps one is interactive
+# Shell example
 
 ~~~shell
   newt model app.yaml
-~~~
-
-# Step two, generate our code
-
-~~~shell
   newt generate app.yaml
-~~~
-
-> Create Postgres+PostgREST setup and schema (e.g. SQL files)
-> Generate Handlebars templates
-> Creates a TypeScript model validation service
-> Wires up routes and template mappings
-
-# Step three run and tet
-
-~~~shell
+  dropdb --if-exists app; createdb app
+  psql -c app '\i setup.sql'; psql -c app '\i models.sql'
   newt run app.yaml
+  open http://localhost:8010
 ~~~
-
-> Point your web browser at http://localhost:8010 to test
 
 # Here's a demo of the process
 
@@ -131,7 +124,7 @@ FIXME: link to a record demonstration here
 # Third prototype Status
 
 - A work in progress (continuing through 2024)
-- A Working version 1.0 hopefully in 2025
+- Working towards a version 1.0 release hopefully in 2025
 - Using internal applications as test bed
 
 # How much is built?
@@ -140,25 +133,25 @@ FIXME: link to a record demonstration here
 - [X] Router is implemented and working
 - [X] ~~Mustache template engine is working~~ (removed)
 - [X] Newt template engine (supporting Handlebars templates)
-- [X] Modeler (testing and refinement)
+- [ ] Modeler (testing and refinement)
 - [ ] Generator development (refactor, testing and refinement)
 
 # Insights from prototypes 1, 2 & 3
 
 - "Off the shelf" is simpler
-- A validition service in TypeScript lets us leverage the same generated code in the browser
 - An interactive UI for managing YAML is helpful
+- A validition needs to happen early in the data pipeline
 
 # Insights from prototypes 1 & 2
 
 - SQL turns people off, use a code generator
 - Hand typing templates is a turn off, use a code generator
 - Large YAML structures benefit from code generation
-- Automatic "wiring up" of routes and templates very helpful
+- Automatic "wiring up" routes and templates is helpful
 
 # What's next?
 
-- Build some real applications using Newt
+- Build real applications using Newt
 - Get feedback for refinement
 - Fix bugs
 
@@ -170,23 +163,23 @@ FIXME: link to a record demonstration here
 
 # Unanswered Questions
 
-- What is the minimum knowledge required to use Newt effectively?
 - Who is in the target audience?
-- Would a visual programming approach or conversation user interface make sense?
+- What is the minimum knowledge required to use Newt effectively?
+- What is the best human interface for Newt?
 
 # Someday, maybe ideas
 
-- A visual programming or conversational approach could be easier for managing the YAML file
+- A visual programming or conversational user interface
 - Direct SQLite 3 database support and integration could be much simpler than Postgres+PostgREST
 - Web components for library, archive and museum metadata types
-- A S3 protocol web service implementing object storage using OCFL
-- Generate code which can compile stack into a single binary application
+- A S3 protocol web service implementing file storage using OCFL
+- Render Newt apps into a standalone binary application
 
 # Related resources
 
 - Newt <https://github.com/caltechlibrary/newt>
-- Dataset + datasetd <https://github.com/caltechlibrary/dataset>
 - [Handlebars](https://handlebarsjs.com) programming languages support
+- Dataset + datasetd <https://github.com/caltechlibrary/dataset>
 
 # Thank you!
 

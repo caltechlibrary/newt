@@ -88,13 +88,14 @@ data pipelines and can host static content.</p>
 <blockquote>
 <p>Wait, what about my custom metadata needs?</p>
 </blockquote>
-<p>Metadata oriented applications tend to all need CRUD-L<a href="#fn2"
-class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>
-features. Customization tend towards data models. Newt’s configuration
-file includes simple YAML description of your data models. It uses the
-data model to render configuration, middleware and templates. Newt’s
-data router ties them all together into an application using service
-oriented architecture.</p>
+<p>Metadata oriented applications share the following operations –
+create, retrieve, update, delete and list. These are called CRUD-L<a
+href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a> features. Customization tend towards
+data models. Newt’s configuration file includes simple YAML description
+of your data models. It uses the data model to render configuration,
+middleware and templates. Newt’s data router ties them all together into
+an application using service oriented architecture.</p>
 <p>Newt provides:</p>
 <ul>
 <li>a simple data modeler</li>
@@ -102,9 +103,9 @@ oriented architecture.</p>
 <li>template engine</li>
 <li>data routing</li>
 </ul>
-<p>Extending your basic create, retrieve, update, delete and list
-application (abbr: CRUD-L) can be done through integrating additional
-data routes and services or through customizing the generated code.</p>
+<p>You can extend your application through browser side enhancements,
+adding additional data routes and pipelines or through customizing the
+generated code.</p>
 <h2 id="does-newt-clean-my-house-or-make-cocktails">Does Newt clean my
 house or make cocktails?</h2>
 <p>Newt is a narrowly focused rapid application development toolbox.
@@ -339,9 +340,10 @@ web service and using it as the input to another web service. It is the
 web equivalent of Unix pipes. Prior art: <a
 href="https://en.wikipedia.org/wiki/Yahoo!_Pipes">Yahoo! Pipes</a><a
 href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>CRUD-L, acronym meaning, “Create, Retrieve, Update,
-Delete and List”. These are the basic actions used to manage metadata.<a
-href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>CRUD-L, acronym meaning, “Create, Read, Update, Delete
+and List” or alternately “Create, Retrieve, Update, Delete and List”.
+These are the basic actions used to manage metadata.<a href="#fnref2"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>See <a
 href="https://infrequently.org/2024/01/performance-inequality-gap-2024/"
 class="uri">https://infrequently.org/2024/01/performance-inequality-gap-2024/</a>

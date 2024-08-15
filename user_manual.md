@@ -38,6 +38,7 @@
 - [prototype 2 ideas](prototype2.md)
 - [Have more questions?](more_questions.md)
 - [Reference Material](reference_material.md), links to prior art
+- [Dev notes and ideas](dev_notes_and_ideas.md)
 
 ## Installation
 

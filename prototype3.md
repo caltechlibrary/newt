@@ -14,10 +14,11 @@
   - [X] model (model your data)
     - [X] Add app metadata to AST and update newt YAML syntax docs
   - [ ] Workflow testing and verification
-    - [ ] Config (used be init)
     - [ ] Model
     - [ ] Generator
     - [ ] Run
+    - [ ] Config (optional) available if needed
+    - [ ] Check (optional) available if needed
 - [ ] generate the following
     - [ ] SQL for Postgres+PostgREST
     - [ ] Handlebar template targetting Newt's template engine
@@ -30,7 +31,7 @@
   - [ ] Document the run command more fully
 - data router  (ndr)
   - data pipelines
-    - [ ] validator integration via generated code (e.g. TypeScript run by Deno)
+    - [ ] validator integration via generated code (e.g. TypeScript run by Deno?)
     - [ ] Postgres+PostgREST integration via generated code and configuration
     - [ ] Templates render data acurately (needs automated testing)
   - static file service
@@ -77,3 +78,4 @@ in the browser.
 - TBD Demonstration to Caltech Library staff
 - TBD Demonstration for SoCal Code4Lib Meetup
 - TBD Promote via recorded presentation
+

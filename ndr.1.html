@@ -256,10 +256,10 @@ routes:
       - service: POST http://localhost:8011/post_create_response
         description: This is an result template for post create
   - id: post_update
-    request: GET /post_update/{identifier}
+    request: GET /post_update/{oid}
     description: Handle retrieving the webform for post update
     pipeline:
-      - service: GET http://localhost:3000/rpc/post_read/{identifier}
+      - service: GET http://localhost:3000/rpc/post_read/{oid}
         description: Retrieve post from PostgREST API before update
       - service: POST http://localhost:8011/post_update
         description: Display a post for update
@@ -267,15 +267,15 @@ routes:
     request: POST /post_update
     description: Handle form submission for post update
     pipeline:
-      - service: PUT http://localhost:3000/rpc/post_update/{identifier}
+      - service: PUT http://localhost:3000/rpc/post_update/{oid}
         description: Access PostgREST API for post update
       - service: POST http://localhost:8011/post_update_response
         description: This is an result template for post update
   - id: post_delete
-    request: GET /post_delete/{identifier}
+    request: GET /post_delete/{oid}
     description: Handle retrieving the webform for post delete
     pipeline:
-      - service: GET http://localhost:3000/rpc/post_read/{identifier}
+      - service: GET http://localhost:3000/rpc/post_read/{oid}
         description: Retrieve post from PostgREST API before delete
       - service: POST http://localhost:8011/post_delete
         description: Display a post for delete
@@ -283,7 +283,7 @@ routes:
     request: POST /post_delete
     description: Handle form submission for post delete
     pipeline:
-      - service: DELETE http://localhost:3000/rpc/post_delete/{identifier}
+      - service: DELETE http://localhost:3000/rpc/post_delete/{oid}
         description: Access PostgREST API for post delete
       - service: POST http://localhost:8011/post_delete_response
         description: This is an result template for post delete
@@ -291,7 +291,7 @@ routes:
     request: POST /post_read
     description: Retrieve object(s) for post read
     pipeline:
-      - service: GET http://localhost:3000/rpc/post_read/{identifier}
+      - service: GET http://localhost:3000/rpc/post_read/{oid}
         description: Access PostgREST API for post read
       - service: POST http://localhost:8011/post_read
         description: This template handles post read
