@@ -68,10 +68,10 @@ Short answer is **yes**. Longer answer is more nuanced.
 # Goal of Prototype 3: Questions to explore
 
 1. Is Handlebars a good fit for managing data views and rendering HTML?
-2. Is generated TypeScript validation middleware the right fit for a validation?
+2. Is TypeScript validation middleware the right fit?
 3. Should Postgres+PostgREST remain the exclusive back end of Newt?
-4. Should the generate step subsume the external Postres commands?
-5. Should the generate step generate the validation middleware binary?
+4. What is the right solution for the messy setup of Postgres+PostgREST?
+5. Should the generated TypeScript be compiled?
 
 # Changes from last prototype
 
@@ -114,10 +114,6 @@ Short answer is **yes**. Longer answer is more nuanced.
   newt run app.yaml
   firefox http://localhost:8010
 ~~~
-
-# Here's a demo of the process
-
-FIXME: link to a record demonstration here
 
 # Third prototype status
 
