@@ -131,12 +131,14 @@ func renderTemplate(generator *Generator, tType string, modelID string, action s
 // Generate the validator middleware a well as updating the Postgres+PostgRESTS
 // configuration and databases.
 func RunBuilder(in io.Reader, out io.Writer, eout io.Writer, args []string) int {
-	fmt.Fprintf(eout, `Builder not implemented yet. 
-This is the stage that should the following when complete.
+	fmt.Fprintf(eout, `Builder not fully implemented yet. 
 
-1 compile the validator middleware
+The generate step should have completed. The remaining steps are not yet implemented.
+
+1 compile the validator middleware using Deno
 2. (re)create the necessary database in Postgres
 3. Run the SQL files setup.sql and models.sql)
+
 `)
 	return BUILD_FAIL
 }
@@ -499,8 +501,8 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	case "generate":
 		return RunGenerator(in, out, eout, args)
 	case "build":
-		if err := RunGenerator(in, out, eout, args); err != nil {
-			return err
+		if errCode := RunGenerator(in, out, eout, args); errCode != 0 {
+			return errCode
 		}
 		return RunBuilder(in, out, eout, args)
 	case "run":

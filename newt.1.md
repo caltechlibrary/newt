@@ -1,6 +1,6 @@
 ---
-title: newt(1) user manual | 0.0.9 3662ba0
-pubDate: 2024-08-14
+title: newt(1) user manual | 0.0.9 9b8683c
+pubDate: 2024-08-15
 author: R. S. Doiel
 ---
 
@@ -14,22 +14,31 @@ newt [OPTIONS] ACTION [YAML_FILE]
 
 # DESCRIPTION
 
-**newt** is a developer tool. It can set up and run your Newt application
-during development.  **newt** provides three main actions or verbs.
-They are "model", "generate" and "run. There are additional verbs suppported
-such as "config" and "check".  The "model" action is interactive. It is the
-first step in generating your application.  It provides an interactive menu
-system for building your data model(s) for your application.
+**newt** is a developer tool. It model, build and run your Newt application.
+**newt** provides three main actions or verbs, "model", "build" and "run.
+There are additional verbs suppported such as "config", "check", "generate".
 
-The "generate" action will create Handlebar templates, SQL files and a TypeScript
-validation service.
+The "model" action is interactive. It is the first step in your development cycle.
+It provides an interactive menu system building your data model(s).
 
-The "run" action will launch your services for testing and refining your application.
+The "build" action will generate all the external code such as Handlebar templates,
+SQL files, and a TypeScript validation service. Additionally this steps will
+(re)create your Postgres databases and configure them for use with PostgREST.
+It will also compile the TypeScript validation service into a stand alone
+binary using Deno.
+
+The "run" action will launch your services for testing your application.
+
+There are some optional actions for advanced work.
 
 The "config" action can be run if you need to adjust the ports used by your services.
 
 The "check" will analyze the the YAML file and report results of the analyze and as
 well as validate the YAML syntax.
+
+The "generate" action will generate the SQL, templates and TypeScript files with
+out completing the build process. Useful if you want to inspect or customize
+the generated code.
 
 A Newt YAML filename is requires by the actions. If the file doesn't exist one will
 be created.
@@ -55,9 +64,11 @@ The following options are supported by **newt**.
 model [YAML_FILE]
 : this will read the current Newt YAML file and run the interactive modeler updating the Newt YAML file.
 
-generate [YAML_FILE]
-: this is used to generate your SQL, PostgREST configuration and Handlebars templates
-based on the contents of your Newt YAML file.
+build [YAML_FILE]
+: this is used to generate your SQL, PostgREST configuration, Handlebars templates,
+TypeScript validation middleware, based on the contents of your Newt YAML file.
+The build action also also (re)creates your Postgres database, configure for use
+with PostgREST and compile the TypeScript middleware using Deno.
 
 run [YAML_FILE]
 : this will run the defined services in the application attribute of the Newt YAML file.
