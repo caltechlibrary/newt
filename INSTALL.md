@@ -4,8 +4,6 @@ Installation
 
 Newt is an experimental set of programs for rapid application development for libraries, archives and museums. It provides a data router, code generator and Mustache template engine. At this time you must install it from source code. The programs are likely broken, poorly documented and certainly contain bugs. It's a prototype!
 
-<!--
-
 Quick install with curl or irm
 ------------------------------
 
@@ -22,7 +20,6 @@ In Powershell on Windows you can use the following command
 irm https://caltechlibrary.github.io/newt/installer.ps1 | iex
 ~~~
 
--->
 
 Install from source
 -------------------
