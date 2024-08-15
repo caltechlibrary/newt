@@ -102,30 +102,28 @@ Short answer is **yes**. Longer answer is more nuanced.
 # How do I think things will work?
 
 1. Model your data interactively
-2. Generate our application code
-3. (Re)create database, run setup.sql and models.sql
-4. Run and test using Newt command
+2. Build your application
+3. Run and test using Newt command
+4. Test with your favorite web browser
 
-# Shell example
+# Here's the shell commands
 
 ~~~shell
   newt model app.yaml
-  newt generate app.yaml
-  dropdb --if-exists app; createdb app
-  psql -c app '\i setup.sql'; psql -c app '\i models.sql'
+  newt build app.yaml
   newt run app.yaml
-  open http://localhost:8010
+  firefox http://localhost:8010
 ~~~
 
 # Here's a demo of the process
 
 FIXME: link to a record demonstration here
 
-# Third prototype Status
+# Third prototype status
 
 - A work in progress (continuing through 2024)
-- Working towards a version 1.0 release hopefully in 2025
-- Using internal applications as test bed
+- Working towards a version 1.0 release in 2025
+- Using parts of Newt internally
 
 # How much is built?
 
@@ -136,44 +134,40 @@ FIXME: link to a record demonstration here
 - [ ] Modeler (testing and refinement)
 - [ ] Generator development (refactor, testing and refinement)
 
-# Insights from prototypes 1, 2 & 3
-
-- "Off the shelf" is simpler
-- An interactive UI for managing YAML is helpful
-- A validition needs to happen early in the data pipeline
-
-# Insights from prototypes 1 & 2
-
-- SQL turns people off, use a code generator
-- Hand typing templates is a turn off, use a code generator
-- Large YAML structures benefit from code generation
-- Automatic "wiring up" routes and templates is helpful
-
-# What's next?
-
-- Build real applications using Newt
-- Get feedback for refinement
-- Fix bugs
-
-# Out of the box
+# Out of the box prototype 3
 
 - `newt` the Newt development tool
 - `ndr` the Newt data router
 - `nte` the Newt Template Engine
+- Depends on Postgres+PostgREST and Deno
+
+# What's next?
+
+- Plan 4th prototype
+- Build real applications with 4th prototype
+- Get feedback for refinement
+- Fix bugs
+
+# Lessons from current development
+
+- "Off the shelf" is simpler
+- An interactive UI is more compelling
+- A simpler "back end" is desirable
 
 # Unanswered Questions
 
-- Who is in the target audience?
-- What is the minimum knowledge required to use Newt effectively?
+- What is the minimum knowledge needed to use Newt effectively?
 - What is the best human interface for Newt?
+- Who is in the target audience?
 
 # Someday, maybe ideas
 
+- Release v1.0 of Newt
 - A visual programming or conversational user interface
-- Direct SQLite 3 database support and integration could be much simpler than Postgres+PostgREST
+- Simplified backend (e.g. SQLite3) 
 - Web components for library, archive and museum metadata types
-- A S3 protocol web service implementing file storage using OCFL
-- Render Newt apps into a standalone binary application
+- S3 protocol support for implementing file storage using OCFL
+- Render whole newt app as a standalone binary
 
 # Related resources
 

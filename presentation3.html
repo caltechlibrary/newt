@@ -126,24 +126,22 @@ coding)</h1>
 work?</h1>
 <ol type="1">
 <li>Model your data interactively</li>
-<li>Generate our application code</li>
-<li>(Re)create database, run setup.sql and models.sql</li>
+<li>Build your application</li>
 <li>Run and test using Newt command</li>
+<li>Test with your favorite web browser</li>
 </ol>
-<h1 id="shell-example">Shell example</h1>
+<h1 id="heres-the-shell-commands">Here’s the shell commands</h1>
 <pre class="shell"><code>  newt model app.yaml
-  newt generate app.yaml
-  dropdb --if-exists app; createdb app
-  psql -c app &#39;\i setup.sql&#39;; psql -c app &#39;\i models.sql&#39;
+  newt build app.yaml
   newt run app.yaml
-  open http://localhost:8010</code></pre>
+  firefox http://localhost:8010</code></pre>
 <h1 id="heres-a-demo-of-the-process">Here’s a demo of the process</h1>
 <p>FIXME: link to a record demonstration here</p>
-<h1 id="third-prototype-status">Third prototype Status</h1>
+<h1 id="third-prototype-status">Third prototype status</h1>
 <ul>
 <li>A work in progress (continuing through 2024)</li>
-<li>Working towards a version 1.0 release hopefully in 2025</li>
-<li>Using internal applications as test bed</li>
+<li>Working towards a version 1.0 release in 2025</li>
+<li>Using parts of Newt internally</li>
 </ul>
 <h1 id="how-much-is-built">How much is built?</h1>
 <ul class="task-list">
@@ -160,47 +158,41 @@ refinement)</label></li>
 <li><label><input type="checkbox" />Generator development (refactor,
 testing and refinement)</label></li>
 </ul>
-<h1 id="insights-from-prototypes-1-2-3">Insights from prototypes 1, 2
-&amp; 3</h1>
-<ul>
-<li>“Off the shelf” is simpler</li>
-<li>An interactive UI for managing YAML is helpful</li>
-<li>A validition needs to happen early in the data pipeline</li>
-</ul>
-<h1 id="insights-from-prototypes-1-2">Insights from prototypes 1 &amp;
-2</h1>
-<ul>
-<li>SQL turns people off, use a code generator</li>
-<li>Hand typing templates is a turn off, use a code generator</li>
-<li>Large YAML structures benefit from code generation</li>
-<li>Automatic “wiring up” routes and templates is helpful</li>
-</ul>
-<h1 id="whats-next">What’s next?</h1>
-<ul>
-<li>Build real applications using Newt</li>
-<li>Get feedback for refinement</li>
-<li>Fix bugs</li>
-</ul>
-<h1 id="out-of-the-box">Out of the box</h1>
+<h1 id="out-of-the-box-prototype-3">Out of the box prototype 3</h1>
 <ul>
 <li><code>newt</code> the Newt development tool</li>
 <li><code>ndr</code> the Newt data router</li>
 <li><code>nte</code> the Newt Template Engine</li>
+<li>Depends on Postgres+PostgREST and Deno</li>
+</ul>
+<h1 id="whats-next">What’s next?</h1>
+<ul>
+<li>Plan 4th prototype</li>
+<li>Build real applications with 4th prototype</li>
+<li>Get feedback for refinement</li>
+<li>Fix bugs</li>
+</ul>
+<h1 id="lessons-from-current-development">Lessons from current
+development</h1>
+<ul>
+<li>“Off the shelf” is simpler</li>
+<li>An interactive UI is more compelling</li>
+<li>A simpler “back end” is desirable</li>
 </ul>
 <h1 id="unanswered-questions">Unanswered Questions</h1>
 <ul>
-<li>Who is in the target audience?</li>
-<li>What is the minimum knowledge required to use Newt effectively?</li>
+<li>What is the minimum knowledge needed to use Newt effectively?</li>
 <li>What is the best human interface for Newt?</li>
+<li>Who is in the target audience?</li>
 </ul>
 <h1 id="someday-maybe-ideas">Someday, maybe ideas</h1>
 <ul>
+<li>Release v1.0 of Newt</li>
 <li>A visual programming or conversational user interface</li>
-<li>Direct SQLite 3 database support and integration could be much
-simpler than Postgres+PostgREST</li>
+<li>Simplified backend (e.g. SQLite3)</li>
 <li>Web components for library, archive and museum metadata types</li>
-<li>A S3 protocol web service implementing file storage using OCFL</li>
-<li>Render Newt apps into a standalone binary application</li>
+<li>A S3 protocol support for implementing file storage using OCFL</li>
+<li>Render whole newt app as a standalone binary</li>
 </ul>
 <h1 id="related-resources">Related resources</h1>
 <ul>
