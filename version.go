@@ -5,16 +5,16 @@ import (
 )
 
 const (
-    // Version number of release
-    Version = "0.0.9"
+	// Version number of release
+	Version = "0.0.9"
 
-    // ReleaseDate, the date version.go was generated
-    ReleaseDate = "2024-08-15"
+	// ReleaseDate, the date version.go was generated
+	ReleaseDate = "Fri 08/16/2024"
 
-    // ReleaseHash, the Git hash when version.go was generated
-    ReleaseHash = "9b8683c"
+	// ReleaseHash, the Git hash when version.go was generated
+	ReleaseHash = "h"
 
-    LicenseText = `
+	LicenseText = `
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -47,9 +47,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // FmtHelp lets you process a text block with simple curly brace markup.
 func FmtHelp(src string, appName string, version string, releaseDate string, releaseHash string) string {
-	m := map[string]string {
-		"{app_name}": appName,
-		"{version}": version,
+	m := map[string]string{
+		"{app_name}":     appName,
+		"{version}":      version,
 		"{release_date}": releaseDate,
 		"{release_hash}": releaseHash,
 	}
