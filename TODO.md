@@ -24,6 +24,10 @@
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
 - [ ] Evaluate how to organize root YAML to support a selection of backends, e.g. Postgres+PostgREST, Dataset+datasetd. It is important to be able to evolve the back end without causing a major code refactor each time
+    - [ ] Look at `just` tool written in rust and see what might need to be adjusted in the context of Newt application pipelines
+    - [ ] Decide what fields the runnable applications need for both running and configuration generation (or drop generating postgrest.conf)
+    - [ ] The list of applications for the backend stack are ordered and reflected in the startup sequence
+    - [ ] Is there a specific set of roles the backend components play?
 - [ ] The `*_response.hbs` templates seem unnecessary, the "read" template given the data can is the same thing
     - [ ] The "response" pages could be implemented as a redirect to the read end point
     - [ ] It can be done as a template using that generates a page redirect via head, meta elements

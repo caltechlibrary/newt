@@ -26,7 +26,9 @@ type AST struct {
 	// AppMetadata holds you app's metadata such as needed to render an "about" page in your final app.
 	AppMetadata *AppMetadata `json:"app_metadata,omitempty" yaml:"app_metadata,omitempty"`
 
-	// Application holds the application specific settings and metadata needed to compose your Newt Application.
+	// Application holds the back end application with their specific settings used to compose your Newt Application.
+	//FIXME: This should be a list of "application" objects their settings.  This would include start/stop/restart actions
+	// and enough metadata to generated appropriate Systemd and Luanchd configurations.
 	Applications *Applications `json:"applications,omitempty" yaml:"applications,omitempty"`
 
 	// Models holds a list of data models. It is used by
