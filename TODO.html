@@ -79,7 +79,20 @@ implementation plans</p>
 <li><p><label><input type="checkbox" />Evaluate how to organize root
 YAML to support a selection of backends, e.g. Postgres+PostgREST,
 Dataset+datasetd. It is important to be able to evolve the back end
-without causing a major code refactor each time</label></p></li>
+without causing a major code refactor each time</label></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Look at <code>just</code> tool
+written in rust and see what might need to be adjusted in the context of
+Newt application pipelines</label></li>
+<li><label><input type="checkbox" />Decide what fields the runnable
+applications need for both running and configuration generation (or drop
+generating postgrest.conf)</label></li>
+<li><label><input type="checkbox" />The list of applications for the
+backend stack are ordered and reflected in the startup
+sequence</label></li>
+<li><label><input type="checkbox" />Is there a specific set of roles the
+backend components play?</label></li>
+</ul></li>
 <li><p><label><input type="checkbox" />The <code>*_response.hbs</code>
 templates seem unnecessary, the “read” template given the data can is
 the same thing</label></p>

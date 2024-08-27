@@ -271,24 +271,25 @@ func NewRouter(ast *AST) (*Router, error) {
 	if ast.Applications == nil {
 		return nil, fmt.Errorf("applications and router not configured")
 	}
-	if ast.Applications.Router == nil {
+	appRouter := ast.GetApplication("router")
+	if appRouter == nil {
 		return nil, fmt.Errorf("router not configured")
 	}
-	if ast.Applications.Router.Htdocs != "" {
-		router.Htdocs = ast.Applications.Router.Htdocs
+	if appRouter.Htdocs != "" {
+		router.Htdocs = appRouter.Htdocs
 	}
-	if ast.Applications.Router.Port != 0 {
-		router.Port = ast.Applications.Router.Port
+	if appRouter.Port != 0 {
+		router.Port = appRouter.Port
 	}
 	// Populate an env from our allowed environment variables
 	for _, route := range router.Routes {
 		// Copy in the applications options without overwriting the route specific
 		// defined options.  NOTE: Application options have already been resolved
 		// with the environment by ast.LoadAST()
-		if route.Options == nil && len(ast.Applications.Options) > 0 {
+		if appRouter.Options == nil && len(appRouter.Options) > 0 {
 			route.Options = make(map[string]interface{})
 		}
-		for k, v := range ast.Applications.Options {
+		for k, v := range appRouter.Options {
 			if _, conflict := route.Options[k]; !conflict {
 				route.Options[k] = v
 			}

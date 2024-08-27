@@ -15,7 +15,7 @@
     - "identifier" seems like the best choice, I think it is something that the something library community understands
   - [X] The address becomes lower case in conversation UI (`.app_metadata`)
 - [ ] Check should summarize each service not just template engine or only show errors and report OK otherwise
-    - [ ] Missing information about router, should indicate port as well as if htdocs is set
+  - [ ] Missing information about router, should indicate port as well as if htdocs is set
 - [X] In generated Newt YAML file the bang line is incorrect (missing bang)
 - [ ] When creating a new object, the resulting JSON should return the identifier then a template can trigger a redirect in the browser to a read end point using the identifier
 
@@ -23,15 +23,16 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
-- [ ] Evaluate how to organize root YAML to support a selection of backends, e.g. Postgres+PostgREST, Dataset+datasetd. It is important to be able to evolve the back end without causing a major code refactor each time
-    - [ ] Look at `just` tool written in rust and see what might need to be adjusted in the context of Newt application pipelines
-    - [ ] Decide what fields the runnable applications need for both running and configuration generation (or drop generating postgrest.conf)
-    - [ ] The list of applications for the backend stack are ordered and reflected in the startup sequence
-    - [ ] Is there a specific set of roles the backend components play?
+- [ ] Evaluate how to organize root YAML to support a selection of backends, e.g. Postgres+PostgREST or Dataset+datasetd. 
+  - It is important to be able to evolve the back end without causing a major code refactor each time
+  - [ ] Look at `just` tool written in rust and see what might need to be adjusted in the context of Newt application pipelines
+  - [ ] Decide what fields the runnable applications need for both running and configuration generation (or drop generating postgrest.conf)
+  - [ ] The list of applications for the backend stack are ordered and reflected in the startup sequence
+  - [ ] Is there a specific set of roles the backend components play?
 - [ ] The `*_response.hbs` templates seem unnecessary, the "read" template given the data can is the same thing
-    - [ ] The "response" pages could be implemented as a redirect to the read end point
-    - [ ] It can be done as a template using that generates a page redirect via head, meta elements
-    - [ ] It'd be nice to be able to have the pipeline handle the redirect as a psuedo service
+  - [ ] The "response" pages could be implemented as a redirect to the read end point
+  - [ ] It can be done as a template using that generates a page redirect via head, meta elements
+  - [ ] It'd be nice to be able to have the pipeline handle the redirect as a psuedo service
 - [ ] First step in process should be modeling the data
 - [ ] Drop "config" verb, this should be automatic if the ports need to be changed then that is a whole other level of knowledge needed
   - [ ] Presume the stack is Postgres + PostgREST
@@ -47,7 +48,7 @@ NOTE: X is completed, P is partial completion, D (dropped) from implementation p
 - [ ] Review [go-webui](https://github.com/webui-dev/go-webui) for implementing a GUI for newt
 - [ ] Adding modeler.go shows I need to cleanup code and normalize an API info working with models, updating routes and templates based on updated models list.
 - [ ] Postgres configuration in yamlgen.go needs to include a DSN to make the connection for loading our SQL
-[ ] I need to implement the third prototype code generator once I've debugged the Newt YAML syntax
+- [ ] I need to implement the third prototype code generator once I've debugged the Newt YAML syntax
   - [ ] setup.sql
   - [ ] models.sql
   - [ ] postgrest.conf

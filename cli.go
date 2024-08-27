@@ -50,16 +50,16 @@ const (
 	TEMPLATE_ERROR
 
 	// Default service settings
-	ROUTER_PORT             = 8010
-	TEMPLATE_ENGINE_PORT    = 8011
-	TEMPLATE_ENGINE_TIMEOUT = 3 * time.Second
-	TEMPLATE_ENGINE_BASE_DIR   = "views"
-	TEMPLATE_ENGINE_PARTIALS_DIR   = "partials"
-	TEMPLATE_ENGINE_EXT_NAME   = ".hbs"
-	SWS_PORT                = 8000
-	SWS_HTDOCS              = "."
-	POSTGREST_PORT          = 3000
-	POSTGRES_PORT           = 5432
+	ROUTER_PORT                  = 8010
+	TEMPLATE_ENGINE_PORT         = 8011
+	TEMPLATE_ENGINE_TIMEOUT      = 3 * time.Second
+	TEMPLATE_ENGINE_BASE_DIR     = "views"
+	TEMPLATE_ENGINE_PARTIALS_DIR = "partials"
+	TEMPLATE_ENGINE_EXT_NAME     = ".hbs"
+	SWS_PORT                     = 8000
+	SWS_HTDOCS                   = "."
+	POSTGREST_PORT               = 3000
+	POSTGRES_PORT                = 5432
 )
 
 // backupFile takes a filename, copies it to filename plus ".bak"
@@ -163,7 +163,7 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 	}
 	//NOTE: I need to generate each of the files needed for Postgres and PostgREST
 	for _, fName := range []string{"setup.sql", "models.sql"} {
-	    action := strings.TrimSuffix(fName, ".sql")	
+		action := strings.TrimSuffix(fName, ".sql")
 		if err := renderTemplate(generator, "postgres", "", action, fName); err != nil {
 			fmt.Fprintf(eout, "%s\n", err)
 			return GENERATOR_FAIL
@@ -175,63 +175,67 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 		fmt.Fprintf(eout, "%s\n", err)
 		return GENERATOR_FAIL
 	}
+	templateEngine := ast.GetApplication("template_engine")
+	if templateEngine != nil {
+		//NOTE: For each model generate a set of templates
+		for _, modelID := range ast.GetModelIds() {
+			// backup and generate {model}_create_form.hbs, {model}_create_response.hbs
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_create_form%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "create_form", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_create_response%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "create_response", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
 
-	//NOTE: For each model generate a set of templates
-	for _, modelID := range ast.GetModelIds() {
-		// backup and generate {model}_create_form.hbs, {model}_create_response.hbs
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_create_form%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "create_form", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
+			// backup and generate {model}_read.hbs
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_read%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "read", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
+			// backup and generate {model}_update_form.hbs, {model}_update_response.hbs
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_update_form%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "update_form", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_update_response%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "update_response", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
+			// backup and generate {model}_delete_form.hbs, {model}_delete_response.hbs
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_delete_form%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "delete_form", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_delete_response%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "delete_response", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
+			// backup and generate {model}_list.hbs
+			fName = path.Join(templateEngine.BaseDir, fmt.Sprintf("%s_list%s", modelID, templateEngine.ExtName))
+			if err := renderTemplate(generator, "template", modelID, "list", fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
 		}
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_create_response%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "create_response", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
+		// Need to generate Handlebars partials.
+		for _, partialType := range []string{"head", "header", "nav", "footer"} {
+			fName = path.Join(templateEngine.BaseDir, templateEngine.PartialsDir, partialType+templateEngine.ExtName)
+			if err := renderTemplate(generator, "partial_template", "", partialType, fName); err != nil {
+				fmt.Fprintf(eout, "%s\n", err)
+				return GENERATOR_FAIL
+			}
 		}
-
-		// backup and generate {model}_read.hbs
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_read%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "read", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
-		}
-		// backup and generate {model}_update_form.hbs, {model}_update_response.hbs
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_update_form%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "update_form", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
-		}
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_update_response%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "update_response", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
-		}
-		// backup and generate {model}_delete_form.hbs, {model}_delete_response.hbs
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_delete_form%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "delete_form", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
-		}
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_delete_response%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "delete_response", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
-		}
-		// backup and generate {model}_list.hbs
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, fmt.Sprintf("%s_list%s", modelID, ast.Applications.TemplateEngine.ExtName))
-		if err := renderTemplate(generator, "template", modelID, "list", fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
-		}
-	}
-	// Need to generate Handlebars partials.
-	for _, partialType := range []string{ "head", "header", "nav", "footer" } {
-		fName = path.Join(ast.Applications.TemplateEngine.BaseDir, ast.Applications.TemplateEngine.PartialsDir, partialType + ast.Applications.TemplateEngine.ExtName)
-		if err := renderTemplate(generator, "partial_template", "", partialType, fName); err != nil {
-			fmt.Fprintf(eout, "%s\n", err)
-			return GENERATOR_FAIL
-		}
+	} else {
+		fmt.Fprintf(eout, "WARNING: templated engine not configured\n")
 	}
 	return OK
 }
@@ -259,7 +263,7 @@ func RunTemplateEngine(in io.Reader, out io.Writer, eout io.Writer, args []strin
 		fmt.Fprintf(eout, "now templates found in %s\n", fName)
 		return CONFIG
 	}
-	if ast.Applications.TemplateEngine == nil {
+	if ast.GetApplication("template_engine") == nil {
 		fmt.Fprintf(eout, "missing template engine configuration in %q", fName)
 		return CONFIG
 	}
@@ -423,11 +427,12 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		return CHECK_FAIL
 	}
 	if verbose {
-		if ast.Applications.PostgREST != nil {
-			fmt.Fprintf(out, "PostgREST configuration is %s\n", ast.Applications.PostgREST.ConfPath)
+		postgREST := ast.GetApplication("postgrest")
+		if postgREST != nil {
+			fmt.Fprintf(out, "PostgREST configuration is %s\n", postgREST.ConfPath)
 			fmt.Fprintf(out, "PostgREST will be run with the command %q\n", strings.Join([]string{
-				ast.Applications.PostgREST.AppPath,
-				ast.Applications.PostgREST.ConfPath,
+				postgREST.AppPath,
+				postgREST.ConfPath,
 			}, " "))
 		}
 		if ast.Models != nil {
@@ -438,14 +443,15 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				}
 			}
 		}
-		if ast.Applications.Router != nil {
+		router := ast.GetApplication("router")
+		if router != nil {
 			port := ROUTER_PORT
-			if ast.Applications.Router.Port != 0 {
-				port = ast.Applications.Router.Port
+			if router.Port != 0 {
+				port = router.Port
 			}
 			fmt.Fprintf(out, "Newt Router configured, port set to :%d\n", port)
-			if ast.Applications.Router.Htdocs != "" {
-				fmt.Fprintf(out, "Static content will be served from %s\n", ast.Applications.Router.Htdocs)
+			if router.Htdocs != "" {
+				fmt.Fprintf(out, "Static content will be served from %s\n", router.Htdocs)
 			}
 			if ast.Routes != nil {
 				for _, r := range ast.Routes {
@@ -456,8 +462,9 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				}
 			}
 		}
-		if ast.Applications.TemplateEngine != nil {
-			port := ast.Applications.TemplateEngine.Port
+		templateEngine := ast.GetApplication("template_engine")
+		if templateEngine != nil {
+			port := templateEngine.Port
 			if port == 0 {
 				port = TEMPLATE_ENGINE_PORT
 			}
@@ -535,9 +542,9 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		return CONFIG
 	}
 	// Startup PostgREST if configured in the Newt YAML file.
-	if ast.Applications.PostgREST != nil &&
-		ast.Applications.PostgREST.ConfPath != "" && ast.Applications.PostgREST.AppPath != "" {
-		postgREST := ast.Applications.PostgREST
+	postgREST := ast.GetApplication("postgrest")
+	if postgREST != nil &&
+		postgREST.ConfPath != "" && postgREST.AppPath != "" {
 		cwd, err := os.Getwd()
 		if err != nil {
 			log.Println(err)
@@ -558,14 +565,14 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		cmd.Process.Release()
 	}
 	// Setup and start Newt template engine first
-	if ast.Applications.TemplateEngine != nil {
+	if ast.GetApplication("template_engine") != nil {
 		go func() {
 			RunTemplateEngine(in, out, eout, args, 0, 0, verbose)
 		}()
 	}
 
 	// The router starts up second and is what prevents service from falling through.
-	if ast.Applications.Router != nil {
+	if ast.GetApplication("router") != nil {
 		go func() {
 			RunRouter(in, out, eout, args, false, 0, "", verbose)
 		}()
@@ -696,26 +703,26 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 	}
 	// Step 2. If "applications" not configured, generate default configuration.
 	if ast.Applications == nil ||
-		ast.Applications.Router == nil ||
-		ast.Applications.Postgres == nil ||
-		ast.Applications.PostgREST == nil ||
-		ast.Applications.TemplateEngine == nil {
-        ast.Applications = new(Applications)
-        skipPrompts := true
-        setupAppMetadata(ast, readBuffer, out, appFName, skipPrompts)
-        setupRouter(ast, readBuffer, out, appFName, skipPrompts)
-        setupPostgresAndPostgREST(ast, readBuffer, out, appFName, skipPrompts)
-        setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)
-        setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
-        setupOptions(ast, readBuffer, out, appFName, skipPrompts)
-        bName := path.Base(appFName)
-        ext := path.Ext(appFName)
-        mName := strings.TrimSuffix(bName, ext)
-        if len(args) == 0 {
-        	args = append(args, mName)
-        } else if len(args) == 1 {
-            args[0] = mName
-        }
+		ast.GetApplication("router") == nil ||
+		ast.GetApplication("postgres") == nil ||
+		ast.GetApplication("postgrest") == nil ||
+		ast.GetApplication("template_engine") == nil {
+		ast.Applications = new(Applications)
+		skipPrompts := true
+		setupAppMetadata(ast, readBuffer, out, appFName, skipPrompts)
+		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
+		setupPostgresAndPostgREST(ast, readBuffer, out, appFName, skipPrompts)
+		setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)
+		setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
+		setupOptions(ast, readBuffer, out, appFName, skipPrompts)
+		bName := path.Base(appFName)
+		ext := path.Ext(appFName)
+		mName := strings.TrimSuffix(bName, ext)
+		if len(args) == 0 {
+			args = append(args, mName)
+		} else if len(args) == 1 {
+			args[0] = mName
+		}
 	}
 	// Step 3. build our lists of models and manage them
 	if err := modelerTUI(ast, in, out, eout, appFName, args); err != nil {

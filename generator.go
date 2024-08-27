@@ -41,41 +41,51 @@ func NewGenerator(ast *AST) (*Generator, error) {
 		return nil, fmt.Errorf("configuration missing for applications")
 	}
 	generator := &Generator{}
-	generator.Namespace = ast.Applications.Postgres.Namespace
+	postgres := ast.GetApplication("postgres")
+	postgREST := ast.GetApplication("postgrest")
+	templateEngine := ast.GetApplication("template_engine")
+	generator.Namesspace = ""
 	generator.Models = ast.Models
 	generator.Options = make(map[string]interface{})
 	if ast.AppMetadata != nil {
 		generator.AppMetadata = ast.AppMetadata
 	}
-	if ast.Applications.Postgres != nil {
-		generator.Postgres = ast.Applications.Postgres
+	if postgres != nil {
+		generator.Postgres = postgres
+		generator.Namespace = postgres.Namespace
 	}
-	if ast.Applications.PostgREST != nil {
-		generator.PostgREST = ast.Applications.PostgREST
+	if postgREST != nil {
+		generator.PostgREST = postgREST
 	}
-	if ast.Applications.TemplateEngine != nil {
-		generator.TemplateEngine = ast.Applications.TemplateEngine
+	if templateEngine != nil {
+		generator.TemplateEngine = templateEngine
 	}
 	// NOTE: LoadCondfig handles loading the environment into options. We just need to
 	// copy into the Generator struct.
-	if len(ast.Applications.Options) > 0 {
-		for k, v := range ast.Applications.Options {
-			generator.Options[k] = v
-		}
+	for k, v := range postgres.Options {
+		generator.Options[k] = v
+	}
+	for k, v := range postgrest.Options {
+		generator.Options[k] = v
+	}
+	for k, v := range postgREST.Options {
+		generator.Options[k] = v
+	}
+	for k, v := range templateEngine.Options {
+		generator.Options[k] = v
 	}
 	return generator, nil
 }
 
 // renderPostgreSQL does what its name implies. It outputs an SQL
 // program in Postgres SQL dialect. It does so for a specific type
-// request. Possible values are "setup" and "models". 
+// request. Possible values are "setup" and "models".
 //
 // The "setup" code type includes a placeholder for your DB credentials.
 // It should not be included in your GitHub repository.
 //
 // The "models" contains all the table definitions, view definitions,
 // and functions implementing CRUD-L operations for each model.
-//
 func (g *Generator) renderPostgreSQL(action string) error {
 	switch action {
 	case "setup":

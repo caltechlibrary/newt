@@ -238,18 +238,20 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 			ast.Applications = NewApplications()
 			ast.isChanged = true
 		}
-		if ast.Applications.Router == nil {
-			ast.Applications.Router = NewApplication()
+		router := ast.GetApplications("router")
+		if router == nil {
+			router = NewApplication()
+			ast.Applications = append(ast.Applications, router)
 			ast.isChanged = true
 		}
 		// NOTE: If port is zero, we haven't configure the router.
-		if ast.Applications.Router.Port == 0 {
-			ast.Applications.Router.Port = ROUTER_PORT
+		if router.Port == 0 {
+			router.Port = ROUTER_PORT
 			if info, err := os.Stat("htdocs"); err == nil && info.IsDir() {
-				ast.Applications.Router.Htdocs = "htdocs"
+				router.Htdocs = "htdocs"
 				ast.isChanged = true
 			} else {
-				ast.Applications.Router.Htdocs = ""
+				router.Htdocs = ""
 				fmt.Fprintf(out, "WARNING: Skipping the htdocs directory for router")
 			}
 		}
@@ -258,8 +260,8 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 		}
 		for quit := false; !quit; {
 			menuList := []string{
-				fmt.Sprintf("Set [p]ort: %d", ast.Applications.Router.Port),
-				fmt.Sprintf("Set [h]tdocs: %s", ast.Applications.Router.Htdocs),
+				fmt.Sprintf("Set [p]ort: %d", router.Port),
+				fmt.Sprintf("Set [h]tdocs: %s", router.Htdocs),
 			}
 			menu, opt := selectMenuItem(buf, out,
 				"Manage Newt Router Settings",
@@ -278,7 +280,7 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 				if err != nil {
 					fmt.Fprintf(out, "ERROR: port number post be an integer, got %q\n", opt)
 				} else {
-					ast.Applications.Router.Port = port
+					router.Port = port
 					ast.isChanged = true
 				}
 			case "h":
@@ -286,8 +288,8 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 					fmt.Fprintf(out, "Enter htdocs value: ")
 					opt = getAnswer(buf, "", false)
 				}
-				if opt != ast.Applications.Router.Htdocs {
-					ast.Applications.Router.Htdocs = strings.TrimSpace(opt)
+				if opt != router.Htdocs {
+					router.Htdocs = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "q":
@@ -302,9 +304,7 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 			ast.Routes = []*Route{}
 		}
 	} else {
-		if ast.Applications != nil {
-			ast.Applications.Router = nil
-		}
+		ast.RemoveApplication("router")
 	}
 }
 
@@ -315,14 +315,16 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 		ast.Applications = NewApplications()
 		ast.isChanged = true
 	}
-	if ast.Applications.PostgREST == nil {
-		ast.Applications.PostgREST = NewApplication()
+	postgREST = ast.GetApplication("postgrest")
+	if postgREST == nil {
+		postgREST = NewApplication()
+		ast.Applications = append(ast.Applications, postgREST)
 		ast.isChanged = true
 	}
-	if ast.Applications.PostgREST.Port == 0 {
-		ast.Applications.PostgREST.Port = POSTGREST_PORT
-		ast.Applications.PostgREST.AppPath = "postgrest"
-		ast.Applications.PostgREST.ConfPath = "postgrest.conf"
+	if postgREST.Port == 0 {
+		postgREST.Port = POSTGREST_PORT
+		postgREST.AppPath = "postgrest"
+		postgREST.ConfPath = "postgrest.conf"
 		ast.isChanged = true
 	}
 	if skipPrompts {
@@ -330,9 +332,9 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 	}
 	for quit := false; !quit; {
 		menuList := []string{
-			fmt.Sprintf("Set [p]ort: %d", ast.Applications.PostgREST.Port),
-			fmt.Sprintf("Set [a]pp path: %q", ast.Applications.PostgREST.AppPath),
-			fmt.Sprintf("Set [c]onf path: %q", ast.Applications.PostgREST.ConfPath),
+			fmt.Sprintf("Set [p]ort: %d", postgREST.Port),
+			fmt.Sprintf("Set [a]pp path: %q", postgREST.AppPath),
+			fmt.Sprintf("Set [c]onf path: %q", postgREST.ConfPath),
 		}
 		menu, opt := selectMenuItem(buf, out,
 			"Manage PostgREST Settings",
@@ -351,7 +353,7 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 			if err != nil {
 				fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 			} else {
-				ast.Applications.PostgREST.Port = port
+				postgREST.Port = port
 				ast.isChanged = true
 			}
 		case "a":
@@ -359,8 +361,8 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 				fmt.Fprintf(out, "Enter the path to PostgREST application (an empty path is OK): ")
 				opt = getAnswer(buf, "", false)
 			}
-			if ast.Applications.PostgREST.AppPath != opt {
-				ast.Applications.PostgREST.AppPath = strings.TrimSpace(opt)
+			if postgREST.AppPath != opt {
+				postgREST.AppPath = strings.TrimSpace(opt)
 				ast.isChanged = true
 			}
 		case "c":
@@ -368,8 +370,8 @@ func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string,
 				fmt.Fprintf(out, "Enter the path to PostgREST configuration (an empty path is OK): ")
 				opt = getAnswer(buf, "", false)
 			}
-			if ast.Applications.PostgREST.ConfPath != opt {
-				ast.Applications.PostgREST.ConfPath = strings.TrimSpace(opt)
+			if postgREST.ConfPath != opt {
+				postgREST.ConfPath = strings.TrimSpace(opt)
 				ast.isChanged = true
 			}
 		case "q":
@@ -396,25 +398,27 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 			ast.Applications = NewApplications()
 			ast.isChanged = true
 		}
-		if ast.Applications.Postgres == nil {
-			ast.Applications.Postgres = NewApplication()
+		postgres := ast.GetApplication("postgres")
+		if postgres == nil {
+			postgres = NewApplication()
+			ast.Applications = append(ast.Applications, postgres)
 			ast.isChanged = true
 		}
-		if ast.Applications.Postgres.Port == 0 {
-			ast.Applications.Postgres.Port = POSTGRES_PORT
+		if postgres.Port == 0 {
+			postgres.Port = POSTGRES_PORT
 			ast.isChanged = true
 		}
-		if ast.Applications.Postgres.Namespace == "" {
-			ast.Applications.Postgres.Namespace = fNameToNamespace(appFName)
+		if postgres.Namespace == "" {
+			postgres.Namespace = fNameToNamespace(appFName)
 			ast.isChanged = true
 		}
-		if ast.Applications.Postgres.DSN == "" {
-			ast.Applications.Postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", ast.Applications.Postgres.Port, appFName)
+		if postgres.DSN == "" {
+			postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", postgres.Port, appFName)
 			// Now we need to make sure we allow PGUSER and PGPASSWORD to pass through in the environment
-			if ast.Applications.Environment == nil {
-				ast.Applications.Environment = []string{}
+			if postgres.Environment == nil {
+				postres.Environment = []string{}
 			}
-			ast.Applications.Environment = append(ast.Applications.Environment, "PGUSER", "PGPASSWORD")
+			postgres.Environment = append(postgres.Environment, "PGUSER", "PGPASSWORD")
 			ast.isChanged = true
 		}
 		if skipPrompts {
@@ -422,9 +426,9 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 		}
 		for quit := false; !quit; {
 			menuList := []string{
-				fmt.Sprintf("Set [p]ort: %d", ast.Applications.Postgres.Port),
-				fmt.Sprintf("Set [d]sn (data source name): %s", ast.Applications.Postgres.DSN),
-				fmt.Sprintf("Set [n]amespace: %s", ast.Applications.Postgres.Namespace),
+				fmt.Sprintf("Set [p]ort: %d", postgres.Port),
+				fmt.Sprintf("Set [d]sn (data source name): %s", postgres.DSN),
+				fmt.Sprintf("Set [n]amespace: %s", postgres.Namespace),
 			}
 			menu, opt := selectMenuItem(buf, out,
 				"Manage Postgres Settings",
@@ -439,8 +443,8 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 					fmt.Fprintf(out, "Enter namespace value: ")
 					opt = getAnswer(buf, appFName, true)
 				}
-				if opt != ast.Applications.Postgres.Namespace {
-					ast.Applications.Postgres.Namespace = strings.TrimSpace(opt)
+				if opt != postgres.Namespace {
+					postgres.Namespace = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "p":
@@ -452,7 +456,7 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 				if err != nil {
 					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 				} else {
-					ast.Applications.Postgres.Port = port
+					postgres.Port = port
 					ast.isChanged = true
 				}
 			case "d":
@@ -460,8 +464,8 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 					fmt.Fprintf(out, "Enter DSN in uri form: ")
 					opt = getAnswer(buf, "", false)
 				}
-				if ast.Applications.Postgres.DSN != opt {
-					ast.Applications.Postgres.DSN = strings.TrimSpace(opt)
+				if postgres.DSN != opt {
+					postgres.DSN = strings.TrimSpace(opt)
 					ast.isChanged = true
 				}
 			case "q":
@@ -474,9 +478,7 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 		}
 		setupPostgREST(ast, buf, out, appFName, skipPrompts)
 	} else {
-		if ast.Applications != nil {
-			ast.Applications.Postgres = nil
-		}
+		ast.RemoveApplication("postgres")
 	}
 }
 
@@ -493,24 +495,26 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			ast.Applications = NewApplications()
 			ast.isChanged = true
 		}
-		if ast.Applications.TemplateEngine == nil {
-			ast.Applications.TemplateEngine = NewApplication()
+		templateEngine := ast.GetApplication("template_engine")
+		if templateEngine == nil {
+			templateEngine = NewApplication()
+			ast.Applications = append(ast.Applications, templateEngine)
 			ast.isChanged = true
 		}
-		if ast.Applications.TemplateEngine.Port == 0 {
-			ast.Applications.TemplateEngine.Port = TEMPLATE_ENGINE_PORT
+		if templateEngine.Port == 0 {
+			templateEngine.Port = TEMPLATE_ENGINE_PORT
 			ast.isChanged = true
 		}
-		if ast.Applications.TemplateEngine.BaseDir == "" {
-			ast.Applications.TemplateEngine.BaseDir = TEMPLATE_ENGINE_BASE_DIR
+		if templateEngine.BaseDir == "" {
+			templateEngine.BaseDir = TEMPLATE_ENGINE_BASE_DIR
 			ast.isChanged = true
 		}
-		if ast.Applications.TemplateEngine.ExtName == "" {
-			ast.Applications.TemplateEngine.ExtName = TEMPLATE_ENGINE_EXT_NAME
+		if templateEngine.ExtName == "" {
+			templateEngine.ExtName = TEMPLATE_ENGINE_EXT_NAME
 			ast.isChanged = true
 		}
-		if ast.Applications.TemplateEngine.PartialsDir == "" {
-			ast.Applications.TemplateEngine.PartialsDir = TEMPLATE_ENGINE_PARTIALS_DIR
+		if templateEngine.PartialsDir == "" {
+			templateEngine.PartialsDir = TEMPLATE_ENGINE_PARTIALS_DIR
 			ast.isChanged = true
 		}
 		//FIXME: If there are models then templates will need to be updates even when it is NOT nil.
@@ -528,10 +532,10 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 		}
 		for quit := false; !quit; {
 			menuList := []string{
-				fmt.Sprintf("Set [p]ort: %d", ast.Applications.TemplateEngine.Port),
-				fmt.Sprintf("Set [b]ase directory: %s", ast.Applications.TemplateEngine.BaseDir),
-				fmt.Sprintf("Set [f]ile extention: %s", ast.Applications.TemplateEngine.ExtName),
-				fmt.Sprintf("Set [P]artials sub-directory: %s", ast.Applications.TemplateEngine.PartialsDir),
+				fmt.Sprintf("Set [p]ort: %d", templateEngine.Port),
+				fmt.Sprintf("Set [b]ase directory: %s", templateEngine.BaseDir),
+				fmt.Sprintf("Set [f]ile extention: %s", templateEngine.ExtName),
+				fmt.Sprintf("Set [P]artials sub-directory: %s", templateEngine.PartialsDir),
 			}
 			// FIXME: You show the current template list here..
 			menu, opt := selectMenuItem(buf, out,
@@ -551,7 +555,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 				if err != nil {
 					fmt.Fprintf(out, "ERROR: port number must be an intereger, got %q\n", opt)
 				} else {
-					ast.Applications.TemplateEngine.Port = port
+					templateEngine.Port = port
 					ast.isChanged = true
 				}
 			case "b":
@@ -560,7 +564,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 					opt = getAnswer(buf, TEMPLATE_ENGINE_BASE_DIR, true)
 				}
 				if opt != "" {
-					ast.Applications.TemplateEngine.BaseDir = opt
+					templateEngine.BaseDir = opt
 					ast.isChanged = true
 				}
 			case "f":
@@ -569,7 +573,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 					opt = getAnswer(buf, TEMPLATE_ENGINE_EXT_NAME, true)
 				}
 				if opt != "" {
-					ast.Applications.TemplateEngine.ExtName = opt
+					templateEngine.ExtName = opt
 					ast.isChanged = true
 				}
 			case "P":
@@ -578,7 +582,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 					opt = getAnswer(buf, TEMPLATE_ENGINE_PARTIALS_DIR, true)
 				}
 				if opt != "" {
-					ast.Applications.TemplateEngine.PartialsDir = opt
+					templateEngine.PartialsDir = opt
 					ast.isChanged = true
 				}
 			case "q":
@@ -590,9 +594,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			}
 		}
 	} else {
-		if ast.Applications != nil {
-			ast.Applications.TemplateEngine = nil
-		}
+		ast.RemoveApplication("template_engine")
 	}
 }
 
@@ -639,8 +641,9 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 		identifier = "{identifier}"
 	}
 	description = fmt.Sprintf("Access PostgREST API for %s %s", objName, action)
-	if ast.Applications != nil && ast.Applications.PostgREST != nil {
-		port = ast.Applications.PostgREST.Port
+	postgREST := ast.GetApplication("postgrest")
+	if ast.Applications != nil && postgREST != nil {
+		port = postgREST.Port
 	} else {
 		port = 3000
 	}
@@ -670,8 +673,9 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 // setupTemplService creates a Service object to process with a template
 func setupTmplService(ast *AST, tmplPattern string, description string) *Service {
 	var port int
-	if ast.Applications != nil && ast.Applications.TemplateEngine != nil {
-		port = ast.Applications.TemplateEngine.Port
+	templateEngine = ast.GetApplications("template_engine")
+	if ast.Applications != nil && templateEngine != nil {
+		port = templateEngine.Port
 	} else {
 		port = 8011
 	}
@@ -821,7 +825,8 @@ func setupReadHandling(ast *AST, model *Model, action string) error {
 	return nil
 }
 
-func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+//FIXME: setupEnvironment is now set at the runtime app level ...
+func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appName string, appFName string, skipPrompts bool) {
 	var answer string
 	if skipPrompts {
 		answer = "n"
@@ -830,15 +835,21 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 		answer = getAnswer(buf, "n", true)
 	}
 	if answer == "y" {
-		if ast.Applications.Environment == nil {
-			ast.Applications.Environment = []string{}
+		app := ast.GetApplication(appName)
+		if app == nil {
+			app := NewApplication()
+			ast.Applications = append(ast.Applications, app)
+			ast.isChanged = true
+		}
+		if app.Environment == nil {
+			app.Environment = []string{}
 		}
 		for quit := false; !quit; {
 			menu, opt := selectMenuItem(buf, out,
 				fmt.Sprintf("Manage Environment availability in %s", appFName),
 				"Menu [a]dd, [r]emove or press enter when done",
-				ast.Applications.Environment, true, "", "", true)
-			if val, ok := getIdFromList(ast.Applications.Environment, opt); ok {
+				app.Environment, true, "", "", true)
+			if val, ok := getIdFromList(app.Environment, opt); ok {
 				opt = val
 			}
 			if len(menu) > 0 {
@@ -851,7 +862,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 					opt = getAnswer(buf, "", false)
 				}
 				if opt != "" {
-					ast.Applications.Environment = append(ast.Applications.Environment, opt)
+					app.Environment = append(app.Environment, opt)
 					ast.isChanged = true
 				}
 			case "r":
@@ -860,9 +871,9 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 					opt = getAnswer(buf, "", false)
 				}
 				if opt != "" {
-					pos, ok := getItemNoFromList(ast.Applications.Environment, opt)
+					pos, ok := getItemNoFromList(app.Environment, opt)
 					if ok {
-						ast.Applications.Environment = append(ast.Applications.Environment[:pos], ast.Applications.Environment[(pos+1):]...)
+						app.Environment = append(app.Environment[:pos], app.Environment[(pos+1):]...)
 						ast.isChanged = true
 					}
 				}
@@ -877,7 +888,8 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appFName strin
 	}
 }
 
-func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
+//FIXME: Options are now set per application
+func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appName string, ppFName string, skipPrompts bool) {
 	var answer string
 	if skipPrompts {
 		answer = "n"
@@ -886,12 +898,18 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 		answer = getAnswer(buf, "n", true)
 	}
 	if answer == "y" {
-		if ast.Applications.Options == nil {
-			ast.Applications.Options = make(map[string]interface{})
+		app := ast.GetApplication(appName)
+		if app == nil {
+			app = NewApplication()
+			ast.Applications = append(ast.Applications, app)
+			ast.isChanged = true
+		}
+		if app.Options == nil {
+			app.Options = make(map[string]interface{})
 		}
 		for quit := false; !quit; {
 			optionsList := []string{}
-			for k, v := range ast.Applications.Options {
+			for k, v := range app.Options {
 				optionsList = append(optionsList, fmt.Sprintf("%s -> %q", k, v))
 			}
 			menu, opt := selectMenuItem(buf, out,
@@ -913,7 +931,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 				fmt.Fprintf(out, "Enter option value: ")
 				val := getAnswer(buf, "", false)
 				if opt != "" && val != "" {
-					ast.Applications.Options[opt] = val
+					app.Options[opt] = val
 					ast.isChanged = true
 				}
 			case "r":
@@ -922,7 +940,7 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, s
 					opt = getAnswer(buf, "", false)
 				}
 				if opt != "" {
-					delete(ast.Applications.Options, opt)
+					delete(app.Options, opt)
 					ast.isChanged = true
 				}
 			case "q":

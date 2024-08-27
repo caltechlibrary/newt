@@ -23,13 +23,13 @@ import (
 
 // AST holds a configuration for Newt for the data router and code generator.
 type AST struct {
-	// AppMetadata holds you app's metadata such as needed to render an "about" page in your final app.
+	// AppMetadata holds your application's metadata such as needed to render an "about" page in your final app.
 	AppMetadata *AppMetadata `json:"app_metadata,omitempty" yaml:"app_metadata,omitempty"`
 
-	// Application holds the back end application with their specific settings used to compose your Newt Application.
+	// Applications holds runnable list of applications used as the runtime for your application.
 	//FIXME: This should be a list of "application" objects their settings.  This would include start/stop/restart actions
 	// and enough metadata to generated appropriate Systemd and Luanchd configurations.
-	Applications *Applications `json:"applications,omitempty" yaml:"applications,omitempty"`
+	Applications []*Application `json:"applications,omitempty" yaml:"applications,omitempty"`
 
 	// Models holds a list of data models. It is used by
 	// both the data router and code generator.
@@ -67,6 +67,7 @@ type AppMetadata struct {
 	ContactEMail string `json:"contact_email,omitempty" yaml:"contact_email,omitempty"`
 }
 
+/** DEPRECIATED: This is being removed because it causes a rewrite when the optional applications change.
 // Applications holds the runtime information for newt router, generator,
 // template engine.
 type Applications struct {
@@ -93,9 +94,13 @@ type Applications struct {
 	// the environment variable valuess are stored.
 	Options map[string]interface{} `json:"options,omitempty" yaml:"options,omitempty"`
 }
+*/
 
-// Application implements runtime config for Newt programs
+// Application implements runtime config for Newt and off the shelf programs.
 type Application struct {
+	// AppName holds the name of the application, e.g. Postgres, PostgREST
+	AppName string `josn:"app_name,omitempty" yaml:"app_name,omitempty"`
+
 	// AppPath holds the path to the binary application, e.g. PostgREST
 	// This property provides the location of the service to run.
 	AppPath string `json:"app_path,omitempty" yaml:"app_path,omitempty"`
@@ -131,31 +136,47 @@ type Application struct {
 
 	// DSN, data ast name is a URI connection string
 	DSN string `json:"dsn,omitemity" yaml:"dsn,omitempty"`
+
+	// Environment holds a list of OS environment variables that can be made
+	// available to the web services.
+	Environment []string `json:"environment,omitempty" yaml:"enviroment,omitempty"`
+
+	// Options is a map of name to string values, it is where the
+	// the environment variable valuess are stored.
+	Options map[string]interface{} `json:"options,omitempty" yaml:"options,omitempty"`
 }
 
-// NewApplication will create an empty Application struct
-func NewApplication() *Application {
-	return &Application{}
-}
-
-// NewApplications will create an empty Application with top level attributes
-func NewApplications() *Applications {
-	return &Applications{
-		Router:         NewApplication(),
-		TemplateEngine: NewApplication(),
-		Postgres:       NewApplication(),
-		PostgREST:      NewApplication(),
-		Datasetd:       NewApplication(),
-		Options:        map[string]interface{}{},
-		Environment:    []string{},
+// NewApplications generates a default set of applications for your Newt project.
+func NewApplications() []*Application {
+	var applications []*Application
+	for _, appName := range []string{"router", "template_engine", "postgres", "postgrest"} {
+		//FIXME: Postgres supports specific environment variables, these should be automatically included
+		app := &Application{
+			AppName: appName,
+		}
+		applications = append(applications, app)
 	}
+	return applications
 }
+
 
 // NewAST will create an empty AST with top level attributes
 func NewAST() *AST {
 	ast := new(AST)
 	ast.Applications = NewApplications()
 	return ast
+}
+
+// GetApplication takes a list of applications, `[]*Application`, and returns the application name in the list or nil.
+func (ast *AST) GetAppliction(appName string) *Application {
+	if ast.Applications != nil {
+		for _, app := range ast.Applications {
+			if app.AppName == appName {
+				return app
+			}
+		}
+	}
+	return nil
 }
 
 // UnmarshalAST will read []byte of YAML or JSON,
@@ -213,11 +234,11 @@ func LoadAST(configFName string) (*AST, error) {
 		ast.Applications = NewApplications()
 	}
 	// Load environment if missing from config file.
-	if len(ast.Applications.Environment) == 0 {
-		for _, envar := range ast.Applications.Environment {
+	for _, app := range ast.Applications {
+		for _, envar := range app.Environment {
 			// YAML settings take presidence over environment, check for conflicts
-			if _, conflict := ast.Applications.Options[envar]; !conflict {
-				ast.Applications.Options[envar] = os.Getenv(envar)
+			if _, conflict := app.Options[envar]; !conflict {
+				app.Options[envar] = os.Getenv(envar)
 			}
 		}
 	}
@@ -456,8 +477,11 @@ func (ast *AST) Check(buf io.Writer) bool {
 		fmt.Fprintf(buf, "no applications defined\n")
 		ok = false
 	}
-
-	if ast.Applications.Postgres != nil || ast.Applications.Datasetd != nil {
+	postgres := ast.GetApplication("postgres")
+	datasetd := ast.GetApplication("datasetd")
+	router := ast.GetApplication("router")
+	templateEngine := ast.GetApplication("template_engine")
+	if postgres != nil || datasetd != nil {
 		if ast.Models == nil || len(ast.Models) == 0 {
 			fmt.Fprintf(buf, "no models defined for applications\n")
 			ok = false
@@ -471,12 +495,12 @@ func (ast *AST) Check(buf io.Writer) bool {
 		}
 	}
 
-	if ast.Applications.Router != nil {
+	if router != nil {
 		if ast.Routes == nil || len(ast.Routes) == 0 {
 			fmt.Fprintf(buf, "no routes defined for Newt Router\n")
 			ok = false
 		}
-		if ast.Applications.Router.Port == 0 {
+		if router.Port == 0 {
 			fmt.Fprintf(buf, "application.router.port not set\n")
 			ok = false
 		}
@@ -488,7 +512,7 @@ func (ast *AST) Check(buf io.Writer) bool {
 		}
 	}
 
-	if ast.Applications.TemplateEngine != nil {
+	if templateEngine != nil {
 		if ast.Templates == nil || len(ast.Templates) == 0 {
 			fmt.Fprintf(buf, "template engine is defined but not templates are configured\n")
 			ok = false
@@ -590,15 +614,16 @@ type Template struct {
 // NewTemplateEngine create a new TemplateEngine struct. If a filename
 // is provided it reads the file and sets things up accordingly.
 func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
-	if ast.Applications.TemplateEngine == nil {
+	templateEngine := ast.GetApplication("template_engine")
+	if templateEngine == nil {
 		return nil, fmt.Errorf("template engine is nil")
 	}
 
 	// Copy our options so we can expose them in the template's .document
 	docvars := map[string]interface{}{}
 	// Copy in options to envars
-	if ast.Applications.Options != nil && len(ast.Applications.Options) > 0 {
-		for k, v := range ast.Applications.Options {
+	if templateEngine.Options != nil && len(templateEngine.Options) > 0 {
+		for k, v := range templateEngine.Options {
 			docvars[k] = v
 		}
 	}
@@ -608,17 +633,17 @@ func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
 		BaseDir:     TEMPLATE_ENGINE_BASE_DIR,
 		PartialsDir: TEMPLATE_ENGINE_PARTIALS_DIR,
 	}
-	if ast.Applications.TemplateEngine.Port != 0 {
-		te.Port = ast.Applications.TemplateEngine.Port
+	if templateEngine.Port != 0 {
+		te.Port = templateEngine.Port
 	}
-	if ast.Applications.TemplateEngine.BaseDir != "" {
-		te.BaseDir = ast.Applications.TemplateEngine.BaseDir
+	if templateEngine.BaseDir != "" {
+		te.BaseDir = templateEngine.BaseDir
 	}
-	if ast.Applications.TemplateEngine.ExtName != "" {
-		te.ExtName = ast.Applications.TemplateEngine.ExtName
+	if templateEngine.ExtName != "" {
+		te.ExtName = templateEngine.ExtName
 	}
-	if ast.Applications.TemplateEngine.PartialsDir != "" {
-		te.PartialsDir = ast.Applications.TemplateEngine.PartialsDir
+	if templateEngine.PartialsDir != "" {
+		te.PartialsDir = templateEngine.PartialsDir
 	}
 	// FIXME: Need to copy in environment variables from ast.Options and set t.Document content.
 	errMsgs := []string{}

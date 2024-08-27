@@ -19,16 +19,17 @@ func TestPgGenerators(t *testing.T) {
 		t.Errorf("Missing .Applications from %q, aborting test", fName)
 		t.FailNow()
 	}
-	if ast.Applications.Postgres == nil {
-		t.Errorf("Missing .Applications.Postgres from %q", fName)
+	postgres := ast.GetApplication("postgres")
+	if postgres == nil {
+		t.Errorf("Missing Postres in .Applications from %q", fName)
 		t.FailNow()
 	}
-	if ast.Applications.Postgres.Namespace == "" {
-		t.Errorf("Missing .Applications.Postgres.Namespace from %q, aborting test", fName)
+	if postgres.Namespace == "" {
+		t.Errorf("Missing Postgres.Namespace in .Applications from %q, aborting test", fName)
 		t.FailNow()
 	}
 	expected := "birds"
-	got := ast.Applications.Postgres.Namespace
+	got := postgres.Namespace
 	if expected != got {
 		t.Errorf("expected namepsace %q, got %q", expected, got)
 	}
