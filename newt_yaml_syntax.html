@@ -38,10 +38,10 @@ as copyright year, copyright statement text, license info, etc. It gets
 used when rendering templates (e.g. page footers hold app attribution
 details).
 </dd>
-<dt><code>applications</code></dt>
+<dt><code>services</code></dt>
 <dd>
-(required) holds the run time configuration used by the Newt
-applications.
+(required) holds the run time configuration of services used to compose
+your Newt application.
 </dd>
 <dt><code>models</code></dt>
 <dd>
@@ -129,66 +129,63 @@ This is the contact phone to use in the footer
 This is the contact email to use in the footer
 </dd>
 </dl>
-<h2 id="the-applications-property">The applications property</h2>
-<p>The applications properties are optional. Some maybe set via command
-line. See Newt application’s manual page for specific ones. These
-properties lets you override the default settings of Newt programs.</p>
+<h2 id="the-services-property">The services property</h2>
+<p>The services property holds a list of services used to compose your
+applciation. This typically defines the “router”, “template_engine” and
+additional services such as Postgres and PostgREST.</p>
+<h3 id="services-defined">Services defined</h3>
 <dl>
-<dt><code>router</code></dt>
+<dt><code>name</code></dt>
 <dd>
-this contains configuration for the Newt Router, i.e. port and htdocs
+(required) the unique name of the service (e.g. “router”,
+“template_engine”, “postgres”, “postgrest”).
 </dd>
-<dt><code>template_egnine</code></dt>
+<dt><code>path</code></dt>
 <dd>
-this contains configuration for Newt’s template engine, e.g. port,
-base_dir, ext_name, etc.
-</dd>
-<dt><code>postgres</code></dt>
-<dd>
-this contains configuration information for the running Postgres
-database
-</dd>
-<dt><code>postgrest</code></dt>
-<dd>
-this contains configuration information managing PostgREST application
-with <code>newt</code>
-</dd>
-<dt><code>options</code></dt>
-<dd>
-holds key value pairs of which can be referenced in the values of
-models, routes and templates.
-</dd>
-<dt><code>environment</code></dt>
-<dd>
-(optional) this is a list of operating system environment variables that
-will be available to models, routes and templates. You can use this to
-pass in secrets (e.g. credentials) to your pipelined services. The
-pairing of environment variable and value are merged into the options
-when Newt services start up.
-</dd>
-</dl>
-<h3 id="configuring-newt-programs">Configuring Newt programs</h3>
-<dl>
-<dt><code>app_path</code></dt>
-<dd>
-(postgrest) the path to the program(s) managed by <code>newt</code>
+(required) the path to the service
 </dd>
 <dt><code>conf_path</code></dt>
 <dd>
-(postgrest) path to PostgREST configuration file
+(optional) path to the service configuration file
 </dd>
 <dt><code>namespace</code></dt>
 <dd>
-(postgres) uses this in the SQL generated for setting up
+(optional) uses this in the SQL generated for setting up
 Postgres+PostgREST
 </dd>
 <dt><code>port</code></dt>
 <dd>
-(all) Port number to used for Newt web service running on localhost
+(optional) localhost port number to used access the service
 </dd>
 <dt><code>htdocs</code></dt>
 <dd>
-(newt, ndr) Directory that holds your application’s static content
+(optional) the hypertext document directory, used by “rotuer”
+</dd>
+<dt><code>base_dir</code></dt>
+<dd>
+(optional) the template directory, used by “template_engine”
+</dd>
+<dt><code>ext_name</code></dt>
+<dd>
+(optional) holds the template name extension, used by “template_engine”
+</dd>
+<dt><code>partials_dir</code></dt>
+<dd>
+(optional) holds the sub directory name for partial templates, used by
+“template_engine”
+</dd>
+<dt><code>dsn</code></dt>
+<dd>
+(optional) the data source name, used by Postgres+PostgREST
+</dd>
+<dt><code>environment</code></dt>
+<dd>
+(optional) a list of enviroment variable available to a service
+</dd>
+<dt><code>options</code></dt>
+<dd>
+(optional) a key/value store of options, environment variable’s values
+are mapped here
 </dd>
 </dl>
 <h2 id="the-routes-property">the “routes” property</h2>

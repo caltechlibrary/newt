@@ -77,10 +77,11 @@ identifier</label></li>
 implementation plans</p>
 <ul class="task-list">
 <li><p><label><input type="checkbox" />Evaluate how to organize root
-YAML to support a selection of backends, e.g. Postgres+PostgREST,
-Dataset+datasetd. It is important to be able to evolve the back end
-without causing a major code refactor each time</label></p>
-<ul class="task-list">
+YAML to support a selection of backends, e.g. Postgres+PostgREST or
+Dataset+datasetd.</label></p>
+<ul>
+<li>It is important to be able to evolve the back end without causing a
+major code refactor each time</li>
 <li><label><input type="checkbox" />Look at <code>just</code> tool
 written in rust and see what might need to be adjusted in the context of
 Newt application pipelines</label></li>
@@ -142,8 +143,10 @@ cleanup code and normalize an API info working with models, updating
 routes and templates based on updated models list.</label></p></li>
 <li><p><label><input type="checkbox" />Postgres configuration in
 yamlgen.go needs to include a DSN to make the connection for loading our
-SQL [ ] I need to implement the third prototype code generator once I’ve
-debugged the Newt YAML syntax</label></p>
+SQL</label></p></li>
+<li><p><label><input type="checkbox" />I need to implement the third
+prototype code generator once I’ve debugged the Newt YAML
+syntax</label></p>
 <ul class="task-list">
 <li><label><input type="checkbox" />setup.sql</label></li>
 <li><label><input type="checkbox" />models.sql</label></li>

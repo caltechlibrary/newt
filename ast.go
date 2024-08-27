@@ -98,11 +98,11 @@ type Services struct {
 // your Newt based application.
 type Service struct {
 	// AppName holds the name of the application, e.g. Postgres, PostgREST
-	AppName string `josn:"app_name,omitempty" yaml:"app_name,omitempty"`
+	AppName string `josn:"name,required" yaml:"name,required"`
 
 	// AppPath holds the path to the binary application, e.g. PostgREST
 	// This property provides the location of the service to run.
-	AppPath string `json:"app_path,omitempty" yaml:"app_path,omitempty"`
+	AppPath string `json:"path,omitempty" yaml:"path,omitempty"`
 
 	// ConfPath holds teh path to the configuration file (e.g. PostgREST configuration file)
 	ConfPath string `json:"conf_path,omitempty" yaml:"conf_path,omitempty"`

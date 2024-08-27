@@ -1,5 +1,5 @@
 ---
-title: nte(1) user manual | 0.0.9 68a4e73
+title: nte(1) user manual | 0.0.9 aad2248
 pubDate: 2024-08-27
 author: R. S. Doiel
 ---
@@ -82,21 +82,24 @@ This is a list of the Newt YAML syntax relevant to **nte**.
 
 These are the top level properties in YAML files.
 
-applications
-: (required) holds the run time configuration used by the Newt applications.
+services
+: (optional) holds the run time configuration of services used to compose your
+Newt application.
 
 templates
 : (required) holds a list of template objects
 
-## The __applications__ property
+## The __services__ property
 
-template_engine
-: (required) this contains configuration for Newt template engine, e.g. port, base_dir, ext_name.
+Is a list of services with configuration to run them.
 
-### The __template engine__ properties
+### The __template engine__ definition
+
+The follow service properties are used by nte.
 
 port
-: (required) port number to used for to used for Newt Template Engine
+: (required) port number to used for to used for nte,
+a.k.a. "template_engine" in YAML.
 
 base_dir
 : (required) base directory holding the primary templates
@@ -148,8 +151,9 @@ Example of Newt YAML that only runs the template engine by itself.
 The paths are used to provide template content.
 
 ~~~yaml
-applications:
-  template_engine:
+services:
+  - name: template_engine
+    path: nte
     port: 8011
 	base_dir: testdata/views
 	ext_name: .hbs

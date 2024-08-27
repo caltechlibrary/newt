@@ -10,8 +10,8 @@ These are the top level properties in YAML files.
 `app_metadata`
 : (recommended) this holds generation metadata about your application such as copyright year, copyright statement text, license info, etc. It gets used when rendering templates (e.g. page footers hold app attribution details).
 
-`applications`
-: (required) holds the run time configuration used by the Newt applications.
+`services`
+: (required) holds the run time configuration of services used to compose your Newt application.
 
 `models`
 : (recommended) This holds the description of the data models in your application. Each model describes a series of HTML 5 elements that make up the model.
@@ -72,45 +72,50 @@ The following properties are used in the `app_metadata` property of your Newt YA
 `contact_email`
 : This is the contact email to use in the footer
 
-## The applications property
+## The services property
 
-The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
+The services property holds a list of services used to compose your applciation.
+This typically defines the "router", "template_engine" and additional services such
+as Postgres and PostgREST.
 
-`router`
-: this contains configuration for the Newt Router, i.e. port and htdocs
+### Services defined
 
-`template_egnine`
-: this contains configuration for Newt's template engine, e.g. port, base_dir, ext_name, etc.
+`name`
+: (required) the unique name of the service (e.g. "router", "template_engine",
+"postgres", "postgrest").
 
-`postgres`
-: this contains configuration information for the running Postgres database
-
-`postgrest`
-: this contains configuration information managing PostgREST application with `newt`
-
-`options`
-: holds key value pairs of which can be referenced in the values of models, routes and templates.
-
-`environment`
-: (optional) this is a list of operating system environment variables that will be available to models, routes and templates. You can use this to pass in secrets (e.g. credentials) to your pipelined services. The pairing of environment variable and value are merged into the options when Newt services start up.
-
-### Configuring Newt programs
-
-`app_path`
-: (postgrest) the path to the program(s) managed by `newt`
+`path`
+: (required) the path to the service
 
 `conf_path`
-: (postgrest) path to PostgREST configuration file
+: (optional) path to the service configuration file
 
 `namespace`
-: (postgres) uses this in the SQL generated for setting up Postgres+PostgREST
+: (optional) uses this in the SQL generated for setting up Postgres+PostgREST
 
 `port`
-: (all) Port number to used for Newt web service running on localhost
+: (optional) localhost port number to used access the service
 
 `htdocs`
-: (newt, ndr) Directory that holds your application's static content
+: (optional) the hypertext document directory, used by "rotuer"
 
+`base_dir`
+: (optional) the template directory, used by "template_engine"
+
+`ext_name`
+: (optional) holds the template name extension, used by "template_engine"
+
+`partials_dir`
+: (optional) holds the sub directory name for partial templates, used by "template_engine"
+
+`dsn`
+: (optional) the data source name, used by Postgres+PostgREST
+
+`environment`
+: (optional) a list of enviroment variable available to a service
+
+`options`
+: (optional) a key/value store of options, environment variable's values are mapped here
 
 ## the "routes" property
 

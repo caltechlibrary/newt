@@ -104,8 +104,8 @@ YAML syntax use in a Newt project that uses all of the Newt programs.
 
 These are the top level properties in YAML files.
 
-applications
-: (optional) holds the run time configuration used by the Newt applications.
+services
+: (optional) holds the run time configuration of services used to compile your Newt application.
 
 models
 : (required by newt generator) This holds the description of the data models in your application.  Each model uses HTML 5 element descriptions which can be set using the interactive ` + "`" + `{app_name} model` + "`" + ` command.
@@ -116,54 +116,54 @@ routes
 templates
 : (required by newt handbars)
 
-## The applications property
+## The services property
 
-The applications properties are optional. Some maybe set via command line. See Newt application's manual page for specific ones. These properties lets you override the default settings of Newt programs.
+The services is optional. It is an array of service definitions used to compose your Newt
+application. These properties lets you override the default settings of Newt programs.
 
-router
-: this contains configuration for the Newt's router, i.e. port and htdocs
+Each service has the following fields.
 
-template_engine
-: this contains configuration for Newt's template engine, e.g. port setting, base directory
+name
+: (required) a unique name of the service, (e.g. router, template_engine, postgres, postgrest)
 
-options
-: holds key value pairs of which can be referenced in the values of models, routes and templates.
+path
+: (optional) the path to the service on disk, used to invoke the app. Maybe the same of name
 
-environment
-: (optional: newtrouter, newthandlebars) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
-
-### Each application may have one or more of these properies.
+conf_path
+: (optional) the path to the service configuration file
 
 namespace
-: (postgres) uses this in the SQL generated for setting up Postgres+PostgREST
+: (optional) used by Postgres
+
+c_name
+: (optional) used by datasetd
 
 port
-: (all) Port number to used for Newt web service running on localhost
-
-htdocs
-: (router) Directory that holds your application's static content
+: (optional) the localhost port number used to access the service
 
 timeout
-: (router, nte) The time in seconds to timeout a HTTP transaction
+: (optional) timeout, if settable, in seconds
 
-dsn
-: (postgres) The data source name (URI for database connection string). Using to connect to Postgres
-
-app_path
-: (postgrest) The full path to the application (if it is not in the PATH environment variable)
-
-conf_app
-: (postgres) Configuration path for the application.
+htdocs
+: (optional) the hypertext document directory used by the router service
 
 base_dir
-: (nte) the base directory holding the templates (a.k.a in Handlbars' views)
+: (optional) the base directory holding templates used by template_engine
 
-ext_name
-: (nte) the file extension used to identifiy templates, e.g. ".hbs" for handlebars
+ext_dir
+: (optional) the extension name for templates used by template_engine
 
-partials
-: the sub directory holding partial templates.
+partials_dir
+: (optional) the sub directory for partial templates used by template_engine
 
+dsn
+: (optional) data source name, used by postgres
+
+environment
+: (optional) the environment variables passed to service
+
+options
+: (optional) a key/value store of options, environment variable values land here for the service
 
 ## the "routes" property
 

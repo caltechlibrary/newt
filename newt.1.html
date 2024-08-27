@@ -113,10 +113,10 @@ the Newt programs.</p>
 <h2 id="top-level-properties">Top level properties</h2>
 <p>These are the top level properties in YAML files.</p>
 <dl>
-<dt>applications</dt>
+<dt>services</dt>
 <dd>
-(optional) holds the run time configuration used by the Newt
-applications.
+(optional) holds the run time configuration of services used to compile
+your Newt application.
 </dd>
 <dt>models</dt>
 <dd>
@@ -134,79 +134,71 @@ which can be set using the interactive <code>newt model</code> command.
 (required by newt handbars)
 </dd>
 </dl>
-<h2 id="the-applications-property">The applications property</h2>
-<p>The applications properties are optional. Some maybe set via command
-line. See Newt application’s manual page for specific ones. These
-properties lets you override the default settings of Newt programs.</p>
+<h2 id="the-services-property">The services property</h2>
+<p>The services is optional. It is an array of service definitions used
+to compose your Newt application. These properties lets you override the
+default settings of Newt programs.</p>
+<p>Each service has the following fields.</p>
 <dl>
-<dt>router</dt>
+<dt>name</dt>
 <dd>
-this contains configuration for the Newt’s router, i.e. port and htdocs
+(required) a unique name of the service, (e.g. router, template_engine,
+postgres, postgrest)
 </dd>
-<dt>template_engine</dt>
+<dt>path</dt>
 <dd>
-this contains configuration for Newt’s template engine, e.g. port
-setting, base directory
+(optional) the path to the service on disk, used to invoke the app.
+Maybe the same of name
 </dd>
-<dt>options</dt>
+<dt>conf_path</dt>
 <dd>
-holds key value pairs of which can be referenced in the values of
-models, routes and templates.
+(optional) the path to the service configuration file
 </dd>
-<dt>environment</dt>
-<dd>
-(optional: newtrouter, newthandlebars) this is a list of operating
-system environment that will be available to routes. This is used to
-pass in secrets (e.g. credentials) need in the pipeline
-</dd>
-</dl>
-<h3 id="each-application-may-have-one-or-more-of-these-properies.">Each
-application may have one or more of these properies.</h3>
-<dl>
 <dt>namespace</dt>
 <dd>
-(postgres) uses this in the SQL generated for setting up
-Postgres+PostgREST
+(optional) used by Postgres
+</dd>
+<dt>c_name</dt>
+<dd>
+(optional) used by datasetd
 </dd>
 <dt>port</dt>
 <dd>
-(all) Port number to used for Newt web service running on localhost
-</dd>
-<dt>htdocs</dt>
-<dd>
-(router) Directory that holds your application’s static content
+(optional) the localhost port number used to access the service
 </dd>
 <dt>timeout</dt>
 <dd>
-(router, nte) The time in seconds to timeout a HTTP transaction
+(optional) timeout, if settable, in seconds
 </dd>
-<dt>dsn</dt>
+<dt>htdocs</dt>
 <dd>
-(postgres) The data source name (URI for database connection string).
-Using to connect to Postgres
-</dd>
-<dt>app_path</dt>
-<dd>
-(postgrest) The full path to the application (if it is not in the PATH
-environment variable)
-</dd>
-<dt>conf_app</dt>
-<dd>
-(postgres) Configuration path for the application.
+(optional) the hypertext document directory used by the router service
 </dd>
 <dt>base_dir</dt>
 <dd>
-(nte) the base directory holding the templates (a.k.a in Handlbars’
-views)
+(optional) the base directory holding templates used by template_engine
 </dd>
-<dt>ext_name</dt>
+<dt>ext_dir</dt>
 <dd>
-(nte) the file extension used to identifiy templates, e.g. “.hbs” for
-handlebars
+(optional) the extension name for templates used by template_engine
 </dd>
-<dt>partials</dt>
+<dt>partials_dir</dt>
 <dd>
-the sub directory holding partial templates.
+(optional) the sub directory for partial templates used by
+template_engine
+</dd>
+<dt>dsn</dt>
+<dd>
+(optional) data source name, used by postgres
+</dd>
+<dt>environment</dt>
+<dd>
+(optional) the environment variables passed to service
+</dd>
+<dt>options</dt>
+<dd>
+(optional) a key/value store of options, environment variable values
+land here for the service
 </dd>
 </dl>
 <h2 id="the-routes-property">the “routes” property</h2>

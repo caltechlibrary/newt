@@ -1,5 +1,5 @@
 ---
-title: ndr(1) user manual | 0.0.9 68a4e73
+title: ndr(1) user manual | 0.0.9 aad2248
 pubDate: 2024-08-27
 author: R. S. Doiel
 ---
@@ -40,24 +40,17 @@ In additional content routing ndr can also service out static resources. This is
 
 Top level properties for **ndr** YAML.
 
-application
-: (optional: newtrouter, newtgenerator, newtHandlebars) holds the run time configuration used by the Newt web service and metadata about the application you're creating.
+services
+: (optional) the run time service configuration used to compose your Newt application
 
 routes
 : (optional: newtrouter, newtgenerator) This holds the routes for the data pipeline (e.g. JSON API and template engine sequence)
 
-## the "application" property
+## the "services" property
 
-The application properties are optional.
+The services property is a list of services and how to run them. Each service may have the following properties.
 
-port
-: (optional: newtrouter, newtHandlebars) default is This port number the Newt web services uses to listen for request on localhost
-
-htdocs
-: (optional: newtrouter only) Directory that holds your application's static content
-
-environment
-: (optional: newtrouter, newtHandlebars) this is a list of operating system environment that will be available to routes. This is used to pass in secrets (e.g. credentials) need in the pipeline
+## the "routes" property
 
 Routes hosts a list of request descriptions and their data pipelines. This property is only used by Newt router and Newt code generator.
 
@@ -102,23 +95,26 @@ ndr blog.yaml
 An example of a YAML file describing blog like application based on Postgres+PostgREST.
 
 ~~~
-applications:
-  router:
+services:
+  - name: router
+    path: ndr
     port: 8010
     htdocs: htdocs
-  template_engine:
+  - name: template_engine
+    path: nte
     port: 8011
-  postgres:
+  - name: postgres
+    path: postgres
     namespace: blog
     port: 5432
     dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/blog.yaml
-  postgrest:
-    app_path: postgrest
+    enviroment:
+      - PGUSER
+      - PGPASSWORD
+  - name: postgrest
+    path: postgrest
     conf_path: postgrest.conf
     port: 3000
-  enviroment:
-    - PGUSER
-    - PGPASSWORD
 models:
   - id: post
     description: A blog post or article
