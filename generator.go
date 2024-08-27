@@ -25,26 +25,26 @@ type Generator struct {
 	AppMetadata *AppMetadata
 
 	// Postgres configuration information
-	Postgres *Application
+	Postgres *Service
 
 	// PostgREST configuration information
-	PostgREST *Application
+	PostgREST *Service
 
 	// TemplateEngine configuration information
-	TemplateEngine *Application
+	TemplateEngine *Service
 }
 
 // NewGenerator instaitates a new Generator object form a filename and AST object
 // It returns a Generator object and error value.
 func NewGenerator(ast *AST) (*Generator, error) {
-	if ast.Applications == nil {
+	if ast.Services == nil {
 		return nil, fmt.Errorf("configuration missing for applications")
 	}
 	generator := &Generator{}
-	postgres := ast.GetApplication("postgres")
-	postgREST := ast.GetApplication("postgrest")
-	templateEngine := ast.GetApplication("template_engine")
-	generator.Namesspace = ""
+	postgres := ast.GetService("postgres")
+	postgREST := ast.GetService("postgrest")
+	templateEngine := ast.GetService("template_engine")
+	generator.Namespace = ""
 	generator.Models = ast.Models
 	generator.Options = make(map[string]interface{})
 	if ast.AppMetadata != nil {
@@ -65,7 +65,7 @@ func NewGenerator(ast *AST) (*Generator, error) {
 	for k, v := range postgres.Options {
 		generator.Options[k] = v
 	}
-	for k, v := range postgrest.Options {
+	for k, v := range postgREST.Options {
 		generator.Options[k] = v
 	}
 	for k, v := range postgREST.Options {

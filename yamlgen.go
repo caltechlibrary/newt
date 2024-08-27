@@ -234,14 +234,18 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 		answer = getAnswer(buf, "y", true)
 	}
 	if answer == "y" {
-		if ast.Applications == nil {
-			ast.Applications = NewApplications()
+		if ast.Services == nil {
+			ast.Services = NewServices()
 			ast.isChanged = true
 		}
-		router := ast.GetApplications("router")
+		router := ast.GetService("router")
 		if router == nil {
-			router = NewApplication()
-			ast.Applications = append(ast.Applications, router)
+			router = &Service{
+				AppName: "router",
+				Port: 0,
+				Htdocs: "",
+			}
+			ast.Services = append(ast.Services, router)
 			ast.isChanged = true
 		}
 		// NOTE: If port is zero, we haven't configure the router.
@@ -304,21 +308,24 @@ func setupRouter(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, sk
 			ast.Routes = []*Route{}
 		}
 	} else {
-		ast.RemoveApplication("router")
+		ast.RemoveService("router")
 	}
 }
 
 // setupPostgREST prompt to configure PostgREST
 func setupPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFName string, skipPrompts bool) {
 	fmt.Fprintf(out, "Configuring PostgREST\n")
-	if ast.Applications == nil {
-		ast.Applications = NewApplications()
+	if ast.Services == nil {
+		ast.Services = NewServices()
 		ast.isChanged = true
 	}
-	postgREST = ast.GetApplication("postgrest")
+	postgREST := ast.GetService("postgrest")
 	if postgREST == nil {
-		postgREST = NewApplication()
-		ast.Applications = append(ast.Applications, postgREST)
+		postgREST = &Service{
+			AppName: "postgrest",
+			Port: 0,
+		}
+		ast.Services = append(ast.Services, postgREST)
 		ast.isChanged = true
 	}
 	if postgREST.Port == 0 {
@@ -394,14 +401,18 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 		answer = getAnswer(buf, "y", true)
 	}
 	if answer == "y" {
-		if ast.Applications == nil {
-			ast.Applications = NewApplications()
+		if ast.Services == nil {
+			ast.Services = NewServices()
 			ast.isChanged = true
 		}
-		postgres := ast.GetApplication("postgres")
+		postgres := ast.GetService("postgres")
 		if postgres == nil {
-			postgres = NewApplication()
-			ast.Applications = append(ast.Applications, postgres)
+			postgres = &Service{
+				AppName: "postgres",
+				Port: 9,
+				Namespace: fNameToNamespace(appFName),
+			}
+			ast.Services = append(ast.Services, postgres)
 			ast.isChanged = true
 		}
 		if postgres.Port == 0 {
@@ -416,7 +427,7 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 			postgres.DSN = fmt.Sprintf("postgres://{PGUSER}:{PGPASSWORD}@localhost:%d/%s", postgres.Port, appFName)
 			// Now we need to make sure we allow PGUSER and PGPASSWORD to pass through in the environment
 			if postgres.Environment == nil {
-				postres.Environment = []string{}
+				postgres.Environment = []string{}
 			}
 			postgres.Environment = append(postgres.Environment, "PGUSER", "PGPASSWORD")
 			ast.isChanged = true
@@ -478,7 +489,7 @@ func setupPostgresAndPostgREST(ast *AST, buf *bufio.Reader, out io.Writer, appFN
 		}
 		setupPostgREST(ast, buf, out, appFName, skipPrompts)
 	} else {
-		ast.RemoveApplication("postgres")
+		ast.RemoveService("postgres")
 	}
 }
 
@@ -491,14 +502,17 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 		answer = getAnswer(buf, "y", true)
 	}
 	if answer == "y" {
-		if ast.Applications == nil {
-			ast.Applications = NewApplications()
+		if ast.Services == nil {
+			ast.Services = NewServices()
 			ast.isChanged = true
 		}
-		templateEngine := ast.GetApplication("template_engine")
+		templateEngine := ast.GetService("template_engine")
 		if templateEngine == nil {
-			templateEngine = NewApplication()
-			ast.Applications = append(ast.Applications, templateEngine)
+			templateEngine = &Service{
+				AppName: "template_engine",
+				Port: 0,
+			}
+			ast.Services = append(ast.Services, templateEngine)
 			ast.isChanged = true
 		}
 		if templateEngine.Port == 0 {
@@ -594,7 +608,7 @@ func setupTemplateEngine(ast *AST, buf *bufio.Reader, out io.Writer, appFName st
 			}
 		}
 	} else {
-		ast.RemoveApplication("template_engine")
+		ast.RemoveService("template_engine")
 	}
 }
 
@@ -624,8 +638,8 @@ func setupTemplateHandlers(ast *AST) error {
 	return nil
 }
 
-// setupPostgRESTService creates a Service object for interacting with PostgREST
-func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
+// setupPostgRESTService creates a RouteService object for interacting with PostgREST
+func setupPostgRESTService(ast *AST, model *Model, action string) *RouteService {
 	var (
 		identifier         string
 		identifierSuffix   string
@@ -641,8 +655,8 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 		identifier = "{identifier}"
 	}
 	description = fmt.Sprintf("Access PostgREST API for %s %s", objName, action)
-	postgREST := ast.GetApplication("postgrest")
-	if ast.Applications != nil && postgREST != nil {
+	postgREST := ast.GetService("postgrest")
+	if ast.Services != nil && postgREST != nil {
 		port = postgREST.Port
 	} else {
 		port = 3000
@@ -664,23 +678,23 @@ func setupPostgRESTService(ast *AST, model *Model, action string) *Service {
 		// list action doesn't take an identifier
 		method = http.MethodGet
 	}
-	return &Service{
+	return &RouteService{
 		Service:     fmt.Sprintf("%s http://localhost:%d/rpc/%s_%s%s", method, port, objName, action, identifierSuffix),
 		Description: description,
 	}
 }
 
-// setupTemplService creates a Service object to process with a template
-func setupTmplService(ast *AST, tmplPattern string, description string) *Service {
+// setupTemplService creates a RouteService object to process with a template
+func setupTmplService(ast *AST, tmplPattern string, description string) *RouteService {
 	var port int
-	templateEngine = ast.GetApplications("template_engine")
-	if ast.Applications != nil && templateEngine != nil {
+	templateEngine := ast.GetService("template_engine")
+	if ast.Services != nil && templateEngine != nil {
 		port = templateEngine.Port
 	} else {
 		port = 8011
 	}
 	serviceURL := fmt.Sprintf("POST http://localhost:%d%s", port, tmplPattern)
-	return &Service{
+	return &RouteService{
 		Service:     serviceURL,
 		Description: description,
 	}
@@ -692,7 +706,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	var (
 		identifier        string
 		pathSuffix string
-		service    *Service
+		service    *RouteService
 	)
 	objName := model.Id
 	element, ok := model.GetModelIdentifier()
@@ -738,7 +752,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
-		Pipeline:    []*Service{},
+		Pipeline:    []*RouteService{},
 	}
 	// NOTE: If we have an update or delete we want to retrieve the record before calling the template
 	if action == "update" || action == "delete" {
@@ -770,7 +784,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
-		Pipeline:    []*Service{},
+		Pipeline:    []*RouteService{},
 	}
 	service = setupPostgRESTService(ast, model, action)
 	route.Pipeline = append(route.Pipeline, service)
@@ -814,7 +828,7 @@ func setupReadHandling(ast *AST, model *Model, action string) error {
 		Id:          routeId,
 		Pattern:     request,
 		Description: routeDescription,
-		Pipeline:    []*Service{},
+		Pipeline:    []*RouteService{},
 	}
 	service := setupPostgRESTService(ast, model, action)
 	route.Pipeline = append(route.Pipeline, service)
@@ -835,10 +849,12 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appName string
 		answer = getAnswer(buf, "n", true)
 	}
 	if answer == "y" {
-		app := ast.GetApplication(appName)
+		app := ast.GetService(appName)
 		if app == nil {
-			app := NewApplication()
-			ast.Applications = append(ast.Applications, app)
+			app := &Service{
+				AppName: appName,
+			}
+			ast.Services = append(ast.Services, app)
 			ast.isChanged = true
 		}
 		if app.Environment == nil {
@@ -889,7 +905,7 @@ func setupEnvironment(ast *AST, buf *bufio.Reader, out io.Writer, appName string
 }
 
 //FIXME: Options are now set per application
-func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appName string, ppFName string, skipPrompts bool) {
+func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appName string, appFName string, skipPrompts bool) {
 	var answer string
 	if skipPrompts {
 		answer = "n"
@@ -898,10 +914,12 @@ func setupOptions(ast *AST, buf *bufio.Reader, out io.Writer, appName string, pp
 		answer = getAnswer(buf, "n", true)
 	}
 	if answer == "y" {
-		app := ast.GetApplication(appName)
+		app := ast.GetService(appName)
 		if app == nil {
-			app = NewApplication()
-			ast.Applications = append(ast.Applications, app)
+			app = &Service{
+				AppName: appName,
+			}
+			ast.Services = append(ast.Services, app)
 			ast.isChanged = true
 		}
 		if app.Options == nil {

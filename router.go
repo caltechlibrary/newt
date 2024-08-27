@@ -36,7 +36,7 @@ type Route struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Pipeline holds the series of http services context with the output of one sent to another.
-	Pipeline []*Service `json:"pipeline,omitempty" yaml:"pipeline,omitempty"`
+	Pipeline []*RouteService `json:"pipeline,omitempty" yaml:"pipeline,omitempty"`
 
 	// Debug if true log verbosely
 	Debug bool `json:"debug,omitempty" yaml:"debug,omitempty"`
@@ -48,8 +48,8 @@ type Route struct {
 	Vars []string `json:"-" yaml:"-"`
 }
 
-// Service holds the necessary information to contact a data ast and retrieve the results for use in a pipeline.
-type Service struct {
+// RouteService holds the necessary information to contact a data ast and retrieve the results for use in a pipeline.
+type RouteService struct {
 	// Service holds the http Request Pattern to request a reast from a service
 	Service string `json:"service,required" yaml:"service,omitempty"`
 
@@ -102,7 +102,7 @@ func (nr *Route) ResolveRoute() error {
 
 // Request a service, sending any import if provided.
 // Returns a byte splice of results and an error value
-func (s *Service) MakeRequest(env map[string]interface{}, input []byte, contentType string, debug bool) ([]byte, int, string, error) {
+func (s *RouteService) MakeRequest(env map[string]interface{}, input []byte, contentType string, debug bool) ([]byte, int, string, error) {
 	// The default method for a service is POST, it can be overwritten by what is supplied in the .Service's pattern.
 	method := http.MethodPost
 	uri := s.Service
@@ -268,28 +268,28 @@ func NewRouter(ast *AST) (*Router, error) {
 	router := &Router{
 		Routes: ast.Routes,
 	}
-	if ast.Applications == nil {
-		return nil, fmt.Errorf("applications and router not configured")
+	if ast.Services == nil {
+		return nil, fmt.Errorf("services and router not configured")
 	}
-	appRouter := ast.GetApplication("router")
-	if appRouter == nil {
+	service := ast.GetService("router")
+	if service == nil {
 		return nil, fmt.Errorf("router not configured")
 	}
-	if appRouter.Htdocs != "" {
-		router.Htdocs = appRouter.Htdocs
+	if service.Htdocs != "" {
+		router.Htdocs = service.Htdocs
 	}
-	if appRouter.Port != 0 {
-		router.Port = appRouter.Port
+	if service.Port != 0 {
+		router.Port = service.Port
 	}
 	// Populate an env from our allowed environment variables
 	for _, route := range router.Routes {
 		// Copy in the applications options without overwriting the route specific
 		// defined options.  NOTE: Application options have already been resolved
 		// with the environment by ast.LoadAST()
-		if appRouter.Options == nil && len(appRouter.Options) > 0 {
+		if service.Options == nil && len(service.Options) > 0 {
 			route.Options = make(map[string]interface{})
 		}
-		for k, v := range appRouter.Options {
+		for k, v := range service.Options {
 			if _, conflict := route.Options[k]; !conflict {
 				route.Options[k] = v
 			}

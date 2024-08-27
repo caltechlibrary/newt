@@ -175,7 +175,7 @@ func RunGenerator(in io.Reader, out io.Writer, eout io.Writer, args []string) in
 		fmt.Fprintf(eout, "%s\n", err)
 		return GENERATOR_FAIL
 	}
-	templateEngine := ast.GetApplication("template_engine")
+	templateEngine := ast.GetService("template_engine")
 	if templateEngine != nil {
 		//NOTE: For each model generate a set of templates
 		for _, modelID := range ast.GetModelIds() {
@@ -255,7 +255,7 @@ func RunTemplateEngine(in io.Reader, out io.Writer, eout io.Writer, args []strin
 		fmt.Fprintf(eout, "%s\n", err)
 		return CONFIG
 	}
-	if ast.Applications == nil {
+	if ast.Services == nil {
 		fmt.Fprintf(eout, "%s not configed in %s\n", appName, fName)
 		return CONFIG
 	}
@@ -263,7 +263,7 @@ func RunTemplateEngine(in io.Reader, out io.Writer, eout io.Writer, args []strin
 		fmt.Fprintf(eout, "now templates found in %s\n", fName)
 		return CONFIG
 	}
-	if ast.GetApplication("template_engine") == nil {
+	if ast.GetService("template_engine") == nil {
 		fmt.Fprintf(eout, "missing template engine configuration in %q", fName)
 		return CONFIG
 	}
@@ -427,7 +427,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 		return CHECK_FAIL
 	}
 	if verbose {
-		postgREST := ast.GetApplication("postgrest")
+		postgREST := ast.GetService("postgrest")
 		if postgREST != nil {
 			fmt.Fprintf(out, "PostgREST configuration is %s\n", postgREST.ConfPath)
 			fmt.Fprintf(out, "PostgREST will be run with the command %q\n", strings.Join([]string{
@@ -443,7 +443,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				}
 			}
 		}
-		router := ast.GetApplication("router")
+		router := ast.GetService("router")
 		if router != nil {
 			port := ROUTER_PORT
 			if router.Port != 0 {
@@ -462,7 +462,7 @@ func RunNewtCheckYAML(in io.Reader, out io.Writer, eout io.Writer, args []string
 				}
 			}
 		}
-		templateEngine := ast.GetApplication("template_engine")
+		templateEngine := ast.GetService("template_engine")
 		if templateEngine != nil {
 			port := templateEngine.Port
 			if port == 0 {
@@ -513,7 +513,7 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 		}
 		return RunBuilder(in, out, eout, args)
 	case "run":
-		return RunNewtApplications(in, out, eout, args, verbose)
+		return RunNewtServices(in, out, eout, args, verbose)
 	case "ws":
 		return RunStaticWebServer(in, out, eout, args, 0, verbose)
 	default:
@@ -523,8 +523,8 @@ func RunNewt(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose
 	return OK
 }
 
-// RunNewtApplications will run the applictions defined in your Newt YAML file.
-func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
+// RunNewtServices will run the applictions defined in your Newt YAML file.
+func RunNewtServices(in io.Reader, out io.Writer, eout io.Writer, args []string, verbose bool) int {
 	appName := path.Base(os.Args[0])
 	// Get the Newt YAML file to run
 	fName := getNewtYamlFName(args)
@@ -537,12 +537,12 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		fmt.Fprintf(eout, "%s failed to load %q, %s", appName, fName, err)
 		return CONFIG
 	}
-	if ast.Applications == nil {
+	if ast.Services == nil {
 		fmt.Fprintf(eout, "no applications configured in %s", fName)
 		return CONFIG
 	}
 	// Startup PostgREST if configured in the Newt YAML file.
-	postgREST := ast.GetApplication("postgrest")
+	postgREST := ast.GetService("postgrest")
 	if postgREST != nil &&
 		postgREST.ConfPath != "" && postgREST.AppPath != "" {
 		cwd, err := os.Getwd()
@@ -565,14 +565,14 @@ func RunNewtApplications(in io.Reader, out io.Writer, eout io.Writer, args []str
 		cmd.Process.Release()
 	}
 	// Setup and start Newt template engine first
-	if ast.GetApplication("template_engine") != nil {
+	if ast.GetService("template_engine") != nil {
 		go func() {
 			RunTemplateEngine(in, out, eout, args, 0, 0, verbose)
 		}()
 	}
 
 	// The router starts up second and is what prevents service from falling through.
-	if ast.GetApplication("router") != nil {
+	if ast.GetService("router") != nil {
 		go func() {
 			RunRouter(in, out, eout, args, false, 0, "", verbose)
 		}()
@@ -619,9 +619,9 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 	if ast.AppMetadata == nil {
 		ast.AppMetadata = new(AppMetadata)
 	}
-	// Step 3. Decide which services you're going to use (a .Applications will need to exist).
-	if ast.Applications == nil {
-		ast.Applications = new(Applications)
+	// Step 3. Decide which services you're going to use (a .Services will need to exist).
+	if ast.Services == nil {
+		ast.Services = NewServices()
 	}
 	for {
 		//NOTE: Each of these should reflect the current model list in ast.
@@ -629,8 +629,10 @@ func RunNewtConfig(in io.Reader, out io.Writer, eout io.Writer, args []string, v
 		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
 		setupPostgresAndPostgREST(ast, readBuffer, out, appFName, skipPrompts)
 		setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)
+		/*
 		setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
 		setupOptions(ast, readBuffer, out, appFName, skipPrompts)
+		*/
 
 		// Now output the YAML
 		_, err := ast.Encode()
@@ -702,19 +704,21 @@ func RunModeler(in io.Reader, out io.Writer, eout io.Writer, args []string) int 
 		}
 	}
 	// Step 2. If "applications" not configured, generate default configuration.
-	if ast.Applications == nil ||
-		ast.GetApplication("router") == nil ||
-		ast.GetApplication("postgres") == nil ||
-		ast.GetApplication("postgrest") == nil ||
-		ast.GetApplication("template_engine") == nil {
-		ast.Applications = new(Applications)
+	if ast.Services == nil ||
+		ast.GetService("router") == nil ||
+		ast.GetService("postgres") == nil ||
+		ast.GetService("postgrest") == nil ||
+		ast.GetService("template_engine") == nil {
+		ast.Services = NewServices()
 		skipPrompts := true
 		setupAppMetadata(ast, readBuffer, out, appFName, skipPrompts)
 		setupRouter(ast, readBuffer, out, appFName, skipPrompts)
 		setupPostgresAndPostgREST(ast, readBuffer, out, appFName, skipPrompts)
 		setupTemplateEngine(ast, readBuffer, out, appFName, skipPrompts)
+		/*
 		setupEnvironment(ast, readBuffer, out, appFName, skipPrompts)
 		setupOptions(ast, readBuffer, out, appFName, skipPrompts)
+		*/
 		bName := path.Base(appFName)
 		ext := path.Ext(appFName)
 		mName := strings.TrimSuffix(bName, ext)

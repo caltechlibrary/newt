@@ -16,7 +16,6 @@ import (
 	"time"
 
 	// 3rd Party
-	//"github.com/cbroglie/mustache"
 	"github.com/aymerick/raymond"
 	"gopkg.in/yaml.v3"
 )
@@ -26,10 +25,9 @@ type AST struct {
 	// AppMetadata holds your application's metadata such as needed to render an "about" page in your final app.
 	AppMetadata *AppMetadata `json:"app_metadata,omitempty" yaml:"app_metadata,omitempty"`
 
-	// Applications holds runnable list of applications used as the runtime for your application.
-	//FIXME: This should be a list of "application" objects their settings.  This would include start/stop/restart actions
+	// Services holds definitions of the services used to compose your application.
 	// and enough metadata to generated appropriate Systemd and Luanchd configurations.
-	Applications []*Application `json:"applications,omitempty" yaml:"applications,omitempty"`
+	Services []*Service `json:"services,omitempty" yaml:"services,omitempty"`
 
 	// Models holds a list of data models. It is used by
 	// both the data router and code generator.
@@ -47,7 +45,7 @@ type AST struct {
 	isChanged bool `json:"-" yaml:"-"`
 }
 
-// AppMetadata holds metadata about your Newt Application
+// AppMetadata holds metadata about your Newt Service
 // This is primarily used in generated Handlbars partials
 type AppMetadata struct {
 	AppName string `json:"name,omitempty" yaml:"app_name,omitempty"`
@@ -68,23 +66,23 @@ type AppMetadata struct {
 }
 
 /** DEPRECIATED: This is being removed because it causes a rewrite when the optional applications change.
-// Applications holds the runtime information for newt router, generator,
+// Services holds the runtime information for newt router, generator,
 // template engine.
-type Applications struct {
+type Services struct {
 	// Newt Router runtime config
-	Router *Application `json:"router,omitempty" yaml:"router,omitempty"`
+	Router *Service `json:"router,omitempty" yaml:"router,omitempty"`
 
 	// TemplateEngine holds Handlebars runtime configuration for Newt template engine
-	TemplateEngine *Application `json:"template_engine,omitempty" yaml:"template_engine,omitempty"`
+	TemplateEngine *Service `json:"template_engine,omitempty" yaml:"template_engine,omitempty"`
 
 	// Dataset runtime config
-	Datasetd *Application `json:"dataset,omitempty" yaml:"dataset,omitempty"`
+	Datasetd *Service `json:"dataset,omitempty" yaml:"dataset,omitempty"`
 
 	// Postgres runtime config, e.g. port number to use for connecting.
-	Postgres *Application `json:"postgres,omitempty" yaml:"postgres,omitempty"`
+	Postgres *Service `json:"postgres,omitempty" yaml:"postgres,omitempty"`
 
 	// PostgREST runtime config
-	PostgREST *Application `json:"postgrest,omitempty" yaml:"postgrest,omitempty"`
+	PostgREST *Service `json:"postgrest,omitempty" yaml:"postgrest,omitempty"`
 
 	// Environment holds a list of OS environment variables that can be made
 	// available to the web services.
@@ -96,8 +94,9 @@ type Applications struct {
 }
 */
 
-// Application implements runtime config for Newt and off the shelf programs.
-type Application struct {
+// Service implements runtime config for Newt and off the shelf programs used to compose
+// your Newt based application.
+type Service struct {
 	// AppName holds the name of the application, e.g. Postgres, PostgREST
 	AppName string `josn:"app_name,omitempty" yaml:"app_name,omitempty"`
 
@@ -146,12 +145,12 @@ type Application struct {
 	Options map[string]interface{} `json:"options,omitempty" yaml:"options,omitempty"`
 }
 
-// NewApplications generates a default set of applications for your Newt project.
-func NewApplications() []*Application {
-	var applications []*Application
+// NewServices generates a default set of applications for your Newt project.
+func NewServices() []*Service {
+	var applications []*Service
 	for _, appName := range []string{"router", "template_engine", "postgres", "postgrest"} {
 		//FIXME: Postgres supports specific environment variables, these should be automatically included
-		app := &Application{
+		app := &Service{
 			AppName: appName,
 		}
 		applications = append(applications, app)
@@ -163,20 +162,34 @@ func NewApplications() []*Application {
 // NewAST will create an empty AST with top level attributes
 func NewAST() *AST {
 	ast := new(AST)
-	ast.Applications = NewApplications()
+	ast.Services = NewServices()
 	return ast
 }
 
-// GetApplication takes a list of applications, `[]*Application`, and returns the application name in the list or nil.
-func (ast *AST) GetAppliction(appName string) *Application {
-	if ast.Applications != nil {
-		for _, app := range ast.Applications {
+// GetService takes a list of applications, `[]*Service`, and returns the application name in the list or nil.
+func (ast *AST) GetService(appName string) *Service {
+	if ast.Services != nil {
+		for _, app := range ast.Services {
 			if app.AppName == appName {
 				return app
 			}
 		}
 	}
 	return nil
+}
+
+// RemoveService takes a list of applications, `[]*Service`, and remove the target item.
+func (ast *AST) RemoveService(appName string) error {
+	if ast.Services != nil {
+		// Find the position of the application in list
+		for pos, app := range ast.Services {
+			if app.AppName == appName {
+				ast.Services = append(ast.Services[:pos], ast.Services[pos+1:]...)
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("could not remove %q, not found", appName)
 }
 
 // UnmarshalAST will read []byte of YAML or JSON,
@@ -201,8 +214,8 @@ func UnmarshalAST(src []byte, ast *AST) error {
 			return err
 		}
 	}
-	if ast.Applications == nil {
-		ast.Applications = NewApplications()
+	if ast.Services == nil {
+		ast.Services = NewServices()
 	}
 	return nil
 }
@@ -230,11 +243,11 @@ func LoadAST(configFName string) (*AST, error) {
 		}
 	}
 
-	if ast.Applications == nil {
-		ast.Applications = NewApplications()
+	if ast.Services == nil {
+		ast.Services = NewServices()
 	}
 	// Load environment if missing from config file.
-	for _, app := range ast.Applications {
+	for _, app := range ast.Services {
 		for _, envar := range app.Environment {
 			// YAML settings take presidence over environment, check for conflicts
 			if _, conflict := app.Options[envar]; !conflict {
@@ -473,14 +486,14 @@ func (ast *AST) GetTemplateByPrimary(fName string) (*Template, bool) {
 // if no errors found and false otherwise.  The "buf" will hold the error output.
 func (ast *AST) Check(buf io.Writer) bool {
 	ok := true
-	if ast.Applications == nil {
+	if ast.Services == nil {
 		fmt.Fprintf(buf, "no applications defined\n")
 		ok = false
 	}
-	postgres := ast.GetApplication("postgres")
-	datasetd := ast.GetApplication("datasetd")
-	router := ast.GetApplication("router")
-	templateEngine := ast.GetApplication("template_engine")
+	postgres := ast.GetService("postgres")
+	datasetd := ast.GetService("datasetd")
+	router := ast.GetService("router")
+	templateEngine := ast.GetService("template_engine")
 	if postgres != nil || datasetd != nil {
 		if ast.Models == nil || len(ast.Models) == 0 {
 			fmt.Fprintf(buf, "no models defined for applications\n")
@@ -529,7 +542,7 @@ func (ast *AST) Check(buf io.Writer) bool {
 	return ok
 }
 
-// TemplateEngine defines the `nte` application YAML file. It joins some of the Application struct
+// TemplateEngine defines the `nte` application YAML file. It joins some of the Service struct
 // with an array of templates so that "check" can validate the YAML.
 type TemplateEngine struct {
 	// Port is the name of the localhost port Newt will listen on.
@@ -614,7 +627,7 @@ type Template struct {
 // NewTemplateEngine create a new TemplateEngine struct. If a filename
 // is provided it reads the file and sets things up accordingly.
 func NewTemplateEngine(ast *AST) (*TemplateEngine, error) {
-	templateEngine := ast.GetApplication("template_engine")
+	templateEngine := ast.GetService("template_engine")
 	if templateEngine == nil {
 		return nil, fmt.Errorf("template engine is nil")
 	}
