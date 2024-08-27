@@ -98,7 +98,7 @@ type Services struct {
 // your Newt based application.
 type Service struct {
 	// AppName holds the name of the application, e.g. Postgres, PostgREST
-	AppName string `josn:"name,required" yaml:"name,required"`
+	AppName string `josn:"name,omitempty" yaml:"name,omitempty"`
 
 	// AppPath holds the path to the binary application, e.g. PostgREST
 	// This property provides the location of the service to run.
