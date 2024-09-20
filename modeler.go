@@ -8,6 +8,9 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
 )
 
 // isSupportedElementType checks if the element type is supported by Newt, returns true if OK false is it is not
@@ -22,12 +25,12 @@ func isSupportedElementType(eType string) bool {
 }
 
 // removeElement removes an element from a model
-func removeElement(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
+func removeElement(model *models.Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
 	elemFound := false
 	for i, elem := range model.Elements {
 		if elem.Id == elementId {
 			model.Elements = append(model.Elements[:i], model.Elements[(i+1):]...)
-			model.isChanged = true
+			model.Changed(true)
 			elemFound = true
 		}
 	}
@@ -126,12 +129,12 @@ func normalizeInputType(inputType string) (string, string) {
 }
 
 // addElementStub adds an empty element to model.Elements list. Returns a new model list and error value
-func addElementStub(model *Model, elementId string) ([]string, error) {
+func addElementStub(model *models.Model, elementId string) ([]string, error) {
 	elementList := model.GetElementIds()
-	if !isValidVarname(elementId) {
+	if !models.IsValidVarname(elementId) {
 		return elementList, fmt.Errorf("%q is not a valid elmeent id", elementId)
 	}
-	elem, err := NewElement(elementId)
+	elem, err := models.NewElement(elementId)
 	if err != nil {
 		return elementList, err
 	}
@@ -144,10 +147,10 @@ func addElementStub(model *Model, elementId string) ([]string, error) {
 // a new model list and error value
 func addModelStub(ast *AST, modelId string) ([]string, error) {
 	modelList := ast.GetModelIds()
-	if !isValidVarname(modelId) {
+	if !models.IsValidVarname(modelId) {
 		return modelList, fmt.Errorf("%q is not a valid model id", modelId)
 	}
-	model, err := NewModel(modelId)
+	model, err := models.NewModel(modelId)
 	if err != nil {
 		return modelList, err
 	}
@@ -189,7 +192,7 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 			}
 			if opt != "" {
 				model.Description = strings.TrimSpace(opt)
-				model.isChanged = true
+				model.Changed(true)
 			}
 		case "e":
 			if err := modifyElementsTUI(in, out, eout, model); err != nil {
@@ -207,7 +210,7 @@ func modifyModelTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, model
 }
 
 // modifyModelAttributesTUI provides a text UI for managing a model's attributes
-func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer) error {
+func modifyModelAttributesTUI(model *models.Model, in io.Reader, out io.Writer, eout io.Writer) error {
 	buf := bufio.NewReader(in)
 	if model.Attributes == nil {
 		model.Attributes = map[string]string{}
@@ -231,11 +234,11 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 				fmt.Fprintf(out, "Enter attribute name: ")
 				opt = getAnswer(buf, "", true)
 			}
-			if !isValidVarname(opt) {
+			if !models.IsValidVarname(opt) {
 				fmt.Fprintf(eout, "%q is not a valid attribute name\n", opt)
 			} else {
 				model.Attributes[opt] = ""
-				model.isChanged = true
+				model.Changed(true)
 			}
 		case "m":
 			if opt == "" {
@@ -246,7 +249,7 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 			val := getAnswer(buf, "", false)
 			if val != "" {
 				model.Attributes[opt] = val
-				model.isChanged = true
+				model.Changed(true)
 			}
 		case "r":
 			if opt == "" {
@@ -257,7 +260,7 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 			if ok {
 				if _, ok := model.Attributes[opt]; ok {
 					delete(model.Attributes, opt)
-					model.isChanged = true
+					model.Changed(true)
 				}
 			} 
 			if ! ok {
@@ -276,7 +279,7 @@ func modifyModelAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io
 
 
 // modifyElementAttributesTUI provides a text UI for managing a model's element's attributes
-func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
+func modifyElementAttributesTUI(model *models.Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
 	buf := bufio.NewReader(in)
 	elem, _ := model.GetElementById(elementId)
 	for quit := false; !quit; {
@@ -298,11 +301,11 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 				fmt.Fprintf(out, "Enter attribute name: ")
 				opt = getAnswer(buf, "", true)
 			}
-			if !isValidVarname(opt) {
+			if !models.IsValidVarname(opt) {
 				fmt.Fprintf(eout, "%q is not a valid attribute name\n", opt)
 			} else {
 				elem.Attributes[opt] = ""
-				elem.isChanged = true
+				elem.Changed(true)
 			}
 		case "m":
 			if opt == "" {
@@ -313,7 +316,7 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 			val := getAnswer(buf, "", false)
 			if val != "" {
 				elem.Attributes[opt] = val
-				elem.isChanged = true
+				elem.Changed(true)
 			}
 		case "r":
 			if opt == "" {
@@ -324,7 +327,7 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 			if ok {
 				if _, ok = elem.Attributes[opt]; ok {
 					delete(elem.Attributes, opt)
-					elem.isChanged = true
+					elem.Changed(true)
 				}
 			} 
 			if ! ok {
@@ -341,7 +344,7 @@ func modifyElementAttributesTUI(model *Model, in io.Reader, out io.Writer, eout 
 	return nil
 }
 
-func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
+func modifySelectElementTUI(elem *models.Element, in io.Reader, out io.Writer, eout io.Writer, modelId string) error {
 	buf := bufio.NewReader(in)
 	if elem.Options == nil {
 		elem.Options = []map[string]string{}
@@ -380,7 +383,7 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 						val: label,
 					}
 					elem.Options = append(elem.Options, option)
-					elem.isChanged = true
+					elem.Changed(true)
 				}
 			case "m":
 				pos, ok := -1, false
@@ -411,7 +414,7 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 					}
 					// Replace the option in the options list.
 					elem.Options[pos] = option
-					elem.isChanged = true
+					elem.Changed(true)
 				} else {
 					fmt.Fprintf(eout, "Failed to identify option %q\n", opt)
 				}
@@ -428,7 +431,7 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 				}
 				if ok {
 					elem.Options = append(elem.Options[0:pos], elem.Options[(pos+1):]...)
-					elem.isChanged = true
+					elem.Changed(true)
 				} else {
 					fmt.Fprintf(eout, "failed to remove option number (%d) %q\n", pos, opt)
 				}
@@ -443,7 +446,7 @@ func modifySelectElementTUI(elem *Element, in io.Reader, out io.Writer, eout io.
 	return nil
 }
 
-func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
+func modifyElementTUI(model *models.Model, in io.Reader, out io.Writer, eout io.Writer, elementId string) error {
 	buf := bufio.NewReader(in)
 	elem, ok := model.GetElementById(elementId)
 	if !ok {
@@ -510,7 +513,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				} else {
 					// FIXME: If elem.Type is select I need to provide an choices TUI for values and labels
 					elem.Type, elem.Pattern = normalizeInputType(eType)
-					elem.isChanged = true
+					elem.Changed(true)
 					if elem.Type == "select" {
 						if err := modifySelectElementTUI(elem, in, out, eout, model.Id); err != nil {
 							fmt.Fprintf(eout, "ERROR (%q): %s\n", elementId, err)
@@ -531,7 +534,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				} else {
 					elem.Pattern = strings.TrimSpace(opt)
 				}
-				model.isChanged = true
+				model.Changed(true)
 			}
 		case "l":
 			if opt == "" {
@@ -543,7 +546,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				if opt != elem.Label {
 					elem.Label = strings.TrimSpace(opt)
 				}
-				model.isChanged = true
+				model.Changed(true)
 			}
 		case "a":
 			if err := modifyElementAttributesTUI(model, in, out, eout, elementId); err != nil {
@@ -556,7 +559,7 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 				}
 			} else {
 				elem.IsObjectId = !elem.IsObjectId
-				elem.isChanged = true
+				elem.Changed(true)
 			}
 		case "q":
 			quit = true
@@ -569,11 +572,11 @@ func modifyElementTUI(model *Model, in io.Reader, out io.Writer, eout io.Writer,
 	return nil
 }
 
-func removeElementFromModel(model *Model, elementId string) error {
+func removeElementFromModel(model *models.Model, elementId string) error {
 	for i, elem := range model.Elements {
 		if elem.Id == elementId {
 			model.Elements = append(model.Elements[0:i], model.Elements[(i+1):]...)
-			model.isChanged = true
+			model.Changed(true)
 			return nil
 		}
 	}
@@ -581,7 +584,7 @@ func removeElementFromModel(model *Model, elementId string) error {
 }
 
 // modifyElementsTUI modify a specific model's element list.
-func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *Model) error {
+func modifyElementsTUI(in io.Reader, out io.Writer, eout io.Writer, model *models.Model) error {
 	var (
 		err    error
 		answer string
@@ -650,7 +653,7 @@ func modelerTUI(ast *AST, in io.Reader, out io.Writer, eout io.Writer, configNam
 	)
 	buf := bufio.NewReader(in)
 	if ast.Models == nil {
-		ast.Models = []*Model{}
+		ast.Models = []*models.Model{}
 	}
 	modelList := ast.GetModelIds()
 	sort.Strings(modelList)

@@ -11,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
 )
 
 // setupAppMetadata to configure the project's metadata. Project metadata is used in
@@ -639,7 +642,7 @@ func setupTemplateHandlers(ast *AST) error {
 }
 
 // setupPostgRESTService creates a RouteService object for interacting with PostgREST
-func setupPostgRESTService(ast *AST, model *Model, action string) *RouteService {
+func setupPostgRESTService(ast *AST, model *models.Model, action string) *RouteService {
 	var (
 		identifier         string
 		identifierSuffix   string
@@ -702,7 +705,7 @@ func setupTmplService(ast *AST, tmplPattern string, description string) *RouteSe
 
 // setupWebFormHandling generates the routes and template handling for retrieving and submitting
 // webforms for "create", "update" or "delete".
-func setupWebFormHandling(ast *AST, model *Model, action string) error {
+func setupWebFormHandling(ast *AST, model *models.Model, action string) error {
 	var (
 		identifier        string
 		pathSuffix string
@@ -795,7 +798,7 @@ func setupWebFormHandling(ast *AST, model *Model, action string) error {
 	return nil
 }
 
-func setupReadHandling(ast *AST, model *Model, action string) error {
+func setupReadHandling(ast *AST, model *models.Model, action string) error {
 	templateList := ast.GetTemplateIds()
 	templateId := fmt.Sprintf("%s_%s", model.Id, action)
 	routeList := ast.GetRouteIds()

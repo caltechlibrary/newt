@@ -5,6 +5,9 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
 )
 
 var (
@@ -51,7 +54,7 @@ func genElementAttrString(attributes map[string]string, excludeList []string) st
 
 // displayElemGen generates a specific Mustache template for displaying
 // and element.
-func displayElemGen(elem *Element) string {
+func displayElemGen(elem *models.Element) string {
 	// Apply a class value based on element id.
 	if class, ok := elem.Attributes["class"]; ok {
 		if class != "" {
@@ -79,7 +82,7 @@ func displayElemGen(elem *Element) string {
 }
 
 // inputElemGen generates a specific Mustache template for input of an element
-func inputElemGen(elem *Element) string {
+func inputElemGen(elem *models.Element) string {
 	var (
 		input string
 	)
@@ -97,7 +100,7 @@ func inputElemGen(elem *Element) string {
 }
 
 // tmplGenCreateForm generations a Mustache partial for a create object web form
-func tmplGenCreateForm(out io.Writer, model *Model) error {
+func tmplGenCreateForm(out io.Writer, model *models.Model) error {
 	formURL := fmt.Sprintf("/create_%s", model.Id)
 	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
 	// Build a webform partial
@@ -114,13 +117,13 @@ func tmplGenCreateForm(out io.Writer, model *Model) error {
 }
 
 // tmplGenCreateResponse generations a Mustache partial for a create object web form
-func tmplGenCreateResponse(out io.Writer, model *Model) error {
+func tmplGenCreateResponse(out io.Writer, model *models.Model) error {
 	// Build a response partial
 	return tmplGenRead(out, model)
 }
 
 // tmplGenRead generations a Mustache partial for a read object display element
-func tmplGenRead(out io.Writer, model *Model) error {
+func tmplGenRead(out io.Writer, model *models.Model) error {
 	// Build a display partial
 	for _, elemId := range model.GetElementIds() {
 		if elem, ok := model.GetElementById(elemId); ok {
@@ -133,7 +136,7 @@ func tmplGenRead(out io.Writer, model *Model) error {
 }
 
 // tmplGenUpdateForm generations a Mustache partial for a update object web form
-func tmplGenUpdateForm(out io.Writer, model *Model) error {
+func tmplGenUpdateForm(out io.Writer, model *models.Model) error {
 	// Build a webform partial
 	formURL := fmt.Sprintf("/%s_update", model.Id)
 	fmt.Fprintf(out, "<form method=%q action=%q>", http.MethodPost, formURL)
@@ -150,13 +153,13 @@ func tmplGenUpdateForm(out io.Writer, model *Model) error {
 }
 
 // tmplGenUpdateResponse generations a Mustache partial for a update object web form
-func tmplGenUpdateResponse(out io.Writer, model *Model) error {
+func tmplGenUpdateResponse(out io.Writer, model *models.Model) error {
 	// Build a response partial
 	return tmplGenRead(out, model)
 }
 
 // tmplGenDeleteForm generations a Mustache partial for a delete object web form
-func tmplGenDeleteForm(out io.Writer, model *Model) error {
+func tmplGenDeleteForm(out io.Writer, model *models.Model) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
 	// Build a webform partial
 	formURL := fmt.Sprintf("/%s_delete", model.Id)
@@ -175,7 +178,7 @@ func tmplGenDeleteForm(out io.Writer, model *Model) error {
 }
 
 // tmplGenDeleteResponse generations a Mustache partial for a delete object web form
-func tmplGenDeleteResponse(out io.Writer, model *Model) error {
+func tmplGenDeleteResponse(out io.Writer, model *models.Model) error {
 	//FIXME: what do we need to delete a record? Just the record id? other fields?
 	// Build a webform partial
 	fmt.Fprintf(out, "<b>object deleted goes here ...</b>\n")
@@ -183,7 +186,7 @@ func tmplGenDeleteResponse(out io.Writer, model *Model) error {
 }
 
 // tmplGenList generations a Mustache partial to lists objects
-func tmplGenList(out io.Writer, model *Model) error {
+func tmplGenList(out io.Writer, model *models.Model) error {
 	fmt.Fprintf(out, "<ul>\n")
 	fmt.Fprintf(out, "{{#%s}}\n", model.Id)
 	fmt.Fprintf(out, "\t<li>")
@@ -256,12 +259,12 @@ func TmplFooterPartial(out io.Writer, copyrightYear string, copyrightLink string
 	return nil
 }
 
-type BodyGen func(io.Writer, *Model) error
+type BodyGen func(io.Writer, *models.Model) error
 
 // tmplPage takes an output buffer and a PartialGen with a function
-// signature `func(io.Writer,*Model) error` and renders a webpage
+// signature `func(io.Writer,*models.Model) error` and renders a webpage
 // using the passed in func.
-func tmplPage(out io.Writer, model *Model, fn BodyGen) error {
+func tmplPage(out io.Writer, model *models.Model, fn BodyGen) error {
 	fmt.Fprintf(out, `<!DOCTYPE html>
 <html lang="en-us">
 {{>head}}
@@ -283,7 +286,7 @@ func tmplPage(out io.Writer, model *Model, fn BodyGen) error {
 // the contents of the model as a Newt handlebars template for the
 // provided action. It returns an error value when something
 // goes wrong.
-func TmplGen(out io.Writer, model *Model, action string) error {
+func TmplGen(out io.Writer, model *models.Model, action string) error {
 	if model == nil || model.Id == "" {
 		return fmt.Errorf("model appears incomplete, aborting")
 	}

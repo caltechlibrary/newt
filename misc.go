@@ -7,6 +7,9 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
 )
 
 //
@@ -88,7 +91,7 @@ func getIdFromList(list []string, id string) (string, bool) {
 			}
 		}
 	}
-	if isValidVarname(id) {
+	if models.IsValidVarname(id) {
 		return id, true
 	}
 	return "", false

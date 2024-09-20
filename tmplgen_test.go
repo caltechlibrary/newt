@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"testing"
+
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
 )
 
 func TestTmplGen(t *testing.T) {
@@ -130,6 +133,6 @@ func testMInputGen(elem *Element) error {
 	return fmt.Errorf("testMInputGen(%+v) not implemented", elem)
 }
 
-func testTmplGen(model *Model, action string) error {
+func testTmplGen(model *models.Model, action string) error {
 	return fmt.Errorf("testTmplGen(%+v, %q) not implemented", model, action)
 }

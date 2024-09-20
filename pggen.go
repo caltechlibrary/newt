@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"io"
 
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
+
 	// 3rd Party Templates
 	"github.com/cbroglie/mustache"
 )
@@ -63,7 +66,7 @@ grant {{namespace}}_anonymous to {{namespace}}_authenticator;
 	return tmpl.FRender(out, data)
 }
 
-func pgModels(out io.Writer, namespace string, models []*Model) error {
+func pgModels(out io.Writer, namespace string, models []*models.Model) error {
 	// Setup the opening comment, change to the name space and then render models.
 	txt := `--
 -- Below is the SQL I would noramally check into a project repository.
@@ -335,7 +338,7 @@ grant execute on function {{namespace}}.{{model}}_list to {{namespace}}_anonymou
 	return nil
 }
 
-func pgModelsTest(out io.Writer, namespace string, models []*Model) error {
+func pgModelsTest(out io.Writer, namespace string, models []*models.Model) error {
 	txt := `--
 -- {{namespace}}_test.sql tests the models described in {{namespace}}.yaml
 --

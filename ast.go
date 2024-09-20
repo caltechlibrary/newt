@@ -15,6 +15,9 @@ import (
 	"strings"
 	"time"
 
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
+
 	// 3rd Party
 	"github.com/aymerick/raymond"
 	"gopkg.in/yaml.v3"
@@ -31,7 +34,7 @@ type AST struct {
 
 	// Models holds a list of data models. It is used by
 	// both the data router and code generator.
-	Models []*Model `json:"models,omitempty" yaml:"models,omitempty"`
+	Models []*models.Model `json:"models,omitempty" yaml:"models,omitempty"`
 
 	// Routes holds an array of maps of route definitions used by
 	// the data router and code generator
@@ -308,9 +311,9 @@ func (ast *AST) SaveAs(configName string) error {
 	fmt.Fprintf(fp, "%s", src)
 	for _, model := range ast.Models {
 		for _, element := range model.Elements {
-			element.isChanged = false
+			element.Changed(false)
 		}
-		model.isChanged = false
+		model.Changed(false)
 	}
 	ast.isChanged = false
 	return nil
@@ -319,7 +322,7 @@ func (ast *AST) SaveAs(configName string) error {
 // GetModelIds returns a list of model ids
 func (ast *AST) GetModelIds() []string {
 	if ast.Models == nil {
-		ast.Models = []*Model{}
+		ast.Models = []*models.Model{}
 	}
 	ids := []string{}
 	for _, m := range ast.Models {
@@ -331,7 +334,7 @@ func (ast *AST) GetModelIds() []string {
 }
 
 // GetModelById return a specific model by it's id
-func (ast *AST) GetModelById(id string) (*Model, bool) {
+func (ast *AST) GetModelById(id string) (*models.Model, bool) {
 	for _, m := range ast.Models {
 		if m.Id == id {
 			return m, true
@@ -343,10 +346,10 @@ func (ast *AST) GetModelById(id string) (*Model, bool) {
 // AddModel takes a new Model, checks if the model exists in the list (i.e.
 // has an existing model id that matches the new model and if not appends
 // it so the list.
-func (ast *AST) AddModel(model *Model) error {
+func (ast *AST) AddModel(model *models.Model) error {
 	// Make sure we have a Models lists to work with.
 	if ast.Models == nil {
-		ast.Models = []*Model{}
+		ast.Models = []*models.Model{}
 	}
 	// Check to see if this is a duplicate, return error if it is
 	for i, m := range ast.Models {
@@ -361,7 +364,7 @@ func (ast *AST) AddModel(model *Model) error {
 
 // UpdateModel takes a model id and new model struct replacing the
 // existing one.
-func (ast *AST) UpdateModel(id string, model *Model) error {
+func (ast *AST) UpdateModel(id string, model *models.Model) error {
 	// Make sure we have a Models lists to work with.
 	if ast.Models == nil {
 		return fmt.Errorf("no models defined")

@@ -1,6 +1,6 @@
 module github.com/caltechlibrary/newt
 
-go 1.22.5
+go 1.23.1
 
 require (
 	github.com/aymerick/raymond v2.0.2+incompatible
@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/caltechlibrary/models v0.0.2-0.20240920233445-f70c0651ed5f // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect

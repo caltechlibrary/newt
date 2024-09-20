@@ -3,6 +3,10 @@ package newt
 import (
 	"fmt"
 	"io"
+
+	// Caltech Library Packages
+	"github.com/caltechlibrary/models"
+
 )
 
 // Generator holds our Newt Generator structures for rendering code.
@@ -11,7 +15,7 @@ type Generator struct {
 	Namespace string
 
 	// Models holds the models used to generator specific code
-	Models []*Model
+	Models []*models.Model
 
 	// Options holds the result environment variables and options that can be used in generator code
 	Options map[string]interface{}
@@ -161,7 +165,7 @@ func validateAction(action string, supportedActions []string) error {
 }
 
 // validateModelId
-func validateModelId(modelId string, models []*Model) error {
+func validateModelId(modelId string, models []*models.Model) error {
 	for _, model := range models {
 		if modelId == model.Id {
 			return nil
