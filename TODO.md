@@ -23,6 +23,7 @@
 
 NOTE: X is completed, P is partial completion, D (dropped) from implementation plans
 
+- [ ] Integrate models package into cli
 - [ ] Evaluate how to organize root YAML to support a selection of backends, e.g. Postgres+PostgREST or Dataset+datasetd. 
   - It is important to be able to evolve the back end without causing a major code refactor each time
   - [ ] Look at `just` tool written in rust and see what might need to be adjusted in the context of Newt application pipelines
