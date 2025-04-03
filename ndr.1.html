@@ -36,9 +36,9 @@ through a data pipeline of web services returning the results of the
 last one executed to the web browser or requester. It’s just a data
 router that manages a pipeline of services for each defined request
 pattern.</p>
-<p>In additional content routing ndr can also service out static
-resources. This is handy during development but less useful if you are
-using a front end web server such as a production setting.</p>
+<p>In additional content routing ndr can also serve static resources.
+This is handy during development but less useful if you are using a
+front end web server such as a production setting.</p>
 <p><strong>ndr</strong>’s configuration uses a declarative model
 expressed in YAML. It can also allow environment variables read at start
 up to be part of the data for mapping JSON data source requests. This is
@@ -73,11 +73,10 @@ Here’s a summary of the Newt YAML syntax that <strong>ndr</strong>
 uses.</p>
 <p>Top level properties for <strong>ndr</strong> YAML.</p>
 <dl>
-<dt>application</dt>
+<dt>services</dt>
 <dd>
-(optional: newtrouter, newtgenerator, newtHandlebars) holds the run time
-configuration used by the Newt web service and metadata about the
-application you’re creating.
+(optional) the run time service configuration used to compose your Newt
+application
 </dd>
 <dt>routes</dt>
 <dd>
@@ -85,26 +84,10 @@ application you’re creating.
 pipeline (e.g. JSON API and template engine sequence)
 </dd>
 </dl>
-<h2 id="the-application-property">the “application” property</h2>
-<p>The application properties are optional.</p>
-<dl>
-<dt>port</dt>
-<dd>
-(optional: newtrouter, newtHandlebars) default is This port number the
-Newt web services uses to listen for request on localhost
-</dd>
-<dt>htdocs</dt>
-<dd>
-(optional: newtrouter only) Directory that holds your application’s
-static content
-</dd>
-<dt>environment</dt>
-<dd>
-(optional: newtrouter, newtHandlebars) this is a list of operating
-system environment that will be available to routes. This is used to
-pass in secrets (e.g. credentials) need in the pipeline
-</dd>
-</dl>
+<h2 id="the-services-property">the “services” property</h2>
+<p>The services property is a list of services and how to run them. Each
+service may have the following properties.</p>
+<h2 id="the-routes-property">the “routes” property</h2>
 <p>Routes hosts a list of request descriptions and their data pipelines.
 This property is only used by Newt router and Newt code generator.</p>
 <h3 id="a-route-object">a route object</h3>
@@ -188,23 +171,26 @@ set the timeout to a small number.
 <pre><code>ndr blog.yaml</code></pre>
 <p>An example of a YAML file describing blog like application based on
 Postgres+PostgREST.</p>
-<pre><code>applications:
-  router:
+<pre><code>services:
+  - name: router
+    path: ndr
     port: 8010
     htdocs: htdocs
-  template_engine:
+  - name: template_engine
+    path: nte
     port: 8011
-  postgres:
+  - name: postgres
+    path: postgres
     namespace: blog
     port: 5432
     dsn: postgres://{PGUSER}:{PGPASSWORD}@localhost:5432/blog.yaml
-  postgrest:
-    app_path: postgrest
+    enviroment:
+      - PGUSER
+      - PGPASSWORD
+  - name: postgrest
+    path: postgrest
     conf_path: postgrest.conf
     port: 3000
-  enviroment:
-    - PGUSER
-    - PGPASSWORD
 models:
   - id: post
     description: A blog post or article

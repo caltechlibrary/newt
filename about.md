@@ -19,7 +19,7 @@ from these services."
 authors:
   - family-names: Doiel
     given-names: R. S.
-    orcid: "https://orcid.org/0000-0003-0900-6903"
+    orcid: ""
 
 repository-code: "git+https://github.com/caltechlibrary/newt"
 version: 0.0.9

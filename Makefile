@@ -13,7 +13,7 @@ GO_PROGRAMS = newt ndr nte # $(shell ls -1 cmd)
 
 TS_PROGRAMS =
 
-MAN_PAGES_1 = newt.1 ndr.1 nte.1 # $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
+MAN_PAGES = newt.1 ndr.1 nte.1 # $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
 
 HTML_PAGES = newt.1.html ndr.1.html nte.1.html # $(shell find . -type f | grep -E '\.html')
 
@@ -117,6 +117,7 @@ install: build man .FORCE
 	@echo ""
 	@echo "Make sure $(PREFIX)/bin is in your PATH"
 	@echo ""
+	@echo "Installing manpages in $(PREFIX)/man"
 	@if [ ! -d $(PREFIX)/man/man1 ]; then mkdir -p $(PREFIX)/man/man1; fi
 	@for MAN_PAGE in $(MAN_PAGES); do cp -v man/man1/$$MAN_PAGE $(PREFIX)/man/man1/;done
 	@echo ""

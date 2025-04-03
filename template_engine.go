@@ -137,7 +137,7 @@ func (t *Template) Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	document := make(map[string]interface{})
 	vars := map[string]string{}
-	// Copy in the options into page objcet's options.
+	// Copy in the options into page object's options.
 	log.Printf("Debug Document -> %+v\n", t.Document)
 	if t.Document != nil && len(t.Document) > 0 {
 		if t.Debug {

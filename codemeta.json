@@ -1,17 +1,23 @@
 {
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-  "@type": "SoftwareSourceCode",
+  "type": "SoftwareSourceCode",
   "codeRepository": "git+https://github.com/caltechlibrary/newt",
+  "author": [
+    {
+      "id": "https://orcid.org/0000-0003-0900-6903",
+      "type": "Person",
+      "givenName": "R. S.",
+      "familyName": "Doiel",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Caltech Library"
+      },
+      "email": "rsdoiel@caltech.edu"
+    }
+  ],
   "dateCreated": "2023-04-27",
   "dateModified": "2024-08-05",
-  "downloadUrl": "https://github.com/caltechlibrary/releases",
-  "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
-  "name": "Newt",
-  "version": "0.0.9",
   "description": "Newt is an experimental rapid application development. It is a toolbox for creating metadata curation applications. Newt applications implement a service orient architecture to minimize the code you have to write and maintain. The Newt approach emphasizes off the shelf components.  Newt comes with a data router, a stateless template engine and a developer tool. The developer tool includes data modeler, code generator and app runner. Data models are described in YAML similar to a YAML description of a web form. The code generator targets SQL and conf files for running Postgres plus PostgREST. It can generate handlebar templates from your modeled data. If manages the data routes and template mapping. It can generate a TypeScript validation service based on your data models. Newt composes your metadata curation application from these services.",
-  "applicationCategory": "computer science",
-  "releaseNotes": "This release implements the Newt third prototype. It uses a new simpler YAML syntax. It comes with four programs, newtrouter, newtmustache, newtgenerator and a developer tool called newt.",
-  "developmentStatus": "WIP",
   "funder": {
     "@type": "Organization",
     "name": "Caltech Library"
@@ -30,8 +36,21 @@
     "template engine",
     "rapid application development"
   ],
-  "programmingLanguage": ["YAML", "SQL", "Go", "TypeScript" ],
-  "operatingSystem": ["Linux", "Windows", "macOS"],
+  "name": "Newt",
+  "operatingSystem": [
+    "Linux",
+    "Windows",
+    "macOS"
+  ],
+  "programmingLanguage": [
+    "YAML",
+    "SQL",
+    "Go",
+    "TypeScript"
+  ],
+  "relatedLink": [
+    "https://caltechlibrary.github.io/newt"
+  ],
   "softwareRequirements": [
     "Dataset >= 2.1",
     "Deno >= 1.44",
@@ -39,18 +58,9 @@
     "Golang > 1.22",
     "A front end web server supporting reverse proxy (e.g. Apache2, NGINX)"
   ],
-  "relatedLink": ["https://caltechlibrary.github.io/newt"],
-  "author": [
-    {
-      "@type": "Person",
-      "@id": "https://orcid.org/0000-0003-0900-6903",
-      "givenName": "R. S.",
-      "familyName": "Doiel",
-      "email": "rsdoiel@caltech.edu",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Caltech Library"
-      }
-    }
-  ]
+  "version": "0.0.9",
+  "developmentStatus": "WIP",
+  "issueTracker": "git+https://github.com/caltechlibrary/newt/issues",
+  "downloadUrl": "https://github.com/caltechlibrary/releases",
+  "releaseNotes": "This release implements the Newt third prototype. It is an interum release to test\nmany of the changes planned for the Newt Project.\n\nThis release sees a new simpler YAML syntax and a major refactoring since v0.0.8.\nThe v0.0.8 release was demoed at UCLA Code4Lig meetup in April 2024.\n\nv0.0.8 has three cli.\n\n- **newt** provides a general tool to manage Newt projects\n- **ndr** is the Newt data router replacing the old **newtrouter**\n- **nte** is the Newt template engine replacing **newmustache**\n\nMustache templates have been dropped in favor of Handlebars templates. Eventually\nthe template engine will be rewritten in TypeScript and compiled with Deno\nallowing the use of Handlebarjs directly.\n\nThe purpose of this release is to determine what code should remain in Go\nand what code should be rewritten in TypeScript and compiled with Deno 2.2."
 }
