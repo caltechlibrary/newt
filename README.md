@@ -1,5 +1,11 @@
-
 # Newt Project
+
+> **Newt is no longer being developed.** This project was an experiment and the
+> lessons learned from it have been folded back into
+> [Dataset](https://github.com/caltechlibrary/dataset) and the
+> [models](https://github.com/caltechlibrary/models) module. The repository is
+> kept, archived, as a historical record. New work should start with those
+> projects instead.
 
 Newt is an experimental rapid application development. Specifically Newt is focused on creating web based metadata curation tools. These types of applications are commonly needed in galleries, libraries, archives and museums (abbr: GLAM). Newt makes creating these type of applications easier.
 
